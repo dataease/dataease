@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Creare buffere</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Creare buffere"></h2>
+        <hr/>
+    <p>Un buffer este o suprafaţă care acoperă o anumită distanţă faţă de un obiect spaţial punct, linie sau suprafaţă. 
+    </p>
+    <p>Bufferele sunt utilizate de obicei pentru a crea suprafeţe care pot fi analizate mai departe cu ajutorul unui instrument, precum Suprapunere straturi tematice. De exemplu, dacă se pune &icirc;ntrebarea &bdquo;Ce clădiri se găsesc pe o rază de un kilometru &icirc;n jurul şcolii?&rdquo;, răspunsul poate fi găsit prin crearea unui buffer de un kilometru &icirc;n jurul şcolii şi utilizarea instrumentului Suprapunere straturi tematice pentru a suprapune bufferul cu stratul tematic ce conţine amprente de clădiri. Rezultatul final este un strat tematic cu acele clădiri aflate pe o rază de un kilometru &icirc;n jurul şcolii.  
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă a hărţii</b>, &icirc;n buffer vor fi incluse numai obiectele spaţiale vizibile &icirc;n extinderea curentă a hărţii.  Dacă nu se bifează, toate obiectele spaţiale din stratul tematic introdus vor fi cuprinse &icirc;n buffer, chiar dacă se află &icirc;n afara extinderii curente a hărţii.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Alegeţi straturi tematice care conţin obiecte spaţiale care să fie incluse în buffer</h2></div>
+        <hr/>
+        <div>
+            <p>Obiectele spaţiale punctuale, liniare sau de suprafaţă care vor fi incluse &icirc;n buffer. 
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Introducere dimensiune buffer</h2></div>
+        <hr/>
+        <div>
+            <p>Pentru distanţă puteţi introduce o singură valoare sau mai multe valori, separ&acirc;ndu-le prin c&acirc;te un spaţiu. De asemenea, puteţi specifica &icirc;n stratul tematic de intrare un atribut care să conţină valoare pentru distanţă, făc&acirc;nd clic pe  <b>C&acirc;mp</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>Opţiuni</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeţi modul &icirc;n care doriţi să fie tratate bufferele care se suprapun. Pentru orice buffer aflat deasupra altui buffer, suprafeţele &icirc;n comun pot fi păstrate (Suprapunere) sau combinate (Dizolvare). When using  <b>Dissolve</b>, all buffers are dissolved together into a single multi-part feature, removing any overlap.
+            </p>  
+            <p> C&acirc;nd utilizaţi mai multe distanţe, puteţi alege cum să reprezentaţi distanţa de la ultima distanţă din buffer; de exemplu, dacă distanţele sunt 10 şi 14:
+                <ul>
+                    <li>Dacă alegeţi  <b>Inele</b> rezultă buffere care se &icirc;ntind de la 0 la 10 şi de la 10 la 14.
+                    </li>
+                    <li>Dacă alegeţi  <b>Discuri</b> rezultă buffere care se &icirc;ntind de la 0 la 10 şi de la 0 la 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>Opţiuni</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeţi modul &icirc;n care doriţi să fie tratate bufferele care se suprapun. Pentru orice buffer aflat deasupra altui buffer, suprafeţele &icirc;n comun pot fi păstrate (Suprapunere) sau combinate (Dizolvare). When using  <b>Dissolve</b>, all buffers are dissolved together into a single multi-part feature, removing any overlap.
+            </p>
+            <p>La crearea unui singur buffer &icirc;n jurul obiectelor spaţiale de tip suprafaţă (o singură distanţă introdusă), puteţi alege dacă obiectele spaţiale introduse &icirc;n buffer sunt incluse sau excluse din bufferul rezultat.
+            </p>
+            <p>C&acirc;nd utilizaţi mai multe distanţe, puteţi alege cum să reprezentaţi distanţa de la ultima distanţă din buffer; de exemplu, dacă distanţele sunt 10 şi 14:
+                <ul>
+                    <li>Dacă alegeţi  <b>Inele</b> rezultă buffere care se &icirc;ntind de la 0 la 10 şi de la 10 la 14.
+                    </li>
+                    <li>Dacă alegeţi  <b>Discuri</b> rezultă buffere care se &icirc;ntind de la 0 la 10 şi de la 0 la 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>Opţiuni</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeţi modul &icirc;n care doriţi să fie tratate bufferele care se suprapun. Pentru orice buffer aflat deasupra altui buffer, suprafeţele &icirc;n comun pot fi păstrate (Suprapunere) sau combinate (Dizolvare). When using  <b>Dissolve</b>, all buffers are dissolved together into a single multi-part feature, removing any overlap.
+            </p>
+            <p>La crearea unui singur buffer &icirc;n jurul unei linii (o singură distanţă introdusă), puteţi alege pe ce parte a liniei să se creeze bufferul. De regulă, alegeţi ambele părţi. Părţile st&acirc;ngă şi dreaptă sunt determinate ca şi c&acirc;nd v-aţi deplasa de la prima coordonată x,y a liniei (coordonata iniţială) către ultima coordonată x,y a liniei (coordonata finală). Alegerea părţii st&acirc;ngi sau drepte &icirc;nseamnă de regulă că ştiţi că obiectele spaţiale linie au fost create şi stocate &icirc;ntr-o anumită direcţie (de exemplu, &icirc;n amonte sau &icirc;n aval &icirc;ntr-o reţea hidrografică). La capetele liniilor, bufferul poate fi rotunjit (Rotund) sau tăiat drept (Drept).
+            </p>
+            <p>C&acirc;nd creaţi mai multe buffere (mai multe distanţe), puteţi alege cum să reprezentaţi distanţa de la ultima distanţă din buffer; de exemplu, dacă distanţele sunt 10 şi 14:
+                <ul>
+                    <li>Dacă alegeţi  <b>Inele</b> rezultă buffere care se &icirc;ntind de la 0 la 10 şi de la 10 la 14.
+                    </li>
+                    <li>Dacă alegeţi  <b>Discuri</b> rezultă buffere care se &icirc;ntind de la 0 la 10 şi de la 0 la 14.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>Opţiuni</h2></div>
+        <hr/>
+        <div>
+            <p>După ce alegeţi un strat tematic pentru a-l include &icirc;n buffer, puteţi alege cum doriţi să fie gestionate bufferele suprapuse. Pentru orice buffer aflat deasupra altui buffer, suprafeţele &icirc;n comun pot fi păstrate (Suprapunere) sau combinate (Dizolvare). When using  <b>Dissolve</b>, all buffers are dissolved together into a single multi-part feature, removing any overlap.  &Icirc;n plus, puteţi specifica cum să fie reprezentate distanţele multiple.   Pentru straturile tematice care conţin obiecte spaţiale liniare, puteţi alege pe ce parte a liniei să se creeze bufferul.  Pentru straturile tematice care conţin obiectelor spaţiale de tip suprafaţă, puteţi alege dacă obiectele spaţiale introduse &icirc;n buffer sunt incluse sau excluse din bufferul rezultat.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic care va fi creat &icirc;n  <b>Resursele mele</b> și adăugat &icirc;n hartă.  Numele implicit se bazează pe numele instrumentului și numele stratului tematic de intrare. Dacă numele stratului tematic rezultat există deja, vi se va solicita să furnizați un alt nume.
+            </p>
+            <p>Utiliz&acirc;nd meniul derul&acirc;nd  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

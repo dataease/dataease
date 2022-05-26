@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/reportContainerGrid/_HiddenContentSupport",["dojo/_base/declare","esri/dijit/geoenrichment/promise/all"],function(b,c){return b(null,{collapseContent:function(){this._grids.forEach(function(a){a.collapseContent()});this._syncFillerContainer()},hasHiddenContent:function(){return this._grids.some(function(a){return a.hasHiddenContent()})},resizePanelsToShowContent:function(){return c(this._grids.map(function(a){return a.resizeRowHeightToShowCellsContent()}))}})});

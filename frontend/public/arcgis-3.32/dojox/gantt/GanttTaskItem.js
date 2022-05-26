@@ -1,0 +1,3 @@
+//>>built
+define("dojox/gantt/GanttTaskItem",["./GanttTaskControl","dojo/_base/declare","dojo/domReady!"],function(d,c){return c("dojox.gantt.GanttTaskItem",[],{constructor:function(a){this.id=a.id;this.name=a.name||this.id;this.startTime=a.startTime||new Date;this.duration=a.duration||8;this.percentage=a.percentage||0;this.previousTaskId=a.previousTaskId||"";this.taskOwner=a.taskOwner||"";this.cldTasks=[];this.cldPreTasks=[];this.previousParentTask=this.nextParentTask=this.previousChildTask=this.nextChildTask=
+this.project=this.previousTask=this.parentTask=null},addChildTask:function(a){this.cldTasks.push(a);a.parentTask=this},setProject:function(a){this.project=a;for(var b=0;b<this.cldTasks.length;b++)this.cldTasks[b].setProject(a)}})});

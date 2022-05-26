@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Calcula el pendent</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="Eina Calcula el pendent del portal"></h2>
+        <hr/>
+    <p>Aquesta eina crea una superf&iacute;cie que mostra el pendent de les dades d'elevaci&oacute; d'entrada. El pendent representa la velocitat de canvi d'elevaci&oacute; de cada cel&middot;la del model d'elevaci&oacute; digital (DEM).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu les dades d'entrada per calcular el pendent</h2></div>
+        <hr/>
+        <div>
+            <p>Capa d'elevaci&oacute; a partir de la qual es calcular&agrave; el pendent.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>Especifiqueu el factor d'escala per a l'elevació</h2></div>
+        <hr/>
+        <div>
+            <p>Introdu&iuml;u un factor z.
+            </p>
+            <p>El factor z &eacute;s un factor d'escala que s'utilitza per convertir els valors d'elevaci&oacute; amb dues finalitats:
+ 
+                <ul>
+                    <li>Convertir les unitats d'elevaci&oacute; (com ara metres o peus) a les unitats de la coordenada horitzontal de la capa, que poden ser peus, metres o graus
+                        
+  
+                    </li>
+                    <li>Afegir exageraci&oacute; vertical per aconseguir un efecte visual
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>De peus
+                    </p>
+                </td>
+                <td>
+                    <p>De metres
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>De peus
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0,3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>De metres
+                    </p>
+                </td>
+                <td>
+                    <p>3,28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Podeu especificar el nom d'una carpeta de  <b>El meu contingut</b> on es desar&agrave; el resultat mitjan&ccedil;ant el quadre desplegable <b>Desa el resultat a</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

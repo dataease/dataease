@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Útvonalak tervezése</h2><p/>
+        <h2><img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="&Uacute;tvonalak tervez&eacute;se"></h2>
+        <hr/>
+    <p>Az &Uacute;tvonalak tervez&eacute;se a mobil munkaerő k&ouml;z&ouml;tti hat&eacute;kony feladatmegoszt&aacute;s m&oacute;dj&aacute;t hat&aacute;rozza meg.
+    </p>
+    <p>Adja meg az eszk&ouml;zben a meg&aacute;ll&oacute;helyeket &eacute;s a meg&aacute;ll&oacute;helyek felkeres&eacute;s&eacute;hez el&eacute;rhető j&aacute;rművek sz&aacute;m&aacute;t. Az eszk&ouml;z hozz&aacute;rendeli a meg&aacute;ll&oacute;helyeket a j&aacute;rművekhez, &eacute;s megjelen&iacute;ti, hogyan &eacute;rhetik el az egyes j&aacute;rművek a hozz&aacute;juk rendelt meg&aacute;ll&oacute;helyeket az &uacute;tvonalakon a legr&ouml;videbb időn bel&uuml;l.
+    </p>
+    <p>Az &Uacute;tvonalak tervez&eacute;se seg&iacute;ts&eacute;g&eacute;vel a mobil munkaerő t&ouml;bb munkav&eacute;gz&eacute;si helysz&iacute;nt &eacute;rhet el kevesebb idő alatt, ami n&ouml;veli a hat&eacute;konys&aacute;got, &eacute;s jav&iacute;tja a vevőszolg&aacute;latot.
+        <ul>
+            <li>Otthonok, &eacute;ttermek vagy &eacute;p&iacute;tkez&eacute;sek vizsg&aacute;lata
+                
+
+            </li>
+            <li>Jav&iacute;t&aacute;si, &uuml;zembe helyez&eacute;si vagy műszaki szolg&aacute;ltat&aacute;sok
+            </li>
+            <li>Term&eacute;kek &eacute;s kis csomagok k&eacute;zbes&iacute;t&eacute;se
+            </li>
+            <li>&Eacute;rt&eacute;kes&iacute;t&eacute;si h&iacute;v&aacute;sok bonyol&iacute;t&aacute;sa
+            </li>
+            <li>Szem&eacute;lysz&aacute;ll&iacute;t&aacute;s otthonr&oacute;l egy rendezv&eacute;nyre
+            </li>
+        </ul>
+        
+    </p>
+    <p>Az &Uacute;tvonalak tervez&eacute;se kimenete egy meg&aacute;ll&oacute;hely r&eacute;teg az &uacute;tvonalak szerinti k&oacute;dol&aacute;ssal, amelyhez hozz&aacute;rendelt&eacute;k őket; egy &uacute;tvonal r&eacute;teg, amelyen l&aacute;that&oacute;k a hozz&aacute;rendelt meg&aacute;ll&oacute;helyekre vezető legr&ouml;videbb utak; valamint att&oacute;l f&uuml;ggően, hogy van-e olyan meg&aacute;ll&oacute;hely, amelyet nem lehet el&eacute;rni, egy hozz&aacute;rendel&eacute;s n&eacute;lk&uuml;li meg&aacute;ll&oacute;helyeket tartalmaz&oacute; r&eacute;teg. 
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;s haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel a program csak az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen l&aacute;that&oacute; vektoros elemeket veszi figyelembe az elemz&eacute;sn&eacute;l.  Ha nincs bejel&ouml;lve, akkor a bemeneti r&eacute;teg &ouml;sszes vektoros elem&eacute;t figyelembe veszi, akkor is, ha azok k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Felkeresendő megállóhelyeknek megfelelő pont réteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki a pont r&eacute;teget, amelyet az &uacute;tvonalaknak &eacute;rinteni&uuml;k kell (vagy a j&aacute;rműveknek fel kell keresni&uuml;k).  Ezek a pontok hozz&aacute;rendelt vagy nem hozz&aacute;rendelt meg&aacute;ll&oacute;helyekk&eacute; v&aacute;lnak a kimeneten. 
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p>
+            <p>Az eszk&ouml;z legfeljebb 2000 bemeneti vektoros elemet t&aacute;mogat. 
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Útvonalak utazási módja</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki az utaz&aacute;si m&oacute;dot.  A kimeneti &uacute;tvonalak a k&ouml;zutakat vagy k&ouml;zlekedőutakat k&ouml;vetik, &eacute;s betartj&aacute;k az &eacute;rv&eacute;nyes szab&aacute;lyokat, figyelembe veszik p&eacute;ld&aacute;ul az egyir&aacute;ny&uacute; k&ouml;zleked&eacute;st &eacute;s a fordul&aacute;si vagy tehersz&aacute;ll&iacute;t&aacute;si tilalmat.  Az el&eacute;rhető utaz&aacute;si m&oacute;dokat a szervezet rendszergazd&aacute;ja hat&aacute;rozza meg.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Útvonalak kezdete megállóhelyeknél</h2></div>
+        <hr/>
+        <div>
+            <p>Adja meg, hogy mikor &eacute;s hol kezdik meg a j&aacute;rművek a hozz&aacute;juk rendelt &uacute;tvonalat.
+            </p>
+            <p>Az &Uacute;tvonalak tervez&eacute;se seg&iacute;ts&eacute;g&eacute;vel megadhat egy vagy t&ouml;bb kiindul&aacute;si helyet a j&aacute;rművek sz&aacute;m&aacute;ra.
+            </p>
+            <p>Ha egyetlen pontot ad meg helyk&eacute;nt, akkor minden j&aacute;rmű innen indul, tekintet n&eacute;lk&uuml;l a felhaszn&aacute;lhat&oacute; j&aacute;rművek sz&aacute;m&aacute;ra. Kiv&aacute;laszthat egy egyetlen pontb&oacute;l &aacute;ll&oacute; pont r&eacute;teget, vagy hozz&aacute;adhat egy pontot a t&eacute;rk&eacute;phez a  <b>Pont hozz&aacute;ad&aacute;sa t&eacute;rk&eacute;phez</b> lehetős&eacute;get kiv&aacute;lasztva, a mellette l&eacute;vő Pont szerkeszt&eacute;se gombra, majd a t&eacute;rk&eacute;pre kattintva. 
+            </p>
+            <p>T&ouml;bb hely megad&aacute;sa eset&eacute;n az egyes j&aacute;rművekhez hozz&aacute; kell rendelni a hozz&aacute;juk tartoz&oacute; pontot. A j&aacute;rművek sz&aacute;m&aacute;nak meg kell egyeznie a r&eacute;tegen tal&aacute;lhat&oacute; pontok sz&aacute;m&aacute;val. V&aacute;lasszon ki egy t&ouml;bb pontot tartalmaz&oacute; r&eacute;teget, &eacute;s adjon meg egy mezőt, amely egyedileg azonos&iacute;tja az egyes &uacute;tvonalakat vagy j&aacute;rművezetőket az  <b>&Uacute;tvonal-azonos&iacute;t&oacute; mező</b> leg&ouml;rd&uuml;lő list&aacute;n.
+            </p>
+            <p>Az indul&aacute;si idő megegyezik minden &uacute;tvonal eset&eacute;ben. Az indul&aacute;si idő időz&oacute;n&aacute;ja megegyezik a kezdőpont vagy -pontok időz&oacute;n&aacute;j&aacute;val, emiatt &uuml;gyeljen arra, hogy a helyi időt adja meg. Tegy&uuml;k fel p&eacute;ld&aacute;ul, hogy a csendes-&oacute;ce&aacute;ni (PST) időz&oacute;n&aacute;ban tart&oacute;zkodik (UTC-8:00), &eacute;s a j&aacute;rművek, amelyek sz&aacute;m&aacute;ra &uacute;tvonalat tervez, az &eacute;szak-amerikai hegyi (MST) időz&oacute;n&aacute;ban tal&aacute;lhat&oacute;k (UTC-7:00). Ha az idő pillanatnyilag d.e. 9:30 PST (d.e. 10:30 MST), &eacute;s a j&aacute;rműveknek 30 percen bel&uuml;l kell megkezdeni&uuml;k az &uacute;tvonalat, akkor &aacute;ll&iacute;tson be d.e. 11:00 kezd&eacute;si időt. 
+            </p>
+            <p>Ha a j&aacute;rművek k&uuml;l&ouml;nb&ouml;ző időz&oacute;n&aacute;kban indulnak, a kezd&eacute;si idő nem lehet azonos, hanem eltol&aacute;ssal kell megadni őket. Ha p&eacute;ld&aacute;ul az egyik &uacute;tvonal a PST időz&oacute;n&aacute;ban tal&aacute;lhat&oacute; pontr&oacute;l indul, egy m&aacute;sik pedig az MST időz&oacute;n&aacute;b&oacute;l, &eacute;s d.e. 11:00 &oacute;r&aacute;t ad meg kezd&eacute;si idők&eacute;nt, akkor a PST időz&oacute;n&aacute;ban az &uacute;tvonal d.e. 11:00 PST &oacute;rakor kezdődik, az MST időz&oacute;n&aacute;ban pedig d.e. 11:00 MST &oacute;rakor &ndash; azaz 1 &oacute;ra elt&eacute;r&eacute;ssel.
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Útvonalak végpontja megállóhelyeknél</h2></div>
+        <hr/>
+        <div>
+            <p>Adja meg a j&aacute;rművek &uacute;tvonal&aacute;nak v&eacute;gpontj&aacute;t.
+            </p>
+            <p>Az &uacute;tvonalakat konfigur&aacute;lhatja &uacute;gy, hogy h&aacute;rom helysz&iacute;n k&ouml;z&uuml;l az egyiken &eacute;rjenek v&eacute;get: 
+                <ul>
+                    <li>Az &uacute;tvonalak kezdet&eacute;vel megegyező helyen, tekintet n&eacute;lk&uuml;l arra, hogy egy vagy t&ouml;bb helyről indultak-e.
+                    </li>
+                    <li>Egyetlen hely
+                    </li>
+                    <li>Sok helysz&iacute;n &ndash; azaz &uacute;tvonalank&eacute;nt egy-egy v&eacute;gpont
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jel&ouml;lje be a  <b>Visszat&eacute;r&eacute;s a kezdőpontba</b> lehetős&eacute;get, ha a j&aacute;rművek &uacute;tvonal&aacute;nak kezdő- &eacute;s v&eacute;gpontja azonos.
+            </p>
+            <p>Ha a kezdőpont helyett minden j&aacute;rművet egy k&ouml;z&ouml;s v&eacute;gpontra k&iacute;v&aacute;n ir&aacute;ny&iacute;tani, akkor sz&uuml;ntesse a  <b>Visszat&eacute;r&eacute;s a kezdőpontba</b> jel&ouml;l&eacute;st, &eacute;s adjon hozz&aacute; egy pontot a t&eacute;rk&eacute;phez, vagy v&aacute;lasszon egy pontosan egy pontot tartalmaz&oacute; r&eacute;teget.
+            </p>
+            <p>Ha azt szeretn&eacute;, hogy az &uacute;tvonalak egyedi helyen &eacute;rjenek v&eacute;get, akkor sz&uuml;ntesse meg a  <b>Visszat&eacute;r&eacute;s a kezdőpontba</b> jel&ouml;l&eacute;st, &eacute;s v&aacute;lasszon ki egy t&ouml;bb pontot tartalmaz&oacute; r&eacute;teget. A j&aacute;rművek sz&aacute;m&aacute;nak meg kell egyeznie a kiv&aacute;lasztott r&eacute;tegen tal&aacute;lhat&oacute; pontok sz&aacute;m&aacute;val. Az <b>&Uacute;tvonal-azonos&iacute;t&oacute; mező</b> leg&ouml;rd&uuml;lő list&aacute;b&oacute;l v&aacute;lasszon ki egy mezőt, amely egyedileg azonos&iacute;tja az egyes &uacute;tvonalakat, j&aacute;rműveket vagy j&aacute;rművezetőket. Ha a j&aacute;rművek t&ouml;bb helyről indulnak, &eacute;s t&ouml;bb helyen fejezik be az &uacute;tvonalat, akkor a kezdő &eacute;s a z&aacute;r&oacute; r&eacute;teghez kiv&aacute;lasztott &uacute;tvonal-azonos&iacute;t&oacute;knak meg kell egyezni&uuml;k.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Határrétegek kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p> Egy vagy t&ouml;bb olyan funkci&oacute;, ami ideiglenes korl&aacute;toz&aacute;sk&eacute;nt műk&ouml;dik (hat&aacute;rk&eacute;nt), amikor az &eacute;rintett utc&aacute;kon k&ouml;zlekedik. A korl&aacute;tokat a pontok, vonalak vagy polygon tulajdons&aacute;gaival hat&aacute;rozhatja meg.
+            </p>
+            <p>Egy korl&aacute;t pont lehet egy let&ouml;r&ouml;tt fa&aacute;g, egy k&ouml;zleked&eacute;si baleset, egy leszakadt elektromos vezet&eacute;k, vagy b&aacute;rmi, ami egy adott helyen teljes m&eacute;rt&eacute;kben megakad&aacute;lyozza az utcai k&ouml;zleked&eacute;st. A k&ouml;zleked&eacute;s enged&eacute;lyezett az utc&aacute;n, de a korl&aacute;t ponton t&uacute;l m&aacute;r nem. Legfeljebb 250 olyan funkci&oacute;t hat&aacute;rozhat meg, ami hat&aacute;rk&eacute;nt műk&ouml;dhet.
+            </p>
+            <p>A korl&aacute;t vonal megakad&aacute;lyozza a k&ouml;zleked&eacute;st minden olyan ponton, ahol az keresztezi az utc&aacute;t. P&eacute;ld&aacute;ul egy felvonul&aacute;s vagy t&uuml;ntet&eacute;s megakad&aacute;lyozza a k&ouml;zleked&eacute;st t&ouml;bb utca szakaszon is, ez&eacute;rt ezt korl&aacute;t vonallal lehet modellezni. Ha az utc&aacute;t keresztező korl&aacute;t vonalak sz&aacute;ma meghaladja az 500-at, akkor az eszk&ouml;z hiba&uuml;zenetet ad.
+            </p>
+            <p>A polygon korl&aacute;t megakad&aacute;lyozza a k&ouml;zleked&eacute;st minden olyan ponton, ahol az keresztezi az utc&aacute;t. Ilyen jellegű korl&aacute;t lehet p&eacute;ld&aacute;ul egy &aacute;rad&aacute;s, ami utc&aacute;k eg&eacute;sz h&aacute;l&oacute;zat&aacute;t fedi le, &iacute;gy megakad&aacute;lyozva a k&ouml;zleked&eacute;st. Ha az utc&aacute;t keresztező polygonok sz&aacute;ma meghaladja az 2000-et, akkor az eszk&ouml;z hiba&uuml;zenetet ad.
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Irányítandó járművek maximális száma</h2></div>
+        <hr/>
+        <div>
+            <p>Adja meg a meg&aacute;ll&oacute;helyek felkeres&eacute;s&eacute;hez el&eacute;rhető j&aacute;rművek sz&aacute;m&aacute;t. Az eszk&ouml;z legfeljebb  100 j&aacute;rművet t&aacute;mogat. 
+            </p>
+            <p>Előfordulhat, hogy az eszk&ouml;z olyan megold&aacute;st tal&aacute;l, amely az itt megadottn&aacute;l kevesebb j&aacute;rművet haszn&aacute;l, az &ouml;sszes meg&aacute;ll&oacute;hely sz&aacute;m&aacute;t&oacute;l, a j&aacute;rművenk&eacute;nt megengedett meg&aacute;ll&oacute;helyek sz&aacute;m&aacute;t&oacute;l, a meg&aacute;ll&oacute;helyek t&aacute;vols&aacute;g&aacute;t&oacute;l, az egyes meg&aacute;ll&oacute;helyeken elt&ouml;lt&ouml;tt időtől &eacute;s a teljes &uacute;tvonalidőre vonatkoz&oacute;an j&aacute;rművenk&eacute;nt be&aacute;ll&iacute;tott b&aacute;rmely korl&aacute;toz&aacute;st&oacute;l f&uuml;ggően.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Megállások maximális száma járművenként</h2></div>
+        <hr/>
+        <div>
+            <p>Ez a teljes terhel&eacute;s &uacute;tvonalak k&ouml;z&ouml;tti eloszt&aacute;s&aacute;nak első k&eacute;t param&eacute;tere. 1 &eacute;s  200 k&ouml;z&ouml;tti &eacute;rt&eacute;ket adhat meg. 
+            </p>
+            <p>Az egyes j&aacute;rművekhez hozz&aacute;rendelhető meg&aacute;ll&oacute;helyek sz&aacute;m&aacute;nak cs&ouml;kkent&eacute;s&eacute;vel val&oacute;sz&iacute;nűbb, hogy az eszk&ouml;z azonos sz&aacute;m&uacute; meg&aacute;ll&oacute;helyet rendel az egyes j&aacute;rművekhez. Ez seg&iacute;t kiegyens&uacute;lyozni a j&aacute;rművezetők k&ouml;z&ouml;tti terhel&eacute;st. H&aacute;tr&aacute;nya viszont, hogy kev&eacute;sb&eacute; hat&eacute;kony megold&aacute;shoz vezethet.
+            </p>
+            <p>A j&aacute;rművenk&eacute;nti meg&aacute;ll&oacute;helyek sz&aacute;m&aacute;nak n&ouml;vel&eacute;s&eacute;vel az eszk&ouml;znek nagyobb szabads&aacute;g engedhető a hat&eacute;konyabb megold&aacute;sok keres&eacute;s&eacute;hez; de lehet, hogy a terhel&eacute;s egyenetlen&uuml;l fog eloszlani a j&aacute;rművezetők &eacute;s j&aacute;rművek k&ouml;z&ouml;tt. Megjegyzendő, hogy a terhel&eacute;sek idő &eacute;s meg&aacute;ll&oacute;helyek sz&aacute;ma szerint egyar&aacute;nt eloszthat&oacute;k a  <b>J&aacute;rművek teljes &uacute;tvonalidej&eacute;nek korl&aacute;toz&aacute;sa</b> param&eacute;ter &eacute;rt&eacute;k&eacute;nek meghat&aacute;roz&aacute;s&aacute;val.
+            </p>
+            <p>A k&ouml;vetkező p&eacute;ld&aacute;k a j&aacute;rművenk&eacute;nt maxim&aacute;lisan megengedett meg&aacute;ll&oacute;helyek vagy a j&aacute;rművenk&eacute;nti teljes idő korl&aacute;toz&aacute;s&aacute;nak hat&aacute;s&aacute;t szeml&eacute;ltetik. Minden p&eacute;ld&aacute;ban hat meg&aacute;ll&oacute;hely &eacute;s k&eacute;t &uacute;tvonal szerepel, amelyek azonos helyen kezdődnek.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="../images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="Elosztott meg&aacute;ll&aacute;sok az utaz&aacute;si időh&ouml;z viszony&iacute;tva">
+                </td>
+                <td>
+                    <p>Elosztott utaz&aacute;si idők &eacute;s meg&aacute;ll&oacute;helyek &uacute;tvonalank&eacute;nt:
+                    </p>
+                    <p>A meg&aacute;ll&oacute;helyek t&ouml;bb&eacute;-kev&eacute;sb&eacute; egyenletes vannak elosztva, &iacute;gy a terhel&eacute;s egyenletes eloszt&aacute;sa c&eacute;lj&aacute;b&oacute;l a j&aacute;rművenk&eacute;nt maxim&aacute;lisan megengedett meg&aacute;ll&aacute;sok be&aacute;ll&iacute;t&aacute;sa k&ouml;zel azonos időtartam&uacute; &uacute;tvonalakat eredm&eacute;nyez.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Nem elosztott utaz&aacute;si idők">
+                </td>
+                <td>
+                    <p>&Uacute;tvonalank&eacute;nt elosztott meg&aacute;ll&oacute;helyek, de nem elosztott utaz&aacute;si idők:
+                    </p>
+                    <p>Hat meg&aacute;ll&oacute;hely k&ouml;z&uuml;l &ouml;t egy klasztert alkot a kezd&eacute;si hely k&ouml;zel&eacute;ben, egy meg&aacute;ll&oacute;hely azonban t&aacute;volabb esik, &eacute;s sokkal hosszabb időbe telik megk&ouml;zel&iacute;teni. A meg&aacute;ll&oacute;helyek k&eacute;t &uacute;tvonal k&ouml;z&ouml;tti egyenlő eloszt&aacute;sa nem elosztott utaz&aacute;si időket okoz.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="Elosztott utaz&aacute;si idők">
+                </td>
+                <td>
+                    <p>&Uacute;tvonalank&eacute;nt nem elosztott meg&aacute;ll&oacute;helyek, de elosztott utaz&aacute;si idők:
+                    </p>
+                    <p>A meg&aacute;ll&oacute;helyek ugyanott tal&aacute;lhat&oacute;k, mint az előző &aacute;br&aacute;n, de az &uacute;tvonalank&eacute;nt maxim&aacute;lisan megengedett meg&aacute;ll&oacute;helyek sz&aacute;m&aacute;nak n&ouml;vel&eacute;s&eacute;vel &eacute;s a j&aacute;rművenk&eacute;nti teljes utaz&aacute;si idő korl&aacute;toz&aacute;s&aacute;val elosztott utaz&aacute;si idők &eacute;rhetők el.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Egyes megállóhelyeken eltöltött idő</h2></div>
+        <hr/>
+        <div>
+            <p>&Aacute;ll&iacute;tsa be az egyes meg&aacute;ll&oacute;helyeken t&ouml;lt&ouml;tt v&aacute;rhat&oacute; &aacute;tlagos szolg&aacute;ltat&aacute;si időt. Ha p&eacute;ld&aacute;ul ellenőr&ouml;k napi munkabeoszt&aacute;s&aacute;t tervezi, &eacute;s egy ellenőrz&eacute;s &aacute;tlagosan 45 percig tart, akkor adjon meg  <code>45</code>-&ouml;t.
+            </p>
+            <p>A felt&eacute;telezett szolg&aacute;ltat&aacute;si idő minden meg&aacute;ll&oacute;helyen azonos.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Útvonal teljes idejének korlátozása járművenként</h2></div>
+        <hr/>
+        <div>
+            <p>Adja meg, hogy legfeljebb mennyi ideig tartson egy &uacute;tvonal a kezdet&eacute;től a v&eacute;g&eacute;ig. Ez mag&aacute;ban foglalja az &uacute;tvonal ment&eacute;n tal&aacute;lhat&oacute; meg&aacute;ll&oacute;helyeken t&ouml;lt&ouml;tt v&aacute;rt utaz&aacute;si időt &eacute;s szolg&aacute;ltat&aacute;si időt. Ha a j&aacute;rművezetők nem dolgozhatnak naponta a megadott időn&eacute;l, p&eacute;ld&aacute;ul nyolc &oacute;r&aacute;n&aacute;l tov&aacute;bb, akkor itt adhatja meg ezt a korl&aacute;toz&aacute;st.
+            </p>
+            <p>A terhel&eacute;s kiegyens&uacute;lyoz&aacute;sakor megfontoland&oacute; t&eacute;nyezőkkel kapcsolatban l&aacute;sd a  <b>Meg&aacute;ll&aacute;sok maxim&aacute;lis sz&aacute;ma j&aacute;rművenk&eacute;nt</b> mezőre vonatkoz&oacute; s&uacute;g&oacute;t.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Eredményréteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott vektoros r&eacute;teg neve. Ha a vektoros r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet. A vektoros r&eacute;teg tartalmaz egy-egy r&eacute;teget az al&aacute;bbiak mindegyik&eacute;hez: &uacute;tvonalak, hozz&aacute;rendelt meg&aacute;ll&oacute;helyek &eacute;s nem hozz&aacute;rendelt meg&aacute;ll&oacute;helyek, ha az egyes megadott meg&aacute;ll&oacute;helyeket nem siker&uuml;lt hozz&aacute;rendelni egyik &uacute;tvonalhoz sem.
+            </p>
+            <p>Az  <b>&Uacute;tvonal r&eacute;tegek belefoglal&aacute;sa</b> kijel&ouml;l&eacute;sekor az eszk&ouml;z az eredm&eacute;ny minden egyes &uacute;tvonal&aacute;t elmenti &uacute;tvonal r&eacute;tegk&eacute;nt. Az &uacute;tvonal r&eacute;teg mag&aacute;ban foglalja az adott &uacute;tvonal &ouml;sszes inform&aacute;ci&oacute;j&aacute;t, p&eacute;ld&aacute;ul az &uacute;tvonalhoz hozz&aacute;rendelt meg&aacute;ll&oacute;helyeket &eacute;s a halad&aacute;si ir&aacute;nyokat. &Uacute;tvonal r&eacute;tegek l&eacute;trehoz&aacute;sa olyankor hasznos, ha szeretn&eacute; megosztani az egyes &uacute;tvonalakat a szervezet m&aacute;s tagjaival, vagy szeretn&eacute; tov&aacute;bb m&oacute;dos&iacute;tani az &uacute;tvonalakat az <b>Ir&aacute;nyok</b> gomb haszn&aacute;lat&aacute;val a t&eacute;rk&eacute;pn&eacute;zegető ablakban. Az &uacute;tvonal r&eacute;tegek a vektoros r&eacute;tegen megadott nevet haszn&aacute;lj&aacute;k előtagk&eacute;nt, &eacute;s az elemz&eacute;s r&eacute;szek&eacute;nt l&eacute;trehozott &uacute;tvonaln&eacute;v hozz&aacute;ad&aacute;s&aacute;val l&eacute;trehozz&aacute;k az egyes &uacute;tvonal r&eacute;tegek egyedi nev&eacute;t.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti a vektoros r&eacute;teget &eacute;s a l&eacute;trehozott &uacute;tvonalr&eacute;tegeket.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

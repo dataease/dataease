@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tạo Tầm nhìn</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Tạo tầm nh&igrave;n"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ Tạo Tầm nh&igrave;n gi&uacute;p tạo ra c&aacute;c khu vực m&agrave; tại đ&oacute; người quan s&aacute;t c&oacute; thể nh&igrave;n thấy c&aacute;c đối tượng tr&ecirc;n mặt đất. C&aacute;c điểm quan s&aacute;t đầu v&agrave;o c&oacute; thể đại diện cho những người quan s&aacute;t (như người đứng tr&ecirc;n mặt đất hoặc trạm quan s&aacute;t trong một th&aacute;p b&aacute;o động hỏa hoạn) hoặc c&aacute;c đối tượng được quan s&aacute;t (như tua-bin gi&oacute;, th&aacute;p nước, xe cộ, hoặc những người kh&aacute;c). C&aacute;c khu vực kết quả l&agrave; c&aacute;c khu vực ở đ&oacute; người quan s&aacute;t c&oacute; thể nh&igrave;n thấy c&aacute;c đối tượng được quan s&aacute;t v&agrave; ngược lại: c&aacute;c đối tượng được quan s&aacute;t c&oacute; thể nh&igrave;n thấy người quan s&aacute;t.
+    </p>
+    <p>Cả người quan s&aacute;t v&agrave; đối tượng được quan s&aacute;t đều c&oacute; thể c&oacute; độ cao tr&ecirc;n mặt đất, c&aacute;c độ cao n&agrave;y được d&ugrave;ng để x&aacute;c định khả năng nh&igrave;n thấy.
+ V&iacute; dụ, tầm nh&igrave;n được t&iacute;nh cho c&aacute;c tua-bin gi&oacute; cao 400 foot v&agrave; những người cao s&aacute;u foot đứng tr&ecirc;n mặt đất thường lớn hơn tầm nh&igrave;n t&iacute;nh to&aacute;n cho c&aacute;c tua-bin gi&oacute; cao 200 foot v&agrave; những người cao s&aacute;u foot.
+    </p>
+    <p>Lưu &yacute; rằng việc t&iacute;nh to&aacute;n tầm nh&igrave;n kh&ocirc;ng xem x&eacute;t c&aacute;c vật cản như c&acirc;y cối hoặc t&ograve;a nh&agrave;. Bạn c&oacute; thể nghĩ về việc t&iacute;nh to&aacute;n giống như xảy ra tr&ecirc;n đất trống kh&ocirc;ng c&oacute; bất cứ vật thể g&igrave; trừ người quan s&aacute;t v&agrave; c&aacute;c đối tượng được quan s&aacute;t.
+    </p>
+    <p>Lớp kết quả chứa c&aacute;c đối tượng khu vực thể hiện cho c&aacute;c khu vực nh&igrave;n thấy. Trường  <i>Frequency</i> ghi ch&eacute;p số lượng c&aacute;c điểm người quan s&aacute;t c&oacute; thể nh&igrave;n thấy từng khu vực. V&iacute; dụ, nếu bạn c&oacute; năm điểm đầu v&agrave;o, mỗi điểm đại diện cho một th&aacute;p quan s&aacute;t b&aacute;o động hỏa hoạn, trường <i>Frequency</i> sẽ c&oacute; c&aacute;c gi&aacute; trị từ một đến năm; c&aacute;c khu vực c&oacute; gi&aacute; trị một chỉ c&oacute; thể nh&igrave;n thấy bởi một th&aacute;p, v&agrave; c&aacute;c khu vực c&oacute; gi&aacute; trị năm c&oacute; thể nh&igrave;n thấy bởi tất cả c&aacute;c th&aacute;p. Lớp kết quả cũng chứa trường <i>DEMResolution</i>, ghi ch&eacute;p độ ph&acirc;n giải của m&ocirc; h&igrave;nh số h&oacute;a độ cao (DEM) được sử dụng để tạo tầm nh&igrave;n.
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c điểm người quan s&aacute;t nh&igrave;n thấy trong phạm vi bản đồ hiện tại sẽ được ph&acirc;n t&iacute;ch. Nếu bỏ chọn, tất cả điểm người quan s&aacute;t trong lớp đầu v&agrave;o sẽ được ph&acirc;n t&iacute;ch, ngay cả khi ch&uacute;ng ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Các đối tượng điểm đại diện cho vị trí người quan sát</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c đối tượng điểm được sử dụng l&agrave;m vị tr&iacute; người quan s&aacute;t. 
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Độ cao vị trí người quan sát</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; chiều cao tr&ecirc;n mặt đất của c&aacute;c vị tr&iacute; người quan s&aacute;t. Mặc định l&agrave; gần bằng chiều cao trung b&igrave;nh của một người.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Chiều cao của các đối tượng khác trên mặt đất</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; chiều cao của cấu tr&uacute;c hoặc người tr&ecirc;n mặt đất được d&ugrave;ng để thiết lập khả năng hiển thị. Kết quả tầm nh&igrave;n l&agrave; c&aacute;c khu vực tại đ&oacute; một điểm người quan s&aacute;t c&oacute; thể thấy c&aacute;c đối tượng kh&aacute;c. Điều ngược lại cũng đ&uacute;ng; c&aacute;c đối tượng kh&aacute;c cũng thấy điểm người quan s&aacute;t. 
+            </p>
+            <p>
+                <ul>
+                    <li>Nếu c&aacute;c điểm người quan s&aacute;t của bạn thể hiện cho c&aacute;c tua-bin gi&oacute; v&agrave; bạn muốn x&aacute;c định nơi người đứng tr&ecirc;n mặt đất c&oacute; thể nh&igrave;n thấy tua-bin, h&atilde;y nhập chiều cao trung b&igrave;nh của một người (khoảng 6 foot). Kết quả l&agrave; c&aacute;c khu vực m&agrave; tại đ&oacute; một người đứng tr&ecirc;n mặt đất c&oacute; thể thấy c&aacute;c tua-bin gi&oacute;.
+                    </li>
+                    <li>Nếu c&aacute;c điểm người quan s&aacute;t của bạn thể hiện c&aacute;c th&aacute;p quan s&aacute;t b&aacute;o động hỏa hoạn v&agrave; bạn muốn x&aacute;c định c&aacute;c th&aacute;p quan s&aacute;t c&oacute; thể nh&igrave;n thấy ch&ugrave;m kh&oacute;i phun cao từ 20 foot trở l&ecirc;n, h&atilde;y nhập độ cao l&agrave; 20 foot. Kết quả l&agrave; c&aacute;c khu vực m&agrave; tại đ&oacute; th&aacute;p quan s&aacute;t b&aacute;o động hỏa hoạn c&oacute; thể nh&igrave;n thấy ch&ugrave;m kh&oacute;i cao &iacute;t nhất 20 foot.
+                    </li>
+                    <li>Nếu c&aacute;c điểm người quan s&aacute;t thể hiện cho c&aacute;c điểm quan s&aacute;t dọc theo những con đường v&agrave; bạn muốn x&aacute;c định nơi c&oacute; thể nh&igrave;n thấy c&aacute;c tua-bin gi&oacute; cao từ 400 foot trở l&ecirc;n, h&atilde;y nhập độ cao l&agrave; 400 foot. Kết quả l&agrave; c&aacute;c khu vực m&agrave; tại đ&oacute; một người đứng tại điểm quan s&aacute;t c&oacute; thể nh&igrave;n thấy tua-bin gi&oacute; cao &iacute;t nhất 400 foot.
+                    </li>
+                    <li>Nếu c&aacute;c điểm ph&acirc;n t&iacute;ch thể hiện cho c&aacute;c điểm quan s&aacute;t v&agrave; bạn muốn x&aacute;c định diện t&iacute;ch tr&ecirc;n mặt đất m&agrave; người đang đứng tại điểm quan s&aacute;t c&oacute; thể nh&igrave;n thấy l&agrave; bao nhi&ecirc;u, h&atilde;y nhập l&agrave; kh&ocirc;ng. Kết quả l&agrave; c&aacute;c khu vực c&oacute; thể được nh&igrave;n thấy từ điểm quan s&aacute;t.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Khoảng cách xem tối đa</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; khoảng c&aacute;ch ngắt nơi t&iacute;nh to&aacute;n c&aacute;c khu vực c&oacute; thể nh&igrave;n thấy dừng lại. Ngo&agrave;i khoảng c&aacute;ch n&agrave;y, kh&ocirc;ng thể biết được c&aacute;c điểm người quan s&aacute;t v&agrave; c&aacute;c đối tượng kh&aacute;c c&oacute; thể thấy nhau hay kh&ocirc;ng. Gi&aacute; trị c&agrave;ng lớn sẽ l&agrave;m tăng thời gian t&iacute;nh to&aacute;n. Gi&aacute; trị tối đa cho ph&eacute;p l&agrave; 31 dặm (50 kil&ocirc;m&eacute;t).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu t&ecirc;n lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> menu thả xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+            <p> Chạy c&ocirc;ng cụ n&agrave;y kh&ocirc;ng sử dụng credit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

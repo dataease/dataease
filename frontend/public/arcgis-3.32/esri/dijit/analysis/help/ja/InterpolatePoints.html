@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>ポイントの内挿</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="ポイントの内挿"></h2>
+        <hr/>
+    <p>   [ポイントの内挿] ツールを使用すると、一連のポイントからの計測値に基づいて、新しい場所の値を推定できます。 このツールは、各ポイントの値を持つポイント データを取得して、推定値で分類したエリアを返します。次に例を示します。
+        <ul>
+            <li>大気環境管理区域には、汚染度を計測するセンサーがあります。 [ポイントの内挿] を使用すると、汚染リスクがあるがセンサーのない場所 (たとえば、学校や病院) の汚染度を推定できます。
+            </li>
+            <li>個々の植物から収集したサンプルに基づいて、作物の重金属濃度を推定します。
+            </li>
+            <li>土壌養分濃度 (窒素、リン、カリウムなど) や他の指標 (導電率など) を推定して、作物収穫量との関係を研究し、田畑の各場所の肥料の正確な量を規定します。
+
+            </li>
+            <li>気象学的な応用として、温度、降水量、関連変数 (酸性雨など) の推定などに利用できます。 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>既知の値が指定された場所を含むポイント レイヤーの選択</h2></div>
+        <hr/>
+        <div>
+            <p>内挿の基準として使用するポイント レイヤー。  
+
+            </p>
+            <p>マップからレイヤーを選択するだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択することもできます。このオプションを選択すると、解析で使用するためにさまざまなソースのデータセットを参照して選択できるギャラリーが開きます。 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>内挿するフィールドを選択</h2></div>
+        <hr/>
+        <div>
+            <p>内挿する値を含むフィールドを選択します。  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>最適化の対象</h2></div>
+        <hr/>
+        <div>
+            <p>速度と精度の優先度を選択します。推定の精度を上げると、計算時間が長くなります。
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>出力推定エラー</h2></div>
+        <hr/>
+        <div>
+            <p> オンにすると、内挿推定の標準誤差のレイヤーが作成されます。  出力レイヤーの名前は、結果レイヤーの名前に Errors が追加されたものになります。
+            </p>
+            <p>標準誤差は、推定値の信頼性に関する情報を提供するため、有益です。おおよそ、実値は、95 パーセントの確率で推定値の 2つの 標準誤差内に収まります。たとえば、新しい場所の推定値が 50、標準誤差が 5 であるとします。  これは、このツールでは、該当する場所の実値が 50 であることが最良の推定になりますが、最小値として 40 または最大値として 60 の可能性もあることを意味します。  この妥当な値の範囲を求めるには、標準誤差に 2 を掛けて得られた値を推定値に足して範囲の上限を算出し、推定値から引いて範囲の下限を算出します。
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>分類方法</h2></div>
+        <hr/>
+        <div>
+            <p>推定値をエリアに分類する方法を選択します。
+                <ul>
+                    <li>[等比間隔] - 等比級数を持つクラスの間隔に基づいてエリアが作成されます。この方法により、各クラスの範囲にはクラスごとにほぼ同じ数の値が含まれ、間隔ごとの差が一定に保たれます。
+                    </li>
+                    <li>[等間隔] - 推定値の範囲が各エリアで均等になるようにエリアが作成されます。
+                    </li>
+                    <li>[等面積] - 各エリアのデータ値の数が均等になるようにエリアが作成されます。たとえば、データに低値よりも高値が多くある場合、高値のエリアが多く作成されます。
+                    </li>
+                    <li>[手動] - このオプションを使用すると、エリアに独自の値範囲を定義できます。この値は、下記の  <b>[クラス閾値]</b> パラメーターに入力します。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>クラス数</h2></div>
+        <hr/>
+        <div>
+            <p>結果レイヤーのクラスの数 (推定値の範囲) を指定します。 各クラスは、エリアの境界線を定義します。これらのクラスの値は、上記の  <b>[分類方法]</b> パラメーターによって決定します。
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>クラス閾値</h2></div>
+        <hr/>
+        <div>
+            <p>必要なクラス閾値をスペースで区切って入力します。たとえば、クラス閾値を 1.5、3、7 にしたい場合は、「 <code>1.5 3 7</code>」と入力します。  これらの値によって各クラスの上限が定義されるため、クラスの数は、入力した値の数と等しくなります。エリアは、入力した最大の閾値を超える推定値を持つ場所には作成されません。入力する値の数は、2 つ以上 32 個以下にする必要があります。
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>出力のクリップ先</h2></div>
+        <hr/>
+        <div>
+            <p>結果を描画したいエリアを指定するレイヤーを描画または指定します。 たとえば、湖の汚染計測値を内挿する場合、このパラメーターに湖の境界線を使用することができ、出力で湖の境界線内のみが描画されます。
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>これらの地点で推定</h2></div>
+        <hr/>
+        <div>
+            <p>推定値を計算するためにポイント位置を指定するレイヤーを描画または指定します。 これを使用すると、対象とする指定位置で推定を実行できます。たとえば、入力レイヤーが汚染度の計測値を表す場合は、このパラメーターを使用して、汚染リスクの高い場所 (たとえば、学校や病院) の汚染度を推定できます。  次に、この情報を使用して、これらの地域の保健当局に勧告をすることができます。
+            </p>
+            <p>これを指定すると、このツールは、指定された場所の推定値のポイント レイヤーを出力します。 出力レイヤーの名前は、結果レイヤーの名前に Points が追加されたものになります。  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果レイヤーの名前</h2></div>
+        <hr/>
+        <div>
+            <p>これは、 <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前です。デフォルト名は、ツール名と入力レイヤー名に基づいて設定されます。レイヤー名がすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存先]</b> ドロップダウン メニューを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

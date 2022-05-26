@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>מזהה אובייקטים באמצעות למידה לעומק</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="מזהה אובייקטים באמצעות למידה לעומק"></h2>
+        <hr/>
+    <p>כלי זה מריץ מודל למידה לעומק מאומן על רסטר קלט כדי להפיק קבוצת ישויות שמכילה את האובייקטים שנמצאו. הישויות יכולות להיות מלבנים תוחמים או פוליגונים סביב האובייקטים שנמצאו, או נקודות במרכזים של האובייקטים.
+    </p>
+    <p>אם האפשרות  <b>השתמש בתיחום המפה הנוכחי</b> מסומנת, רק אזור הרסטר שנראה בתיחום המפה הנוכחי ינותח. אם האפשרות לא מסומנת, כל הרסטר ינותח, גם אם הוא מחוץ לתיחום המפה הנוכחי.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>בחר תמונה המשמשת לזיהוי אובייקטים</h2></div>
+        <hr/>
+        <div>
+            <p>תמונת הקלט המשמשת לזיהוי אובייקטים.
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>בחר מודל של למידה לעומק (deep learning) המשמש לזיהוי אובייקטים</h2></div>
+        <hr/>
+        <div>
+            <p>פרט חבילת למידה עמוקה (Deep Learning) ( <code>.dlpk</code>) של הקלט.
+            </p>
+            <p>חבילת הלמידה העמוקה מורכבת מקובץ JSON של הגדרת מודל Esri ( <code>.emd</code>), קובץ המודל הבינארי של למידה עמוקה, וכאופציה, פונקציית Python של הרסטר לשימוש.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>ציין ארגומנטים למודל של למידה לעומק</h2></div>
+        <hr/>
+        <div>
+            <p>הארגומנטים של הפונקציה מוגדרים בייחוס קבוצת פונקציית הרסטר Python על ידי מודל הקלט. זה המקום שבו אתה מפרט פרמטרים וארגומנטים נוספים של למידה עמוקה עבור ניסויים ועידונים, כגון סף בר-סמך עבור התאמת הרגישות.
+            </p>
+            <p>השמות של הארגומנטים מאוכלסים על ידי הכלי מתוך קריאת מודול Python בשרת ניתוח הרסטר.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>הסר ישויות כפולות מהפלט (אופציונלי)</h2></div>
+        <hr/>
+        <div>
+            <p>מבצע הנחתת ערכים שאינם מקסימום, כאשר אובייקטים כפולים מזוהים והישות הכפולה עם ערך בר-סמך נמוך יותר מוסרת. 
+                <ul>
+                    <li>לא מסומן - כל האובייקטים שמזוהים יהיו בקבוצת ישויות הפלט. זוהי ברירת המחדל.
+                        
+
+                    </li>
+                    <li>מסומן - מסיר אובייקטים כפולים שמזוהים.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>שדה ציון סמך</h2></div>
+        <hr/>
+        <div>
+            <p>השדה בשירות הישויות שמכיל את ציון הסמך כפלט על ידי שיטת זיהוי האובייקטים.
+            </p>
+            <p>חובה לציין פרמטר זה בעת סימון הפרמטר  <b>הנחתת ערכים שאינם מקסימום</b>.
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>שדה ערך קבוצה</h2></div>
+        <hr/>
+        <div>
+            <p>שדה ערך הקבוצה בשירות ישויות הפלט. אם לא צוין, הכלי ישתמש בשדות ערך הקבוצה הסטנדרטיים  <i>Classvalue</i> ו- <i>Value</i>. אם שדות אלה לא קיימים, כל הישויות יטופלו כאותה קבוצת אובייקטים.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>יחס חפיפה מקסימאלית</h2></div>
+        <hr/>
+        <div>
+            <p>יחס החפיפה המקסימאלית עבור שתי ישויות חופפות, שמוגדר כיחס של אזור הצטלבות על אזור איחוד. ערך ברירת המחדל הוא 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>שם שכבת התוצאה</h2></div>
+        <hr/>
+        <div>
+            <p>השם של השכבה שתיווצר ב <b>התוכן שלי</b> ותתווסף למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם שם השכבה כבר קיים, תתבקש לספק שם אחר.
+            </p>
+            <p>באפשרותך לציין את השם של תיקייה ב- <b>התוכן שלי</b> שבה התוצאה תישמר באמצעות התיבה הנפתחת <b>שמור תוצאה ב</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

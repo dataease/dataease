@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Beregn tæthed</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="Beregn t&aelig;thed-v&aelig;rkt&oslash;j"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j opretter et t&aelig;thedskort ud fra punkt- eller linjeobjekter ved at sprede kendte m&aelig;ngder af et f&aelig;nomen (repr&aelig;senteret som attributter af punkter eller linjer) p&aring; tv&aelig;rs af kortet. Resultatet er et lag af omr&aring;der klassificeret fra mindste til st&oslash;rste t&aelig;thed.
+    </p>
+    <p>Ved angivelse af punkter skal hvert punkt repr&aelig;sentere placeringen af en begivenhed eller h&aelig;ndelse, og resultatlaget skal repr&aelig;sentere antallet af h&aelig;ndelser pr. enhed omr&aring;de. En h&oslash;j t&aelig;thedsv&aelig;rdi p&aring; en ny placering betyder, at der er flere punkter i n&aelig;rheden af placeringen. I mange tilf&aelig;lde kan resultatlaget fortolkes som en risikoflade for fremtidige begivenheder. Hvis de angivne punkter f.eks. repr&aelig;senterer placeringer af lynnedslag, kan resultatlaget fortolkes som en risikoflade for fremtidige lynnedslag.
+    </p>
+    <p>Ved angivelse af linjer repr&aelig;senterer linjet&aelig;thedsfladen det samlede antal linjer i n&aelig;rheden af hver placering. Enhederne for de beregnede t&aelig;thedsv&aelig;rdier er linjel&aelig;ngden pr. enhedsomr&aring;de. Hvis linjerne f.eks. repr&aelig;senterer floder, repr&aelig;senterer resultatlaget den samlede l&aelig;ngde af floder inden for s&oslash;geradiusen. Resultatet kan bruges til at identificere omr&aring;der, der egner sig som hjemsted for gr&aelig;ssende dyr.
+    </p>
+    <p>Andre situationer, hvor dette v&aelig;rkt&oslash;j kan anvendes, er:
+
+        <ul>
+            <li>Oprettelse af t&aelig;thedskort for kriminalitet, som kan hj&aelig;lpe politikredsene med at allokere ressourcer til omr&aring;der med h&oslash;j kriminalitet.
+                
+ 
+            </li>
+            <li>Beregning af t&aelig;theder af hospitaler inden for en landsdel. Resultatlaget vil vise omr&aring;der med stor eller lille tilg&aelig;ngelighed til hospitaler, og disse oplysninger kan anvendes til at beslutte, hvor der skal bygges nye hospitaler.
+                
+ 
+            </li>
+            <li>Identifikation af omr&aring;der med h&oslash;j risiko for skovbrande baseret p&aring; steder, hvor der historisk set har v&aelig;ret skovbrande.
+                
+ 
+            </li>
+            <li>Lokalisering af samfund, der ligger langt fra hovedveje, for at planl&aelig;gge, hvor der skal anl&aelig;gges nye veje.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>Angiv det inputpunkt- eller linjelag, som tætheden skal beregnes ud fra</h2></div>
+        <hr/>
+        <div>
+            <p>Det inputpunkt- eller linjelag, som t&aelig;theden skal beregnes ud fra.
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>Brug et tællerfelt</h2></div>
+        <hr/>
+        <div>
+            <p>Opret et felt til angivelse af antal h&aelig;ndelser pr. placering. Hvis du f.eks. har punkter, der repr&aelig;senterer byer, kan du bruge et felt, der repr&aelig;senterer byens befolkning, som et t&aelig;llerfelt, og befolkningst&aelig;thedslaget, som er resultatet, vil beregne store befolkningst&aelig;theder n&aelig;r byer med h&oslash;je befolkningstal.
+            </p>
+            <p>Hvis standardindstillingen  <b>Ingen</b> anvendes, antages det, at hver placering repr&aelig;senterer et enkelt antal.
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Søgeafstand</h2></div>
+        <hr/>
+        <div>
+            <p>Skriv en s&oslash;gesafstand, der angiver, hvor langt der skal s&oslash;ges for at finde punkt- eller linjeobjekter ved beregningen at t&aelig;thedsv&aelig;rdier. Hvis du f.eks. angiver en s&oslash;geafstand p&aring; 10.000 meter, beregnes t&aelig;theden af en vilk&aring;rlig placering i outputlaget baseret p&aring; objekter, som er inden for en afstand af 10.000 meter fra placeringen. Enhver placering, som ikke har h&aelig;ndelser inden for 10.000 meter, f&aring;r t&aelig;thedsv&aelig;rdien nul.
+            </p>
+            <p>Hvis der ingen afstand angives, beregnes en standard baseret p&aring; placeringen af inputobjekterne og v&aelig;rdien af t&aelig;llerfeltet (hvis der vises et t&aelig;llerfelt).
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>Enheder i outputområde</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv enheden for outputomr&aring;de. T&aelig;theden er antal divideret med omr&aring;de, og denne parameter angiver enheden for omr&aring;det i t&aelig;thedsberegningen.
+            </p>
+            <p>De tilg&aelig;ngelige arealenheder er kvadratmiles, kvadratfod, kvadratmeter og kvadratkilometer.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Størrelse på outputcelle</h2></div>
+        <hr/>
+        <div>
+            <p>Cellest&oslash;rrelse og enheder for output-rasterdata.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; det lag, som oprettes under  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Du kan angive navnet p&aring; en mappe i  <b>Mit indhold</b>, hvor resultatet bliver gemt ved at benytte rullelisten <b>Gem resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

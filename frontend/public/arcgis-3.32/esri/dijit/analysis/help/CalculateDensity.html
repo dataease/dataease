@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calculate Density</h2><p/>
+        <h2><img src="./images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" alt="Calculate Density"></h2>
+        <hr/>
+    <p>The Calculate Density tool creates a density map from point or line features by spreading known quantities of some phenomenon (represented as attributes of the points or lines) across the map. The result is a layer of areas classified from least dense to most dense.   
+
+    </p>
+    <p>For point input, each point should represent the location of some event or incident, and the result layer represents a count of the incident per unit area.  A higher density value in a new location means that there are more points near that location.  In many cases, the result layer can be interpreted as a risk surface for future events. For example, if the input points represent locations of lightning strikes, the result layer can be interpreted as a risk surface for future lightning strikes.
+    </p>
+    <p>For line input, the line density surface represents the total amount of line that is near each location.  The units of the calculated density values are the length of line per unit area. For example, if the lines represent rivers, the result layer will represent the total length of rivers that are within the search radius.  This result can be used to identify areas that are hospitable to grazing animals.
+    </p>
+    <p> Other use cases of this tool include the following:
+        <ul>
+            <li>Creating crime density maps to help police departments properly allocate resources to high crime areas.
+            </li>
+            <li>Calculating densities of hospitals within a county.  The result layer will show areas with high and low accessibility to hospitals, and this information can be used to decide where new hospitals should be built.
+            </li>
+            <li>Identifying areas that are at high risk of forest fires based on historical locations of forest fires.
+            </li>
+            <li>Locating communities that are far from major highways in order to plan where new roads should be constructed.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose point or line layer from which to calculate density</h2></div>
+        <hr/>
+        <div>
+            <p>The point or line layer from which density will be calculated.
+
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Use a count field</h2></div>
+        <hr/>
+        <div>
+            <p>Provide a field specifying the number of incidents at each location.  For example, if you have points that represent cities, you 
+can use a field representing the population of the city as the count field, and the resulting population density layer will calculate larger population densities near cities with larger populations.
+            </p>
+            <p> If the default choice of  None is used, each location will be assumed to represent a single count.
+            </p>
+        </div>
+    </div>
+    <div id="radius">
+        <div><h2>Search Distance</h2></div>
+        <hr/>
+        <div>
+            <p>Enter a distance specifying how far to search  to find point or line features when calculating density values.  For example, if you provide a search distance of 10,000 meters, the density of any location in the output layer  is calculated based on features that are within 10,000 meters of the location.  Any location that does not have any incidents within 10,000 meters will receive a density value of zero.     
+
+            </p>
+            <p>If no distance is provided, a default will be calculated that is based on the locations of the input features and the values in the count field (if a count field is provided).
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Clip output to</h2></div>
+        <hr/>
+        <div>
+            <p>Either draw or provide a  layer specifying the area where you want densities to be calculated. For example, if you are calculating densities of fish within a lake, you can use the boundary of the lake in this parameter and the output will  only draw within the boundary of the lake.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Classify by</h2></div>
+        <hr/>
+        <div>
+            <p>Choose how density values will be classified into areas.
+                <ul>
+                    <li>Equal interval&mdash;Areas are created such that the range of density values  is equal for each area.
+                    </li>
+                    <li>Geometrical interval&mdash;Areas are based on class intervals that have a geometrical series. This method ensures that each class range has approximately the same number of values within each class and that the change between intervals is consistent.
+                    </li>
+                    <li>Natural breaks&mdash;Class intervals for areas are based on natural groupings of the data.  Class break values are identified that best group similar values and that
+maximize the differences between classes.
+
+                    </li>
+                    <li>Equal area&mdash;Areas are created such that the size of each area is equal.  For example, if the result layer has more high density values than low density values, more areas will be created for high densities.
+                    </li>
+                    <li>Standard deviation&mdash;Areas are created based upon the standard deviation of the predicted density values. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Number of classes</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the number of classes (range of predicted values) in the result layer.  Each class defines the boundary of areas.  The values of these classes will be determined by the 
+ <b>Classify by</b> parameter above.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Output area units</h2></div>
+        <hr/>
+        <div>
+            <p>Specify the output area unit.  Density is count divided by area, and this parameter specifies the unit of the area in the density calculation.  
+
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>This is the name of the layer that will be created in  <b>My Content</b>  and added to the map.  The default  name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down menu, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

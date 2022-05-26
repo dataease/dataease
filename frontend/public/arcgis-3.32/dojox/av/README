@@ -1,0 +1,65 @@
+-------------------------------------------------------------------------------
+DojoX Audio/Video
+-------------------------------------------------------------------------------
+Version 0.1
+Release date: 01/15/2008
+-------------------------------------------------------------------------------
+Project state:
+experimental
+-------------------------------------------------------------------------------
+Credits
+	Tom Trenka (ttrenka AT gmail.com)
+    Mike Wilcox (AnM8tR AT Yahoo.com)
+-------------------------------------------------------------------------------
+Project description
+
+DojoX A/V aims to bring audio and video capabilities to the Open Web, first
+by wrapping common media types (Flash and Quicktime) and then by providing
+easy to use objects to accomplish basic A/V tasks.  As of version 0.1, only
+the base is included (Flash and Quicktime embedding mechanisms); in the near
+future, usable objects will appear, both in raw programmatic form and also with
+Dijit-compatible wrappers.
+-------------------------------------------------------------------------------
+Dependencies:
+
+DojoX A/V depends on dojox.embed, and uses Flash movies created in the deft
+project using Flex OSS 3.  You do not need any of the deft code; compiled
+movies are included with dojox.av.  If you want to modify the actual movies,
+you can look in the deft project (under the package deft.av).
+-------------------------------------------------------------------------------
+Documentation
+
+TBD.
+-------------------------------------------------------------------------------
+Included media:
+
+Video:
+test/video/Grog.flv and test/video/OldMan.flv are both created by Mike Wilcox
+and may be freely used and distributed in any way. I only ask for credit if
+widely shown.
+
+Audio:
+test/audio/Ola.mp3, test/audio/Hio.mp3, test/audio/FuzzWah.mp3 are from a
+sounds effects CD and are not to be redistributed. They will most likely
+be swapped out when a better open source option is avaialable.
+
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+
+http://svn.dojotoolkit.org/src/dojox/trunk/embed/*
+http://svn.dojotoolkit.org/src/dojox/trunk/av/*
+
+Install into the following directory structure:
+/dojox/av/
+
+...which should be at the same level as your Dojo checkout.
+
+-------------------------------------------------------------------------------
+Change history
+
+2008-01-15	Initial checkin, with basic movie embedding code.
+2008-06-04	Removed the base code, after moving it into dojox.embed and modifying it.
+2008-08-14  Implemented FLVideo for Flash Video 
+2009-02-08  Implemented FLAudio for Flash Audio

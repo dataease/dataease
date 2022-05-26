@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolar puntos</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Herramienta Interpolar puntos"></h2>
+        <hr/>
+    <p>Esta herramienta le permite predecir los valores de las nuevas ubicaciones en funci&oacute;n de las mediciones de un conjunto de puntos. La herramienta toma los datos de puntos con valores en cada punto y devuelve un r&aacute;ster de valores predichos.
+    </p>
+    <p>Se describen a continuaci&oacute;n otros ejemplos de uso de esta herramienta:
+
+        <ul>
+            <li>Un distrito de control de la calidad del aire tiene sensores que miden los niveles de contaminaci&oacute;n. Interpolar puntos se puede usar para predecir los niveles de contaminaci&oacute;n en los puntos que no tienen sensores, como las ubicaciones con poblaciones de riesgo, por ejemplo, colegios u hospitales.
+                
+
+            </li>
+            <li>Prediga las concentraciones de metales pesados de las cosechas en funci&oacute;n de las muestras tomadas de plantas individuales.
+                
+
+            </li>
+            <li>Prediga los niveles de nutrientes del suelo (nitr&oacute;geno, f&oacute;sforo, potasio, etc.) y otros indicadores (como la conductividad el&eacute;ctrica) para estudiar su relaci&oacute;n con la producci&oacute;n de la cosecha y prescribir cantidades exactas para cada ubicaci&oacute;n del campo.
+                
+
+            </li>
+            <li>Las aplicaciones meteorol&oacute;gicas incluyen la predicci&oacute;n de las temperaturas, las precipitaciones y las variables asociadas (como la lluvia &aacute;cida).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Elegir la capa de puntos que contiene las ubicaciones con valores conocidos</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de puntos que contiene los puntos donde se han medido los valores.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Elegir el campo a interpolar</h2></div>
+        <hr/>
+        <div>
+            <p>Elija el campo cuyos valores desea interpolar. El campo debe ser num&eacute;rico.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimizar para</h2></div>
+        <hr/>
+        <div>
+            <p>Elige tu preferencia de velocidad frente a precisi&oacute;n.
+            </p>
+            <p>Las predicciones m&aacute;s precisas tardan m&aacute;s tiempo en calcularse. Este par&aacute;metro modifica los valores predeterminados de muchos otros par&aacute;metros de Interpolar puntos a fin de optimizar la velocidad del c&aacute;lculo, la exactitud de los resultados o un equilibrio entre ambos. De forma predeterminada, la herramienta optimizar&aacute; para lograr un equilibrio.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Transformar datos a distribución normal</h2></div>
+        <hr/>
+        <div>
+            <p>Elija si desea transformar los datos con la distribuci&oacute;n normal.
+            </p>
+            <p>La interpolaci&oacute;n es m&aacute;s exacta para aquellos datos que siguen una distribuci&oacute;n normal (en forma de campana). Si parece que los datos no est&aacute;n distribuidos de forma normal, deber&iacute;a realizar una transformaci&oacute;n.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Tamaño de modelos locales</h2></div>
+        <hr/>
+        <div>
+            <p>Interpolar puntos funciona creando modelos de interpolaci&oacute;n local que se combinan entre s&iacute; para crear el mapa de predicci&oacute;n final. Este par&aacute;metro controla cu&aacute;ntos puntos se incluir&aacute;n en cada modelo local. Con valores m&aacute;s peque&ntilde;os se obtendr&aacute;n resultados m&aacute;s locales y se pueden conseguir efectos a peque&ntilde;a escala, pero pueden conducir a una inestabilidad en los c&aacute;lculos. Los valores m&aacute;s grandes ser&aacute;n m&aacute;s estables, pero podr&iacute;an perderse algunos efectos locales.
+            </p>
+            <p>Aunque el valor puede oscilar entre 30 y 500, los valores t&iacute;picos se encuentran entre 50 y 200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Cantidad de vecinos</h2></div>
+        <hr/>
+        <div>
+            <p>Las predicciones se calculan seg&uacute;n los puntos vecinos. Este par&aacute;metro controla cu&aacute;ntos puntos se utilizar&aacute;n en el c&aacute;lculo. Si se utiliza un mayor n&uacute;mero de vecinos se obtendr&aacute;n resultados m&aacute;s precisos, pero pueden tardar m&aacute;s en calcularse.
+            </p>
+            <p>Aunque este valor puede oscilar entre 1 y 64, los valores t&iacute;picos se encuentran entre 5 y 15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Tamaño de celda de salida</h2></div>
+        <hr/>
+        <div>
+            <p>El tama&ntilde;o de celda y las unidades para los r&aacute;steres de salida.
+            </p>
+            <p>Las unidades disponibles son pies, millas, metros y kil&oacute;metros.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Error de predicción de salida</h2></div>
+        <hr/>
+        <div>
+            <p>Elija si desea crear un r&aacute;ster de errores est&aacute;ndar para los valores predichos.
+            </p>
+            <p>Los errores est&aacute;ndar resultan &uacute;tiles porque proporcionan informaci&oacute;n sobre la fiabilidad de los valores predichos. Una regla general sencilla es que el verdadero valor estar&aacute; comprendido entre dos errores est&aacute;ndar del valor predicho el 95% del tiempo. Por ejemplo, sup&oacute;n que una nueva ubicaci&oacute;n obtiene un valor predicho de 50 con un error est&aacute;ndar de 5. Esto significa que la estimaci&oacute;n m&aacute;s aproximada de esta herramienta es que el valor verdadero en esa ubicaci&oacute;n es 50, aunque podr&iacute;a ser de 40 o 60. Para calcular este rango de valores razonables, multiplique el error est&aacute;ndar por 2, sume este valor al valor predicho para obtener el l&iacute;mite superior del rango y r&eacute;stelo del valor predicho para obtener el l&iacute;mite inferior del rango.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>El nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y que se agregar&aacute; al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Puede especificar el nombre de una carpeta de  <b>Mi contenido</b> en la que se guardar&aacute; el resultado con el cuadro desplegable <b>Guardar el resultado en</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

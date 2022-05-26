@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>描述数据集</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="描述数据集工作流示意图"></h2>
+        <hr/>
+    <p>使用&ldquo;描述数据集&rdquo;工具可以更详细地查看数据集。在对大量数据运行分析之前，使用此工具可以确定输入数据的内容和位置。默认情况下，结果包含一个概述输入图层关键描述符的 JSON 字符串，以及一个详细列出每个字段的汇总统计数据的表格。
+    </p>
+    <p>您可以选择创建其他输出要素图层以进一步描述数据。可以选择样本图层或范围图层。您可以选择输出其中一种图层或输出两者。
+    </p>
+    <p>例如，假设您拥有一个包含 15 个数据集的大数据文件共享。每个数据集都有 1000 万个区域要素，代表您所在国家不同区域的建筑物和房屋。您的任务是分析区域 C，但是您不知道哪个数据集包含这些要素。要查找应使用的数据集，请运行&ldquo;描述数据集&rdquo;并选择创建范围图层以调查哪个数据集位于研究区域。
+    </p>
+    <p>再举一例，假设您的任务是完成大量数据的分析工作流。您想尝试该工作流，但是操作完整数据集可能会花费数小时或数天。您可以创建样本图层来有效测试完整工作流，而无需耗费大量时间和资源运行完整分析。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>选择要描述的数据集</h2></div>
+        <hr/>
+        <div>
+            <p>图层中包含将要描述、汇总和采样的点、线、面或表格要素。
+            </p>
+            <p>除了从地图中选择图层外，还可以在下拉列表的底部选择 <b>选择分析图层</b>，以浏览至大数据文件共享数据集或要素图层中的内容。
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>了解您的数据集，方法为创建（可选）</h2></div>
+        <hr/>
+        <div>
+            <p>输出其他描述性图层，以提高您对大数据的理解。您可以选择不输出图层，也可以选择输出以下图层中的一个或两个：
+            </p>
+            <ul>
+                <li> <b>范围图层</b> - 创建一个区域要素，表示输入要素范围和感兴趣区域。
+                </li>
+                <li> <b>样本图层</b> - 创建一个子集图层，其中包含在数据集或感兴趣区域中的指定数量的输入要素。
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>样本图层</h2></div>
+        <hr/>
+        <div>
+            <p>从输入图层输出包含要素子集的图层。如果选择 <b>样本图层</b>，您可以指定要在样本图层中返回的要素数。默认情况下，将会在输出图层中返回 100 个样本要素。
+            </p>
+            <p>值必须大于零。如果指定的数字大于要素总数，则将返回所有要素。
+            </p>
+            <p>如果选择 <b>使用当前地图范围</b>，则样本图层将包含地图范围内的要素。
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>范围图层</h2></div>
+        <hr/>
+        <div>
+            <p>通过选择 <b>范围图层</b>按钮，可以输出要素图层，其中包含表示输入要素范围的单个要素。此选项默认为选中。
+            </p>
+            <p>如果选择 <b>使用当前地图范围</b>，则范围图层将表示地图的可见范围。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p> 要创建的图层的名称。如果您要写入 ArcGIS Data Store，则您的结果将保存在<b>我的内容</b>并添加到地图中。如果您要写入大数据文件共享，则您的结果将存储于大数据文件共享中，并添加到其清单。结果将不会添加到地图中。默认名称基于工具名称以及输入图层名称。如果该图层已存在，将无法使用该工具。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

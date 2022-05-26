@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>重新构建轨迹</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="重新构建轨迹"></h2>
+        <hr/>
+    <p> 该工具适用于启用时间的点或区域要素（表示 <code>时刻</code>）图层。它首先使用标识符确定属于轨迹的要素。使用每个位置的时间按顺序排列轨迹，并将其转换为表示随时间变化的移动路径的线或面。或者，可以依据字段对输入进行缓冲，从而在每个位置创建一个面。这些缓冲点或输入面随即按顺序连接，以将轨迹创建为面，其中宽度表示感兴趣属性。生成的轨迹具有开始和结束时间，临时表示已知轨迹中的第一个和最后一个要素。创建轨迹后，将计算输入要素的统计数据并将其分配给输出轨迹。最基本的统计数据是区域内点的计数，但是也可以计算其他统计数据。
+    </p>
+    <p>可以采用下面两种方式之一来表示启用时间的图层中的要素：
+        <ul>
+            <li>时刻 - 单个时间点
+            </li>
+            <li>间隔 - 开始和结束时间
+            </li>
+        </ul>
+        
+    </p>
+    <p>例如，假设您拥有每隔 10 分钟的飓风 GPS 测量。每个 GPS 测量记录了飓风的名称、位置、记录时间和风速。根据此信息，您可以使用轨迹识别的名称创建每个飓风的轨迹，然后生成每个飓风的轨迹。此外，还可以计算每个飓风的平均风速、最大风速和最小风速等统计数据，以及每条轨迹中的测量计数。
+    </p>
+    <p>使用相同示例，可以依据风速对轨迹进行缓冲。依据该位置的风速字段对每个测量进行缓冲，并将缓冲区域连接在一起，从而创建表示轨迹路径以及随着飓风前进风速的变化的面。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>从以下内容选择要素以重新构建轨迹</h2></div>
+        <hr/>
+        <div>
+            <p>要重新构建为轨迹的点或面图层。输入图层必须已启用时间，并具有用于表示时刻的要素。图层必须在投影坐标系中，否则必须使用 <b>分析环境</b>将处理空间参考设置为投影坐标系（如果已应用缓冲区）。
+            </p>
+            <p>除了从地图中选择图层外，还可以在下拉列表的底部选择 <b>选择分析图层</b>，以浏览至大数据文件共享数据集或要素图层中的内容。
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>选择一个或多个字段以标识轨迹</h2></div>
+        <hr/>
+        <div>
+            <p>表示轨迹标识符的字段。
+            </p>
+            <p>例如，如果要重新构建飓风的轨迹，则可以使用飓风名称作为轨迹字段。
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>选择用于重新构建轨迹的方法</h2></div>
+        <hr/>
+        <div>
+            <p>用于连接轨迹和应用缓冲区（如果适用）的方法。 <b>平面</b>方法可以更快地计算结果，但是不会使轨迹经向环绕国际日期变更线或在缓冲时考虑地球的实际形状。 <b>测地线</b>方法将根据需要使轨迹经向环绕日期变更线，并应用测地线缓冲区将地球的形状考虑在内。
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>创建缓冲输入要素所依据的表达式(可选)</h2></div>
+        <hr/>
+        <div>
+            <p>用于计算以输入要素为中心的缓冲距离的公式。可以使用缓冲区计算器生成此公式，支持加、减、乘、除等基本运算。使用分析坐标系计算这些值。图层必须在投影坐标系中，否则必须使用 <b>分析环境</b>将处理空间参考设置为投影坐标系（如果已应用缓冲区）。
+            </p>
+            <p>类似  <code>$feature.windspeed * 1000</code> 的公式将应用 1,000 乘以 <i>windspeed</i> 字段的缓冲区。可以在缓冲区计算器中使用多个字段。
+            </p>
+            <p> 也可以指定一个追踪感知型表达式。例如，可使用类似 <code>$track.field(windspeed).history(-3)</code> 的公式计算当前要素与前两个要素的 <i>windspeed</i> 字段值总和。将计算每个地点的当前 <i>windspeed</i> 和前两个测量值的总和并进行缓冲。
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>选择分割轨迹所依据的时间(可选)</h2></div>
+        <hr/>
+        <div>
+            <p>用于分割轨迹的时间。如果输入点或面之间的持续时间比时段长，则会将其分割成不同的轨迹。
+            </p>
+            <p>如果指定时间分割和距离分割，则满足一个或两个条件时将分割轨迹。
+            </p>
+            <p>假设您拥有表示飞机飞行的点要素，其中轨迹字段为飞机 ID。该飞机可进行多次飞行并表示为一条轨迹。如果已知飞行之间存在 1 小时的休息时间，则可以使用  <code>1 小时</code>作为轨迹分割，将每次飞行分割成其自己的轨迹。
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>分割轨迹（可选）</h2></div>
+        <hr/>
+        <div>
+            <p>您可以使用三种不同的方法分割轨迹。您可以单独使用这些分割方法，也可以将这三种方法或其中两种组合使用。
+            </p>
+            <p>可以通过以下方式完成分割：
+                <ul>
+                    <li> <b>基于输入之间的距离</b> - 如果输入点或面之间的距离大于指定距离，则其将分割到不同的轨迹中。例如，如果您指定距离为 10 公里，则超出 10 公里的连续点将成为单独的轨迹。
+                    </li>
+                    <li> <b>基于输入之间的时间</b> - 如果输入点或面之间的持续时间比时段长，则会将其分割成不同的轨迹。例如，假设您拥有表示飞机飞行的点要素，其中轨迹字段为飞机 ID。该飞机可进行多次飞行并表示为一条轨迹。如果已知飞行之间存在 1 小时的休息时间，则可以使用 <code>1 小时</code>作为轨迹分割，将每次飞行分割成其自己的轨迹。
+                    </li>
+                    <li> <b>以定义的时间间隔</b> - 使用由时间间隔和参考时间指定的固定间隔进行分割。如果您没有指定参考时间，则将使用 1970 年 1 月 1 日。例如，如果指定的时间间隔为 1 年，参考时间为 1990 年 2 月 2 日 10:00，则会在 1990 年 2 月 2 日 10:00、1991 年 2 月 2 日 10:00（以一年为间隔类推）处分割轨迹。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果指定多个分割选项，则满足一个或多个条件时将分割轨迹。
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>选择分割轨迹所依据的距离(可选)</h2></div>
+        <hr/>
+        <div>
+            <p>用于分割轨迹的距离。如果输入点或面之间的距离大于分割距离，则其将分割到不同的轨迹中。
+            </p>
+            <p>如果指定时间分割和距离分割，则满足一个或两个条件时将分割轨迹。
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>添加统计数据（可选）</h2></div>
+        <hr/>
+        <div>
+            <p> 可以计算汇总的要素的统计数据。可计算数值字段的以下内容：
+                <ul>
+                    <li>计数 - 计算非空值的数目。此项可用于数值字段或字符串。[null, 0, 2] 的计数为 2。
+                    </li>
+                    <li>总和 - 字段内数值的总和。[null, null, 3] 的总和为 3。
+                    </li>
+                    <li>平均值 - 数值的平均值。[0, 2, null] 的平均值为 1。
+                    </li>
+                    <li>最小值 - 数值字段的最小值。[0, 2, null] 的最小值为 0。
+                    </li>
+                    <li>最大值 - 数值字段的最大值。[0, 2, null] 的最大值为 2。
+                    </li>
+                    <li>范围 - 数值字段的范围。其计算方法为最大值减去最小值。[0, null, 1] 的范围为 1。[null, 4] 的范围为 0。
+                    </li>
+                    <li>方差 - 轨迹中数值字段内数值的方差。[1] 的方差为空。[null, 1,0,1,1] 的方差为 0.25。
+                    </li>
+                    <li>标准差 - 数值字段的标准差。[1] 的标准差为空。[null, 1,0,1,1] 的标准差为 0.5。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>可计算字符串字段的以下内容：
+                <ul>
+                    <li>计数 - 非空字符串的数目。
+                    </li>
+                    <li>任意 - 该统计数据是指定字段中字符串值的随机样本。
+                    </li>
+                </ul>
+                所有统计数据均根据非空值计算而得。生成的图层将包含一个针对每个计算而得的统计数据的新字段。通过选择一个属性和统计数据可添加任意数量的统计数据。 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>选择要保存结果的 ArcGIS Data Store</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics 结果存储在数据存储中并显示为  Portal for ArcGIS 中的要素图层。大多数情况下，结果应存储在时空数据存储中（此为默认设置）。某些情况下，将结果存储在关系数据存储也是一个很好的选择。下列内容说明了您可能需要将结果存储在关系数据存储中的原因： 
+                <ul>
+                    <li>可在门户到门户协作中应用结果。
+                    </li>
+                    <li>可启用结果的同步功能。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果您希望您的 GeoAnalytics 结果增加并希望利用时空大数据存储功能处理大量数据，则您不应使用关系数据存储。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p> 要创建的图层的名称。如果您要写入 ArcGIS Data Store，则您的结果将保存在<b>我的内容</b>并添加到地图中。如果您要写入大数据文件共享，则您的结果将存储于大数据文件共享中，并添加到其清单。结果将不会添加到地图中。默认名称基于工具名称以及输入图层名称。如果该图层已存在，将无法使用该工具。
+            </p>
+            <p>如果写入  ArcGIS Data Store（关系或时空大数据存储），可以使用<b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

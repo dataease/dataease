@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>버퍼 생성 (Create Buffers)</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="버퍼 생성"></h2>
+        <hr/>
+    <p>버퍼는 포인트, 라인 또는 영역 피처에서 지정된 거리를 포함하는 영역입니다. 
+    </p>
+    <p>버퍼는 일반적으로 레이어 중첩과 같은 도구를 사용하여 추가 분석할 수 있는 영역을 생성하는 데 사용됩니다. 예를 들어 질문이 &quot;학교에서 1.6Km 이내에 있는 건물은 무엇입니까?&quot;인 경우 학교를 중심으로 1.6Km 버퍼를 생성한 후 레이어 중첩을 통해 건물 풋프린트가 포함된 레이어로 버퍼를 중첩하여 답을 찾을 수 있습니다. 이 과정을 통해 학교에서 1.6km 이내에 있는 건물들의 레이어가 최종 결과로 생성됩니다.  
+    </p>
+    <p> <b>현재 맵 범위 사용</b>을 선택한 경우 현재 맵 범위 내에 표시된 피처만 버퍼링되고,  이 옵션의 선택을 취소한 경우 현재 맵 범위 외부에 있는 피처를 포함하여 입력 레이어에 있는 모든 피처가 버퍼링됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>버퍼링할 피처가 포함된 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>버퍼링할 포인트, 라인 또는 영역 피처입니다. 
+            </p>
+            <p>맵에서 레이어를 선택하는 것 외에도 드롭다운 목록 하단에서  <b>분석 레이어를 선택</b>할 수 있습니다. 해당 옵션을 사용하면 다양한 원본에서 분석에 사용할 데이터셋을 검색하고 선택할 수 있는 갤러리가 열립니다. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>버퍼 크기 입력</h2></div>
+        <hr/>
+        <div>
+            <p>단일 거리 값을 입력하거나, 각 값을 공백으로 구분하여 여러 값을 입력할 수 있습니다. 또한  <b>필드</b>를 클릭하여 입력 레이어에서 거리 값이 포함된 속성을 지정할 수 있습니다.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>옵션</h2></div>
+        <hr/>
+        <div>
+            <p>겹치는 버퍼를 처리할 방법을 선택합니다. 다른 버퍼 위에 있는 버퍼에 대해 공통 영역을 유지(중첩)하거나 결합(디졸브)할 수 있습니다.  <b>디졸브</b>를 사용하면 모든 버퍼가 단일 피처로 함께 디졸브되어 모든 중첩을 제거합니다.
+            </p>  
+            <p> 여러 거리를 사용하는 경우 마지막 버퍼 거리에서의 거리를 나타내는 방법을 선택할 수 있습니다. 예를 들어 거리가 10과 14인 경우 다음과 같이 선택할 수 있습니다.
+                <ul>
+                    <li> <b>링</b>을 선택하면 0에서 10 사이의 버퍼와 10에서 14 사이의 버퍼가 생성됩니다.
+                    </li>
+                    <li> <b>디스크</b>를 선택하면 0에서 10 사이의 버퍼와 0에서 14 사이의 버퍼가 생성됩니다.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>옵션</h2></div>
+        <hr/>
+        <div>
+            <p>겹치는 버퍼를 처리할 방법을 선택합니다. 다른 버퍼 위에 있는 버퍼에 대해 공통 영역을 유지(중첩)하거나 결합(디졸브)할 수 있습니다.  <b>디졸브</b>를 사용하면 모든 버퍼가 단일 피처로 함께 디졸브되어 모든 중첩을 제거합니다.
+            </p>
+            <p>영역 피처를 기준으로 단일 버퍼를 생성하는 경우(하나의 거리 입력) 버퍼링할 피처를 결과 버퍼에 포함할지 여부를 선택할 수 있습니다.
+            </p>
+            <p>여러 거리를 사용하는 경우 마지막 버퍼 거리에서의 거리를 나타내는 방법을 선택할 수 있습니다. 예를 들어 거리가 10과 14인 경우 다음과 같이 선택할 수 있습니다.
+                <ul>
+                    <li> <b>링</b>을 선택하면 0에서 10 사이의 버퍼와 10에서 14 사이의 버퍼가 생성됩니다.
+                    </li>
+                    <li> <b>디스크</b>를 선택하면 0에서 10 사이의 버퍼와 0에서 14 사이의 버퍼가 생성됩니다.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>옵션</h2></div>
+        <hr/>
+        <div>
+            <p>겹치는 버퍼를 처리할 방법을 선택합니다. 다른 버퍼 위에 있는 버퍼에 대해 공통 영역을 유지(중첩)하거나 결합(디졸브)할 수 있습니다.  <b>디졸브</b>를 사용하면 모든 버퍼가 단일 피처로 함께 디졸브되어 모든 중첩을 제거합니다.
+            </p>
+            <p>라인을 기준으로 단일 버퍼를 생성하는 경우(하나의 거리 입력) 라인의 어느 쪽을 버퍼링할지 선택할 수 있습니다. 일반적으로는 양쪽을 선택합니다. 왼쪽과 오른쪽은 라인의 첫 번째 x,y 좌표(시작 좌표)에서 라인의 마지막 x,y 좌표(끝 좌표)를 향해 걷고 있는 것으로 가정하여 결정됩니다. 왼쪽이나 오른쪽을 선택하면 일반적으로 라인 피처가 생성되어 특정 방향(예: 하천 유역의 상류 또는 하류)으로 저장되었음을 알 수 있습니다. 라인의 양쪽 단부에서는 버퍼가 둥근 모양(원형) 또는 직선(평면)으로 마무리될 수 있습니다.
+            </p>
+            <p>여러 버퍼를 생성하는 경우(둘 이상의 거리) 마지막 버퍼 거리에서의 거리를 나타내는 방법을 선택할 수 있습니다. 예를 들어 거리가 10과 14인 경우 다음과 같이 선택할 수 있습니다.
+                <ul>
+                    <li> <b>링</b>을 선택하면 0에서 10 사이의 버퍼와 10에서 14 사이의 버퍼가 생성됩니다.
+                    </li>
+                    <li> <b>디스크</b>를 선택하면 0에서 10 사이의 버퍼와 0에서 14 사이의 버퍼가 생성됩니다.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>옵션</h2></div>
+        <hr/>
+        <div>
+            <p>버퍼링할 레이어를 선택하면 겹치는 버퍼를 처리할 방법을 선택할 수 있습니다. 다른 버퍼 위에 있는 버퍼에 대해 공통 영역을 유지(중첩)하거나 결합(디졸브)할 수 있습니다.  <b>디졸브</b>를 사용하면 모든 버퍼가 단일 피처로 함께 디졸브되어 모든 중첩을 제거합니다.  또한 여러 거리를 나타내는 방법을 지정할 수 있습니다.   라인 피처를 포함한 레이어의 경우 라인의 어느 쪽을 버퍼링할지 선택할 수 있습니다.  영역 피처를 포함한 레이어의 경우 버퍼링할 피처를 결과 버퍼에 포함할지 여부를 선택할 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에서 생성되어 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어 이름이 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 메뉴를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Ustvari razvodje</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Ustvari razvodja"></h2>
+        <hr/>
+    <p>To orodje določi razvodje ali gorvodno prispevno območje za posamezne točke v va&scaron;em vhodnem sloju. 
+    </p>
+    <p>Na primer, če imate točkovne geoobjekte, ki predstavljajo lokacije onesnažene vode, in želite najti verjetne vire onesnaženja. Ker mora biti vir onesnaženja nekje gorvodno od točke, bi uporabili to orodje za določanje razvodij, ki vsebujejo vire onesnaženja.
+    </p>
+    <p>Lokacija va&scaron;ih vhodnih točk je pomembna. Če se ne nahajajo natančno na odvodni liniji, bodo razvodja morda zelo majhna in neuporabna za va&scaron;o analizo. Orodje  <b>I&scaron;či razdaljo do najbližjega odvodnjavanja</b> je lahko uporabljeno za nastavitev lokacije va&scaron;ih vhodnih točk, da padejo natančno na odvodne linije, od koder se stekajo tokovi v točke na odvodni liniji. Nastavljene lokacije za iskanje razvodij so zapisane v izhodnem sloju &ndash; va&scaron;e vhodne točke niso spremenjene.
+    </p>
+    <p>Rezultat je skupinski sloj, ki vsebuje dva sloja: razvodja in prilagojene točke, uporabljene za izračun razvodij.     
+    </p>
+    <p>Dobljena razvodja bodo imela vse atribute va&scaron;ih vhodnih točk ter te dodatne atribute:     
+        <ul>
+            <li> <i>PourPtID</i> &ndash; vsebuje vrednost ID-ja za vhodno točko
+            </li>
+            <li> <i>Area Square Kilometers</i> &ndash; vsebuje povr&scaron;ine v kvadratnih kilometrih gorvodnega razvodja.
+            </li>
+            <li> <i>Description</i> in <i>DataResolution</i> &ndash; vsebujeta informacije s hidrolo&scaron;kimi podatki, uporabljenimi za izračun sledi.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Če je obkljukana možnost  <b>Uporabi trenutni obseg karte</b>, bodo za izračun razvodij uporabljeni samo geoobjekti, vidni znotraj trenutnega obsega karte. Če je možnost odkljukana, bodo analizirani vsi geoobjekti v vhodnem sloju, tudi če so zunaj trenutnega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Točkovni geoobjekti za izračun razvodij</h2></div>
+        <hr/>
+        <div>
+            <p>Za vsako točko bo izračunano razvodje (gorvodno prispevno območje).  
+            </p>
+            <p>Poleg izbire sloja s karte lahko izberete  <b>Izberi sloj za analizo</b> ki se nahaja v spodnjem delu spustnega menija. Ta možnost odpre galerijo, kjer lahko brskate in izberete sklope podatkov iz različnih virov za uporabo v svoji analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Išči razdaljo do najbližjega odvodnjavanja</h2></div>
+        <hr/>
+        <div>
+            <p>Če so va&scaron;e vhodne točke stran od odvodne linije, bodo dobljena razvodja verjetno zelo majhna in ne bodo zelo koristna pri analizi, kot je določanje gorvodnega vira onesnaževanja. V večini primerov je zaželeno, da se vhodna točka poravna z najbližjo odvodno linijo, da se najdejo razvodja, ki tečejo v točko na odvodni liniji. Navedite iskalno razdaljo, da najdete najbližjo odvodno linijo. Če ne določite iskalne razdalje, bo orodje izračunalo in uporabilo konzervativno iskalno razdaljo.  
+            </p>
+            <p>Za uporabo dodatne lokacije va&scaron;e vhodne točke, navedite iskalno razdaljo ničle.  
+            </p>
+            <p>Za analitične namene je Esri predhodno izračunal odvodne linije s standardnimi hidrolo&scaron;kimi modeli. Če znotraj iskalne razdalje ni odvodne linije, je uporabljena lokacija znotraj iskalne razdalje, ki vsebuje največjo akumulacijo toka.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>To je ime sloja, ki bo ustvarjen v  <b>Moji vsebini</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če ime sloja že obstaja, boste morali vnesti drugo ime.
+            </p>
+            <p>S pomočjo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+            <p> Uporaba tega orodja ne porablja kreditov.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Išgauti rastrą</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Rastro i&scaron;gavimo įrankis portalui"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis gali i&scaron;kirpti rastrą pagal tam tikrą formą pvz., kvadratą arba bet kokią kitą, kurią interaktyviai nubrė&scaron;ite ekrane. Galite i&scaron;kirpti tą ploto aprėptį, kurią &scaron;iuo metu matote žemėlapyje, arba poligono formos analizuojamą plotą.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pasirinkite įvesties duomenis, kuriuos norite išgauti</h2></div>
+        <hr/>
+        <div>
+            <p>Įvesties sluoksnis, kurį norite i&scaron;kirpti.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Nurodykite iškerpamą formą</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkite aprėpties tipą, kuris bus naudojamas apkerpant sluoksnį pagal tam tikrą formą:
+
+                <ul>
+                    <li>Naudoti esamą aprėptį &ndash; sluoksnis bus i&scaron;kirptas pagal matomą žemėlapio aprėptį. Tai numatytasis nustatymas.
+                        
+
+                    </li>
+                    <li>Pasirinkti analizuojamą plotą &ndash; leidžia pasirinkti, ar matysite plotą formos viduje ar i&scaron;orėje. Jei pasirinksite parinktį  <b>Duomenys formos viduje</b>, bus pa&scaron;alintas vaizdas už aprėpties ribų. Jei pasirinksite parinktį <b>Duomenys už formos ribų</b>, bus pa&scaron;alintas vaizdas aprėpties viduje. I&scaron;kerpamą formą galite nubraižyti ir naudodami pie&scaron;imo įrankį.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnio, kuris bus sukurtas puslapyje  <b>Turinys</b> ir įtrauktas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau egzistuoja, būsite papra&scaron;yti pateikti kitą pavadinimą.
+            </p>
+            <p>Galite nurodyti aplanko  <b>Turinyje</b>, kuriame rezultatai bus įra&scaron;yti naudojant i&scaron;&scaron;okantįjį meniu <b>Rezultatą įra&scaron;yti į</b>, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

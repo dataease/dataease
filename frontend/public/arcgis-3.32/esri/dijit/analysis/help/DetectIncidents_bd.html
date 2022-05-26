@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Detect Incidents</h2><p/>
+        <h2><img src="./images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Detect Incidents"></h2>
+        <hr/>
+    <p> This tool works with a time-enabled layer of
+points, lines, areas, or tables that represents an instant in time.   Using sequentially ordered features, called tracks, this tool determines which features are incidents of interest. Incidents are determined by conditions that you specify.
+    </p>
+    <p>First, the tool
+determines which features belong to a track using one or more fields. Using the time at each feature, the tracks are ordered sequentially and the incident condition is applied. Features that meet the starting incident condition are marked as an incident. You can optionally apply an ending incident condition; when the end condition is true, the feature is no longer an incident.  The results will be returned with the original features&mdash;with new columns representing the incident name&mdash;and indicate which feature meets the incident condition. You can return all original features or only the features that are incidents.
+    </p>
+    <p>For example, suppose you have GPS measurements of hurricanes every 10 minutes. Each GPS measurement records the hurricane's name, location, time of recording, and  wind speed. Using these  fields, you could create an incident where any measurement with a wind speed greater than  208 km/h is an incident titled  <code>Catastrophic</code>. By not setting an end condition, the incident would end if the feature no longer meets the start condition (wind speed slows down to less than 208).
+    </p>
+    <p>Using another example, suppose you were monitoring concentrations of a chemical in your local water supply using a field called  <code>contaminateLevel</code>. You know that the recommended levels are less than 0.01 mg/L, and dangerous levels are above 0.03 mg/L. To detect incidents where a value above 0.03mg/L is an incident and remains an incident until contamination levels are back to normal, you create an incident using a start condition of <code>contaminateLevel &gt; 0.03</code> and an end condition of <code>contaminateLevel &lt; 0.01</code>. This will mark any sequence where values exceed 0.03mg/L until they return to a value less than 0.01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose layer to detect incidents from</h2></div>
+        <hr/>
+        <div>
+            <p>The points, lines, areas, or tables that will be used to find incidents. The input layer must be time enabled with features that represent an instant in time, as well as have one or more fields that can be used to identify tracks.
+            </p>
+            <p>In addition to choosing a layer from your map, you can choose  <b>Choose Analysis Layer</b> at the bottom of the drop-down list to browse to your contents for a big data file share dataset or feature layer. You may optionally apply a filter on your input layer or apply a selection on hosted layers added to your map. Filters and selections are only applied for analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Select one or more fields to identify tracks</h2></div>
+        <hr/>
+        <div>
+            <p>The fields that represent the track identifier.
+You can use one field or multiple fields to represent unique values of tracks.
+            </p>
+            <p>For example, if you were reconstructing tracks of hurricanes, you could use the hurricane name as the track field.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Build an expression condition to signify the start of an incident</h2></div>
+        <hr/>
+        <div>
+            <p>Add a condition using the expression builder to determine what an incident is. If the condition you specify is true, the feature is an incident. If you do not specify an end condition, an incident ends when the start condition is no longer true.
+            </p>
+            <p>For example, suppose you want to be alerted when the sum of fields   <code>concentration_1</code> and <code>concentration_2</code> is greater than <code>concentration_3</code>.   To do this,  apply a condition of <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>If you were interested in how the concentrations changed over time, and wanted to be alerted when the current  <code>concentration_1</code> was greater than the two previous measurements of <code>concentration_2</code> you could use an expression like <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Build an expression condition to signify the end of an incident (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Optionally add a condition using the expression builder to determine the end of an incident. If the end condition you specify is true, the feature is no longer an incident. If you do not specify an end condition, an incident ends when the start condition is no longer true.    
+            </p>
+            <p>For example, suppose you want to be alerted when the sum of fields   <code>concentration_1</code> and <code>concentration_2</code> is greater than <code>concentration_3</code>, and you want the incident to end if <code>concentration_4</code> is less than <code>concentration_1</code>. To do this,  apply a start condition of <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> and an end condition of <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>.
+            </p>
+            <p>If you wanted an incident to end when the mean of the current  <code>concentration_1</code> and four previous measurements was greater than the first measurement  you could use an expression like <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Show me</h2></div>
+        <hr/>
+        <div>
+            <p>All output methods will append fields to the original features. There are two ways to determine which features are returned:
+                <ul>
+                    <li> <b>All features</b>&mdash;This is the default. All features in the input will be returned.
+                    </li>
+                    <li> <b>Only incidents</b>&mdash;This method will only return the features that are incidents. Any features that are not found to be incidents will not be returned.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analyze data with time intervals (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Specify if you want to detect incidents using time intervals which segment your input features for analysis. If you use time intervals you must set the time interval you want to use, and optionally set the reference time. If you don't set a reference time, Jan 1, 1970 will be used. 
+            </p>
+            <p>For example, if you set the time boundary to be 1 day, starting at 9:00 AM on January 1st, 1990, than each track will be truncated at 9:00 am for every day and analyzed within that segment. 
+            </p>
+            <p>Using time intervals is a fast way to accelerate computing time, as it quickly creates smaller tracks for analysis. If splitting by a reoccurring time interval makes sense for your analysis, it is recommend for big data processing.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p> The name of the layer that will be created.  If you are writing to an ArcGIS Data Store, your results will be saved in  <b>My
+Content</b> and added to the map. If you are writing to a big data file share, your results will be stored in the big data file share and added to its manifest. It will not be added to the map. The default name is based on the
+tool name and the input layer name. If the layer already exists, the tool will fail.
+            </p>
+            <p>When writing to   ArcGIS Data Store  (relational or spatiotemporal big data store) using the  <b>Save result in</b> drop-down box, you can specify
+the name of a folder in <b>My Content</b> where the result will be
+saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

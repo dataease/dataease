@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/renderers/RGBRenderer","dojo/_base/declare dojo/_base/array dojo/_base/lang dojo/has ../kernel ../lang".split(" "),function(a,g,b,d,e,f){var c={TYPE_NONE:"none",TYPE_STANDARDDEVIATION:"standardDeviation",TYPE_HISTOGRAMEQUALIZATION:"histogramEqualization",TYPE_MINMAX:"minMax",TYPE_PERCENTCLIP:"percentClip",TYPE_SIGMOID:"sigmoid"};a=a(null,{declaredClass:"esri.renderer.RGBRenderer",constructor:function(a){a=a||{};this.bandIndex=[0,1,2];this.stretchType=c.TYPE_NONE;this.dra=!0;this.statistics=
+[];this.gamma=[];this.computeGamma=this.useGamma=!1;this.sigmoidStrengthLevel=this.numberOfStandardDeviations=this.minPercent=this.maxPercent=this.min=this.max=null;b.mixin(this,a)},toJson:function(){var a={type:"rgb",bandIndex:this.bandIndex,stretchType:this.stretchType,min:this.min,max:this.max,numberOfStandardDeviations:this.numberOfStandardDeviations,statistics:b.clone(this.statistics),dra:this.dra,minPercent:this.minPercent,maxPercent:this.maxPercent,useGamma:this.useGamma,gamma:b.clone(this.gamma),
+computeGamma:this.computeGamma,sigmoidStrengthLevel:this.sigmoidStrengthLevel};return f.fixJson(a)}});b.mixin(a,c);d("extend-esri")&&b.setObject("renderer.RGBRenderer",a,e);return a});

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>重新建構軌跡</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="重新建構軌跡"></h2>
+        <hr/>
+    <p> 此工具使用點或區域圖徵的時間啟用圖層，其表示 <code>即時</code>時間。它會先使用識別碼來判定哪些圖徵屬於軌跡。藉由在每一個位置使用時間，軌跡會循序排序並轉換至線或區域，表示一段時間的移動路徑。（選用）輸入可由欄位緩衝，將在每個位置上建立一個區域。接著會循序加入這些緩衝點或輸入區域，以建立軌跡作為區域，其中的寬度代表感興趣的屬性。結果軌跡具有開始和結束時間，其暫時表示指定軌跡中的第一個和最後一個圖徵。建立軌跡後，會計算輸入圖徵的相關統計資料並指派給輸出軌跡。最基本的統計資料是區域內的點計數，但也可以計算其他統計資料。
+    </p>
+    <p>可以兩種方式之一來表示時間啟用圖層中的圖徵：
+        <ul>
+            <li>即時 - 單一時間點
+            </li>
+            <li>間隔 - 開起時間和結束時間
+            </li>
+        </ul>
+        
+    </p>
+    <p>例如，假設 GPS 測量出每 10 分鐘會出現颶風。每一次 GPS 測量會記錄颶風的名稱、位置、記錄時間和風速。利用此資訊，您可以使用軌跡識別名稱來建立每個颶風的軌跡，並將產生每個颶風的軌跡。您也可以計算統計資料，如每個颶風的平均、最大和最小風速，以及每個軌跡內的測量計數。
+    </p>
+    <p>使用相同的範例，您可以按風速緩衝軌跡。這將按該位置的風速欄位來緩衝每一次測量，並一起加入緩衝的區域，從而建立一個區域來表示軌跡路徑，以及隨颶風逼近時的風速變化。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇要重新建構軌跡的來源圖徵</h2></div>
+        <hr/>
+        <div>
+            <p>會將點或區域圖層重新建構至軌跡中。輸入圖層必須是包含圖徵且啟用時間功能，其表示即時時間。投影的座標系統中必須具有圖層，或必須使用 <b>分析環境</b>，將處理空間參考設為投影座標系統（若已套用緩衝區）。
+            </p>
+            <p>除了從地圖選擇圖層外，您也可以選擇下拉式清單底部的 <b>選擇分析圖層</b>，以瀏覽到大數據檔案分享資料集或圖徵圖層的內容。
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>選擇用來識別軌跡的一或多個欄位</h2></div>
+        <hr/>
+        <div>
+            <p>表示軌跡識別碼的欄位。
+            </p>
+            <p>例如，若要重新建構颶風的軌跡，可以將颶風名稱作為軌跡欄位。
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>選擇用來重新建構軌跡的方法</h2></div>
+        <hr/>
+        <div>
+            <p>用來加入軌跡和套用緩衝區的方法（如果適用）。 <b>平面</b>方法可更快速地計算結果，但不會沿國際換日線來變換軌跡，也不會在緩衝時考量地球的實際形狀。 <b>測地線</b>方法會在必要時沿換日線變換軌跡，並套用測地線緩衝區來考量地球的形狀。
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>建立用來緩衝輸入圖徵的表達式 (選用)</h2></div>
+        <hr/>
+        <div>
+            <p>用來環繞輸入圖徵計算緩衝區距離的公式。支援使用緩衝區計算器和基本運算（例如加、減、乘和除）來產生此公式。值是使用分析座標系統所計算。投影的座標系統中必須具有圖層，或必須使用 <b>分析環境</b>，將處理空間參考設為投影座標系統（若已套用緩衝區）。
+            </p>
+            <p> <code>$feature.windspeed * 1000</code> 之類的公式會將緩衝區 1,000 乘以 <i>windspeed</i> 欄位。您可以在緩衝區計算器中使用多個欄位。
+            </p>
+            <p> 您也可以指定軌跡感知表達式。例如，您可以使用 <code>$track.field(windspeed).history(-3)</code> 之類的公式，計算目前的圖徵和前兩個圖徵的欄位值 <i>windspeed</i> 總和。在每個位置上，將計算和緩衝目前的 <i>windspeed</i> 和前兩個測量的總和。
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>選擇用來分割軌跡的時間 (選用)</h2></div>
+        <hr/>
+        <div>
+            <p>用來分割軌跡的時間。如果輸入點或區域之間的有效期間比時間分割還長，則會將其分割成不同的軌跡。
+            </p>
+            <p>如果指定時間分割和距離分割，則在符合一或兩個條件時將分割軌跡。
+            </p>
+            <p>想像您具有表示飛機飛行的點圖徵，其中的軌跡欄位是飛機 ID。這架飛機可能飛行多次，並將以一條軌跡表示。如果您知道飛行之間會有 1 小時休息時間，則可使用  <code>1 小時</code>作為軌跡分割，且每次飛行將分割到其本身的軌跡中。
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>分割軌跡（選用）</h2></div>
+        <hr/>
+        <div>
+            <p>您可以使用三種不同的方法來分割軌跡。您可以使用部分或全部分割方法的組合，或完全不使用組合。
+            </p>
+            <p>可使用下列方法完成分割：
+                <ul>
+                    <li> <b>根據輸入之間的距離</b> - 如果輸入點或區域之間的距離比指定的距離還寬，則會將其分割成不同的軌跡。例如，如果指定 10 公里的距離，則大於 10 公里的循序點將是不同的軌跡。
+                    </li>
+                    <li> <b>根據輸入之間經過的時間</b> - 如果輸入點或區域之間的有效期間比時間分割還長，則會將其分割成不同的軌跡。例如，如果您具有表示飛機飛行的點圖徵，其中的軌跡欄位是飛機 ID。這架飛機可能飛行多次，並將以一條軌跡表示。如果您知道飛行之間會有 1 小時休息時間，則可使用 <code>1 小時</code>作為軌跡分割，且每次飛行將分割到其本身的軌跡中。
+                    </li>
+                    <li> <b>在定義的時間間隔</b> - 使用固定間隔（按時間間隔和參考時間指定）予以分割。若未指定參考時間，將使用 1970 年 1 月 1 日。例如，如果您以參考時間 1990 年 2 月 2 日 10:00 指定 1 年，則會在 1990 年 2 月 2 日 10:00、1991 年 2 月 2 日 10:00，並以 1 年為間隔持續分割軌跡。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果指定多個分割選項，則將在符合一或多個條件時分割軌跡。
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>選擇用來分割軌跡的距離 (選用)</h2></div>
+        <hr/>
+        <div>
+            <p>用來分割軌跡的距離。如果輸入點或區域之間的距離比距離分割還長，則會將其分割成不同的軌跡。
+            </p>
+            <p>如果指定時間分割和距離分割，則在符合一或兩個條件時將分割軌跡。
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>新增統計資料 (選用)</h2></div>
+        <hr/>
+        <div>
+            <p> 您可以在要摘要的圖徵上計算統計資料。您可以在數值欄位上計算：
+                <ul>
+                    <li>計數 - 計算非 null 值的數目。可將其使用於數值欄位或字串。[null, 0, 2] 的計數是 2。
+                    </li>
+                    <li>總和 - 欄位中的數值總和。[null, null, 3] 的總和是 3。
+                    </li>
+                    <li>平均值 - 數值的平均值。[0, 2, null] 的平均值是 1。
+                    </li>
+                    <li>最小值 - 數值欄位的最小值。[0, 2, null] 的最小值是 0。
+                    </li>
+                    <li>最大值 - 數值欄位的最大值。[0, 2, null] 的最大值是 2。
+                    </li>
+                    <li>範圍 - 數值欄位的範圍。這是以最大值減去最小值的計算結果。[0, null, 1] 的範圍為 1。[null, 4] 的範圍為 0。
+                    </li>
+                    <li>變異 - 追蹤中的數值欄位的變異。[1] 的變異為 null。[null, 1,0,1,1] 的變異是 0.25。
+                    </li>
+                    <li>標準差 - 數值欄位的標準差。[1] 的標準差為 null。[null, 1,0,1,1] 的標準差是 0.5。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>您可以在字串欄位上計算：
+                <ul>
+                    <li>計數 - 非 null 字串的數目。
+                    </li>
+                    <li>任何 - 此統計資料是指定欄位中字串值的隨機樣本。
+                    </li>
+                </ul>
+                會以非 null 值計算所有統計資料。結果圖層將為每個已計算的統計資料納入一個新欄位。透過選擇屬性和統計資料可新增任意數量的統計資料。 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>選擇要儲存結果的 ArcGIS Data Store</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics 結果是儲存於資料儲存庫，並作為  Portal for ArcGIS 中的圖徵圖層公開。在大多數情況下，必須將結果儲存到大型的時空資料儲存庫，且這是預設值。在某些情況下，將結果儲存至關聯式資料儲存庫是個好選擇。在下列情況下，您可能想要在關聯式資料儲存庫中儲存結果： 
+                <ul>
+                    <li>您可以使用入口網站-至-入口網站協同作業中的結果。
+                    </li>
+                    <li>您可以啟用結果同步功能。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果您預期 GeoAnalytics 結果會增加，並需要利用大型的時空資料儲存庫的功能來處理大量資料，則不應使用關聯式資料儲存庫。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p> 將建立之圖層的名稱。若是寫入到 ArcGIS Data Store，您的結果將儲存於<b>我的內容</b>並新增至地圖中。若是寫入到大數據檔案分享，您的結果將儲存於大數據檔案分享並新增至其資訊清單中。不會將它新增到地圖。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層已存在，工具將失敗。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式方塊寫入到 ArcGIS Data Store（關聯式或大型的時空資料儲存庫）時，可以在<b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Agreguj obszary</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Agreguj obszary"></h2>
+        <hr/>
+    <p>Obszary, kt&oacute;re się nakładają, mają wsp&oacute;lną granicę lub mają wsp&oacute;lną wartość atrybutu, zostają połączone w celu utworzenia jednego obszaru.
+    </p>
+    <p>Możesz wybrać spos&oacute;b łączenia obszar&oacute;w, wskazując konkretne pole. Na przykład warstwa powiat&oacute;w ma atrybut  <pre>State_Name</pre>, według kt&oacute;rego można agregować obszary, korzystając z&nbsp;atrybutu <pre>State_Name</pre>. Hrabstwa zostaną połączone, jeśli mają tę samą wartość <pre>State_Name</pre>. Wynikiem jest warstwa z granicami stan&oacute;w.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę powierzchniową, której granice będą agregowane</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa zawierającą obiekty powierzchniowe przeznaczone do agregacji. 
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Wybierz metodę agregacji</h2></div>
+        <hr/>
+        <div>
+            <p>Określa metodę używaną do agregacji p&oacute;l.
+            </p>
+            <p>Można wybrać jedną z dw&oacute;ch metod łączenia obszar&oacute;w:
+                <ul>
+                    <li> <b>Obszary, kt&oacute;re się nakładają lub kt&oacute;re do siebie przylegają</b> &mdash; przynajmniej dwa obszary, kt&oacute;rych granice się nakładają, zostaną połączone. Ponadto obszary, kt&oacute;re do siebie przylegają (tj. mają wsp&oacute;lną granicę) zostaną połączone w jeden obszar.
+                    </li>
+                    <li> <b>Obszary o&nbsp;tej samej wartości pola</b> &mdash; dwa lub większa liczba obszar&oacute;w zostaną połączone w&nbsp;jeden obszar, jeśli mają tę samą wartość pola.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Utwórz obiekty wieloczęściowe</h2></div>
+        <hr/>
+        <div>
+            <p>Obiekt wieloczęściowy to reprezentacja miejsca lub rzeczy składającej się z więcej niż jednej części, ale zdefiniowanej jako jeden obiekt, ponieważ odnosi się do jednego zestawu atrybut&oacute;w. Na przykład w warstwie stan&oacute;w Hawaje można uważać za obiekt wieloczęściowy, ponieważ jego osobne części geometryczne są uznawane za jeden stan.
+            </p>
+            <p>Narzędzie  <b>Utw&oacute;rz obiekty wieloczęściowe</b> udostępnia dwie opcje:
+                <ul>
+                    <li>Prawda (wybrana) &mdash; usługa wynikowa może zawierać obiekty wieloczęściowe.
+                    </li>
+                    <li>Fałsz (niewybrana) &mdash; usługa wynikowa będzie zawierać tylko obiekty jednoczęściowe, a dla każdej części zostanie utworzony osobny obiekt. Jest to opcja domyślna.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Dodaj statystyki (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p>Kiedy obszary są łączone, możliwe jest sumowanie wartości ich atrybut&oacute;w z użyciem istotnych statystyk. Jeśli na przykład agregowane są obszary powiat&oacute;w w&nbsp;oparciu o&nbsp; <pre>State_Name</pre>, a&nbsp;każdy powiat ma pole <i>Population</i> (Populacja), można obliczyć sumę wartości <pre>Population</pre> dla danego stanu.
+            </p>
+            <p> Można obliczyć statystyki dla zsumowanych obiekt&oacute;w.W polach liczbowych można obliczyć następujące wartości:
+                <ul>
+                    <li>Liczba &mdash; zlicza wartości inne niż null.Może być używane w polach liczbowych lub znakowych. Liczba dla wartości [null, 0, 2] wynosi 2.
+                    </li>
+                    <li>Suma &mdash; suma wartości liczbowych w polu. Suma dla wartości [null, null, 3] wynosi 3.
+                    </li>
+                    <li>Średnia &mdash; średnia wartości liczbowych. Średnia dla wartości [0, 2, null] wynosi 1.
+                    </li>
+                    <li>Min &mdash; wartość minimalna w polu liczbowym. Wartość minimalna dla wartości [0, 2, null] wynosi 0. 
+                    </li>
+                    <li>Maks &mdash; wartość maksymalna w polu liczbowym. Wartość maksymalna dla wartości [0, 2, null] wynosi 2.
+                    </li>
+                    <li>Zakres &mdash; zakres pola liczbowego. Zakres jest obliczany przez odjęcie wartości minimalnych od wartości maksymalnej. Zakres dla wartości [0, null, 1] wynosi 1. Zakres dla wartości [null, 4] wynosi 0.
+                    </li>
+                    <li>Wariancja &mdash; wariancja pola liczbowego w ścieżce. Wariancja dla wartości [1] wynosi null. Wariancja dla wartości [null, 1,0,1,1] wynosi 0,25.
+                    </li>
+                    <li>Odchylenie standardowe &mdash; odchylenie standardowe pola liczbowego. Odchylenie standardowe dla wartości [1] wynosi null. Odchylenie standardowe dla wartości [null, 1,0,1,1] wynosi 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>W polach znakowych można obliczyć następujące wartości:
+                <ul>
+                    <li>Liczba &mdash; liczba ciąg&oacute;w znakowych innych niż null.
+                    </li>
+                    <li>Dowolne &mdash; ta statystyka to losowy przykład wartości znakowej w podanym polu.
+                    </li>
+                </ul>
+                Wszystkie statystyki są obliczane na podstawie wartości niepustych. Warstwa wynikowa zawiera nowe pole dla każdego wykonanego obliczenia statystycznego. Dodać można dowolną liczbę statystyk poprzez wybranie atrybutu oraz&nbsp;właściwej operacji statystycznej. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p> Nazwa warstwy, kt&oacute;ra zostanie utworzona w oknie Moje zasoby. W przypadku zapisywania w ArcGIS Data Store wyniki będą przechowywane w obszarze  <b>Moje zasoby</b> i dodawane do mapy. W przypadku zapisywania w udostępnionym pliku dużych zbior&oacute;w danych wyniki będą przechowywane w udostępnionym pliku dużych zbior&oacute;w danych i dodawane do jego manifestu. Nie będą dodawane do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, działanie narzędzia nie powiedzie się.
+            </p>
+            <p>W przypadku zapisywania w  ArcGIS Data Store (relacyjny magazyn danych lub magazyn dużych zbior&oacute;w danych czasowo-przestrzennych) przy użyciu listy rozwijanej  <b>Zapisz wynik w</b> można określić nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Summeeri atribuudid</h2><p/>
+        <h2><img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" alt="Summeeri atribuudid diagramm"></h2>
+        <hr/>
+    <p> See t&ouml;&ouml;riist summeerib k&otilde;ik &uuml;hel v&otilde;i mitmel v&auml;ljal olevad vastavad v&auml;&auml;rtused ja arvutab nende p&otilde;hjal statistika. K&otilde;ige lihtsam statistik on summeeritud objektide arv, aga arvutada saab ka keerulisemaid statistikuid.
+    </p>
+    <p>Kirjeldatud meetod on kasutatav n&auml;iteks olukorras, kus teil on olemas m&uuml;&uuml;gikohtade punktobjektid v&auml;ljaga  <i>DISTRICT_MANAGER_NAME</i> ja soovite summeerida selle alusel kohvi m&uuml;&uuml;gitulu juhatajate kaupa. Saate m&auml;&auml;rata sulandamise v&auml;ljaks v&auml;lja <i>DISTRICT_MANAGER_NAME</i> ja summeeritakse eraldi k&otilde;ikide juhatajate andmeread. See t&auml;hendab, et k&otilde;ik m&uuml;&uuml;gikohad, mille juhataja on <pre>Manager1</pre>, summeeritakse &uuml;hele reale koos statistikute kokkuv&otilde;ttega. Antud juhul arvutatakse k&otilde;ikide <pre>Manager1</pre> ja samuti k&otilde;ikide teiste v&auml;ljal <i>DISTRICT_MANAGER_NAME</i> loetletud juhatajate juhitavate m&uuml;&uuml;gikohtade statistikud, nagu m&uuml;&uuml;gikohtade arv ja <i>TOTAL_SALES</i>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valige summeerimiseks sisend</h2></div>
+        <hr/>
+        <div>
+            <p>Kiht, mis sisaldab summeeritavaid v&auml;ljasid.  
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Valige andmete summeerimise viis</h2></div>
+        <hr/>
+        <div>
+            <p>Andmete summeerimiseks on kaks v&otilde;imalust.
+                <ul>
+                    <li> <b>K&otilde;ik objektid &uuml;heks objektiks</b> &ndash; arvutab k&otilde;igi objektide statistika.
+                    </li>
+                    <li> <b>V&auml;lja j&auml;rgi</b> &ndash; r&uuml;hmitab objektid sarnaste v&auml;&auml;rtuste j&auml;rgi m&auml;&auml;ratud v&auml;ljadel.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Oletame n&auml;iteks, et teil on puude andmekomplekt, mis sisaldab  <i>puuliigi</i> v&auml;lju v&auml;&auml;rtustega <code>Vaher</code>, <code>Kuusk</code> ja <code>M&auml;nd</code> ning v&auml;lja <i>puuk&otilde;rgus</i>, ja teid huvitab keskmise <i>puuk&otilde;rguse</i> leidmine. Kui summeerite k&otilde;ik objektid &uuml;heks objektiks, leiate k&otilde;igi puude keskmise k&otilde;rguse, mis annab tulemuseks &uuml;he keskmise v&auml;&auml;rtuse. Kui summeerite v&auml;lja <i>puuk&otilde;rgus</i> j&auml;rgi, saate vahtrate keskmise, kuuskede keskmises ja m&auml;ndide keskmise.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Lisa statistika (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p> Saate arvutada summeeritud objektide statistika. Saateallj&auml;rgnevad v&auml;&auml;rtused numbriv&auml;ljadel:
+                <ul>
+                    <li>Koguarv &ndash; arvutatakse v&auml;&auml;rtuste, mis pole nullv&auml;&auml;rtused, hulk. See funktsioon on kasutatav numbriv&auml;ljade v&otilde;i stringide korral. V&auml;&auml;rtuste [null, 0 ja 2] koguarv on 2.
+                    </li>
+                    <li>Summa &ndash; v&auml;ljal olevate arvv&auml;&auml;rtuste summa. V&auml;&auml;rtuste [null, null ja 3] summa on 3.
+                    </li>
+                    <li>Keskmine &ndash; arvv&auml;&auml;rtuste keskmine. V&auml;&auml;rtuste [0; 2 ja null] keskmine on 1.
+                    </li>
+                    <li>Miinimum &ndash; numbriv&auml;lja miinimumv&auml;&auml;rtus. V&auml;&auml;rtuste [0; 2 ja null] miinimum on 0. 
+                    </li>
+                    <li>Maksimum &ndash; numbriv&auml;lja maksimumv&auml;&auml;rtus. V&auml;&auml;rtuste [0; 2 ja null] maksimum on 2.
+                    </li>
+                    <li>Vahemik &ndash; numbriv&auml;lja vahemik. Selle arvutamiseks lahutatakse maksimumv&auml;&auml;rtusest miinimumv&auml;&auml;rtus. V&auml;&auml;rtuste [0, null ja 1] vahemik on 1. V&auml;&auml;rtuste [null ja 4] vahemik on 0.
+                    </li>
+                    <li>Dispersioon &ndash; raja numbriv&auml;lja dispersioon. V&auml;&auml;rtuse [1] dispersiooni on null. V&auml;&auml;rtuste [null, 1,0,1,1] dispersioon on 0,25.
+                    </li>
+                    <li>Standardh&auml;lve &ndash; numbriv&auml;lja standardh&auml;lve. V&auml;&auml;rtuse [1] standardh&auml;lve on null. V&auml;&auml;rtuste [null, 1,0,1,1] standardh&auml;lve on 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Saate arvutadaallj&auml;rgnevad v&auml;&auml;rtused tekstiv&auml;ljadel:
+                <ul>
+                    <li>Koguarv &ndash; stringide, mis pole nullv&auml;&auml;rtused, hulk.
+                    </li>
+                    <li>M&otilde;ni &ndash; see statistik on juhuslik valim tekstistringi v&auml;&auml;rtusest vastaval v&auml;ljal.
+                    </li>
+                </ul>
+                K&otilde;ik statistikud arvutatakse v&auml;&auml;rtustega, mis ei ole nullv&auml;&auml;rtus. Tulemkiht sisaldab uut v&auml;lja iga arvutatud statistiku kohta. Soovitud statistika lisamiseks valige uus atribuut ja statistik. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Vali andmeladu</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalyticsi tulemeid k&auml;sitletakse  andmelaos salvedena ning need kuvatakse portaalis   Portal for ArcGIS objektikihtidena. &Uuml;ldjuhul salvestatakse tulemid ajalisruumilisse andmelattu &ndash; see on vaikimisi valitud. M&otilde;nel juhul on , tulemid m&otilde;istlik salvestada relatsioonilisse andmelattu. Allpool on toodud m&otilde;ned p&otilde;hjused, miks oleks soovitatav tulemid   salvestada relatsioonilisse andmelattu: 
+                <ul>
+                    <li>Tulemeid saateportaaliskasutadaportaali koost&ouml;&ouml;ks.
+                    </li>
+                    <li>Saate lubada tulemitega s&uuml;nkroniseerimise funktsiooni.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Loodavakihi nimi.  Kui kirjutate andmelattu ArcGIS Data Store, salvestatakse teie tulemused  <b>Minu sisus</b> ja lisatakse kaardile. Kui kirjutate suurandmete failikettale, salvestatakse teie andmed suurandmete failikettale  ja lisatakse  selle manifestifailile. Seda  ei lisata kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui see kiht on juba olemas, siis t&ouml;&ouml;tlemine nurjub.
+            </p>
+            <p>Kui salvestate admelattu   ArcGIS Data Store (relatsioonilisse v&otilde;i ajalisruumilisse andmelattu), kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemused salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

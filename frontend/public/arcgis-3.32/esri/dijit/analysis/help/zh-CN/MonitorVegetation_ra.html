@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>监测植被</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="适用于门户的监测植被工具"></h2>
+        <hr/>
+    <p>该工具会对多波段栅格图层的波段执行算术运算，以显示研究区域的植被覆盖度信息。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>选择输入数据</h2></div>
+        <hr/>
+        <div>
+            <p>选择多波段栅格图层。请确保输入栅格具有相应的可用波段。
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>选择监测植被的方法</h2></div>
+        <hr/>
+        <div>
+            <p>选择用于创建植被指数图层的方法。不同的植被指数可有助于突出显示特定要素或减少各种噪声。
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI 是通过卫星影像进行全球环境监测的非线性植被指数。该指数与 NDVI 类似，但对大气效应的敏感度较低。它受裸土影响；因此，不建议在植被稀疏或中度茂密的区域使用。
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+GVI 设计源于 Landsat MSS 影像，但经过了专门修改可与 Landsat TM 影像搭配使用。它也称为 Landsat TM Tasseled Cap 绿色植被指数。该监测指数还可用于波段共享相同光谱特征的影像。
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 是试图将裸土对 SAVI 方法的影响降至最小的植被指数。
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI 是一个标准化指数，用于生成显示绿量或相对生物量的影像。该指数对多光谱栅格数据集中两个波段的特征进行对比：即红色波段中叶绿素的色素吸收率和近红外 (NIR) 波段中植物体的高反射率。
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI 与差值植被指数类似，但其对大气变化的敏感度较高。使用此方法比较不同影像时，只可将其用于已进行大气修正的影像。该信息可由数据供应商提供。
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI 是试图使用土壤亮度校正系数最小化土壤亮度影响的植被指数。它通常用在植被覆盖率较低的干旱区域。
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Sultan 公式过程采用六波段八位图像并通过应用特定算法来生成三波段八位图像。生成的图像将突出显示海岸线上称为蛇绿岩的岩层。此公式根据 Landsat 5 或 7 场景的 TM 和 ETM 波段而设计。
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+转换型 SAVI 是试图通过假设土壤线具有任意斜率和截距来最小化土壤亮度影响的植被指数。
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>指定近红外和红色波段的指数</h2></div>
+        <hr/>
+        <div>
+            <p>指定 NIR 和红色波段的波段指数。
+            </p>
+            <p>所有卫星传感器和航空摄像机将捕获拆分为波段指数的信息。每个波段指数都包含电磁光谱特定部分的信息。该植被监测方法需要指定捕获 NIR 和红色波长的波段指数。
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>土壤线的坡度</h2></div>
+        <hr/>
+        <div>
+            <p>土壤线的坡度。坡度指散点图上 NIR 和红色波段之间的近线性关系。
+            </p>
+            <p>此参数仅适用于转换型土壤调节植被指数方法。
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>截距</h2></div>
+        <hr/>
+        <div>
+            <p>如果对于特定的土壤线，红色 (Red) 波段的反射值为 0，则此为 NIR 的值。
+            </p>
+            <p> <code>(a = NIR - sRed)</code> 当 Red 波段为 0 时，
+            </p> 
+            <p>此参数仅适用于转换型土壤调节植被指数方法。
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>绿色植被覆盖量</h2></div>
+        <hr/>
+        <div>
+            <p>指定 SAVI 方法所需的绿色植被覆盖量。
+            </p>
+            <p>有效值如下： 
+
+                <ul>
+                    <li>1 = 无绿色植被覆盖的区域
+                        
+ 
+                    </li>
+                    <li>0.5 = 具有中度绿色植被覆盖的区域
+                        
+ 
+                    </li>
+                    <li>0 = 具有高度绿色植被覆盖的区域
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>调整因子</h2></div>
+        <hr/>
+        <div>
+            <p>指定转换型土壤调节植被指数方法所需的调整因子，用于帮助最大限度降低土壤影响。默认值为 0.08。
+            </p>
+            <p>低值意味着可以忽略土壤影响。高值意味着土壤会影响结果。
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>将在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该名称的图层已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>您可以使用 <b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

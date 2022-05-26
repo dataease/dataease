@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Régression et classification basées sur une forêt</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Diagramme de processus R&eacute;gression et classification bas&eacute;es sur une for&ecirc;t"></h2>
+        <hr/>
+    <p>Cr&eacute;e des mod&egrave;les et g&eacute;n&egrave;re des pr&eacute;visions &agrave; l&rsquo;aide d&rsquo;une adaptation de l&rsquo;algorithme de for&ecirc;t al&eacute;atoire d&eacute;velopp&eacute; par Leo Breiman&nbsp;; celle-ci est une m&eacute;thode d&rsquo;apprentissage automatique supervis&eacute;e. Les pr&eacute;visions sont r&eacute;alisables pour les variables cat&eacute;gorielles (classification) et les variables continues (r&eacute;gression). Les variables explicatives sont des champs de la table attributaire des entit&eacute;s d&rsquo;entra&icirc;nement. L&rsquo;outil peut &ecirc;tre ex&eacute;cut&eacute; pour g&eacute;n&eacute;rer un mod&egrave;le visant &agrave; &eacute;valuer les performances ou pour g&eacute;n&eacute;rer un mod&egrave;le et pr&eacute;voir les r&eacute;sultats d&rsquo;autres jeux de donn&eacute;es.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Type d'analyse</h2></div>
+        <hr/>
+        <div>
+            <p>Sp&eacute;cifie le mode op&eacute;ratoire de l&rsquo;outil. L&rsquo;outil peut &ecirc;tre ex&eacute;cut&eacute; pour entra&icirc;ner un mod&egrave;le &agrave; la seule fin d&rsquo;&eacute;valuer ses performances ou pour entra&icirc;ner un mod&egrave;le et pr&eacute;voir les entit&eacute;s. Les types de pr&eacute;vision sont les suivantes&nbsp;:
+                <ul>
+                    <li> <b>Train a model to assess model performance (Entra&icirc;ner un mod&egrave;le pour &eacute;valuer les performances du mod&egrave;le)</b>&nbsp;: un mod&egrave;le est entra&icirc;n&eacute; et ajust&eacute; aux donn&eacute;es en entr&eacute;e. Utilisez cette option pour &eacute;valuer l&rsquo;exactitude de votre mod&egrave;le avant de g&eacute;n&eacute;rer des pr&eacute;visions pour un nouveau jeu de donn&eacute;es. La sortie de cette option prendra la forme d&rsquo;un service d&rsquo;entit&eacute;s de vos donn&eacute;es d&rsquo;entra&icirc;nement ajust&eacute;es, des diagnostics relatifs au mod&egrave;le et d&rsquo;une table facultative de l&rsquo;importance des variables.
+                    </li>
+                    <li> <b>Train a model and predict values (Entra&icirc;ner un mod&egrave;le et pr&eacute;voir les valeurs)</b>&nbsp;: les pr&eacute;visions ou les classifications seront g&eacute;n&eacute;r&eacute;es pour les entit&eacute;s. Des variables explicatives doivent &ecirc;tre fournies pour les entit&eacute;s d&rsquo;entra&icirc;nement et les entit&eacute;s &agrave; pr&eacute;voir. La sortie de cette option prendra la forme d&rsquo;un service d&rsquo;entit&eacute;s de vos donn&eacute;es pr&eacute;vues, des diagnostics relatifs au mod&egrave;le et d&rsquo;une table facultative de l&rsquo;importance des variables.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Entraîner un modèle pour évaluer les performances du modèle</h2></div>
+        <hr/>
+        <div>
+            <p>Utilisez ce mode si vous voulez ajuster un mod&egrave;le et &eacute;tudier l&rsquo;ajustement.
+            </p>
+            <p>Avec ce choix, le mod&egrave;le sera entra&icirc;n&eacute; &agrave; l&rsquo;aide d&rsquo;une couche en entr&eacute;e. Utilisez cette option pour &eacute;valuer l&rsquo;exactitude de votre mod&egrave;le avant de g&eacute;n&eacute;rer des pr&eacute;visions pour un nouveau jeu de donn&eacute;es. Cette option g&eacute;n&egrave;re des diagnostics relatifs au mod&egrave;le dans la fen&ecirc;tre de messages et applique le mod&egrave;le &agrave; vos donn&eacute;es d&rsquo;entra&icirc;nement.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Entraîner un modèle et prévoir les valeurs</h2></div>
+        <hr/>
+        <div>
+            <p>Utilisez ce mode si vous voulez ajuster un mod&egrave;le et appliquer le mod&egrave;le au jeu de donn&eacute;es pour g&eacute;n&eacute;rer des pr&eacute;visions.
+            </p>
+            <p>Les pr&eacute;visions ou les classifications seront g&eacute;n&eacute;r&eacute;es pour les entit&eacute;s. La sortie de cette option prendra la forme d&rsquo;un service d&rsquo;entit&eacute;s, de diagnostics relatifs au mod&egrave;le et d&rsquo;une table facultative de l&rsquo;importance des variables.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Choisir la couche d’entraînement</h2></div>
+        <hr/>
+        <div>
+            <p>Couche d&rsquo;entit&eacute;s contenant la variable &agrave; pr&eacute;voir et les champs &agrave; utiliser pour g&eacute;n&eacute;rer la pr&eacute;vision.
+            </p>
+            <p>Outre le fait de choisir une couche de votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante pour parcourir votre contenu et rechercher une couche d&rsquo;entit&eacute;s ou un jeu de donn&eacute;es de partage de fichiers Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Choisir une couche pour prévoir les valeurs pour</h2></div>
+        <hr/>
+        <div>
+            <p>Couche d&rsquo;entit&eacute;s repr&eacute;sentant les emplacements o&ugrave; se produisent les pr&eacute;visions. Cette couche d&rsquo;entit&eacute;s doit &eacute;galement contenir les variables explicatives fournies sous forme de champs correspondant &agrave; ceux qui sont utilis&eacute;s pour les entit&eacute;s d&rsquo;entra&icirc;nement.
+            </p>
+            <p>Outre le fait de choisir une couche de votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante pour parcourir votre contenu et rechercher une couche d&rsquo;entit&eacute;s ou un jeu de donn&eacute;es de partage de fichiers Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Choisir le champ à prévoir</h2></div>
+        <hr/>
+        <div>
+            <p>Champ issu des entit&eacute;s d&rsquo;entra&icirc;nement contenant les valeurs &agrave; utiliser pour entra&icirc;ner le mod&egrave;le. Ce champ contient les valeurs (d&rsquo;entra&icirc;nement) connues de la variable &agrave; utiliser pour pr&eacute;voir les emplacements inconnus. Si les valeurs sont cat&eacute;gorielles (&eacute;rable, pin, ch&ecirc;ne, par exemple), s&eacute;lectionnez la case  <b>Categorical (Cat&eacute;gorielle)</b>.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Choisir une ou plusieurs variables explicatives</h2></div>
+        <hr/>
+        <div>
+            <p>Un ou plusieurs champs repr&eacute;sentant les variables explicatives (champs) qui aident &agrave; pr&eacute;voir la valeur ou la cat&eacute;gorie de la variable &agrave; pr&eacute;voir. Utilisez la case &agrave; cocher cat&eacute;gorielle pour toute variable qui repr&eacute;sente les classes ou les cat&eacute;gories (l&rsquo;occupation du sol, la pr&eacute;sence, l&rsquo;absence, etc.). Indiquez que la variable est vraie pour toute variable repr&eacute;sentant des classes ou des cat&eacute;gories telles que l&rsquo;occupation du sol, la pr&eacute;sence ou l&rsquo;absence, si la variable est continue.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Nombre d’arbres</h2></div>
+        <hr/>
+        <div>
+            <p>Nombre d&rsquo;arbres &agrave; cr&eacute;er dans le mod&egrave;le. Un grand nombre d&rsquo;arbres produit habituellement des r&eacute;sultats plus pr&eacute;cis, mais le calcul du mod&egrave;le prend davantage de temps. Le nombre d&rsquo;arbres par d&eacute;faut est d&eacute;fini sur 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Taille de feuille minimale</h2></div>
+        <hr/>
+        <div>
+            <p>Nombre minimal d&rsquo;observations requises pour conserver une feuille (en d&rsquo;autres termes, le n&oelig;ud ultime d&rsquo;un arbre sans fractionnements suppl&eacute;mentaires). La valeur minimale par d&eacute;faut est de 5 pour la r&eacute;gression et de 1 pour la classification. Pour les jeux de donn&eacute;es tr&egrave;s volumineux, l&rsquo;augmentation de ces nombres aura pour effet de r&eacute;duire le temps d&rsquo;ex&eacute;cution de l&rsquo;outil.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Profondeur d'arbre maximum</h2></div>
+        <hr/>
+        <div>
+            <p>Nombre maximum de fractionnements pouvant &ecirc;tre effectu&eacute;s pour un arbre. Si la profondeur maximum est &eacute;lev&eacute;e, le nombre de fractionnements cr&eacute;&eacute;s augmente, ce qui accro&icirc;t les risques de sur-ajustement du mod&egrave;le. La valeur par d&eacute;faut est dynamique et d&eacute;pend du nombre d&rsquo;arbres cr&eacute;&eacute;s et du nombre de variables incluse.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Données disponibles par arbre (%)</h2></div>
+        <hr/>
+        <div>
+            <p>D&eacute;termine le pourcentage d&rsquo;entit&eacute;s dans la couche d&rsquo;entra&icirc;nement utilis&eacute;es pour chaque arbre d&eacute;cisionnel. La valeur par d&eacute;faut est 100 pour cent des donn&eacute;es. Les &eacute;chantillons de chaque arbre sont s&eacute;lectionn&eacute;s de mani&egrave;re al&eacute;atoire dans les deux tiers des donn&eacute;es sp&eacute;cifi&eacute;es.
+            </p>
+            <p>Chaque arbre d&eacute;cisionnel de la for&ecirc;t est cr&eacute;&eacute; &agrave; partir d&rsquo;un &eacute;chantillon al&eacute;atoire ou d&rsquo;un sous-ensemble (&eacute;quivalant approximativement aux deux tiers) des donn&eacute;es d&rsquo;entra&icirc;nement disponibles. Si un pourcentage plus faible de donn&eacute;es est utilis&eacute; en entr&eacute;e pour chaque arbre d&eacute;cisionnel, l&rsquo;outil s&rsquo;ex&eacute;cute plus rapidement sur les jeux de donn&eacute;es tr&egrave;s volumineux.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Nombre de variables échantillonnées de manière aléatoire</h2></div>
+        <hr/>
+        <div>
+            <p>Indique le nombre de variables explicatives utilis&eacute;es pour cr&eacute;er chaque arbre d&eacute;cisionnel.
+            </p>
+            <p>Chaque arbre d&eacute;cisionnel dans la for&ecirc;t est cr&eacute;&eacute; &agrave; l&rsquo;aide d&rsquo;un sous-ensemble al&eacute;atoire des variables explicatives sp&eacute;cifi&eacute;es. Une augmentation du nombre de variables utilis&eacute;es dans chaque arbre d&eacute;cisionnel accro&icirc;t les risques de sur-ajustement de votre mod&egrave;le, notamment s&rsquo;il comporte au moins une variable dominante. Il est courant d&rsquo;utiliser la racine carr&eacute;e du nombre total de variables explicatives si la variable &agrave; pr&eacute;voir est num&eacute;rique, ou de diviser le nombre de total de variables explicatives par 3 si la valeur &agrave; pr&eacute;voir est cat&eacute;gorielle.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Choisir l’appariement des champs explicatifs</h2></div>
+        <hr/>
+        <div>
+            <p>Fa&ccedil;on dont les variables correspondantes dans la couche d&rsquo;entra&icirc;nement seront appari&eacute;es aux variables dans la couche de pr&eacute;vision. Seules les variables utilis&eacute;es pendant l&rsquo;entra&icirc;nement seront incluses dans la table.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Nombre de cycles de validation</h2></div>
+        <hr/>
+        <div>
+            <p>Indique le pourcentage (entre 0 pour cent et 50 pour cent) des entit&eacute;s figurant dans la couche d&rsquo;entra&icirc;nement &agrave; r&eacute;server comme jeu de donn&eacute;es de test pour la validation. Le mod&egrave;le est pr&eacute;par&eacute; (entra&icirc;n&eacute;) sans ce sous-ensemble al&eacute;atoire de donn&eacute;es, et les valeurs observ&eacute;es pour ces entit&eacute;s sont compar&eacute;es aux valeurs pr&eacute;vues. La valeur par d&eacute;faut est 10 pour cent.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Les r&eacute;sultats renvoy&eacute;s d&eacute;pendront du type d&rsquo;analyse. Si vous entra&icirc;nez les donn&eacute;es pour &eacute;valuer l&rsquo;ajustement du mod&egrave;le, les r&eacute;sultats contiendront une couche des donn&eacute;es d&rsquo;entra&icirc;nement ajust&eacute;es au mod&egrave;le et des informations relatives &agrave; l&rsquo;ajustement du mod&egrave;le. Si vous utilis&eacute; l&rsquo;entra&icirc;nement et la pr&eacute;vision, les r&eacute;sultats contiendront une couche des donn&eacute;es d&rsquo;entra&icirc;nement ajust&eacute;es au mod&egrave;le, une couche des r&eacute;sultats pr&eacute;vus et des informations relatives &agrave; l&rsquo;ajustement du mod&egrave;le.
+            </p>
+            <p>La zone de liste d&eacute;roulante  <b>Enregistrer le r&eacute;sultat dans</b> vous permet de sp&eacute;cifier le nom d'un dossier dans <b>Mon contenu</b> o&ugrave; le r&eacute;sultat sera enregistr&eacute;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

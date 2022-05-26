@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Belátható terület létrehozása</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Bel&aacute;that&oacute; ter&uuml;let l&eacute;trehoz&aacute;sa"></h2>
+        <hr/>
+    <p>A Bel&aacute;that&oacute; ter&uuml;let l&eacute;trehoz&aacute;sa eszk&ouml;zzel olyan ter&uuml;letek hozhat&oacute;k l&eacute;tre, ahonnan egy megfigyelő l&aacute;thatja a felsz&iacute;nen tal&aacute;lhat&oacute; objektumokat. A bemenő megfigyelő pontok k&eacute;pviselhetnek megfigyelőket (p&eacute;ld&aacute;ul a felsz&iacute;nen l&eacute;vő szem&eacute;lyeket, vagy egy tűztoronyban l&eacute;vő megfigyelőket), vagy megfigyelt objektumokat (p&eacute;ld&aacute;ul sz&eacute;lerőműveket, v&iacute;ztornyokat, j&aacute;rműveket vagy m&aacute;s szem&eacute;lyeket). Az eredm&eacute;ny ter&uuml;letek azok ter&uuml;letek, ahol a megfigyelők a megfigyelt objektumokat l&aacute;thatj&aacute;k, &eacute;s viszont, azaz a megfigyelt objektumokb&oacute;l l&aacute;that&oacute;k a megfigyelők.
+    </p>
+    <p>A megfigyelőknek &eacute;s a megfigyelt objektumoknak is lehet felsz&iacute;n feletti magass&aacute;ga, &eacute;s a magass&aacute;gok haszn&aacute;lat&aacute;val meghat&aacute;rozhat&oacute; a l&aacute;that&oacute;s&aacute;g. Egy 400 l&aacute;b magas sz&eacute;lerőmű &eacute;s egy hat l&aacute;b testmagass&aacute;g&uacute;, felsz&iacute;nen &aacute;ll&oacute; szem&eacute;ly eset&eacute;n a sz&aacute;m&iacute;tott bel&aacute;that&oacute; ter&uuml;let jellemzően nagyobb lesz, mint egy 200 l&aacute;b magas sz&eacute;lerőmű &eacute;s egy hat l&aacute;b testmagass&aacute;g&uacute; szem&eacute;ly eset&eacute;n.
+    </p>
+    <p>Megjegyzendő, hogy a bel&aacute;that&oacute; ter&uuml;let sz&aacute;m&iacute;t&aacute;sa nem veszi figyelembe az akad&aacute;lyokat, p&eacute;ld&aacute;ul f&aacute;kat vagy &eacute;p&uuml;leteket. A sz&aacute;m&iacute;t&aacute;st &uacute;gy kell elk&eacute;pzelni, mintha a puszta f&ouml;ldfelsz&iacute;nen t&ouml;rt&eacute;nne, ahol semmi m&aacute;s nincs a megfigyelőn &eacute;s a megfigyelt objektumon k&iacute;v&uuml;l.
+    </p>
+    <p>Az eredm&eacute;ny r&eacute;teg polygonokat foglal mag&aacute;ban, amelyek l&aacute;that&oacute; ter&uuml;leteket reprezent&aacute;lnak. A  <i>Frequency</i> mező r&ouml;gz&iacute;ti a megfigyelőpontok sz&aacute;m&aacute;t, ahonnan az egyes ter&uuml;letek l&aacute;that&oacute;k. &Ouml;t bemenő pont eset&eacute;n, amelyek mindegyike egy-egy tűztoronynak felel meg, a <i>Frequency</i> mezőben 1 &eacute;s 5 k&ouml;z&ouml;tti &eacute;rt&eacute;k lesz; azok a ter&uuml;letek, amelyekhez 1-es &eacute;rt&eacute;k tartozik, csak egy toronyb&oacute;l, az 5-&ouml;s &eacute;rt&eacute;kűek pedig mind az &ouml;t toronyb&oacute;l l&aacute;that&oacute;k. A eredm&eacute;ny r&eacute;teg tartalmazza tov&aacute;bb&aacute; a <i>DEMResolution</i> mezőt is, amely a bel&aacute;that&oacute; ter&uuml;letek sz&aacute;m&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt digit&aacute;lis magass&aacute;gmodell (DMM) felbont&aacute;s&aacute;t r&ouml;gz&iacute;ti.
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;s haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel a program csak az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen l&aacute;that&oacute; megfigyelőpontokat elemzi.  Ha nincs bejel&ouml;lve, akkor a bemenő r&eacute;teg &ouml;sszes megfigyelőpontj&aacute;t figyelembe veszi, akkor is, ha azok k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Megfigyelőhelyeknek megfelelő pontként ábrázolt vektoros elemek</h2></div>
+        <hr/>
+        <div>
+            <p>A megfigyelőhelyk&eacute;nt haszn&aacute;lni k&iacute;v&aacute;nt pontszerű vektor elemek. 
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Megfigyelőhelyek magassága</h2></div>
+        <hr/>
+        <div>
+            <p>Ez a megfigyelőhelyek f&ouml;ldfelsz&iacute;n feletti magass&aacute;ga.    Az alap&eacute;rtelmez&eacute;s hozz&aacute;vetőlegesen az &aacute;tlagos testmagass&aacute;g.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Más felszíni tárgyak magassága</h2></div>
+        <hr/>
+        <div>
+            <p>A l&aacute;that&oacute;s&aacute;g meghat&aacute;roz&aacute;shoz haszn&aacute;lt, a felsz&iacute;nen l&eacute;vő &eacute;p&iacute;tm&eacute;nyek vagy szem&eacute;lyek magass&aacute;ga. Az eredm&eacute;nyk&eacute;nt kapott bel&aacute;that&oacute; ter&uuml;letek azok a ter&uuml;letek, ahonnan egy megfigyelőpontb&oacute;l l&aacute;that&oacute; a t&ouml;bbi objektum.  Ennek a ford&iacute;tottja is igaz: a t&ouml;bbi objektum hely&eacute;ről r&aacute; lehet l&aacute;tni a megfigyelőpontra. 
+            </p>
+            <p>
+                <ul>
+                    <li>Ha a megfigyelőpontok sz&eacute;lerőműveket k&eacute;pviselnek, &eacute;s szeretn&eacute; meg&aacute;llap&iacute;tani, hogy a felsz&iacute;nen &aacute;ll&oacute; szem&eacute;lyek l&aacute;tj&aacute;k-e a sz&eacute;lerőműveket, akkor adja meg a szem&eacute;lyek &aacute;tlagos testmagass&aacute;g&aacute;t (k&ouml;r&uuml;lbel&uuml;l 6 l&aacute;b).  Az eredm&eacute;ny azokat a ter&uuml;leteket foglalja mag&aacute;ban, ahonnan a felsz&iacute;nen &aacute;ll&oacute; szem&eacute;ly l&aacute;thatja a sz&eacute;lerőműveket.
+                    </li>
+                    <li>Ha a megfigyelőpontok tűztornyoknak felelnek meg, &eacute;s szeretn&eacute; meg&aacute;llap&iacute;tani, hogy melyik kil&aacute;t&oacute;toronyb&oacute;l l&aacute;that&oacute; egy legal&aacute;bb 20 l&aacute;b magas f&uuml;stoszlop, akkor adjon meg 20 l&aacute;b magass&aacute;got.  A eredm&eacute;ny azokat a ter&uuml;leteket foglalja mag&aacute;ban, amelyekről egy legal&aacute;bb 20 l&aacute;b magas f&uuml;stoszlop l&aacute;that&oacute; egy tűztoronyb&oacute;l.
+                    </li>
+                    <li>Ha a megfigyelőpontok k&ouml;zutak &eacute;s gyalogutak ment&eacute;n tal&aacute;lhat&oacute; kil&aacute;t&oacute;k, &eacute;s szeretn&eacute; meg&aacute;llap&iacute;tani, hogy honnan l&aacute;that&oacute;k a legal&aacute;bb 400 l&aacute;b magas sz&eacute;lerőművek, akkor adjon meg 400 l&aacute;b magass&aacute;got.  Az eredm&eacute;ny azokat a ter&uuml;leteket foglalja mag&aacute;ban, ahonnan a kil&aacute;t&oacute;helyen tart&oacute;zkod&oacute; szem&eacute;ly l&aacute;that egy legal&aacute;bb 400 l&aacute;b magas sz&eacute;lerőművet.
+                    </li>
+                    <li>Ha a megfigyelőpontok kil&aacute;t&oacute;helyeknek felelnek meg, &eacute;s szeretn&eacute; meg&aacute;llap&iacute;tani, hogy a kil&aacute;t&oacute;helyen a felsz&iacute;nen &aacute;ll&oacute; szem&eacute;ly mekkora ter&uuml;letet l&aacute;that be, akkor adjon meg null&aacute;t.  A eredm&eacute;ny a l&aacute;tv&aacute;nyos kil&aacute;t&oacute;helyről l&aacute;that&oacute; ter&uuml;leteket foglalja mag&aacute;ban.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Legnagyobb megtekintési távolság</h2></div>
+        <hr/>
+        <div>
+            <p>T&aacute;vols&aacute;ghat&aacute;r, amelyn&eacute;l a l&aacute;that&oacute; ter&uuml;letek sz&aacute;m&iacute;t&aacute;sa v&eacute;get &eacute;r. Ezen a t&aacute;vols&aacute;gon t&uacute;l nem ismert, hogy a megfigyelőpontok &eacute;s az egy&eacute;b objektumok k&ouml;lcs&ouml;n&ouml;sen r&aacute;l&aacute;tnak-e egym&aacute;sra. Nagy &eacute;rt&eacute;kekn&eacute;l megnő a sz&aacute;m&iacute;t&aacute;si idő. A legnagyobb megengedett &eacute;rt&eacute;k 31 m&eacute;rf&ouml;ld (50 kilom&eacute;ter).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+            <p> Ennek az eszk&ouml;znek a futtat&aacute;sa nem haszn&aacute;l fel kreditet.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

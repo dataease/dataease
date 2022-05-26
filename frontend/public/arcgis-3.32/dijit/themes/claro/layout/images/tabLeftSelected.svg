@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<!--
+	Source file for tabLeftSelected.png, which is used by IE7-9 for selected tabs.
+	Compile to png with batik, or online tool ex: http://www.fileformat.info/convert/image/svg2raster.htm
+
+	Output should match CSS gradient from TabContainer.less.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1000px" height="1px" viewBox="0 0 1000 1" preserveAspectRatio="none">
+	<defs>
+		<linearGradient id="gradient" gradientUnits="objectBoundingBox" x1="0%" y1="0%" x2="100%" y2="0%">
+			<stop offset="0%" stop-color="#ffffff" stop-opacity="0.5"/>
+			<stop offset="100%" stop-color="#ffffff" stop-opacity="1"/>
+		</linearGradient>
+	</defs>
+	<rect x="0" y="0" width="30" height="1" fill="url(#gradient)"/>
+	<rect x="30" y="0" width="970" height="1" fill="white"/>
+</svg>

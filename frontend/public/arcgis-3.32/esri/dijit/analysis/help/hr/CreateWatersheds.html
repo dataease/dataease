@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Stvori sliv</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Stvori sliv"></h2>
+        <hr/>
+    <p>Ovaj alat određuje sliv ili uzvodno područje za svaku točku va&scaron;eg sloja unosa. 
+    </p>
+    <p>Na primjer, pretpostavimo da imate točkaste geoobjekte koji predstavljaju lokacije oneči&scaron;ćenja koje se prenosi vodom i vi želite pronaći izvore oneči&scaron;ćenja. Budući da se izvor oneči&scaron;ćenja mora nalaziti negdje uzvodno od točke unutar sliva, možete upotrijebiti ovaj alat za određivanje slivova koji sadrže izvore oneči&scaron;ćenja.
+    </p>
+    <p>Važna je lokacija va&scaron;ih unesenih točaka.  Ako nisu locirane točno na odvodnoj liniji, dobiveni slivovi mogu biti jako mali i bez koristi za va&scaron;u analizu. Alat  <b>Pretraži udaljenost do najbližeg odvoda</b> može se upotrijebiti za pode&scaron;avanje lokacije va&scaron;ih unesenih točaka tako da se namjeste točno na odvodnu liniju kako bi se prona&scaron;ao sliv koji utječe u točku koja se nalazi na odvodnoj liniji. Pode&scaron;ene lokacije koje se upotrebljavaju za pronalaženje slivova ispisane su na izlazni sloj &ndash; va&scaron;e unesene točke nisu izmijenjene.
+    </p>
+    <p>Rezultat je grupni sloj koji sadrži dva sloja: slivove i pode&scaron;ene točke koje su upotrijebljene za izračun slivova.     
+    </p>
+    <p>Dobiveni slivovi imat će sve atribute va&scaron;ih unesenih točaka, kao i sljedeće dodatne atribute:     
+        <ul>
+            <li> <i>PourPtID</i> &ndash; sadrži vrijednost ID-ja od unosne točke
+            </li>
+            <li> <i>Area Square Kilometers</i> &ndash; sadrži područje u kvadratnim kilometrima uzvodnog sliva
+            </li>
+            <li> <i>Description</i> i <i>DataResolution</i> &ndash; sadrži informacije koje se odnose na hidrolo&scaron;ke podatke za izračun
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, za izračun sliva upotrijebit će se samo geoobjekti koji su vidljivi unutar trenutačnog obuhvata karte.  Ako opcija nije označena, analizirat će se svi geoobjekti u sloju unosa, čak i ako se nalaze izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Točkasti geoobjekti za izračun slivova</h2></div>
+        <hr/>
+        <div>
+            <p>Izračunat će se sliv (uzvodno područje) za svaku točku.  
+            </p>
+            <p>Osim odabira sloja iz karte, možete odabrati opciju  <b>Izaberi sloj za analizu</b> koja se nalazi na dnu popisa padajućeg izbornika. Ova opcija otvara galeriju u kojoj možete pretraživati i odabrati skupove podataka iz raznih izvora te ih koristiti u svojoj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Pretraži udaljenost do najbližeg odvoda</h2></div>
+        <hr/>
+        <div>
+            <p>Ako se va&scaron;e unesene točke nalaze daleko od odvodne linije, dobiveni slivovi vjerojatno će biti jako mali i neće biti jako korisni za analizu kao &scaron;to je određivanje uzvodnog izvora oneči&scaron;ćenja. U većini slučajeva poželjno je da se unesena točka poravna s najbližom odvodnom linijom kako bi se prona&scaron;li slivovi koji utječu u točku koja se nalazi na odvodnoj liniji.  Odredite udaljenost pretraživanja da biste prona&scaron;li najbližu odvodnu liniju.  Ako ne odredite udaljenost pretraživanja, alat će izračunati i upotrijebiti konzervativnu udaljenost pretraživanja.  
+            </p>
+            <p>Za uporabu točne lokacije va&scaron;e unesene točke odredite nultu udaljenost pretraživanja.  
+            </p>
+            <p>Radi analize, Esri je unaprijed izračunao odvodne linije uporabom standardnih hidrolo&scaron;kih modela.  Ako nema odvodnih linija unutar udaljenosti pretraživanja, upotrebljava se lokacija koja sadrži najvi&scaron;u akumulaciju protoka unutar udaljenosti pretraživanja.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Naziva sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će se stvoriti u dijelu  <b>Moj sadržaj</b> i dodati karti.  Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako naziv sloja već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+            <p> Pokretanjem tog alata ne tro&scaron;e se krediti.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

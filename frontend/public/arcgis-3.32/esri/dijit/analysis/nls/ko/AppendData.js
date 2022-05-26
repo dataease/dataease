@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/ko/AppendData",{inputLayerLabel:"\ub2e4\uc74c\uc5d0 \ucd94\uac00\ud560 \ub808\uc774\uc5b4 \uc120\ud0dd",inputWarningLabel:"\uacbd\uace0: \ucd94\uac00\ud55c \ub808\uc774\uc5b4\uac00 \uc218\uc815\ub429\ub2c8\ub2e4.",inputHostedLayerWarning:"\uc120\ud0dd\ud55c \ub808\uc774\uc5b4\ub294 \ud638\uc2a4\ud305 \ud53c\ucc98 \ub808\uc774\uc5b4\uac00 \uc544\ub2d9\ub2c8\ub2e4. \ucd94\uac00\ud560 \ud638\uc2a4\ud305 \ud53c\ucc98 \ub808\uc774\uc5b4\ub97c \uc120\ud0dd\ud558\uc138\uc694.",
+appendLayerLabel:"\ucd94\uac00\ud560 \ub808\uc774\uc5b4 \uc120\ud0dd",filterLabel:"\ubaa8\ub4e0 \ud53c\ucc98 \ucd94\uac00 \ub610\ub294 \uc77c\ubd80\ubd84 \uc815\uc758(\uc120\ud0dd)",fieldMappingLabel:"\ud544\ub4dc \ucd94\uac00 \ubc29\ubc95 \uc120\ud0dd(\uc120\ud0dd)",inputField:"\uc785\ub825 \ud544\ub4dc",appendValue:"\uac12 \ucd94\uac00",expression:"\uc2dd"});

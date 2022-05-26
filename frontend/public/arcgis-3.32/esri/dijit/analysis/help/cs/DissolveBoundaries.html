@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Sloučit hranice (Dissolve Boundaries)</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Sloučit hranice"></h2>
+        <hr/>
+    <p>Oblasti, kter&eacute; se překr&yacute;vaj&iacute; nebo maj&iacute; společnou hranici, se slouč&iacute; a vytvoř&iacute; jedinou oblast.    
+    </p>
+    <p>Zvolen&iacute;m pole stanov&iacute;te, kter&eacute; hranice se maj&iacute; sloučit. Pokud m&aacute;te např. vrstvu krajů a každ&yacute; kraj m&aacute; atribut  <i>State_Name</i>, můžete hranice sloučit na z&aacute;kladě atributu <i>State_Name</i>. Sousedn&iacute; kraje se slouč&iacute; tehdy, pokud maj&iacute; shodnou hodnotu atributu <i>State_Name</i>. Konečn&yacute;m v&yacute;sledkem je vrstva hranic st&aacute;tů.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Zvolte vrstvu ploch, jejichž hranice budou sloučeny</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva obsahuj&iacute;c&iacute; polygonov&eacute; prvky, kter&eacute; chcete sloučit. 
+            </p>
+            <p>Vrstvu můžete vybrat ze sv&eacute; mapy nebo můžete zvolit možnost  <b>Vybrat vrstvu anal&yacute;zy</b>, kter&aacute; se nach&aacute;z&iacute; na konci rozbalovac&iacute;ho seznamu. Pomoc&iacute; t&eacute;to možnosti se otevře galerie, kde můžete proch&aacute;zet a&nbsp;vyb&iacute;rat datov&eacute; sady z&nbsp;různ&yacute;ch vrstev, kter&eacute; můžete použ&iacute;t ve sv&eacute; anal&yacute;ze. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Vybrat metodu sloučení</h2></div>
+        <hr/>
+        <div>
+            <p>Ke spojen&iacute; prvků v oblasti můžete použ&iacute;t jednu ze dvou metod:
+                <ul>
+                    <li> <b>Překr&yacute;vaj&iacute;c&iacute; nebo přilehl&eacute; oblasti</b> &ndash; Dvě nebo v&iacute;ce oblast&iacute;, jejichž hranice se překr&yacute;vaj&iacute;, se spoj&iacute; v jedinou oblast.  Vedle toho se spoj&iacute; oblasti, kter&eacute; soused&iacute; (tj. sd&iacute;l&iacute; společnou hranici).
+                    </li>
+                    <li> <b>Oblasti se stejnou hodnotou pole</b> &ndash; Oblasti, kter&eacute; se překr&yacute;vaj&iacute; nebo maj&iacute; společnou hranici, se spoj&iacute; tehdy, pokud maj&iacute; shodnou hodnotu pole.
+                        <p>Pokud m&aacute;te např. vrstvu krajů a každ&yacute; kraj m&aacute; pole  <i>State_Name</i>, můžete hranice sloučit na z&aacute;kladě pole <i>State_Name</i>. Sousedn&iacute; kraje se slouč&iacute; tehdy, pokud maj&iacute; shodnou hodnotu atributu <i>State_Name</i>. Konečn&yacute;m v&yacute;sledkem je vrstva hranic st&aacute;tů.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t rozsah aktu&aacute;ln&iacute; mapy</b>, budou sloučeny pouze prvky ve vstupn&iacute; vrstvě, kter&eacute; jsou viditeln&eacute; v rozsahu aktu&aacute;ln&iacute; mapy. Pokud pole za&scaron;krtnuto nen&iacute;, budou sloučeny v&scaron;echny prvky ve vstupn&iacute; vrstvě, včetně těch, kter&eacute; se nach&aacute;z&iacute; mimo rozsah aktu&aacute;ln&iacute; mapy.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Vytvořit vícenásobné prvky</h2></div>
+        <hr/>
+        <div>
+            <p>V ArcGIS se jedn&aacute; o digit&aacute;ln&iacute; zn&aacute;zorněn&iacute; m&iacute;sta nebo věci, kter&aacute; m&aacute; v&iacute;ce než jednu č&aacute;st, ale je definov&aacute;na jako jeden prvek, protože se odkazuje na jednu sadu atributů. Např&iacute;klad ve vrstvě st&aacute;tů by se st&aacute;t Havaj dal považovat za v&iacute;cen&aacute;sobn&yacute; prvek, protože jeho jednotliv&eacute; geometrick&eacute; č&aacute;sti jsou klasifikov&aacute;ny jako jeden st&aacute;t. Tento logick&yacute; parametr nab&iacute;z&iacute; dvě možnosti:
+                <ul>
+                    <li>Pravda (za&scaron;krtnuto): v&yacute;stupn&iacute; služba může obsahovat v&iacute;cen&aacute;sobn&eacute; prvky.
+                    </li>
+                    <li>Nepravda (neza&scaron;krtnuto): v&yacute;stupn&iacute; služba bude obsahovat pouze jednoduch&eacute; prvky a pro každou č&aacute;st budou vytvořeny jednotliv&eacute; prvky.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Přidat statistiky</h2></div>
+        <hr/>
+        <div>
+            <p>Po spojen&iacute; oblast&iacute; můžete sumarizovat jejich atributy. Pokud např&iacute;klad slučujete hranici mezi kraji na z&aacute;kladě pole  <i>State_Name</i> a každ&yacute; z krajů m&aacute; pole <i>Population</i>, můžete pro dan&yacute; st&aacute;t vypoč&iacute;tat součet hodnot pole <i>Population</i>.
+            </p>
+            <p>Dostupn&eacute; typy statistik jsou:
+            </p>
+            <ul>
+                <li> <b>Suma</b> &ndash; Přid&aacute; celkovou hodnotu určen&eacute;ho pole.
+                    
+
+                </li>
+                <li> <b>Průměr</b> &ndash; Vypoč&iacute;t&aacute; průměrnou hodnotu určen&eacute;ho pole.
+                    
+
+                </li>
+                <li> <b>Minimum</b> &ndash; Najde nejniž&scaron;&iacute; hodnotu určen&eacute;ho pole v r&aacute;mci v&scaron;ech z&aacute;znamů.
+                    
+
+                </li>
+                <li> <b>Maximum</b> &ndash; Najde nejvy&scaron;&scaron;&iacute; hodnotu určen&eacute;ho pole v r&aacute;mci v&scaron;ech z&aacute;znamů.
+                    
+
+                </li>
+                <li> <b>Směrodatn&aacute; odchylka</b> &ndash; Z hodnot určen&eacute;ho pole zjist&iacute; směrodatnou odchylku.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy.  V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud n&aacute;zev vrstvy již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

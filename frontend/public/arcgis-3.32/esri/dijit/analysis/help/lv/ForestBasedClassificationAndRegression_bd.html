@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Uz mežu balstīta klasifikācija un regresija</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Uz mežu balstītas klasifikācijas un regresijas darbplūsmas diagramma"></h2>
+        <hr/>
+    <p>Rada modeļus un ģenerē prognozes, izmantojot Leo Breimana (Leo Breiman) nejau&scaron;ā meža algoritma, kas ir uzraudzīta ma&scaron;īnmācī&scaron;anās metode Prognozes var veikt gan kategorizētiem mainīgajiem (klasifikācija), gan nepārtrauktiem mainīgajiem (regresija). Paskaidrojo&scaron;i mainīgie ir treniņu elementu atribūtu tabulas lauki. Rīku var palaist, lai ģenerētu modeli veiktspējas novērtē&scaron;anai vai ģenerētu modeli un prognozētu rezultātus citā datu kopā.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analīzes veids</h2></div>
+        <hr/>
+        <div>
+            <p>Norāda rīka darbības režīmu. Rīku var palaist, lai trenētu modeli, kas tikai novērtē veiktspēju, vai trenētu modeli un prognozētu īpa&scaron;ības. Prognožu veidi ir &scaron;ādi:
+                <ul>
+                    <li> <b>Trenēt modeli, lai novērtētu modeļa veiktspēju</b>&mdash;modelis būs trenēts un piemērots ievaddatiem. Izmantojiet &scaron;o opciju, lai novērtētu modeļa precizitāti pirms prognožu ģenerē&scaron;anas jaunā datu kopā. &Scaron;īs opcijas izvade būs jūsu pielāgoto treniņu datu elementu serviss, modeļu diagnostika un pēc izvēles- mainīgo nozīmīguma tabula.
+                    </li>
+                    <li> <b>Trenējiet modeli un prognozējiet vērtības</b>&mdash;ievades funkcijām un prognozes funkcijām tiks ģenerētas prasības vai klasifikācijas. Jāsniedz paskaidrojo&scaron;i mainīgie lielumi gan treniņu elementiem, gan elementiem, kas jāprognozē. &Scaron;īs opcijas izvade būs prognozēto vērtību, modeļu diagnostikas un mainīgas nozīmes izvēles tabula.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Trenēt modeli, lai novērtētu modeļa veiktspēju</h2></div>
+        <hr/>
+        <div>
+            <p>Izmantojiet &scaron;o režīmu, ja vēlaties pielāgot modeli un izpētīt to.
+            </p>
+            <p>Ar &scaron;o izvēli, modelis tiks trenēts, izmantojot ievades slāni. Izmantojiet &scaron;o opciju, lai novērtētu modeļa precizitāti pirms prognožu ģenerē&scaron;anas jaunā datu kopā. &Scaron;ī opcija izvada modeļu diagnostiku ziņojumu logā un piemēro modeli treniņu datiem.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Trenēt modeli un prognozēt vērtības</h2></div>
+        <hr/>
+        <div>
+            <p>Izmantojiet &scaron;o režīmu, ja vēlaties pielāgot modeli, un lietojiet modeli datu kopai, lai ģenerētu prognozes.
+            </p>
+            <p>Elementiem tiks ģenerētas prognozes vai klasifikācijas. &Scaron;īs opcijas izvade būs funkciju serviss, modeļu diagnostika un pēc izvēles- mainīgo tabula.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Izvēlēties treniņu slāni</h2></div>
+        <hr/>
+        <div>
+            <p>Elementu slānis, kas satur prognozējamo mainīgo un laukus, kas tiks izmantoti prognozes ģenerē&scaron;anai.
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Izvēlieties slāni, kam prognozēt vērtības</h2></div>
+        <hr/>
+        <div>
+            <p>Elementu slānis, kas attēlo vietas, kurās tiks veiktas prognozes. &Scaron;ajā elementu slānī jābūt arī visiem skaidrojo&scaron;ajiem mainīgajiem, kas norādīti kā lauki, kuri atbilst tiem, kas izmantoti no treniņu elementiem.
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Izvēlēties prognozējamo lauku</h2></div>
+        <hr/>
+        <div>
+            <p>Laukums no treniņu elementiem, kas satur modeļa treniņam izmantojamās vērtības. &Scaron;ajā laukā norādītas zināmās (treniņu) mainīgā vērtības, kas tiks izmantotas, lai prognozētu nezināmās vietās. Ja vērtības ir kategorizētas (piemēram, kļava, priede, ozols), atzīmējiet izvēles rūtiņu  <b>Kategorizēts</b> .
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Izvēlēties vienu vai vairākus skaidrojošos mainīgos</h2></div>
+        <hr/>
+        <div>
+            <p>Viens vai vairāki lauki, kas atspoguļo skaidrojo&scaron;os mainīgos (laukus), kas palīdz prognozēt prognozējamā mainīgā vērtību vai kategoriju. Izmantojiet kategoriju izvēles rūtiņu visiem mainīgajiem, kas pārstāv klases vai kategorijas (piemēram, zemsedzes esamība vai trūkums). Norādiet mainīgo kā patiesu jebkam, kas pārstāv klases vai kategorijas, piemēram, zemsedzei vai klātbūtnei, vai neesamībai, un aplamu, ja mainīgais ir nepārtraukts.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Koku skaits</h2></div>
+        <hr/>
+        <div>
+            <p>Modelī izveidojamo koku skaits. Vairāk koku kopumā radīs precīzāku modeļa prognozi, bet modelim būs vajadzīgs ilgāks laiks, lai to aprēķinātu. Noklusējuma koku skaits ir 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Minimālais lapu izmērs</h2></div>
+        <hr/>
+        <div>
+            <p>Minimālais novērojumu skaits, kas nepiecie&scaron;ams, lai saglabātu lapu (lapa ir galējais punkts kokā, kam neseko atzarojumi). Regresijas noklusējuma minimums ir 5, un klasifikācijas noklusējuma vērtība ir 1. Ļoti liela apjoma datiem, palielinot &scaron;os skaitļus, tiks samazināts rīka izpildes laiks.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Maksimālais koku dziļums</h2></div>
+        <hr/>
+        <div>
+            <p>Maksimālais dalījumu skaits, kas tiks veikta kokā. Izmantojot lielu maksimālo dziļumu, tiks radīta lielāka plaisa, kas var palielināt modeļa pārmontē&scaron;anas izredzes. Noklusējuma iestatījums ir saistīts ar datiem, un tas ir atkarīgs no izveidoto koku skaita un iekļauto mainīgo skaita.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Dati, kas pieejami par vienu koku (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Norāda katram ieplānotajam kokam izmantoto trenē&scaron;anās slāņa elementu procentuālo vērtību. Noklusējums ir 100 procenti datu. Paraugus katram kokam ņem pēc nejau&scaron;ības principa no divām tre&scaron;daļām norādīto datu.
+            </p>
+            <p>Katru ieplānoto koku mežā veido, izmantojot nejau&scaron;u paraugu vai apak&scaron;kopu (aptuveni divas tre&scaron;daļas) no pieejamajiem treniņu datiem. Ja katram ieplānotajam kokam tiek izmantots mazāks ievades datu procentuālais daudzums, tiek palielināts rīka ātrums ļoti liela apjoma datu kopām.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Izlases veidā atlasīto mainīgo lielumu skaits</h2></div>
+        <hr/>
+        <div>
+            <p>Norāda paskaidrojo&scaron;o mainīgo skaitu, kas tiek izmantots, lai izveidotu katru ieplānoto koku.
+            </p>
+            <p>Katrs no ieplānotajiem kokiem mežā tiek veidots, izmantojot norādīto paskaidrojo&scaron;o mainīgo lielumu nejau&scaron;o apak&scaron;kopu. Katrā ieplānotajā kokā izmantoto mainīgo skaita palielinā&scaron;ana palielinās iespēju pārmontēt jūsu modeli, īpa&scaron;i, ja ir viens vai vairāki dominējo&scaron;ie mainīgie. Vispārpieņemta prakse ir izmantot paskaidrojo&scaron;o mainīgo kopskaita kvadrātsakni, ja prognozējamais mainīgais ir skaitlisks, vai sadalīt paskaidrojo&scaron;o mainīgo kopskaitu ar 3, ja prognozējamais mainīgais ir kategorisks.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Izvēlēties skaidrojošo lauku atbilstību</h2></div>
+        <hr/>
+        <div>
+            <p>Kā atbilsto&scaron;ie mainīgie treniņu slānī atbildīs mainīgajiem prognozes slānī. Tabulā tiks iekļauti tikai trenē&scaron;anā izmantotie mainīgie.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Validācijas izpildes reižu skaits</h2></div>
+        <hr/>
+        <div>
+            <p>Norāda mācību slāņa elementu procentuālo daļu (no 0 līdz 50 procentiem), ko rezervēt kā pārbaudes datu kopu validācijai. Modelis tiks trenēts bez &scaron;īs nejau&scaron;o datu apak&scaron;kopas, un novērotās &scaron;o elementu vērtības tiks salīdzinātas ar prognozēto vērtību. Noklusējums ir 10 procenti.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir slāņa nosaukums, kas tiks izveidots lapā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja slānis jau pastāv, jums tiks lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Atgrieztie rezultāti būs atkarīgi no analīzes veida. Ja trenējat, lai novērtētu modeļa piemērotību, rezultāti ietvers modelim piemērotu treniņu datu slāni un rezultātu informāciju, kas novērtē modeļa piemērotību. Ja trenējat un prognozējat, rezultāti ietvers modelim piemērotu treniņu datu slāni, prognozēto rezultātu slāni un rezultātu informāciju, kas novērtē modeļa piemērotību.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamajā sarakstlodziņā, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

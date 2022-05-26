@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Opret udsigtsområde</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Opret udsigtsomr&aring;de"></h2>
+        <hr/>
+    <p>V&aelig;rkt&oslash;jet Opret udsigtsomr&aring;de opretter omr&aring;der, hvor en observat&oslash;r kan se objekter p&aring; jorden. Inputobservationspunkterne kan repr&aelig;sentere enten observat&oslash;rer (f.eks. mennesker p&aring; jorden eller personer p&aring; udkig i et brandt&aring;rn) eller observerede objekter (f.eks. vindm&oslash;ller, vandt&aring;rne, k&oslash;ret&oslash;jer eller andre mennesker). Resultatomr&aring;derne er de omr&aring;der, hvor observat&oslash;rerne kan se de observerede objekter og omvendt: de observerede objekter kan &quot;se&quot; observat&oslash;rerne.
+    </p>
+    <p>B&aring;de observat&oslash;rerne og de observerede objekter kan have en vis h&oslash;jde over jorden, og disse h&oslash;jder bruges til at bestemme synligheden. For eksempel vil et udsigtsomr&aring;de, der er beregnet for 120 meter h&oslash;je vindm&oslash;ller og 1,83 meter h&oslash;je mennesker, der st&aring;r p&aring; jorden, normalt v&aelig;re st&oslash;rre end et udsigtsomr&aring;de, der er beregnet for 60 meter h&oslash;je vindm&oslash;ller og 1,83 meter h&oslash;je mennesker.
+    </p>
+    <p>Bem&aelig;rk, at beregningen af udsigtsomr&aring;det ikke tager h&oslash;jde for forhindringer, s&aring;som tr&aelig;er og bygninger. Du kan t&aelig;nke p&aring; beregningen, som om den foretages p&aring; den bare jord blottet for alt andet end observat&oslash;ren og de observerede objekter.
+    </p>
+    <p>Resultatlaget indeholder omr&aring;deobjekter, der repr&aelig;senterer synlige omr&aring;der. Feltet  <i>Frequency</i> registrerer antallet af observationspunkter, der kan se hvert omr&aring;de. Hvis du f.eks. har fem inputpunkter, der hver repr&aelig;senterer et brandt&aring;rn, vil feltet <i>Frequency</i> indeholde v&aelig;rdier mellem 1 og 5. Omr&aring;der med v&aelig;rdien 1 kan kun ses fra &eacute;t t&aring;rn, og omr&aring;der med v&aelig;rdien 5 kan ses fra alle t&aring;rne. Resultatlaget indeholder ogs&aring; feltet <i>DEMResolution</i>, der registrerer opl&oslash;sningen for den digitale elevationsmodel (DEM), som benyttes til at oprette udsigtsomr&aring;derne.
+    </p>
+    <p>Hvis feltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, er det kun de observationspunkter, der er synlige inden for den aktuelle kortudstr&aelig;kning, der analyseres. Hvis markeringen fjernes, analyseres alle observationspunkter i inputlaget, ogs&aring; selvom de er placeret uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punktobjekter, der repræsenterer observationspunkter</h2></div>
+        <hr/>
+        <div>
+            <p>Punktobjekter, der skal bruges som observationspunkter. 
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Højde på observationspunkter</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er h&oslash;jden over jorden for dine observationspunkter. Standardv&aelig;rdien er en persons omtrentlige gennemsnitsh&oslash;jde.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Højden af andre objekter på jorden</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er h&oslash;jden p&aring; strukturer eller mennesker p&aring; jorden, der bruges til at fasts&aelig;tte synligheden. Det resulterende udsigtsomr&aring;de er de omr&aring;der, hvor et observationspunkt kan se disse andre objekter. Det omvendte er ogs&aring; sandt: de andre objekter kan se observationspunktet. 
+            </p>
+            <p>
+                <ul>
+                    <li>Hvis dine observationspunkter repr&aelig;senterer vindm&oslash;ller, og du &oslash;nsker at finde ud af, hvorfra mennesker, der st&aring;r p&aring; jorden, kan se vindm&oslash;llerne, skal du angive gennemsnitsh&oslash;jden for en person (ca. 1,83 meter). Resultatet er de omr&aring;der, hvorfra en person, der st&aring;r p&aring; jorden, kan se vindm&oslash;llerne.
+                    </li>
+                    <li>Hvis dine observationspunkter repr&aelig;senterer brandt&aring;rne, og du &oslash;nsker at finde ud af, hvilke brandt&aring;rne der kan se en r&oslash;gs&oslash;jle med en h&oslash;jde p&aring; 6 meter eller mere, skal du indtaste 6 meter som h&oslash;jde. Resultatet er de omr&aring;der, hvor en person i et brandt&aring;rn kan se en r&oslash;gs&oslash;jle p&aring; mindst 6 meter.
+                    </li>
+                    <li>Hvis dine observationspunkter repr&aelig;senterer natursk&oslash;nne udsigtspunkter langs med veje og stier, og du &oslash;nsker at finde ud af, hvorfra vindm&oslash;ller med en h&oslash;jde p&aring; 120 meter eller mere kan ses, skal du indtaste 120 meter som h&oslash;jde. Resultatet er de omr&aring;der, hvor en person, der st&aring;r p&aring; et natursk&oslash;nt udsigtspunkt, kan se en vindm&oslash;lle med en h&oslash;jde p&aring; mindst 120 meter.
+                    </li>
+                    <li>Hvis dine observationspunkter repr&aelig;senterer natursk&oslash;nne udsigtspunkter, og du &oslash;nsker at finde ud af, hvor stort et omr&aring;de p&aring; jorden, der kan ses af personer, som st&aring;r p&aring; udsigtspunktet, skal du indtaste &quot;0&quot;. Resultatet er de omr&aring;der, der kan ses fra det natursk&oslash;nne udsigtspunkt.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Maksimal visningsafstand</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er en gr&aelig;nseafstand, hvor beregningen af synlige omr&aring;der stopper. Ud over denne afstand er det umuligt at vide, om observationspunkterne eller de andre objekter kan se hinanden. H&oslash;je v&aelig;rdier for&oslash;ger beregningstiden. Den maksimalt tilladte v&aelig;rdi er 31 miles (50 kilometer).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+            <p> Brug af dette v&aelig;rkt&oslash;j forbruger ikke credits.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

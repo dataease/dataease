@@ -1,0 +1,25 @@
+<div data-dojo-attach-point="containerNode">
+
+  <!-- metadata constraints -->
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'mdConst',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.metadata.mdConst}'">
+    <div data-dojo-type="esri/dijit/metadata/form/ElementChoice" data-dojo-props="isMdConstElementChoice:true">
+      
+      <!-- general -->
+      <div data-dojo-type="esri/dijit/metadata/types/arcgis/constraints/GeneralConstraints"
+        data-dojo-props="label:'${i18nArcGIS.constraints.general.caption}'">
+      </div>
+      
+      <!-- legal -->
+      <div data-dojo-type="esri/dijit/metadata/types/arcgis/constraints/LegalConstraints"
+        data-dojo-props="label:'${i18nArcGIS.constraints.legal.caption}'">
+      </div>
+      
+      <!-- security -->
+      <div data-dojo-type="esri/dijit/metadata/types/arcgis/constraints/SecurityConstraints"
+        data-dojo-props="label:'${i18nArcGIS.constraints.security.caption}'">
+      </div>
+      
+    </div>
+  </div>
+</div>

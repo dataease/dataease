@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 18.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 32 32" enable-background="new 0 0 32 32" xml:space="preserve">
+<g id="Dark_Theme_1_" display="none">
+	<rect x="-32" y="-256" display="inline" fill="#333333" width="544" height="736"/>
+	
+		<rect x="-64" y="-288" display="inline" fill="none" stroke="#808080" stroke-width="0.25" stroke-miterlimit="10" width="612" height="792"/>
+</g>
+<g id="LightTheme" display="none">
+	<rect x="-32" y="-256" display="inline" fill="#F8F8F8" width="544" height="736"/>
+	
+		<rect x="-64" y="-288" display="inline" fill="none" stroke="#808080" stroke-width="0.25" stroke-miterlimit="10" width="612" height="792"/>
+</g>
+<g id="Hover" display="none">
+	<rect x="-32" y="-256" display="inline" fill="#C5E5F9" width="544" height="736"/>
+</g>
+<g id="Selected" display="none">
+	<rect x="-32" y="-256" display="inline" fill="#AADBFA" width="544" height="736"/>
+</g>
+<g id="Icon_Name">
+</g>
+<g id="Icons">
+	<g>
+		<rect fill-rule="evenodd" clip-rule="evenodd" fill="none" width="32" height="32"/>
+		<path fill="#E5D255" d="M31,28c0,0-6-3-15,0S1,28,1,28L5,4c0,0,6,2,11,0s11,0,11,0L31,28z"/>
+		<g>
+			<rect x="7.0000005" y="15" fill="#6D6E71" width="8.9989996" height="17"/>
+			<polygon fill="#6D6E71" points="14.9989996,11 7.9990001,11 7,15 15.9989996,15 			"/>
+			<polygon fill="#F8F8F8" points="8,15 8.7812929,12 14.2187929,12 15,15 			"/>
+			<rect x="8" y="16" fill="#E0E0E0" width="7" height="15"/>
+			<rect x="18" y="21" fill="#6D6E71" width="8.9989996" height="11"/>
+			<polygon fill="#6D6E71" points="25.9608936,17 18.9608936,17 17.9618931,21 26.9608936,21 			"/>
+			<polygon fill="#F8F8F8" points="19,21 19.7812939,18 25.218792,18 26,21 			"/>
+			<rect x="19" y="22" fill="#E0E0E0" width="7" height="9"/>
+			<g>
+				<g>
+					<rect x="20" y="23" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="22" y="23" fill="#CCCCCC" width="0.999" height="1"/>
+					<rect x="24.0009995" y="23" fill="#CCCCCC" width="1" height="1"/>
+				</g>
+				<g>
+					<rect x="20" y="25" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="22" y="25" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="24" y="25" fill="#CCCCCC" width="1" height="1"/>
+				</g>
+				<g>
+					<rect x="20" y="27" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="22" y="27" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="24" y="27" fill="#CCCCCC" width="1" height="1"/>
+				</g>
+				<g>
+					<rect x="20" y="29" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="22" y="29" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="24" y="29" fill="#CCCCCC" width="1" height="1"/>
+				</g>
+			</g>
+			<g>
+				<g>
+					<rect x="9" y="17" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="11" y="17" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="13" y="17" fill="#CCCCCC" width="1" height="1"/>
+				</g>
+				<g>
+					<rect x="9.0010004" y="19" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="11.0010004" y="19" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="13.0010004" y="19" fill="#CCCCCC" width="1" height="1"/>
+				</g>
+				<g>
+					<rect x="9.0019999" y="21" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="11.0010004" y="21" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="13.0010004" y="21" fill="#CCCCCC" width="1" height="1"/>
+				</g>
+				<g>
+					<rect x="9.0019999" y="23" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="11.0019999" y="23" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="13.0019999" y="23" fill="#CCCCCC" width="1" height="1"/>
+				</g>
+				<g>
+					<rect x="9.0019999" y="25" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="11.0019999" y="25" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="13.0019999" y="25" fill="#CCCCCC" width="1" height="1"/>
+				</g>
+				<g>
+					<rect x="9.0019999" y="27" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="11.0019999" y="27" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="13.0019999" y="27" fill="#CCCCCC" width="1" height="1"/>
+				</g>
+				<g>
+					<rect x="9" y="29" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="11" y="29" fill="#CCCCCC" width="1" height="1"/>
+					<rect x="13" y="29" fill="#CCCCCC" width="1" height="1"/>
+				</g>
+			</g>
+			<rect x="8" y="16" fill="#F8F8F8" width="1" height="15"/>
+			<rect x="19" y="22" fill="#F8F8F8" width="1" height="9"/>
+			<rect x="22" y="14" fill="#6D6E71" width="1" height="5"/>
+		</g>
+	</g>
+</g>
+</svg>

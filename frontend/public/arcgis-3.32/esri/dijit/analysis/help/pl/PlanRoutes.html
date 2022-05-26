@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Planuj trasy</h2><p/>
+        <h2><img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="Planuj trasy"></h2>
+        <hr/>
+    <p>Narzędzie Planuj trasy służy do określenia, jak efektywnie rozdzielić zadania wśr&oacute;d pracownik&oacute;w mobilnych.
+    </p>
+    <p>W&nbsp;narzędziu podaje się zestaw przystank&oacute;w oraz liczbę pojazd&oacute;w, kt&oacute;re mogą dojechać do przystank&oacute;w. Narzędzie przypisuje przystanki pojazdom oraz wyświetla trasy, wskazując, jak w najkr&oacute;tszym czasie poszczeg&oacute;lne pojazdy mogą dotrzeć do przypisanych im przystank&oacute;w.
+    </p>
+    <p>Dzięki narzędziu Planuj trasy pracownicy mobilni mogą docierać do większej liczby miejsc pracy w kr&oacute;tszym czasie, co zwiększa efektywność i usprawnia obsługę klient&oacute;w.
+        <ul>
+            <li>Przeprowadzanie inspekcji dom&oacute;w, restauracji czy plac&oacute;w budowy
+                
+
+            </li>
+            <li>Świadczenie usług naprawczych, instalacyjnych czy technicznych
+            </li>
+            <li>Dostarczanie towar&oacute;w i niewielkich paczek
+            </li>
+            <li>Składanie wizyt handlowych
+            </li>
+            <li>Transportowanie os&oacute;b z domu do miejsca wydarzenia
+            </li>
+        </ul>
+        
+    </p>
+    <p>W&nbsp;wyniku uruchomienia narzędzia Planuj trasy tworzone są: warstwa z&nbsp;przystankami zakodowanymi według tras, do kt&oacute;rych zostały przypisane, warstwa tras przedstawiająca najkr&oacute;tsze trasy umożliwiające dotarcie do przypisanych przystank&oacute;w, a&nbsp;także warstwa przystank&oacute;w nieprzypisanych, w&nbsp;przypadku gdy do niekt&oacute;rych z&nbsp;przystank&oacute;w nie można dotrzeć. 
+    </p>
+    <p>Jeśli zaznaczono opcję  <b>Użyj bieżącego zasięgu mapy</b>, w&nbsp;analizie będą uwzględniane tylko obiekty widoczne w&nbsp;bieżącym zasięgu mapy. Jeśli powyższa opcja nie jest zaznaczona, zostaną uwzględnione wszystkie obiekty w&nbsp;warstwie wejściowej, nawet jeśli będą znajdować się poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Wybierz warstwę punktową reprezentującą odwiedzane lokalizacje przystanków</h2></div>
+        <hr/>
+        <div>
+            <p>Wybierz warstwę punktową, przez kt&oacute;rą powinna przebiec trasa (lub do kt&oacute;rej powinny dotrzeć pojazdy). W danych wyjściowych te punkty będą przypisanymi lub nieprzypisanymi przystankami. 
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+            <p>Narzędzie jest w&nbsp;stanie obsłużyć do 2000 obiekt&oacute;w wejściowych. 
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Tryb podróżowania dla tras</h2></div>
+        <hr/>
+        <div>
+            <p>Wybierz sw&oacute;j tryb podr&oacute;żowania. Trasy wynikowe będą obejmować drogi lub pasaże i&nbsp;respektować obowiązujące zasady, takie jak drogi jednokierunkowe i&nbsp;skręty w&nbsp;niedozwolonych miejscach dla samochod&oacute;w osobowych i&nbsp;samochod&oacute;w ciężarowych. Dostępne tryby podr&oacute;żowania są określane przez administratora instytucji.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Początek tras na przystankach</h2></div>
+        <hr/>
+        <div>
+            <p>Określ, gdzie i kiedy pojazdy wyjeżdżają na swoje trasy.
+            </p>
+            <p>Przy użyciu narzędzia Planuj trasy możesz podać jedną lub kilka lokalizacji początkowych pojazd&oacute;w.
+            </p>
+            <p>Gdy określona zostanie jedna lokalizacja, wszystkie pojazdy wyruszają 
+z&nbsp;tego punktu niezależnie od liczby dostępnych pojazd&oacute;w. Możesz wybrać warstwę punktową zawierającą jeden punkt lub dodać punkt do mapy, wybierając opcję  <b>Dodaj punkt do mapy</b>, klikając znajdujący się obok przycisk edycji punktu i&nbsp;klikając na mapie. 
+            </p>
+            <p>Jeśli określono kilka lokalizacji, każdemu pojazdowi 
+trzeba przypisać jego punkt. Liczba pojazd&oacute;w musi być 
+zgodna z&nbsp;liczbą punkt&oacute;w w&nbsp;warstwie. Wybierz warstwę z wieloma punktami i na liście rozwijanej  <b>Pole identyfikatora trasy</b> wskaż pole, kt&oacute;re jednoznacznie identyfikuje poszczeg&oacute;lne trasy, pojazdy lub kierowc&oacute;w.
+            </p>
+            <p>Czas początkowy jest identyczny dla wszystkich tras. Strefa czasowa, do kt&oacute;rej odnosi się czas początkowy, jest tą samą strefą, w&nbsp;kt&oacute;rej znajdują się punkt lub punkty początkowe. 
+W&nbsp;związku z&nbsp;tym należy się upewnić, że wprowadzany jest czas lokalny. Zał&oacute;żmy na przykład, że przebywasz 
+w&nbsp;strefie standardowego czasu pacyficznego (PST, UTC-8:00), 
+a&nbsp;pojazdy, dla kt&oacute;rych planujesz trasę, znajdują się w&nbsp;strefie standardowego czasu g&oacute;rskiego (MST, UTC-7:00). Jeśli 
+teraz jest godzina 9:30 PST (10:30 MST) i&nbsp;pojazdy wyruszają na trasę 
+za 30&nbsp;minut, należy skonfigurować czas początkowy na godzinę 11:00. 
+            </p>
+            <p>Jeśli pojazdy rozpoczynają trasę w&nbsp;r&oacute;żnych strefach czasowych, czasy początkowe nie będą identyczne, ale przesunięte. Jeśli na przykład jedna trasa ma początek w&nbsp;punkcie w&nbsp;strefie PST, a&nbsp;druga w&nbsp;strefie MST, i&nbsp;wpisany zostanie czas początkowy 11:00, trasa w strefie PST rozpocznie się o&nbsp;godzinie 11:00 PST, a&nbsp;trasa w&nbsp;strefie MST o&nbsp;godzinie 11:00 MST, czyli z&nbsp;r&oacute;żnicą jednej godziny.
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Koniec tras na przystankach</h2></div>
+        <hr/>
+        <div>
+            <p>Podaj, gdzie pojazdy kończą swoje trasy.
+            </p>
+            <p>Możesz skonfigurować trasy tak, aby kończyły się w jednej z trzech lokalizacji: 
+                <ul>
+                    <li>Ta sama lokalizacja, w kt&oacute;rej trasy miały sw&oacute;j początek, niezależnie od tego, czy rozpoczynały się w jednej czy w kilku lokalizacjach.
+                    </li>
+                    <li>Jedna lokalizacja
+                    </li>
+                    <li>Wiele lokalizacji, tzn. jeden punkt końcowy dla każdej trasy
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jeśli pojazdy rozpoczynają i kończą swoje trasy w tych samych lokalizacjach, zaznacz opcję  <b>Wr&oacute;ć do początku</b>.
+            </p>
+            <p>Aby skierować wszystkie pojazdy do wsp&oacute;lnego punktu końcowego innego niż punkt początkowy, usuń zaznaczenie opcji  <b>Wr&oacute;ć do początku</b> i albo dodaj punkt na mapie, albo wybierz warstwę, kt&oacute;ra zawiera dokładnie jeden punkt.
+            </p>
+            <p>Aby trasy kończyły się w r&oacute;żnych lokalizacjach, usuń zaznaczenie  <b>Wr&oacute;ć do początku</b> i wybierz warstwę zawierającą więcej niż jeden punkt. Liczba pojazd&oacute;w musi być r&oacute;wna 
+liczbie punkt&oacute;w w&nbsp;wybranej warstwie. Na liście rozwijanej <b>Pole identyfikatora trasy</b> wskaż pole, kt&oacute;re jednoznacznie identyfikuje poszczeg&oacute;lne trasy, pojazdy lub kierowc&oacute;w. Jeśli pojazdy rozpoczynają i kończą trasy w wielu lokalizacjach, muszą zgadzać się identyfikatory tras wybrane w warstwie początkowej i końcowej.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Wybierz warstwy barier</h2></div>
+        <hr/>
+        <div>
+            <p> Jeden lub większa liczba obiekt&oacute;w, kt&oacute;re pełnią rolę ograniczeń tymczasowych (innymi słowy barier) utrudniających podr&oacute;żowanie po ulicach, na kt&oacute;rych się znajdują. Bariery można definiować przy użyciu obiekt&oacute;w punktowych, liniowych lub poligonowych.
+            </p>
+            <p>Bariera punktowa może modelować powalone drzewo, wypadek, zerwaną linię energetyczną lub inny obiekt, kt&oacute;ry całkowicie blokuje ruch drogowy w określonej pozycji wzdłuż ulicy. Na tej ulicy ruch drogowy jest dozwolony, ale jest blokowany przez barierę. Można zdefiniować do 250 obiekt&oacute;w pełniących rolę barier punktowych.
+            </p>
+            <p>Bariery liniowe uniemożliwiają podr&oacute;żowanie wszędzie tam, gdzie przecinają się z ulicą. Przy użyciu bariery liniowej można na przykład modelować paradę lub marsz protestacyjny, kt&oacute;ry blokuje ruch drogowy na kilku odcinkach ulic. Jeśli liczba obiekt&oacute;w ulic przecinanych przez wszystkie bariery liniowe przekracza 500, narzędzie zwraca błąd.
+            </p>
+            <p>Bariery poligonowe uniemożliwiają podr&oacute;żowanie wszędzie tam, gdzie poligon przecina się z ulicą. Przy użyciu barier tego typu można na przykład modelować powodzie występujące na obszarach sieci ulicznej, kt&oacute;re uniemożliwią ruch drogowy w danym rejonie. Jeśli liczba obiekt&oacute;w ulic przecinanych przez wszystkie bariery poligonowe przekracza 2000, narzędzie zwraca błąd.
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Maksymalna liczba pojazdów, dla których będzie wyznaczana trasa</h2></div>
+        <hr/>
+        <div>
+            <p>Podaj liczbę pojazd&oacute;w, kt&oacute;re mogą dojechać do przystank&oacute;w. Narzędzie obsługuje maksymalnie  100 pojazd&oacute;w. 
+            </p>
+            <p>Narzędzie może być w stanie znaleźć rozwiązanie wymagające użycia mniejszej liczby pojazd&oacute;w, niż określono. Zależy to od łącznej liczby przystank&oacute;w, dopuszczalnej liczby przystank&oacute;w przypadających na pojazd, odległości między przystankami, czasu spędzanego na każdym przystanku oraz ustawionego limitu łącznego czasu przejazdu przypadającego na pojazd.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Maksymalna liczba przystanków na pojazd</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to jeden z&nbsp;dw&oacute;ch parametr&oacute;w służących do r&oacute;wnoważenia całkowitego obciążenia przypadającego na trasy. Można podać wartość z&nbsp;zakresu od 1 do  200. 
+            </p>
+            <p>Jeśli zostanie zmniejszona maksymalna liczba przystank&oacute;w, kt&oacute;re mogą być przypisane poszczeg&oacute;lnym pojazdom, bardziej prawdopodobne jest, że każdemu pojazdowi zostanie przypisana taka sama liczba przystank&oacute;w. Pomaga to w&nbsp;r&oacute;wnomiernym podziale pracy między kierowcami. Wadą jest jednak możliwość uzyskania w&nbsp;ten spos&oacute;b mniej efektywnego rozwiązania.
+            </p>
+            <p>Jeśli zwiększa się liczbę przystank&oacute;w na pojazd, narzędzie ma więcej swobody w&nbsp;poszukiwaniu bardziej efektywnych rozwiązań, ale praca może być nier&oacute;wnomiernie rozdzielona między kierowc&oacute;w i&nbsp;pojazdy. Należy zwr&oacute;cić uwagę, że podział pracy można zr&oacute;wnoważyć przy użyciu parametru czasowego lub liczby przystank&oacute;w poprzez skonfigurowanie wartości parametru  <b>Ogranicz łączny czas przejazdu trasy na pojazd</b>.
+            </p>
+            <p>Na poniższych przykładach zademonstrowano wpływ ograniczania maksymalnej liczby przystank&oacute;w na pojazd lub łącznego czasu na pojazd. We wszystkich przykładach występuje sześć przystank&oacute;w i dwie trasy rozpoczynające się w tej samej lokalizacji.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="../images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="Wyr&oacute;wnane liczby przystank&oacute;w i czasy przejazdu">
+                </td>
+                <td>
+                    <p>Wyr&oacute;wnane czasy przejazdu i liczby przystank&oacute;w na trasę:
+                    </p>
+                    <p>Przystanki są mniej więcej jednolicie rozmieszczone, więc ustawienie maksymalnej liczby przystank&oacute;w na pojazd w celu r&oacute;wnomiernego rozdzielenia pracy powoduje, że uzyskane trasy mają w przybliżeniu taki sam czas przejazdu.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Niewyr&oacute;wnane czasy przejazdu">
+                </td>
+                <td>
+                    <p>Wyr&oacute;wnane liczby przystank&oacute;w na trasę, ale niewyr&oacute;wnane czasy przejazdu:
+                    </p>
+                    <p>Pięć z&nbsp;sześciu przystank&oacute;w jest skupionych blisko lokalizacji początkowej, ale jeden przystanek jest oddalony i&nbsp;dotarcie do niego wymaga dużo dłuższej jazdy. R&oacute;wne podzielenie przystank&oacute;w między dwie trasy powoduje, że czasy przejazdu są niewyr&oacute;wnane.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="Wyr&oacute;wnane czasy przejazdu">
+                </td>
+                <td>
+                    <p>Niewyr&oacute;wnane liczby przystank&oacute;w na trasę, ale wyr&oacute;wnane czasy przejazdu:
+                    </p>
+                    <p>Przystanki znajdują się w tym samym miejscu, co na wcześniejszej grafice, jednak zwiększenie maksymalnej liczby przystank&oacute;w na trasę i ograniczenie łącznego czasu przejazdu na pojazd spowodowało, że czasy przejazdu są wyr&oacute;wnane.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Czas każdego postoju</h2></div>
+        <hr/>
+        <div>
+            <p>Skonfiguruj spodziewany średni czas spędzony na każdym przystanku. Jeśli na przykład planujesz dzienny harmonogram dla inspektor&oacute;w, a&nbsp;średni czas kontroli wynosi 45&nbsp;minut, wpisz wartość  <code>45</code>.
+            </p>
+            <p>Przyjmuje się, że czas spędzany na każdym przystanku jest taki sam.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Ogranicz czas pokonania całej trasy przez jeden pojazd</h2></div>
+        <hr/>
+        <div>
+            <p>Podaj maksymalny czas przejazdu od początku do końca trasy. Obejmuje on spodziewany czas podr&oacute;ży oraz czas spędzony na przystankach na trasie. Jeśli w&nbsp;ciągu dnia kierowcy nie powinni pracować dłużej niż przez dany czas, na przykład przez osiem godzin, ta opcja pozwala podać takie ograniczenie.
+            </p>
+            <p>Informacje na temat zr&oacute;wnoważonego podziału pracy podano w&nbsp;sekcji  <b>Maksymalna liczba przystank&oacute;w na pojazd</b>.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Nazwa warstwy obiektowej, kt&oacute;ra zostanie utworzona w obszarze  <b>Moje zasoby</b> i dodana do mapy. Jeśli warstwa obiektowa już istnieje, wyświetlony zostanie komunikat z&nbsp;prośbą o&nbsp;podanie innej nazwy. Ta warstwa obiekt&oacute;w będzie zawierała warstwę dla każdego z następujących element&oacute;w: tras, przypisanych przystank&oacute;w i nieprzypisanych przystank&oacute;w, jeśli niekt&oacute;rych przystank&oacute;w wejściowych nie będzie można przypisać do żadnej z tras.
+            </p>
+            <p>Jeśli zostanie wybrana opcja  <b>Dołącz warstwy trasy</b>, każda trasa z wynik&oacute;w zostanie także zapisana jako warstwa trasy. Warstwa trasy zawiera wszystkie informacje dotyczące określonej trasy, takie jak przystanki przypisane do trasy i wskaz&oacute;wki dojazdu. Tworzenie warstw tras jest przydatne, jeśli chcesz udostępnić poszczeg&oacute;lne trasy innym członkom instytucji lub dodatkowo zmodyfikować trasy przy użyciu przycisku <b>Wskaz&oacute;wki dojazdu</b> w przeglądarce map. Unikalna nazwa każdej warstwy tras jest tworzona poprzez dodanie nazwy trasy wygenerowanej podczas wykonywania analizy do prefiksu będącego nazwą warstwy obiektowej.
+            </p>
+            <p>Za pomocą menu rozwijanego  <b>Zapisz wynik w</b> można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisana warstwa obiektowa i warstwy tras (jeśli są tworzone).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

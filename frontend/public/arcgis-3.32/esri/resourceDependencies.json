@@ -1,0 +1,396 @@
+{
+    "esri/_coremap": [
+        "esri/images/map/bing-logo-lg.png",
+        "esri/SnappingManager"
+    ],
+    "esri/basemaps": [
+        "esri/images/basemap/*"
+    ],
+    "esri/jsapi": [
+        "esri/css/jsapi.css",
+        "esri/images/map/70-percent-white.png",
+        "esri/images/map/bing-logo-lg.png",
+        "esri/images/map/fixed-pan-sprite.png",
+        "esri/images/map/logo-med.png",
+        "esri/images/map/logo-sm.png"
+    ],
+    "esri/kernel": [
+        "esri/css/esri.css"
+    ],
+    "esri/map": [
+        "dijit/form/HorizontalSlider",
+        "dijit/form/VerticalSlider",
+        "dijit/form/HorizontalRule",
+        "dijit/form/VerticalRule",
+        "dijit/form/HorizontalRuleLabels",
+        "dijit/form/VerticalRuleLabels",
+        "esri/dijit/Attribution",
+        "esri/images/map/logo-med.png",
+        "esri/layers/LabelLayer"
+    ],
+    "esri/PopupManager": [
+        "esri/layers/FeatureLayer"
+    ],
+    "esri/request": [
+        "esri/workers/RequestClient"
+    ],
+    "esri/arcgis/Portal": [
+        "esri/css/images/item_type_icons/*"
+    ],
+    "esri/arcgis/utils": [
+        "esri/layers/LabelLayer",
+        "esri/layers/ArcGISDynamicMapServiceLayer",
+        "esri/layers/ArcGISImageServiceLayer",
+        "esri/layers/ArcGISImageServiceVectorLayer",
+        "esri/arcgis/csv",
+        "esri/layers/CSVLayer",
+        "esri/layers/DynamicLayerInfo",
+        "esri/layers/GeoRSSLayer",
+        "esri/layers/ImageParameters",
+        "esri/layers/ImageServiceParameters",
+        "esri/layers/KMLLayer",
+        "esri/layers/LabelClass",
+        "esri/layers/LayerDrawingOptions",
+        "esri/layers/MosaicRule",
+        "esri/layers/OpenStreetMapLayer",
+        "esri/layers/RasterFunction",
+        "esri/layers/StreamLayer",
+        "esri/layers/TileInfo",
+        "esri/layers/VectorTileLayer",
+        "esri/virtualearth/VETiledLayer",
+        "esri/layers/WebTiledLayer",
+        "esri/layers/WMSLayer",
+        "esri/layers/WMSLayerInfo"
+    ],
+    "esri/dijit/AttributeInspector": [
+        "esri/dijit/css/AttributeInspector.css",
+        "esri/dijit/images/attribute_inspector_sprite.png"
+    ],
+    "esri/dijit/BasemapGallery": [
+        "esri/dijit/images/transparent.gif",
+        "esri/dijit/css/BasemapGallery.css"
+    ],
+    "esri/dijit/BasemapToggle": [
+        "esri/dijit/css/BasemapToggle.css"
+    ],
+    "esri/dijit/Bookmarks": [
+        "esri/dijit/css/Bookmarks.css",
+        "esri/dijit/images/close.gif",
+        "esri/dijit/images/edit.png"
+    ],
+    "esri/dijit/CalculateField": [
+        "esri/dijit/css/CalculateField.css",
+        "esri/dijit/analysis/images/GenericEraser16.png",
+        "esri/dijit/analysis/images/GenericEraserDisabled16.png",
+        "esri/dijit/images/ajax-loader-arrow-lightblue.gif",
+        "esri/dijit/images/ajax-loader-segments-circle-64.gif",
+        "esri/dijit/images/validateicon.png"
+    ],
+    "esri/dijit/ColorPicker": [
+        "esri/dijit/ColorPicker/css/ColorPicker.css"
+    ],
+    "esri/dijit/Directions": [
+        "esri/dijit/images/Directions/*",
+        "esri/dijit/images/Directions/maneuvers/*",
+        "esri/dijit/css/DirectionsPrint.css",
+        "esri/dijit/css/Directions.css",
+        "esri/geometry/webMercatorUtils",
+        "esri/dijit/LocateButton"
+    ],
+    "esri/dijit/FeatureTable": [
+        "esri/dijit/FeatureTable/css/master.css",
+        "esri/dijit/FeatureTable/images/*"
+    ],
+    "esri/dijit/FontAlignment": [
+        "esri/dijit/images/positionSprite.png",
+        "esri/dijit/css/FontAlignment.css",
+        "esri/dijit/images/positionSprite.png"
+    ],
+    "esri/dijit/Form": [
+        "esri/dijit/css/Form.css"
+    ],
+    "esri/dijit/Gallery": [
+        "esri/dijit/css/Gallery.css"
+    ],
+    "esri/dijit/Gauge": [
+        "esri/dijit/css/Gauge.css"
+    ],
+    "esri/dijit/GeocodeMatch": [
+        "esri/dijit/GeocodeMatch/images/*"
+    ],
+    "esri/dijit/GeocodeMatch/Popup": [
+        "esri/dijit/css/Popup.css",
+        "esri/dijit/images/ajax-loader-blue.gif",
+        "esri/dijit/images/ajax-loader.gif",
+        "esri/dijit/images/popup.png"
+    ],
+    "esri/dijit/GeocodeReview": [
+        "esri/dijit/GeocodeReview/images/*"
+    ],
+    "esri/dijit/Geocoder": [
+        "esri/dijit/images/sdk_gps_location.png",
+        "esri/dijit/css/Geocoder.css",
+        "esri/dijit/images/arcgisGeocoder.png",
+        "esri/dijit/images/loading.gif",
+        "esri/dijit/images/simpleGeocoder.png"
+    ],
+    "esri/dijit/HomeButton": [
+        "esri/dijit/css/HomeButton.css",
+        "esri/dijit/images/home-spinner.gif",
+        "esri/dijit/images/home.png"
+    ],
+    "esri/dijit/HorizontalSlider": [
+        "esri/dijit/HorizontalSlider/css/HorizontalSlider.css"
+    ],
+    "esri/dijit/InfoWindow": [
+        "esri/dijit/css/InfoWindow.css",
+        "esri/dijit/images/claro.infowindow.png",
+        "esri/dijit/images/nihilo.infowindow.png",
+        "esri/dijit/images/remove-24x24.png",
+        "esri/dijit/images/soria.infowindow.png",
+        "esri/dijit/images/tundra.infowindow.png"
+    ],
+    "esri/dijit/LayerList": [
+        "esri/dijit/LayerList/css/LayerList.css"
+    ], 
+    "esri/dijit/LayerSwipe": [
+        "esri/dijit/css/LayerSwipe.css",
+        "esri/dijit/images/hDrag.png",
+        "esri/dijit/images/scope.png",
+        "esri/dijit/images/vDrag.png"
+    ],
+    "esri/dijit/Legend": [
+        "esri/dijit/css/Legend.css"
+    ],
+    "esri/dijit/LocateButton": [
+        "esri/dijit/images/sdk_gps_location.png",
+        "esri/dijit/css/LocateButton.css",
+        "esri/dijit/images/locate-spinner.gif",
+        "esri/dijit/images/locate.png",
+        "esri/dijit/images/stop.png"
+    ],
+    "esri/dijit/Measurement": [
+        "esri/dijit/images/cursor16x24.png",
+        "esri/dijit/images/esriGreenPin16x26.png",
+        "esri/dijit/css/Measurement.css",
+        "esri/dijit/images/Measure_Area16.png",
+        "esri/dijit/images/Measure_Distance16.png",
+        "esri/dijit/images/Measure_Point16.png",
+        "esri/dijit/images/button-active.png",
+        "esri/dijit/images/button-hover.png"
+    ],
+    "esri/dijit/MosaicRule": [
+        "esri/dijit/css/MosaicRule.css",
+        "esri/dijit/images/MosaicRule_Query.png",
+        "esri/dijit/images/MosaicRule_Threedots.png"
+    ],
+    "esri/dijit/OverviewMap": [
+        "esri/dijit/css/OverviewMap.css",
+        "esri/dijit/images/overview.png"
+    ],
+    "esri/dijit/Popup": [
+        "esri/dijit/css/Popup.css",
+        "esri/dijit/images/ajax-loader-blue.gif",
+        "esri/dijit/images/ajax-loader.gif",
+        "esri/dijit/images/popup.png"
+    ],
+    "esri/dijit/PopupMobile": [
+        "esri/dijit/css/PopupMobile.css",
+        "esri/dijit/images/whitedown.png",
+        "esri/dijit/images/whitel.png",
+        "esri/dijit/images/leftlongarrow.png",
+        "esri/dijit/images/pointerbottom.png",
+        "esri/dijit/images/pointertop.png",
+        "esri/dijit/images/rightlongarrow.png",
+        "esri/dijit/images/spinner.gif",
+        "esri/dijit/images/squarearrow.png",
+        "esri/dijit/images/whiter.png",
+        "esri/dijit/images/whitex.png"
+    ],
+    "esri/dijit/PopupRenderer": [
+        "dojox/charting/Chart2D",
+        "dojox/charting/action2d/Tooltip",
+        "esri/dijit/Rainbow",
+        "dojox/charting/themes/Adobebricks",
+        "dojox/charting/themes/Algae",
+        "dojox/charting/themes/Bahamation",
+        "dojox/charting/themes/BlueDusk",
+        "dojox/charting/themes/Charged",
+        "dojox/charting/themes/Chris",
+        "dojox/charting/themes/Claro",
+        "dojox/charting/themes/CubanShirts",
+        "dojox/charting/themes/Desert",
+        "dojox/charting/themes/Distinctive",
+        "dojox/charting/themes/Dollar",
+        "dojox/charting/themes/Electric",
+        "dojox/charting/themes/Grasshopper",
+        "dojox/charting/themes/Grasslands",
+        "dojox/charting/themes/GreySkies",
+        "dojox/charting/themes/Harmony",
+        "dojox/charting/themes/IndigoNation",
+        "dojox/charting/themes/Ireland",
+        "dojox/charting/themes/Julie",
+        "dojox/charting/themes/MiamiNice",
+        "dojox/charting/themes/Midwest",
+        "dojox/charting/themes/Minty",
+        "dojox/charting/themes/PrimaryColors",
+        "dojox/charting/themes/PurpleRain",
+        "dojox/charting/themes/Renkoo",
+        "dojox/charting/themes/RoyalPurples",
+        "dojox/charting/themes/SageToLime",
+        "dojox/charting/themes/Shrooms",
+        "dojox/charting/themes/ThreeD",
+        "dojox/charting/themes/Tom",
+        "dojox/charting/themes/Tufte",
+        "dojox/charting/themes/WatersEdge",
+        "dojox/charting/themes/Wetland",
+        "dojox/charting/themes/common",
+        "dojox/charting/themes/gradientGenerator",
+        "dojox/charting/themes/PlotKit/base",
+        "dojox/charting/themes/PlotKit/blue",
+        "dojox/charting/themes/PlotKit/cyan",
+        "dojox/charting/themes/PlotKit/green",
+        "dojox/charting/themes/PlotKit/orange",
+        "dojox/charting/themes/PlotKit/purple",
+        "dojox/charting/themes/PlotKit/red"
+    ],
+    "esri/dijit/Print": [
+        "esri/dijit/css/Print.css"
+    ],
+    "esri/dijit/RenderingRule": [
+        "esri/dijit/css/RenderingRule.css"
+    ],
+    "esri/dijit/Scalebar": [
+        "esri/dijit/css/Scalebar.css"
+    ],
+    "esri/dijit/Search": [
+        "esri/dijit/Search/css/Search.css",
+        "esri/dijit/Search/images/search-pointer.png",
+        "esri/themes/calcite/icons/*"
+    ],
+    "esri/dijit/SingleFilter": [
+        "esri/dijit/css/SingleFilter.css"
+    ],
+    "esri/dijit/SymbolEditor": [
+        "esri/dijit/FontAlignment",
+        "dijit/ColorPalette",
+        "esri/dijit/css/SymbolEditor.css"
+    ],
+    "esri/dijit/Tags": [
+        "esri/dijit/css/Tags.css",
+        "esri/dijit/images/select.png",
+        "esri/css/calcite/images/ago_sprite.png"
+    ],
+    "esri/dijit/TimeSlider": [
+        "esri/dijit/css/TimeSlider.css",
+        "esri/dijit/images/time_slider_sprite.png"
+    ],
+    "esri/dijit/analysis/AggregatePoints": [
+        "esri/dijit/analysis/images/close.gif"
+    ],
+    "esri/dijit/analysis/AnalysisBase": [
+        "esri/arcgis/Portal"
+    ],
+    "esri/dijit/analysis/HelpWindow": [
+        "esri/dijit/analysis/help/*",
+        "esri/dijit/analysis/help/ar/*",
+        "esri/dijit/analysis/help/cs/*",
+        "esri/dijit/analysis/help/css/analysis.css",
+        "esri/dijit/analysis/help/da/*",
+        "esri/dijit/analysis/help/de/*",
+        "esri/dijit/analysis/help/es/*",
+        "esri/dijit/analysis/help/et/*",
+        "esri/dijit/analysis/help/fi/*",
+        "esri/dijit/analysis/help/fr/*",
+        "esri/dijit/analysis/help/he/*",
+        "esri/dijit/analysis/help/helpmap.json",
+        "esri/dijit/analysis/help/images/*",
+        "esri/dijit/analysis/help/it/*",
+        "esri/dijit/analysis/help/ja/*",
+        "esri/dijit/analysis/help/ko/*",
+        "esri/dijit/analysis/help/lt/*",
+        "esri/dijit/analysis/help/lv/*",
+        "esri/dijit/analysis/help/nl/*",
+        "esri/dijit/analysis/help/no/*",
+        "esri/dijit/analysis/help/pl/*",
+        "esri/dijit/analysis/help/pt-BR/*",
+        "esri/dijit/analysis/help/pt-PT/*",
+        "esri/dijit/analysis/help/ro/*",
+        "esri/dijit/analysis/help/ru/*",
+        "esri/dijit/analysis/help/sv/*",
+        "esri/dijit/analysis/help/th/*",
+        "esri/dijit/analysis/help/tr/*",
+        "esri/dijit/analysis/help/zh-CN/*"
+    ],
+    "esri/dijit/analysis/PlanRoutes": [
+        "esri/dijit/images/Directions/redPoint.png",
+        "esri/dijit/images/Directions/greenPoint.png"
+    ],
+    "esri/dijit/analysis/SummarizeNearby": [
+        "esri/dijit/analysis/images/close.gif"
+    ],
+    "esri/dijit/geoenrichment/Infographic": [
+        "esri/dijit/geoenrichment/OneVar",
+        "esri/dijit/geoenrichment/RelatedVariables",
+        "esri/dijit/geoenrichment/AgePyramid",
+        "esri/dijit/geoenrichment/Tapestry"
+    ],
+    "esri/dijit/geoenrichment/theme": [
+        "esri/dijit/geoenrichment/themes/common/*",
+        "esri/dijit/geoenrichment/themes/common/AgePyramid",
+        "esri/dijit/geoenrichment/themes/common/images/*",
+        "esri/dijit/geoenrichment/themes/common/images/analysis/*",
+        "esri/dijit/geoenrichment/themes/common/images/dataCollections/*",
+        "esri/dijit/geoenrichment/themes/common/images/tapestry/*",
+        "esri/dijit/geoenrichment/themes/light/*",
+        "esri/dijit/geoenrichment/themes/light/AgePyramid",
+        "esri/dijit/geoenrichment/themes/light/images/*"
+    ],
+    "esri/dijit/SymbolStyler": [
+        "esri/dijit/SymbolStyler/css/*",
+        "esri/dijit/SymbolStyler/images/*"
+    ],
+    "esri/dijit/util/busyIndicator": [
+        "esri/dijit/images/loading-throb.gif"
+    ],
+    "esri/layers/FeatureLayer": [
+        "esri/plugins/spatialIndex"
+    ],
+    "esri/layers/GraphicsLayer": [
+        "dojox/gfx/filters",
+        "dojox/gfx/svgext"
+    ],
+    "esri/layers/HeatmapManager": [
+        "esri/workers/heatmapCalculator"
+    ],
+    "esri/layers/Raster": [
+        "esri/layers/rasterFormats/JpgPlus",
+        "esri/layers/rasterFormats/Png",
+        "esri/layers/rasterFormats/Raw"
+    ],
+    "esri/layers/rasterFormats/ImageCanvasDecoder": [
+        "esri/layers/rasterFormats/Zlib"
+    ],
+    "esri/layers/VectorTileLayer": [
+        "esri/layers/vectorTiles/core/workers/worker",
+        "esri/layers/vectorTiles/core/libs/requirejs/require"
+    ],
+    "esri/layers/WMSLayer": [
+        "esri/images/pixel.png"
+    ],
+    "esri/renderers/smartMapping": [
+        "esri/plugins/FeatureLayerStatistics"
+    ],
+    "esri/renderers/VectorFieldRenderer": [
+        "esri/images/symbol/sfs/scalar.png"
+    ],
+    "esri/symbols/SimpleFillSymbol": [
+        "esri/images/symbol/sfs/*"
+    ],
+    "esri/tasks/GenerateRendererTask": [
+        "esri/tasks/generateRenderer"
+    ],
+    "esri/toolbars/edit": [
+        "esri/dijit/SymbolEditor"
+    ]
+}

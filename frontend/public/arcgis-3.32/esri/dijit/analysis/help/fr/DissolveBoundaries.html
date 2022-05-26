@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Fusionner les limites</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Dissoudre les limites"></h2>
+        <hr/>
+    <p>Les surfaces qui se chevauchent ou partagent une limite commune sont combin&eacute;es pour former une surface unique.    
+    </p>
+    <p>Vous pouvez contr&ocirc;ler quelles limites sont combin&eacute;es en sp&eacute;cifiant un champ. Par exemple, si vous avez une couche de comt&eacute;s et que chaque comt&eacute; poss&egrave;de un attribut  <i>State_Name</i>, vous pouvez fusionner les limites &agrave; l'aide de l'attribut <i>State_Name</i>. Les comt&eacute;s adjacents seront combin&eacute;s si leur attribut <i>State_Name</i> poss&egrave;de la m&ecirc;me valeur. Le r&eacute;sultat final est une couche de limites d'Etats.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisissez la couche surfacique dont les limites seront fusionnées</h2></div>
+        <hr/>
+        <div>
+            <p>La couche contenant les entit&eacute;s surfaciques qui seront fusionn&eacute;es. 
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Choix du mode de dissolution</h2></div>
+        <hr/>
+        <div>
+            <p>Vous avez le choix entre deux m&eacute;thodes pour combiner les entit&eacute;s des surfaces :
+                <ul>
+                    <li> <b>Surfaces qui se superposent ou qui sont adjacentes</b>&nbsp;: deux surfaces ou plus dont les limites se superposent seront combin&eacute;es en une seule surface.  En outre, les surfaces adjacentes (c'est-&agrave;-dire qui partagent une limite commune) seront combin&eacute;es en une seule surface.
+                    </li>
+                    <li> <b>Surfaces avec la m&ecirc;me valeur de champ</b>&nbsp;: les surfaces qui se superposent ou partagent une limite commune seront combin&eacute;es en une seule surface si elles ont la m&ecirc;me valeur de champ.
+                        <p>Par exemple, si vous avez une couche de comt&eacute;s et que chaque comt&eacute; poss&egrave;de un champ  <i>State_Name</i>, vous pouvez fusionner les limites &agrave; l'aide du champ <i>State_Name</i>. Les comt&eacute;s adjacents seront combin&eacute;s si leur attribut <i>State_Name</i> poss&egrave;de la m&ecirc;me valeur. Le r&eacute;sultat final est une couche de limites d'Etats.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Si l&rsquo;option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s de la couche en entr&eacute;e qui sont visibles dans la carte actuelle seront fusionn&eacute;es.  Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent dans la couche en entr&eacute;e seront fusionn&eacute;es, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Créer des entités multi-parties</h2></div>
+        <hr/>
+        <div>
+            <p>Dans ArcGIS, une repr&eacute;sentation num&eacute;rique d&rsquo;un lieu ou d'un objet qui comprend plusieurs parties est d&eacute;finie comme une entit&eacute; car elle fait r&eacute;f&eacute;rence &agrave; un ensemble d'attributs. Dans une couche d&rsquo;&eacute;tats, par exemple, l&rsquo;&eacute;tat d&rsquo;Hawa&iuml; peut &ecirc;tre consid&eacute;r&eacute; comme une entit&eacute; multi-parties, car ses parties g&eacute;om&eacute;triques sont classifi&eacute;es comme faisant partie d&rsquo;un seul &eacute;tat. Ce param&egrave;tre bool&eacute;en poss&egrave;de deux options&nbsp;:
+                <ul>
+                    <li>True (activ&eacute;)&nbsp;: le service en sortie peut contenir des entit&eacute;s multi-parties.
+                    </li>
+                    <li>False (d&eacute;sactiv&eacute;)&nbsp;: le service en sortie ne contient que des entit&eacute;s &agrave; une seule partie et des entit&eacute;s individuelles sont cr&eacute;&eacute;es pour chaque partie.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Ajouter des statistiques</h2></div>
+        <hr/>
+        <div>
+            <p>Lorsque les surfaces sont combin&eacute;es, vous pouvez synth&eacute;tiser leurs attributs. Par exemple, si vous fusionnez la limite entre les comt&eacute;s en fonction du champ  <i>State_Name</i> et que chaque comt&eacute; poss&egrave;de un champ <i>Population</i>, vous pouvez calculer la somme <i>Population</i> de l&rsquo;&eacute;tat.
+            </p>
+            <p>Types de statistiques disponibles :
+            </p>
+            <ul>
+                <li> <b>Somme</b>&nbsp;: ajoute la valeur totale du champ sp&eacute;cifi&eacute;.
+                    
+
+                </li>
+                <li> <b>Moyenne</b>&nbsp;: calcule la moyenne du champ sp&eacute;cifi&eacute;.
+                    
+
+                </li>
+                <li> <b>Minimum</b>&nbsp;: recherche la valeur la plus faible parmi tous les enregistrements du champ sp&eacute;cifi&eacute;.
+                    
+
+                </li>
+                <li> <b>Maximum</b>&nbsp;: recherche la valeur la plus &eacute;lev&eacute;e parmi tous les enregistrements du champ sp&eacute;cifi&eacute;.
+                    
+
+                </li>
+                <li> <b>Ecart type</b>&nbsp;: recherche l'&eacute;cart type sur les valeurs du champ sp&eacute;cifi&eacute;
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

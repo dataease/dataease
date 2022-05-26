@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/layers/vectorTiles/core/accessorSupport/extensions/computedProperty","require exports dojo/has ../../Logger ../utils ../wire".split(" "),function(n,b,f,g,h,k){Object.defineProperty(b,"__esModule",{value:!0});var l=f("dojo-debug-messages"),m=g.getLogger("esri.core.accessorSupport.extensions.computedProperty");b.ComputedPropertyExtension={processClassPropertyMetadata:function(b,c,e,d){if(l){var a=c.dependsOn;a&&a.length&&a.map(function(a){return a.split(".")[0]}).forEach(function(a){null==
+e[a]&&m.error("[accessor] class '"+d+"' - property '"+b+"' depends on unknown property '"+a+"' which hasn't been found during introspection. This can be fix by adding '"+a+"' to the metadata for example.")})}c.dependsOn&&(a=void 0,a=c.dependsOn.slice())&&(c.wire=k.create(a,function(a){return h.getProperties(a).propertyInvalidated(b)}))},instanceCreated:function(b,c,e){for(var d=0;d<e.length;d++){var a=c[e[d]];a.wire&&a.wire(b)}}};b.default=b.ComputedPropertyExtension});

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Wydziel dane</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Wydziel dane"></h2>
+        <hr/>
+    <p>To narzędzie umożliwia selekcję i pobranie danych dla konkretnego obszaru zainteresowania. Wybrane warstwy zostaną dodane do pliku ZIP, CSV lub KMZ.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Warstwy do wydzielenia</h2></div>
+        <hr/>
+        <div>
+            <p>Są to warstwy w&nbsp;tabeli zawartości, z&nbsp;kt&oacute;rych można wydzielać obiekty. Zaznaczone warstwy są wydzielane i&nbsp;dołączane do wynikowego pliku ZIP lub CSV.
+            </p>
+            <p>Aby dana warstwa pojawiła się na liście warstw przeznaczonych do wydzielania, dane muszą należeć do użytkownika lub ich właściciel musi włączyć opcję eksportowania tych danych. Aby włączyć eksportowanie danych, kt&oacute;rych jesteś właścicielem: 
+                <ul>
+                    <li>Otw&oacute;rz opis elementu dla odpowiednich danych.
+                    </li>
+                    <li>Kliknij kartę  <b>Ustawienia</b>.
+                    </li>
+                    <li>Przewiń w&nbsp;d&oacute;ł do sekcji  <b>Eksportuj dane</b>.
+                    </li>
+                    <li>Zaznacz pole wyboru  <b>Zezw&oacute;l innym na eksport do plik&oacute;w w r&oacute;żnych formatach</b>. Po zakończeniu tej czynności kliknij przycisk <b>Zapisz</b>.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jeśli warstwa analizy zawiera załączniki, będą one wydzielone tylko wtedy, gdy format danych wynikowych jest geobazą plikową i&nbsp;nie zaznaczono opcji  <b>Wytnij obiekty</b>.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Analizowany obszar</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to obszar definiujący, 
+kt&oacute;re obiekty zostaną uwzględnione w&nbsp;wynikowym pliku ZIP lub CSV. Można wybrać spośr&oacute;d następujących opcji:
+                <ul>
+                    <li>Bieżący widoczny zasięg mapy ( <b>Tak jak w widoku</b>).
+                    </li>
+                    <li>Jedna z&nbsp;warstw w&nbsp;tabeli zawartości. Jeśli wybrana warstwa jest warstwą obiekt&oacute;w punktowych lub liniowych, jako analizowany obszar użyty zostanie zasięg warstwy.
+                    </li>
+                    <li>Narysuj obszar, aby zdefiniować analizowany obszar.
+                    </li>
+                </ul>
+                 Wydzielone zostaną wszystkie obiekty, kt&oacute;re w&nbsp;pełni znajdują się w&nbsp;zasięgu mapy. W&nbsp;przypadku obiekt&oacute;w, kt&oacute;re przecinają granicę zasięgu i nie znajdują się całkowicie w&nbsp;zasięgu mapy, dostępne są dwie opcje:
+                <ul>
+                    <li> <b>Wybierz obiekty</b> &mdash; wydzielone zostaną całe obiekty przecinające granicę analizowanego obszaru.
+                    </li>
+                    <li> <b>Wytnij obiekty</b> &mdash; wydzielone zostaną tylko te części obiekt&oacute;w, kt&oacute;re znajdują się na&nbsp;analizowanym obszarze.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Format danych wynikowych</h2></div>
+        <hr/>
+        <div>
+            <p>Format danych, kt&oacute;re zostaną wydzielone. Podczas eksportowania obiekt&oacute;w liniowych lub powierzchniowych do pliku CSV wydzielane są wyłącznie atrybuty nieprzestrzenne. Podczas eksportowania obiekt&oacute;w punktowych, eksportowane są zar&oacute;wno atrybuty przestrzenne, jak i nieprzestrzenne.  
+            </p>
+            <p>Wydzielone dane będą używać odwzorowania Web Mercator 1984.  W przypadku plik&oacute;w CSV do danych zostaną dołączone pola  <i>Lat</i> (Szerokość geograficzna) i <i>Long</i> (Długość geograficzna) zawierające wsp&oacute;łrzędne w układzie wsp&oacute;łrzędnych Web Mercator 1984.
+            </p> 
+            <p>Obsługiwane są następujące formaty wynikowe:
+                <ul>
+                    <li>Wartości rozdzielane przecinkami (CSV) &mdash;  <code>.csv</code> lub <code>.zip</code>
+                    </li>
+                    <li>Geobaza plikowa &mdash;  <code>.zip</code>
+                    </li>
+                    <li>Plik KML (Keyhole Markup Language) &mdash;  <code>.kmz</code> lub <code>.zip</code>
+                    </li>
+                    <li>Plik shape &mdash;  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nazwa pliku wynikowego</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa elementu, kt&oacute;ry zostanie dodany do karty  <b>Moje zasoby</b>. Nazwa elementu oparta jest na wybranym <b>Formacie danych wynikowych</b>. Jeśli element już istnieje, wyświetlony zostanie komunikat z&nbsp;prośbą o&nbsp;podanie innej nazwy.
+            </p>
+            <p>Używając listy rozwijanej  <b>Zapisz wynik w</b>, można określić nazwę folderu w zakładce <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Joindre les entités</h2><p/>
+        <h2><img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" alt="Joindre des entit&eacute;s"></h2>
+        <hr/>
+    <p>Entit&eacute;s jointes fonctionne avec deux couches et joint des attributs d'une entit&eacute; &agrave; une autre en fonction des relations spatiales et attributaires. L'outil d&eacute;termine toutes les entit&eacute;s en entr&eacute;e qui r&eacute;pondent &agrave; des conditions de jointure sp&eacute;cifi&eacute;es et ajoute la couche de jointure &agrave; la couche cible. 
+    </p>
+    <p>L'outil Entit&eacute;s jointes peut s'appliquer aux points, lignes, surfaces et tables. Pour utiliser une jointure spatiale, vos donn&eacute;es doivent poss&eacute;der une g&eacute;om&eacute;trie. 
+    </p>
+    <p>Si l'option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s visibles au sein de l'&eacute;tendue courante de la carte seront analys&eacute;es. Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent &agrave; la fois dans la couche cible et dans la couche de jointure seront analys&eacute;es, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Choisir une couche cible</h2></div>
+        <hr/>
+        <div>
+            <p>La couche cible sera dot&eacute;e des attributs issus de la couche de jointure ajout&eacute;e &agrave; sa table.
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p> 
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Choisir la couche à joindre à la couche cible</h2></div>
+        <hr/>
+        <div>
+            <p>La couche de jointure avec les attributs sera ajout&eacute;e &agrave; la couche cible.
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="joinType">
+        <div><h2>Sélectionner les types de jointure</h2></div>
+        <hr/>
+        <div>
+            <p>Vous pouvez appliquer une jointure spatiale, une jointure attributaire ou une combinaison des deux. 
+                <ul>
+                    <li> <b>Spatial</b>&nbsp;: utilise une relation spatiale sp&eacute;cifi&eacute;e pour joindre les entit&eacute;s. Dans ce cas, les deux couches doivent poss&eacute;der une g&eacute;om&eacute;trie.
+                    </li>
+                    <li> <b>Attribut</b>&nbsp;: joint les entit&eacute;s en fonction de champs &eacute;gaux.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Choisir une relation spatiale</h2></div>
+        <hr/>
+        <div>
+            <p>La relation spatiale qui va d&eacute;terminer si les entit&eacute;s sont jointes les unes aux autres. Les relations disponibles d&eacute;pendent du type de g&eacute;om&eacute;trie (point, ligne, surface) utilis&eacute; comme entit&eacute;s en entr&eacute;e. Les relations disponibles sont notamment&nbsp;:
+                <ul>
+                    <li> <b>Identique &agrave;</b>&nbsp;: les entit&eacute;s dans la couche cible sont appari&eacute;es si elles sont identiques aux entit&eacute;s de la couche de jointure.
+                    </li>
+                    <li> <b>Intersecte</b>&nbsp;: les entit&eacute;s dans la couche cible sont appari&eacute;es si elles intersectent les entit&eacute;s de la couche de jointure.
+                    </li>
+                    <li> <b>Contient compl&egrave;tement</b>&nbsp;: les entit&eacute;s dans la couche cible sont appari&eacute;es si elles contiennent compl&egrave;tement les entit&eacute;s de la couche de jointure.
+                    </li>
+                    <li> <b>Compl&egrave;tement dans</b>&nbsp;: les entit&eacute;s dans la couche cible sont appari&eacute;es si elles se trouvent compl&egrave;tement au sein des entit&eacute;s de la couche de jointure.
+                    </li>
+                    <li> <b>Dans une distance de</b>&nbsp;: les entit&eacute;s de la couche cible sont appari&eacute;es si elles se trouvent &agrave; une distance sp&eacute;cifi&eacute;e des entit&eacute;s de la couche de jointure.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Jointure attributaire</h2></div>
+        <hr/>
+        <div>
+            <p>La relation attributaire qui va d&eacute;terminer si les entit&eacute;s sont jointes les unes aux autres. Les entit&eacute;s sont appari&eacute;es lorsque les valeurs de champ de la couche de jointure sont identiques &agrave; celles de la couche cible. 
+            </p>
+            <p>Supposons par exemple que vous poss&eacute;dez une couche g&eacute;ographique r&eacute;gionale d'adresses r&eacute;sidentielles (notamment un champ  <i>ZIP</i>) et un jeu de donn&eacute;es tabulaire de donn&eacute;es d&eacute;mographiques sanitaires par code postal (notamment, un champ nomm&eacute; <i>HEALTHZIP</i>). Vous pouvez joindre le jeu de donn&eacute;es concernant la sant&eacute; aux donn&eacute;es r&eacute;sidentielles en appariant le champ <i>ZIP</i> &agrave; <i>HEALTHZIP</i>, ce qui g&eacute;n&egrave;re une couche des r&eacute;sidences comportant les donn&eacute;es sanitaires correspondantes.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Choisir l'opération de jointure</h2></div>
+        <hr/>
+        <div>
+            <p>D&eacute;termine le mode de traitement des jointures entre la couche cible et la couche de jointure si plusieurs entit&eacute;s dans la couche de jointure pr&eacute;sentent la m&ecirc;me relation &agrave; la couche cible. Vous avez le choix entre les deux op&eacute;rations de jointure suivantes&nbsp;:
+                <ul>
+                    <li> <b>Joindre un vers un</b>&nbsp;: cette option joint les entit&eacute;s de la couche cible &agrave; une m&ecirc;me entit&eacute; de la couche de jointure. Le mode de jonction des entit&eacute;s est d&eacute;termin&eacute; par le param&egrave;tre <b>Ajouter des statistiques</b> ou le param&egrave;tre <b>D&eacute;finir l&rsquo;enregistrement &agrave; conserver</b>. Si le param&egrave;tre <b>Ajouter des statistiques</b> est utilis&eacute;, toutes les entit&eacute;s appari&eacute;es jointes seront r&eacute;capitul&eacute;es dans chaque entit&eacute; de la couche cible. Le nombre d&rsquo;entit&eacute;s jointes est ajout&eacute; par d&eacute;faut. Si le param&egrave;tre <b>D&eacute;finir l&rsquo;enregistrement &agrave; conserver</b>
+ est utilis&eacute;, vous pouvez choisir de conserver le premier enregistrement correspondant (valeur par d&eacute;faut) ou de conserver un enregistrement correspondant en fonction d&rsquo;une expression. Une expression peut utiliser un champ num&eacute;rique
+(option pour l&rsquo;enregistrement le plus grand ou le plus petit) ou un champ de date (option pour le plus r&eacute;cent ou le plus ancien).
+                    </li>
+                    <li> <b>Joindre un vers plusieurs</b>&nbsp;: cette option joint toutes les entit&eacute;s appari&eacute;es de la couche de jointure &agrave; la couche cible.  La couche de r&eacute;sultat contiendra plusieurs enregistrements de l&rsquo;entit&eacute; cible.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Supposons par exemple que vous voulez rechercher les supermarch&eacute;s situ&eacute;s &agrave; moins de 5&nbsp;kilom&egrave;tres d'un march&eacute; de producteurs.   Dans ce cas, la couche vers laquelle la jointure est r&eacute;alis&eacute;e poss&egrave;de une seule entit&eacute; repr&eacute;sentant un march&eacute; de producteurs et les entit&eacute;s de jointure repr&eacute;sentent les &eacute;piceries locales qui poss&egrave;dent des attributs, tels que les ventes annuelles totales. L'outil  <b>Entit&eacute;s jointes</b> permet de trouver cinq &eacute;piceries qui r&eacute;pondent &agrave; ce crit&egrave;re. En sp&eacute;cifiant une op&eacute;ration de jointure de type <b>Joindre un vers plusieurs</b>, vous obtenez cinq entit&eacute;s dans votre r&eacute;sultat, chaque ligne repr&eacute;sentant le march&eacute; de producteurs et un supermarch&eacute;. En sp&eacute;cifiant une relation de type <b>Joindre un vers un</b> et en s&eacute;lectionnant une statistique, vous obtenez une entit&eacute; repr&eacute;sentant le march&eacute; de producteurs et les informations synth&eacute;tis&eacute;es des supermarch&eacute;s, par exemple le total (5), ainsi que d'autres statistiques facultatives, telles que la somme des ventes annuelles.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Ajouter des statistiques (facultatif)</h2></div>
+        <hr/>
+        <div>
+            <p>Si l'option  <b>Joindre un vers un</b> est s&eacute;lectionn&eacute;e, pour les champs num&eacute;riques, vous pouvez agr&eacute;ger et calculer les statistiques sur les entit&eacute;s jointes.   Par d&eacute;faut, le total des entit&eacute;s jointes d'appariement est calcul&eacute; et ajout&eacute; &agrave; la couche de r&eacute;sultat.  Si vous choisissez de ne pas ajouter de statistiques suppl&eacute;mentaires, la premi&egrave;re entit&eacute; d'appariement de la couche de jointure est jointe &agrave; la premi&egrave;re entit&eacute; d'appariement de la couche cible.   Vous pouvez calculer un des &eacute;l&eacute;ments suivants&nbsp;:
+            </p>
+            <ul>
+                <li>Somme
+                </li>
+                <li>Minimal
+                </li>
+                <li>Maximum
+                </li>
+                <li>Moyenne
+                </li>
+                <li>&Eacute;cart type
+                </li>
+            </ul>
+            
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+    <div id="isView">
+        <div><h2>Créer des résultats en tant que vue de couche d’entités hébergée</h2></div>
+        <hr/>
+        <div>
+            <p> La cr&eacute;ation de r&eacute;sultats en tant que vue de couche d&rsquo;entit&eacute;s h&eacute;berg&eacute;es permet de garder les donn&eacute;es &agrave; jour en cas de modification des donn&eacute;es source. Les vues de couches d&rsquo;entit&eacute;s h&eacute;berg&eacute;s contenant des jointures seront en lecture seule et ne consomment pas de cr&eacute;dits pour l&rsquo;analyse et le stockage.
+            </p>
+            <p>Vous pouvez cr&eacute;er une vue de couche d&rsquo;entit&eacute;s h&eacute;berg&eacute;es &agrave; partir des r&eacute;sultats d&rsquo;analyse si toutes les conditions suivantes sont remplies&nbsp;:
+                <ul>
+                    <li>Vous &ecirc;tes le propri&eacute;taire des deux couches.
+                    </li>
+                    <li>Les deux couches sont des couches d&rsquo;entit&eacute;s h&eacute;berg&eacute;es.
+                    </li>
+                    <li>Vous effectuez une jointure en fonction des attributs.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

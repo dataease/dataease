@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Găsiți fascicule de puncte</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Găsiți fascicule de puncte"></h2>
+        <hr/>
+    <p>Acest instrument găsește obiecte spațiale fascicule de puncte &icirc;n zgomotul &icirc;nconjurător pe baza distribuției lor spațiale.
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă hartă</b>, vor fi analizate numai obiectele spaţiale din stratul tematic de puncte de intrare din extinderea curentă a hărţii. Dacă nu se bifează, toate obiectele spaţiale din stratul tematic de puncte de intrare vor fi analizate, chiar dacă se află &icirc;n afara extinderii curente a hărţii.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Alegeţi stratul tematic pentru care vor fi găsite fasciculele</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic de puncte unde se vor regăsi fasciculele. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Numărul minim de puncte care vor fi considerate un fascicul</h2></div>
+        <hr/>
+        <div>
+            <p>Numărul minim de obiecte spaţiale care vor fi considerate un fascicul. Orice fascicul cu obiecte spațiale mai puține dec&acirc;t cele furnizate va fi considerat zgomot. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Limitarea intervalului de căutare la (opţional)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Distanța maximă la care se consideră că obiectele spațiale fac parte din același fascicul. Dacă este lăsată necompletată, instrumentul va rula HDBSCAN, care utilizează diverse distanțe pentru a separa grupările de densități variate din sunetul rar. Dacă este menționată o valoare, instrumentul va rula DBSCAN, care utilizează o anumită distanță pentru a separa grupările de densități variate din sunetul rar.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic care va fi creat &icirc;n  <b>Resursele mele</b> și adăugat &icirc;n hartă.  Numele implicit se bazează pe numele instrumentului și numele stratului tematic de intrare. Dacă numele stratului tematic rezultat există deja, vi se va solicita să furnizați un alt nume.
+            </p>
+            <p>Utiliz&acirc;nd meniul derul&acirc;nd  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

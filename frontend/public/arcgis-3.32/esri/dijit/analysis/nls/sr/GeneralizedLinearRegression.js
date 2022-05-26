@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/sr/GeneralizedLinearRegression",{modifiedTitle:"Generalizovana linearna regresija - ${goal}",fit:"Uklapanje",fitAndPredict:"Uklapanje i predvi\u0111anje",selectGoal:"\u0160ta biste \u017eeleli da uradite?",fitGoal:"Uklopite model da biste procenili njegove performanse",fitAndPredictGoal:"Uklopite model i predvidite vrednosti",inputLayerLabel:"Odaberite sloj od kojeg se generi\u0161e model",chooseDependentField:"Odaberite polje za modeliranje",chooseDataType:"Odaberite tip podataka koje modelirate",
+continuousData:"Kontinuirano",binaryData:"Binarno",countData:"Broja\u010d",chooseExplanatoryField:"Odaberite polja sa obja\u0161njenjima",chooseFeaturesToPredict:"Odaberite sloj za koji se predvi\u0111aju vrednosti",chooseExplainMatch:"Odaberite kako se polja sa obja\u0161njenjima podudaraju",outputLayerName:"GLR ${inputLayerName}",itemDescription:"Sloj geoobjekata generisan kori\u0161\u0107enjem re\u0161enja za generalizovanu linearnu regresiju ${goal}.",itemTags:"Rezultat analize, generalizovana linearna regresija, ${inputLayerName}, ${goal}",
+itemSnippet:"Sloj geoobjekata generisan pomo\u0107u generalizovane linearne regresije (${goal})."});

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Summarize Nearby</h2><p/>
+        <h2><img src="./images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" alt="Summarize Nearby"></h2>
+        <hr/>
+    <p>This tool finds and summarizes features that are within a specified distance of features in the first input layer.  Distance can be measured as a straight-line distance or by using a selected travel mode.  Travel mode options are driving distance, driving time, trucking distance, trucking time, walking distance, or walking time.   Statistics are then calculated for the nearby features.  For example
+        <ul>
+            <li>Calculate the total population within five minutes of driving time of a proposed new store location.
+            </li>
+            <li>Calculate the number of freeway access ramps within a one-mile driving distance of a proposed new store location to use as a measure of store accessibility.
+            </li>
+        </ul>
+        
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the features in the input layer and the layer to be summarized that are visible within the current map extent will be analyzed.  If unchecked, all features in both the input layer and the layer to be summarized will be analyzed, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumNearbyLayer">
+        <div><h2>Choose layer from which distances will be measured to features in the layer to summarize</h2></div>
+        <hr/>
+        <div>
+            <p>The point, line, or area layer that will be used as the starting locations to summarize nearby features.
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+            <p>The tool supports up to 1,000 features in this layer.
+
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Choose layer to summarize</h2></div>
+        <hr/>
+        <div>
+            <p>Features in this layer that are within the specified distance to features in the layer specified above will be summarized. 
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Summarize nearest features using a</h2></div>
+        <hr/>
+        <div>
+            <p> You can define what kind of distance measurement you want to use, either a straight-line distance or a selected travel mode. Travel modes are only enabled when the first input layer (the layer from which distances are measured) contains points.  The available travel modes are determined by the administrator of your organization. When using one of the travel modes, the measurements are made along roads or walkways and they honor applicable rules, such as one-way streets, illegal turns, and so on. <b>Driving Time</b>, <b>Rural Driving Time</b> and <b>Trucking Time</b> honors your choice of travel speeds, either those based on live traffic or typical traffic. Live speeds are gathered through current sensor readings and typical speeds are calculated from historical averages.
+            </p>
+            <p>You can enter multiple distances.  Features that are within (or equal to) the distances you enter will be summarized.  
+            </p>
+            <p>The  <b>Return bounding areas</b> check box, if checked, will return a result layer of areas defined by the specified distance measurement. The result layer will include all the requested summarized information. For example, when summarizing nearby points, if using a <b>Line distance</b> of 5 miles, your result will contain areas with a 5 mile radius around the input features and all summarized information such as count of points and any added statistics. If unchecked, the resulting layer will return the same features of the first input layer with all requested summary information.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Add statistics from
+the layer to summarize</h2></div>
+        <hr/>
+        <div>
+            <p>You can optionally calculate statistics of
+any numerical attributes of the nearby points. 
+            </p>
+            <p>The  <b>Count of points</b> check box, if checked, will calculate the total number of nearby points.  In addition, you can calculate statistics for numerical fields of the nearby points.
+            </p>
+            <ul>
+                <li> <b>Sum</b>&mdash;The total value for the specified
+field
+                </li>
+                <li> <b>Average</b>&mdash;The average or mean for the specified field
+                </li>
+                <li> <b>Minimum</b>&mdash;The smallest value in the specified
+field
+                </li>
+                <li> <b>Maximum</b>&mdash;The largest value in the specified
+field
+                </li>
+                <li> <b>Std. Deviation</b>&mdash;The standard deviation of the
+values in the specified field
+                </li>
+            </ul>
+            
+            <p>If the layer to summarize does not have any number fields, the additional statistics will not be available.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Add statistics from the layer to summarize</h2></div>
+        <hr/>
+        <div>
+            <p>You can optionally calculate statistics of
+any numerical attributes of the nearby lines. 
+            </p>
+            <p>The  <b>Total length</b> check box, if checked, will calculate the total length of  nearby lines.  In addition, you can calculate statistics for numerical fields of the nearby lines.
+            </p>
+            <ul>
+                <li> <b>Sum</b>&mdash;The total value for the specified
+field
+                </li>
+                <li> <b>Average</b>&mdash;The average or mean for the specified field
+                </li>
+                <li> <b>Minimum</b>&mdash;The smallest value in the specified
+field
+                </li>
+                <li> <b>Maximum</b>&mdash;The largest value in the specified
+field
+                </li>
+                <li> <b>Std. Deviation</b>&mdash;The standard deviation of the
+values in the specified field
+                </li>
+            </ul>
+            
+            <p>If the layer to summarize does not have any number fields, the additional statistics will not be available.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Add statistics
+from the  layer to summarize</h2></div>
+        <hr/>
+        <div>
+            <p>You can optionally calculate statistics of
+any numerical attributes of the nearby areas. 
+            </p>
+            <p>The  <b>Total area</b> check box, if checked, will calculate the total area of  nearby features.  In addition, you can calculate statistics for numerical fields of the nearby features.
+            </p>
+            <ul>
+                <li> <b>Sum</b>&mdash;The total value for the specified
+field
+                </li>
+                <li> <b>Average</b>&mdash;The average or mean for the specified field
+                </li>
+                <li> <b>Minimum</b>&mdash;The smallest value in the specified
+field
+                </li>
+                <li> <b>Maximum</b>&mdash;The largest value in the specified
+field
+                </li>
+                <li> <b>Std. Deviation</b>&mdash;The standard deviation of the
+values in the specified field
+                </li>
+            </ul>
+            
+            <p>If the layer to summarize does not have any number fields, the additional statistics will not be available.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Add statistics
+from the  layer to summarize</h2></div>
+        <hr/>
+        <div>
+            <p>Once you choose a layer to summarize, you can optionally calculate statistics of
+any numerical attributes of the nearby points, lines, or areas. 
+            </p>
+            <ul>
+                <li> <b>Sum</b>&mdash;The total value for the specified
+field
+                </li>
+                <li> <b>Average</b>&mdash;The average or mean for the specified field
+                </li>
+                <li> <b>Minimum</b>&mdash;The smallest value in the specified
+field
+                </li>
+                <li> <b>Maximum</b>&mdash;The largest value in the specified
+field
+                </li>
+                <li> <b>Std. Deviation</b>&mdash;The standard deviation of the
+values in the specified field
+                </li>
+            </ul>
+            
+            <p>Depending on the types of features you are summarizing, you can calculate total count of nearby points, total length of nearby lines, or total area of nearby area features.
+            </p>
+            <p>If the layer to summarize does not have any number fields, the additional statistics will not be available.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Choose field to group by</h2></div>
+        <hr/>
+        <div>
+            <p> This is an attribute of the nearby features you can use to calculate statistics separately for each unique attribute value. For example, suppose your first input layer (the layer from which distances are measured) contains vacant land parcels for sale and your nearby features are building footprints.  One of the attributes of the building footprints is <i>UseType</i>, which contains values such as RETAIL, RESIDENTIAL, MANUFACTURING, PUBLIC, and so on.  To characterize the mix of building uses near each vacant parcel, you could calculate the total area of each unique type of building use within two kilometers of the vacant parcels using <i>UseType</i> as the group by attribute.   The statistics for each group, as well as the count of nearby features, will be displayed in the result layer's pop-up.
+            </p>    
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Add minority, majority</h2></div>
+        <hr/>
+        <div>
+            <p>This check box is enabled  when you choose a field to group by.    If you want to find out which attribute values within each group are the minority (least dominant) or the majority (most dominant)  within the distance or time you specified, select  <b>Add minority, majority</b>.   When you select <b>Add minority, majority</b>, two new fields are added to your result layer.   If you also select <b>Add percentages</b>, two additional fields are added to the result layer containing the percentages of the minority and majority attribute values within each group.
+            </p>
+            <ul>
+                <li>If you are summarizing nearby points, minority and majority values are calculated based on the count of points within the distance or time you specified.
+                </li>
+                <li>If you are summarizing nearby lines, minority and majority values are calculated based on the lengths of  lines within the distance or time you specified.  
+                </li>
+                <li>If you are summarizing nearby areas, minority and majority values are calculated based on the areas within the distance or time you specified.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Add percentages</h2></div>
+        <hr/>
+        <div>
+            <p>This check box is enabled  when you choose a field to group by.    Select  <b>Add percentages</b>   if you want to find the percentage of each attribute value within each group.  A new field  is added to the result table containing the percentages of each attribute value within each group.   If <b>Add minority, majority</b> is also checked, two additional fields are added to the result layer containing the percentages of the minority and majority attribute values within each group.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Result layer
+name</h2></div>
+        <hr/>
+        <div>
+            <p>This is the name of the layer that will be created in  <b>My Content</b>  and added to the map.  The default  name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down menu, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

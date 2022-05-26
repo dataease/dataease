@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Sulauta rajat</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Sulauta rajaukset"></h2>
+        <hr/>
+    <p>P&auml;&auml;llekk&auml;iset tai yhteisen rajan tai ominaisuustietoarvon jakavat alueet yhdistet&auml;&auml;n yhdeksi alueeksi.
+    </p>
+    <p>M&auml;&auml;ritt&auml;m&auml;ll&auml; kent&auml;n voi m&auml;&auml;ritt&auml;&auml;, mitk&auml; rajat yhdistet&auml;&auml;n. Jos taso koostuu esimerkiksi Yhdysvaltain piirikunnista ja jokainen piirikunta sis&auml;lt&auml;&auml;  <pre>State_Name</pre>-ominaisuuden, voit sulauttaa rajoja k&auml;ytt&auml;m&auml;ll&auml; <pre>State_Name</pre>-ominaisuutta. Piirikunnat yhdistet&auml;&auml;n, jos niill&auml; on sama <pre>State_Name</pre>-ominaisuuden  arvo. Tuloksena on osavaltion rajojen mukainen taso.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse aluekarttataso, jonka rajat sulautetaan</h2></div>
+        <hr/>
+        <div>
+            <p>Karttataso, joka sis&auml;lt&auml;&auml; sulautettavat aluekohteet. 
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Valitse sulautustapa</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml; menetelm&auml;n, jota k&auml;ytet&auml;&auml;n kenttien sulauttamiseen.
+            </p>
+            <p>Aluekohteiden yhdist&auml;miseen voi valita kaksi eri tapaa:
+                <ul>
+                    <li> <b>P&auml;&auml;llekk&auml;iset tai vierekk&auml;iset alueet</b> &ndash; v&auml;hint&auml;&auml;n kaksi aluetta, joiden rajat menev&auml;t p&auml;&auml;llekk&auml;in, yhdistyv&auml;t yhdeksi alueeksi. Lis&auml;ksi vierekk&auml;iset (eli yhteisen rajan jakavat) alueet yhdistyv&auml;t yhdeksi alueeksi.
+                    </li>
+                    <li> <b>Alueet, joilla on sama kent&auml;n arvo</b> &ndash; v&auml;hint&auml;&auml;n kaksi aluetta yhdistet&auml;&auml;n yhdeksi alueeksi, jos niill&auml; on sama kent&auml;n arvo.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Luo moniosaisia kohteita</h2></div>
+        <hr/>
+        <div>
+            <p>Moniosainen kohde on sellaisen paikan tai asian esitystapa, jossa on useita osia mutta joka m&auml;&auml;ritell&auml;&auml;n yhdeksi kohteeksi, koska se viittaa yhteen ominaisuusjoukkoon. Osavaltioiden karttatasossa Havaijia voidaan esimerkiksi pit&auml;&auml; moniosaisena kohteena, koska sen erilliset geometriset osat luokitellaan yhdeksi osavaltioksi.
+            </p>
+            <p> <b>Luo moniosaisia kohteita</b> sis&auml;lt&auml;&auml; kaksi vaihtoehtoa:
+                <ul>
+                    <li>True (valittu) &ndash; tulosaineistopalvelu voi sis&auml;lt&auml;&auml; moniosaisia kohteita.
+                    </li>
+                    <li>False (ei valittu) &ndash; tulosaineistopalvelu sis&auml;lt&auml;&auml; vain yksiosaisia kohteita, ja kullekin osalle luodaan yksitt&auml;iset kohteet. T&auml;m&auml; on oletusarvo.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Lisää tilastotiedot (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>Kun alueet on yhdistetty, voit luoda niiden ominaisuustietoarvojen yhteenvedon, joka sis&auml;lt&auml;&auml; mielekk&auml;it&auml; tilastotietoja. Esimerkiksi jos sulautat piirikuntien v&auml;lisen rajan ominaisuuden  <pre>State_Name</pre> perusteella ja jos jokaisella piirikunnalla on kentt&auml; <i>Population</i>, voit laskea osavaltiolle ominaisuuden <pre>Population</pre> summan.
+            </p>
+            <p> Voit laskea tilastotiedot kohteista, joista on laadittu yhteenveto.Voit laskea seuraavat numerokentist&auml;:
+                <ul>
+                    <li>M&auml;&auml;r&auml;: laskee muiden kuin nolla-arvojen m&auml;&auml;r&auml;n.Voidaan k&auml;ytt&auml;&auml; numerokentiss&auml; tai merkkijonoissa. Arvojen [nolla, 0, 2] nolla-arvojen m&auml;&auml;r&auml; on 2.
+                    </li>
+                    <li>Summa: kunkin kent&auml;n numeroarvojen summa. Numeroarvojen [nolla, nolla, 3] summa on 3.
+                    </li>
+                    <li>Keskiarvo: numeroarvojen keskiarvo. Arvojen [0, 2, nolla] keskiarvo on 1.
+                    </li>
+                    <li>Minimi: numerokent&auml;n minimiarvo. Arvojen [0, 2, nolla] minimiarvo on 0. 
+                    </li>
+                    <li>Maksimiarvo: numerokent&auml;n maksimiarvo. Arvojen [0, 2, nolla] maksimiarvo on 2.
+                    </li>
+                    <li>Alue: numerokent&auml;n alue. T&auml;m&auml; lasketaan minimiarvoina, jotka on v&auml;hennetty maksimiarvosta. Arvojen [0, nolla, 1] alue on 1. Arvojen [nolla, 4] alue on 0.
+                    </li>
+                    <li>Varianssi: numerokent&auml;n varianssi reitill&auml;. Arvon [1] varianssi on nolla. Arvojen [nolla, 1,0, 1,1] varianssi on 0,25.
+                    </li>
+                    <li>Vakio keskihajonta: numerokent&auml;n keskihajonta. Arvon [1] varianssi on nolla. Arvojen [nolla, 1,0, 1,1] vakio keskihajonta on 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Voit laskea seuraavat merkkijonokentist&auml;:
+                <ul>
+                    <li>M&auml;&auml;r&auml;: muiden kuin nolla-merkkijonojen m&auml;&auml;r&auml;.
+                    </li>
+                    <li>Mik&auml; tahansa: T&auml;m&auml; tilastotieto on satunnainen otos m&auml;&auml;ritetyn kent&auml;n merkkijonoarvosta.
+                    </li>
+                </ul>
+                Kaikki tilastotiedot lasketaan muina kuin nolla-arvoina. Tuloskarttataso sis&auml;lt&auml;&auml; uuden kent&auml;n jokaiselle lasketulle tilastotiedolle. Voit lis&auml;t&auml; niin paljon tilastotietoja kuin haluat valitsemalla ominaisuustiedon ja tilastotiedon. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+            <p>Kun kirjoitat kohteeseen  ArcGIS Data Store  (relaatiotietokantaan perustuvaan tai spatiotemporaaliseen Big Data -s&auml;il&ouml;&ouml;n) k&auml;ytt&auml;m&auml;ll&auml; avattavaa  <b>Tallenna tulos kohteeseen</b> -luetteloa, voit m&auml;&auml;ritt&auml;&auml; kansion nimen <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

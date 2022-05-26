@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Multivariabel rooster bouwen</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Gegevens bijvoegen workflowdiagram"></h2>
+        <hr/>
+    <p>De Multivariabele rooster bouwtool werkt met een of meer lagen met punt-, lijn- of polygoonkenmerken. De tool genereert een rooster met vierkante of zeshoekige bins en berekend waarden voor elke bin gebaseerd op de nabijheid van elke invoerlaag. Deze waarden kunnen de volgende variabelen bevatten: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Afstand tot dichtstbijzijnde</b>&mdash;De afstand van elke bin naar het dichtstbijzijnde kenmerk
+            </li>
+            <li> <b>Attribuut naar dichtstbijzijnde</b>&mdash;Een veldwaarde van het kenmerk het meest in de buurt van elke bin
+            </li>
+            <li> <b>Samenvatting van dichtbij</b>&mdash;Een gespecificeerde statistiek van alle kenmerken binnen een afstand van elke bin
+            </li>
+            <li> <b>Samenvatting van de intersectie</b>&mdash;Een gespecificeerde statistiek van alle kenmerken door elke bin doorsnijdt
+            </li>
+        </ul>
+        
+    </p>
+    <p>Alleen variabelen die u specificeert worden opgenomen in de resultaatlaag. Deze variabelen kunnen u helpen de nabijheid en distributie van uw data te begrijpen. De resultaten kunnen u helpen bij het beantwoorden van vragen zoals de volgende:
+        <ul>
+            <li>Welk deel van de stad is het minst toegankelijk met het openbaar vervoer, gelet op de verschillende lagen van de infrastructuur van het openbaar vervoer?
+            </li>
+            <li>Wat is de naam van het waterlichaam dat het dichtst bij elke locatie in de V.S. ligt, gezien de lagen van de waterwegen, zoals meren en rivieren?
+            </li>
+            <li>Waar in de V.S. is de variatie van het inkomen in 50 mijl rondom het grootst gezien een laag van inkomen van een huishouden?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Kies het type bins dat gebruikt zal worden om het multivariabele rooster te bouwen</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Het type en de grootte van de bins die gebruikt zullen worden om het multivariabele rooster te bouwen. Voor de  <b>Vierkant</b>-optie bepalen het gespecificeerde aantal en de eenheden de hoogte en de lengte van het vierkant. Voor de <b>Zeskant</b>-optie bepalen het gespecificeerde aantal en de eenheden de afstand tussen de evenwijdige zijden.
+            </p>
+            <p>Deze analyse gebruikt bins en vereist een geprojecteerd co&ouml;rdinaatsysteem. U kunt het  <b>Processing co&ouml;rdinaatsysteem</b> instellen bij <b>Analysis Environments</b>. Als uw huidige co&ouml;rdinaatsysteem niet op een geprojecteerd co&ouml;rdinaatsysteem is ingesteld, zal u gevraagd worden het in te stellen wanneer u <b>Analyse uitvoeren</b> kiest.
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Kies de invoerlagen en variabelen die u wenst toe te voegen aan het rooster</h2></div>
+        <hr/>
+        <div>
+            <p>Klik op de  toevoegen knop ( <b>+</b>) om het <b>Variabelen toevoegen</b>-venster te openen en een laag aan uw analyse toe te voegen. Kies in het <b>Variabelen toevoegen</b>-venster een invoerlaag en configureer de variabelen die uw voor die invoerlaag wilt berekenen.
+            </p>
+            <p>Als u de variabelen die uw wilt berekenen hebt gekozen en geconfigureerd, verschijnt de laag in het toolvenster met andere geselecteerde lagen. Klik op de knop bewerken voor een laag om het  <b>Variabelen toevoegen</b>-venster te openen en alle voor die laag geconfigureerde variabelen te bekijken. Klik op de knop Verwijderen voor een laag om die laag en alle gerelateerde variabelen uit de analyse te verwijderen.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Variabelen toevoegen</h2></div>
+        <hr/>
+        <div>
+            <p>Via dit venster kunt u een invoerlaag kiezen en de variabelen configureren die uw voor die invoerlaag wilt berekenen. Gebruik  <b>om te beginnen. Kies een invoerlaag</b> volgkeuzemenu om de punt-, polygoon- of lijnlaag te kiezen die u aan uw analyse wilt toevoegen.
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+            <p>Klik als u eenmaal een invoerlaag hebt gekozen op de  <b>Een variabel toevoegen</b> knop om een nieuw variabel te openen om te bewerken button. U moet een unieke naam opgegeven voor elke variabele. Dit is de naam van het veld dat is aangemaakt in de attribuutabel van de resultatenlaag.
+            </p>
+            <p>Gebruik het vervolgkeuzemenu om het type variabele te selecteren dat u wilt toevoegen. Elk variabeltype moet worden geconfigureerd met een unieke set parameters en alle parameters zijn vereist.
+            </p>
+            <p>Klik als u alle gewenste variabelen voor de gekozen laag hebt toegevoegd op de knop  <b>Toevoegen</b> om de variabelen op te slaan.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p> De naam van de laag die wordt gemaakt. Als u naar een ArcGIS Data Store,  schrijft, worden uw resultaten opgeslagen in  <b>Mijn Content</b> en toegevoegd aan de kaart. Als u naar een big data file share schrijft, worden uw resultaten opgeslagen in de big data file share en toegevoegd aan het bijhorende manifest. Ze zullen niet worden toegevoegd aan de kaart. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, zal de tool falen.
+            </p>
+            <p>Wanneer u schrijft naar  ArcGIS Data Store (relationele of spatiotemporele big datastore) met behulp van de vervolgkeuzelijst  <b>Resultaat opslaan in</b>, kunt u de naam van een map opgeven in <b>Mijn Content</b>, waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

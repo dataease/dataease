@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Summeeri piirides</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Summeeri piirides"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist leiab alad ja nende osad, mis on esimese sisendkihi piirides.  
+        <ul>
+            <li>Valgala piiride kihi ja maakasutuse piiride kihi p&otilde;hjal saab arvutada  maakasutust&uuml;&uuml;pide pindala iga valgala kohta. 
+            </li>
+            <li>Omavalitsuse piirides paiknevate katastri&uuml;ksuste keskmine maamaksu suurus asustus&uuml;ksuste kaupa.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Kui ruut  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, anal&uuml;&uuml;sitakse &uuml;ksnes neid sisendkihi ja summeeritava kihi objekte, mis on kaardil praegu n&auml;htavad.  Kui see ruut on m&auml;rkimata, anal&uuml;&uuml;sitakse k&otilde;iki sisendkihi ja summeeritava kihi objekte ka siis, kui neid pole praegu kaardil n&auml;ha.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Vali alakiht, et summeerida muid objekte selle piirides</h2></div>
+        <hr/>
+        <div>
+            <p>Alakiht, mida kasutatakse selle piiridesse j&auml;&auml;vate objektide summeerimiseks. V&otilde;ite otsustada summeerida enda sisestatud pol&uuml;goonikihi piires v&otilde;i ruut- v&otilde;i kuusnurksalvede piires, mis luuakse t&ouml;&ouml;riista k&auml;ivitumisel. Salvede loomisel  <b>ruuduna</b> m&auml;&auml;ratlevad ruudu k&otilde;rguse ja pikkuse m&auml;&auml;ratud arv ja &uuml;hikud. Kui teete valiku <b>Kuusnurk</b> m&auml;&auml;ravad arv ja &uuml;hikud paralleelk&uuml;lgede vahelise vahemaa.
+            </p>
+            <p> <b>Ruutsalvede</b> v&otilde;i <b>kuusnurksalvede</b> abil tehtav anal&uuml;&uuml;s n&otilde;uab tasapinnalist ristkoordinaatide s&uuml;steemi. <b>Koordinaats&uuml;steemi t&ouml;&ouml;tlemise</b> saab m&auml;&auml;rata funktsiooniga <b>Anal&uuml;&uuml;sikeskkonnad</b>. Kui koordinaats&uuml;steemi t&ouml;&ouml;tlemine ei ole m&auml;&auml;ratud tasapinnaliseks ristkoordinaatide s&uuml;steemiks, kuvatakse k&auml;su <b>K&auml;ivita anal&uuml;&uuml;s</b> andmisel selle m&auml;&auml;ramist taotlev h&uuml;pikaken.
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="summaryLayer">
+        <div><h2>Vali kiht summeerimiseks</h2></div>
+        <hr/>
+        <div>
+            <p>Selles kihis summeeritakse objektid, mis on sisendkihi v&otilde;i eespool m&auml;&auml;ratud salvede piirides. 
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Valige salvede loomiseks ja agregeerimiseks vahemaa</h2></div>
+        <hr/>
+        <div>
+            <p>Salvede loomiseks kasutatav vahemaa.  
+            </p>
+            <p>M&auml;&auml;rata tuleb kas <b>Salve suurus</b> salvede jaoks v&otilde;i <b>Alakiht</b>.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Agregeeri ajalõikude abil (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p>Kui sisendpunktikihi jaoks on aeg lubatud ja selle t&uuml;&uuml;p on ajahetk, saate kasutada anal&uuml;&uuml;simiseks ajasamme. Aega kasutades saate m&auml;&auml;rata kolm parameetrit.
+                <ul>
+                    <li> <b>Ajasammude vahemik</b>
+                    </li>
+                    <li> <b>Ajasammude kordamise sagedus</b>
+                    </li>
+                    <li> <b>Aeg ajasammude &uuml;hildamiseks</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Kui teil on n&auml;iteksandmed, mis esindavad aastat ja soovite seda anal&uuml;&uuml;sida , kasutades &uuml;hen&auml;dalasi samme, seadke <b>Ajasammu ajavahemiku</b> v&auml;&auml;rtuseks <code>1 n&auml;dal</code>. 
+            </p>
+            <p>Kui teil on n&auml;iteks andmed, mis v&auml;ljendavad ajaliselt aastat ja soovite sedaanal&uuml;&uuml;sida , kasutades kuu esimest n&auml;dalat,, seadke <b>Ajasammu intervalliks</b> <code>1 n&auml;dal</code>, <b>Ajasammude kordamise sagedus</b> ajavahemikule <code>1 kuu</code>, ja <b>Ajasammude &uuml;hildamise ajaks</b> <code>1. jaanuar kell 12.00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Ajavahemik, millega agregeerida</h2></div>
+        <hr/>
+        <div>
+            <p>Ajasammude genereerimiseks kasutatav ajavahemik.  <b>Ajasammude vahemikku saab kasutada nii eraldi kui ka koos parameetriga Ajasammude kordamise sagedus v&otilde;i parameetriga Aeg ajasammude &uuml;hildamiseks</b> <b></b> <b></b> .
+            </p>
+            <p>Kui n&auml;iteks sooviteluua ajasammud, mistoimuvad igal esmasp&auml;eval kell 9.00 kuni 10, seadke <b>Ajasammu ajavahemik</b> <code>1 tunnile</code>, <b>Ajasammude kordamise sagedus</b> <code>1 n&auml;dalale</code> ja <b>Ajasammude &uuml;hildamise aeg</b> <code>kella 9.00:00-ks esmasp&auml;eval</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Ajasamm, millega agregeerida</h2></div>
+        <hr/>
+        <div>
+            <p> Ajasamm, mida kasutatakse ajal&otilde;igu arvutamiseks. Parameetrit <b>Ajasammude kordamise sagedus</b> saab  kasutada eraldi, parameetriga, koos <b>Ajasammude vahemik</b>, <b>koos</b> v&otilde;i koos parameetritega <b>Ajasammude vahemik</b> ja <b>Aeg ajasammude &uuml;hildamiseks</b>.
+            </p>
+            <p> Kui n&auml;iteks  soovite luua ajasammud, mistoimuvad igal esmasp&auml;eval kell 9.00 kuni 10, seadke <b>Ajasammu ajavahemik</b> <code>1 tunnile</code>, <b>Ajasammude kordamise sagedus</b> <code>1 n&auml;dalale</code> ja <b>Ajasammude &uuml;hildamise aeg</b> <code>kella 9.00:00-ks esmasp&auml;eval</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Viiteaeg, mida kasutatakse ajalõigu ühitamiseks</h2></div>
+        <hr/>
+        <div>
+            <p>Kuup&auml;ev ja kellaaeg, mida kasutatakse ajal&otilde;igu &uuml;hitamiseks. Sellest ajast alustatakse ajasammuga  ajas tagasi liikumist. Juhul kui viiteaega ei valita, &uuml;hildatakse ajasamm 1. jaanuariga 1970. 
+            </p>
+            <p> Kui n&auml;iteks sooviteluua ajasammud, mis toimuvad igal esmasp&auml;eval kell 9.00 kuni 10, seadke <b>Ajasammu ajavahemik</b> <code>1 tunnile</code>, <b>Ajasammude kordamise sagedus</b> <code>1 n&auml;dalale</code> ja <b>Ajasammude &uuml;hildamise aeg</b> <code>kella 9.00:00-ks esmasp&auml;eval</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Lisa statistika (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p> Saate arvutada summeeritud objektide statistika. Saateallj&auml;rgnevad v&auml;&auml;rtused numbriv&auml;ljadel:
+                <ul>
+                    <li>Koguarv &ndash; arvutatakse v&auml;&auml;rtuste, mis pole nullv&auml;&auml;rtused, hulk. See funktsioon on kasutatav numbriv&auml;ljade v&otilde;i stringide korral. V&auml;&auml;rtuste [null, 0 ja 2] koguarv on 2.
+                    </li>
+                    <li>Summa &ndash; v&auml;ljal olevate arvv&auml;&auml;rtuste summa. V&auml;&auml;rtuste [null, null ja 3] summa on 3.
+                    </li>
+                    <li>Keskmine &ndash; arvv&auml;&auml;rtuste keskmine. V&auml;&auml;rtuste [0; 2 ja null] keskmine on 1.
+                    </li>
+                    <li>Miinimum &ndash; numbriv&auml;lja miinimumv&auml;&auml;rtus. V&auml;&auml;rtuste [0; 2 ja null] miinimum on 0. 
+                    </li>
+                    <li>Maksimum &ndash; numbriv&auml;lja maksimumv&auml;&auml;rtus. V&auml;&auml;rtuste [0; 2 ja null] maksimum on 2.
+                    </li>
+                    <li>Vahemik &ndash; numbriv&auml;lja vahemik. Selle arvutamiseks lahutatakse maksimumv&auml;&auml;rtusest miinimumv&auml;&auml;rtus. V&auml;&auml;rtuste [0, null ja 1] vahemik on 1. V&auml;&auml;rtuste [null ja 4] vahemik on 0.
+                    </li>
+                    <li>Dispersioon &ndash; raja numbriv&auml;lja dispersioon. V&auml;&auml;rtuse [1] dispersiooni on null. V&auml;&auml;rtuste [null, 1,0,1,1] dispersioon on 0,25.
+                    </li>
+                    <li>Standardh&auml;lve &ndash; numbriv&auml;lja standardh&auml;lve. V&auml;&auml;rtuse [1] standardh&auml;lve on null. V&auml;&auml;rtuste [null, 1,0,1,1] standardh&auml;lve on 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Saate arvutadaallj&auml;rgnevad v&auml;&auml;rtused tekstiv&auml;ljadel:
+                <ul>
+                    <li>Koguarv &ndash; stringide, mis pole nullv&auml;&auml;rtused, hulk.
+                    </li>
+                    <li>M&otilde;ni &ndash; see statistik on juhuslik valim tekstistringi v&auml;&auml;rtusest vastaval v&auml;ljal.
+                    </li>
+                </ul>
+                K&otilde;ik statistikud arvutatakse v&auml;&auml;rtustega, mis ei ole nullv&auml;&auml;rtus. Tulemkiht sisaldab uut v&auml;lja iga arvutatud statistiku kohta. Soovitud statistika lisamiseks valige uus atribuut ja statistik. 
+            </p>
+            <p>Lisaks sellele statistikale arvutatakse proportsionaalne statistika k&otilde;ikidel numbriv&auml;ljadel.
+                <ul>
+                    <li>Arv &ndash; iga v&auml;lja arv, mis on korrutatud pol&uuml;goonide vahele j&auml;&auml;va summeerimiskihi suhtega. 
+                    </li>
+                    <li>Summa &ndash; iga v&auml;lja kaalutud v&auml;&auml;rtuste summa. Rakendatud kaal on pol&uuml;goonide vahele j&auml;&auml;va summeerimiskihi suhe.
+                    </li>
+                    <li>Keskmine &ndash; iga v&auml;lja v&auml;&auml;rtuste kaalutud keskmine. Rakendatud kaal on pol&uuml;goonide vahele j&auml;&auml;va summeerimiskihi suhe.
+                    </li>
+                    <li>Miinimum &ndash; iga v&auml;lja kaalutud v&auml;&auml;rtuste miinimum. Rakendatud kaal on pol&uuml;goonide vahele j&auml;&auml;va summeerimiskihi suhe.
+                    </li>
+                    <li>Maksimum &ndash; iga v&auml;lja kaalutud v&auml;&auml;rtuste maksimum. Rakendatud kaal on pol&uuml;goonide vahele j&auml;&auml;va summeerimiskihi suhe.
+                    </li>
+                    <li>Ulatus &ndash; kaalutud v&auml;&auml;rtuste maksimumi ja miinimumi vaheline erinevus.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Olenevalt summeritavate objektide t&uuml;&uuml;bist arvutatakse l&auml;hedalasuvate punktide koguarv, joonte kogupikkus v&otilde;i kogupindala.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Vali väli, mille järgi rühmitada</h2></div>
+        <hr/>
+        <div>
+            <p>See on funktsiooni  <b>Summeeri</b> atribuut, mida saate kasutada statistika leidmiseks iga unikaalse atribuutv&auml;&auml;rtuse kaupa. Oletame n&auml;iteks, et esimene sisendkiht sisaldab linna piire ja summeerimisobjektideks on maat&uuml;kid.  &Uuml;ks maat&uuml;kkide atribuutidest on <i>Status</i> mis sisaldab kahte v&auml;&auml;rtust: VAKANTNE ja H&Otilde;IVATUD. Vakantsete ja h&otilde;ivatud maat&uuml;kkide kogupindala arvutamiseks linna piirides kasutage atribuudi <i>Status</i> alusel grupeerimist. Iga grupi statistika ja piiraja-objektide alla j&auml;&auml;vate pindade arv kuvatakse tulemkihi h&uuml;pikaknas.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Lisa vähemus, enamus</h2></div>
+        <hr/>
+        <div>
+            <p>See m&auml;rkeruut on aktiveeritud, kui valite r&uuml;hmitatava v&auml;lja. Kui soovite v&auml;lja selgitada, millised atribuudiv&auml;&auml;rtused on esimeses sisendkihis igas grupis iga piiraja piirides v&auml;hemuses (k&otilde;ige v&auml;hem domineerivad) v&otilde;i enamuses (k&otilde;ige rohkem domineerivad), valige  <b>Lisa v&auml;hemus, enamus</b>.   Ruudu <b>Lisa v&auml;hemus, enamus</b> m&auml;rkimisel lisatakse tulemkihile kaks uut v&auml;lja.   Kui m&auml;rgite ka ruudu <b>Lisa protsendid</b>, lisatakse tulemkihile veel kaks v&auml;lja, mis sisaldavad iga r&uuml;hma kohta v&auml;hemuse ja enamuse atribuudiv&auml;&auml;rtuste protsente.
+            </p>
+            <ul>
+                <li>Punktide summeerimisel arvutatakse v&auml;hemuse ja enamuse v&auml;&auml;rtused sisendalakihi piiratud alades olevate punktide arvu j&auml;rgi.  
+                </li>
+                <li>Joonte summeerimisel arvutatakse v&auml;hemuse ja enamuse v&auml;&auml;rtused sisendalakihi piiratud alades olevate joonte pikkuse j&auml;rgi.  
+                </li>
+                <li>Alade summeerimisel arvutatakse v&auml;hemuse ja enamuse v&auml;&auml;rtused sisendalakihi piiratud alades olevate alade j&auml;rgi.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Lisa protsendid</h2></div>
+        <hr/>
+        <div>
+            <p>Kui valite v&auml;lja, mille alusel r&uuml;hmitada, on see ruut lubatud. Valige  <b>Lisa protsendid</b>, kui soovite igas r&uuml;hmas leida iga atribuudiv&auml;&auml;rtuse protsendi.  Tulemtabelile lisatakse uus v&auml;li, mis sisaldab igas r&uuml;hmas k&otilde;igi atribuudiv&auml;&auml;rtuste protsente. Kui m&auml;rgite ka ruudu <b>Lisa v&auml;hemus, enamus</b>, lisatakse tulemkihile kaks t&auml;iendavat v&auml;lja, mis sisaldavad iga r&uuml;hma kohta v&auml;hemuse ja enamuse atribuudiv&auml;&auml;rtuste protsente.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Vali andmeladu</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalyticsi tulemeid k&auml;sitletakse  andmelaos salvedena ning need kuvatakse portaalis   Portal for ArcGIS objektikihtidena. &Uuml;ldjuhul salvestatakse tulemid ajalisruumilisse andmelattu &ndash; see on vaikimisi valitud. M&otilde;nel juhul on , tulemid m&otilde;istlik salvestada relatsioonilisse andmelattu. Allpool on toodud m&otilde;ned p&otilde;hjused, miks oleks soovitatav tulemid   salvestada relatsioonilisse andmelattu: 
+                <ul>
+                    <li>Tulemeid saateportaaliskasutadaportaali koost&ouml;&ouml;ks.
+                    </li>
+                    <li>Saate lubada tulemitega s&uuml;nkroniseerimise funktsiooni.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relatsioonilist andmeladu pole otstarbekas kasutada, kui GeoAnalyticsi tulemite arv suureneb. Sel juhul peaksite kasutama suurt ajalisruumilist andmeladu, mis v&otilde;imaldab hallata suurt andmemahtu.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Loodavakihi nimi.  Kui kirjutate andmelattu ArcGIS Data Store, salvestatakse teie tulemused  <b>Minu sisus</b> ja lisatakse kaardile. Kui kirjutate suurandmete failikettale, salvestatakse teie andmed suurandmete failikettale  ja lisatakse  selle manifestifailile. Seda  ei lisata kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui see kiht on juba olemas, siis t&ouml;&ouml;tlemine nurjub.
+            </p>
+            <p>Kui salvestate admelattu   ArcGIS Data Store (relatsioonilisse v&otilde;i ajalisruumilisse andmelattu), kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemused salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

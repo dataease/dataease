@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Forbind udgangspunkter med destinationer</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="Forbind udgangspunkter med destinationer"></h2>
+        <hr/>
+    <p>Forbind udgangspunkter til destinationer m&aring;ler rejsetiden eller afstanden mellem parpunkter. V&aelig;rkt&oslash;jet kan rapportere afstande i fugleflugtslinje; afstande baseret p&aring; en rejsetilstand, f.eks. g&aring; eller k&oslash;re; eller rejsevarigheder baseret p&aring; en rejsetilstand. Du kan g&oslash;re f&oslash;lgende ved at bruge v&aelig;rkt&oslash;jet:
+    </p>
+    <p>
+        <ul>
+            <li>Beregne den samlede afstand eller tid, som pendlerne rejser p&aring; deres hjem til arbejde-ture.
+            </li>
+            <li>M&aring;le, hvor langt kunder k&oslash;rer for at k&oslash;be ind i dine forretninger. Bruge disse oplysninger til at definere din markedsr&aelig;kkevidde, is&aelig;r i forbindelse med m&aring;lrettede reklamekampagner eller valg af placering til nye forretninger.
+            </li>
+            <li>Beregne det forventede antal k&oslash;rte kilometer for din fl&aring;de af k&oslash;ret&oslash;jer. Derefter skal du k&oslash;re v&aelig;rkt&oslash;jet Opsumm&eacute;r inden for, for at rapportere antal k&oslash;rte kilometer efter stat eller anden region.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Du skal angive start- og slutpunkter, hvorefter laget returnerer et lag, som indeholder rutelinjer, herunder m&aring;linger, mellem parrede udgangspunkter og destinationer. 
+    </p>
+    <p>Hvis feltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, er det kun objekterne, der er synlige inden for den aktuelle kortudstr&aelig;kning, der medtages i analysen. Hvis markeringen fjernes, medtages alle objekter i inputlaget, ogs&aring; selv om de er uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Vælg det punklag, der repræsenterer udgangspunkter.</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg det punklag, der repr&aelig;senterer udgangspunktet eller udgangspunkterne. V&aelig;rkt&oslash;jet underst&oslash;tter op til  5.000 udgangspunkter og  5.000 destinationer. </p>
+            <p>Hvis du v&aelig;lger et lag, som har n&oslash;jagtigt &eacute;t udgangspunkt, vil det blive forbundet med alle destinationer.
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Vælg destinationslaget</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg det lag, der repr&aelig;senterer den destination eller de destinationer, som udgangspunkterne skal forbindes til. V&aelig;rkt&oslash;jet underst&oslash;tter op til  5.000 udgangspunkter og  5.000 destinationer. </p>
+            <p>Hvis du v&aelig;lger et lag, som har &eacute;n destination, vil alle udgangspunkterne blive forbundet til denne destination. 
+            </p>
+            <p>Hvis der er &eacute;t udgangspunkt og mange destinationer, forbinder v&aelig;rkt&oslash;jet udgangspunktet til hver enkelt destination.
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+            <p> Hvis der er mange udgangspunkter og mange destinationer, skal du have to felter, som beskriver udgangspunkt-destinationsparrene: <b>Id-felt i udgangspunkter</b> og <b>Matchende id-felt i destinationer</b>. V&aelig;rkt&oslash;jet forbindes til udgangspunkt-destinationsparrene under analysen. Forestil dig f.eks., at du har to udgangspunkter med ID-feltv&aelig;rdier for <code>Rosie</code> og <code>Harold</code> og to destinationer med de samme ID-v&aelig;rdier. <code>Rosie</code>-udgangspunktet forbindes til <code>Rosie</code>-destinationen og <code>Harold</code> forbindes til <code>Harold</code>. Der foretages ingen andre forbindelser eller m&aring;linger.
+            </p>
+            <p>Hvis der er lige mange udgangspunkter og destinationer, skal ID-v&aelig;rdierne v&aelig;re unikke inden for hvert lag; eksempelvis kan destinationslaget ikke have to  <code>Rosie</code>-v&aelig;rdier. V&aelig;rdierne i udgangspunkt- og destinationslagene skal matche hinanden n&oslash;jagtigt for at danne par; <code>Harold</code> vil ikke forbindes til den forkert stavede v&aelig;rdi <code>Harodl</code>. 
+            </p>
+            <p>V&aelig;rkt&oslash;jet underst&oslash;tter ogs&aring; forbindelse fra hvert udgangspunkt til mere end en destination eller fra hver destination til mere end et udgangspunkt. I s&aring;danne tilf&aelig;lde er det stadig n&oslash;dvendigt at have to felter, som beskriver udgangspunkt/destinations-parrene. Det er imidlertid kun et af lagene (enten udgangspunkt- eller destinationslaget), der skal have unikke ID-v&aelig;rdier.
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Opmål</h2></div>
+        <hr/>
+        <div>
+            
+            <p>V&aelig;lg, om du vil forbinde udgangspunkter med destinationer ved at bruge afstand i fugleflugtslinje eller en rejsetilstand. Outputruterne vil  f&oslash;lge veje eller g&aring;stier, og de vil overholde g&aelig;ldende regler, s&aring;som ensrettede gader, ulovlige vendinger for k&oslash;rsel med biler eller lastbiler. De tilg&aelig;ngelige rejsetilstande fasts&aelig;ttes af administratoren for din organisation.  
+            </p>
+            <p>N&aring;r du v&aelig;lger  <b>K&oslash;retid</b>, <b>K&oslash;retid i landlige omgivelser</b>, eller <b>Lastbilsk&oslash;retid</b> kan du v&aelig;lge, hvordan k&oslash;retiden skal m&aring;les.
+                <ul>
+                    <li>
+                        <p>Fjern markeringen af  <b>Brug trafik</b> for at finde de hurtigste ruter baseret p&aring; faste hastigheder.
+                        </p>
+                        <p>V&aelig;lg denne indstilling, hvis du &oslash;nsker et generelt k&oslash;retidsomr&aring;de og ikke et, der er beregnet ved at tage h&oslash;jde for skiftende trafikforhold p&aring; et bestemt afgangstidspunkt.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Mark&eacute;r feltet  <b>Brug trafik</b> for at finde de hurtigste ruter baseret p&aring; et givent starttidspunkt og skiftende trafikforhold. Hvis du ogs&aring; v&aelig;lger <b>Aktuel trafik</b>, angives afgangstidspunktet fra inputpunkterne til den aktuelle tid, og den aktuelle trafikhastighed, samt prognoser for trafikhastighed hentes fra sensorer og feeds for at oprette ruterne. De forventede k&oslash;rehastigheder beregnes under henvisning til trafikkens aktuelle hastigheder, historiske hastigheder og aktuelle forhold som f.eks. vejret. Trafikkens hastighed forudsiges 12 12 timer frem, s&aring; afgangstidspunktet kan indstilles ved at flytte skyderen op til  12 timer frem. </p>
+                        <p>Brug disse indstillinger for den aktuelle trafik til at finde ud af, hvilke omr&aring;der der kan n&aring;s ved afgang nu, afgang en time fra nu osv.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Hvis du markerer  <b>Brug trafik</b> og v&aelig;lger <b>Trafik baseret p&aring; fysiske forhold for</b> en dag og et klokkesl&aelig;t, finder v&aelig;rkt&oslash;jet de hurtigste ruter baseret p&aring; gennemsnittet af historisk hastighed for hvert femte minut i en normal uge.. Resultaterne omfatter trafik, men fjerner p&aring;virkningen af aktuelle trafikforhold og h&aelig;ndelser, som i betydelig grad kan skille sig ud fra normen.
+                        </p>
+                        <p>Du kan bruge disse historiske trafikindstillinger til eksempelvis at f&aring; svar p&aring; sp&oslash;rgsm&aring;let: &quot;hvor lang tid vil det generelt tage at n&aring; frem til disse destinationer, hvis jeg k&oslash;rer fra udgangspunktet kl. 11.30 p&aring; en onsdag?&quot;
+                        </p>
+                        <p>Klokkesl&aelig;ttet, du indstiller, henviser til tidszonen, som udgangspunkterne befinder sig i. S&aring; hvis du indstiller tidspunktet til kl. 8.00 og har to udgangspunkter - &eacute;t i New York City og et andet i Los Angeles, genereres ruterne til afgangstidspunkt kl. 8.00 p&aring; &oslash;stkysten (Eastern Time) og kl. 8.00 p&aring; vestkysten (Pacific Time).
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Bem&aelig;rk, at n&aring;r et k&oslash;ret&oslash;j begiver sig v&aelig;k fra et punkt, s&aring; g&aring;r tiden, og trafikforholdene &aelig;ndrer sig. V&aelig;rkt&oslash;jet Forbind udgangspunkter til destinationer tager h&oslash;jde for disse variationer, hvis du markerer  <b>Brug trafik</b>; men ikke alle regioner underst&oslash;tter trafik. Klik p&aring; linket <b>Se tilg&aelig;ngelighed</b> i v&aelig;rkt&oslash;jet for at finde ud af, hvorvidt det er tilf&aelig;ldet i det omr&aring;de, du unders&oslash;ger.
+            </p>
+            <p> <b>Lastbilsk&oslash;retid</b> kan benytte dynamiske rejsehastigheder baseret p&aring; trafikken, men kun op til hastighedsgr&aelig;nserne for lastbiler. Hvis den dynamiske hastighed for en vej baseret p&aring; den aktuelle trafik f.eks. er 110 km/t , men hastighedsgr&aelig;nsen for lastbiler p&aring; den p&aring;g&aelig;ldende vej er 80 km/t, benytter beregningen 80 km/t for denne  vej.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Vælg grænselag</h2></div>
+        <hr/>
+        <div>
+            <p> Et eller flere objekter, der fungerer som midlertidige begr&aelig;nsninger (barrierer) under transport p&aring; de underliggende gader. Du kan angive gr&aelig;nser vha. punkt-, linje- eller polygonobjekter.
+            </p>
+            <p>En punktgr&aelig;nse kan modellere et f&aelig;ldet tr&aelig;, en ulykke, en nedfalden elektrisk ledning eller andet, der blokerer helt for trafikken p&aring; en specifik position p&aring; gaden. Transport er tilladt p&aring; gaden, men ikke gennem gr&aelig;nsen (barrieren). Du kan angive op til 250 objekter, der kan fungere som punktgr&aelig;nser.
+            </p>
+            <p>En linjegr&aelig;nse forhindrer transport alle steder, hvor gr&aelig;nsen gennemsk&aelig;rer gaderne. En linjegr&aelig;nse kan f.eks. bruges til at modellere en parade eller en demonstration, der blokerer trafikken p&aring; tv&aelig;rs af flere gadesegmenter. Hvis det antal gadesegmenter, der gennemsk&aelig;res af linjegr&aelig;nserne, overskrider 500, returnerer v&aelig;rkt&oslash;jet en fejl.
+            </p>
+            <p>En polygongr&aelig;nse forhindrer transport alle steder, hvor polygonen gennemsk&aelig;rer gaderne. &Eacute;n m&aring;de at benytte denne type gr&aelig;nse p&aring; er at modellere oversv&oslash;mmelser, der d&aelig;kker s&aring; store dele af vejnettet, at vejtransport bliver umulig. Hvis det antal gadesegmenter, der gennemsk&aelig;res af polygongr&aelig;nserne, overskrider 2000, returnerer v&aelig;rkt&oslash;jet en fejl.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Ruteform</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg formen p&aring; den rute, der forbinder hvert udgangspunkt med dets destination, n&aring;r du bruger en rejsetilstand:
+            </p>
+            <ul>
+                <li> <b>F&oslash;lg veje</b> - Formen er baseret p&aring; det underliggende vejnet. Denne indstilling er den bedste, n&aring;r du vil generere ruterne mellem udgangspunkter og destinationer.
+                </li>
+                <li> <b>Lige linje</b> - Formen er en lige linje, der forbinder udgangspunkt/destination-parret. Denne indstilling er bedst, n&aring;r du vil generere edderkopdiagrammer eller &oslash;nskede ruter (for eksempel for at vise, hvilke butikker kunder bes&oslash;ger).
+                </li>
+            </ul>
+            
+            <p>Den bedste rute mellem et udgangspunkt og den tilh&oslash;rende destination beregnes altid p&aring; grundlag af rejsetilstand, uanset hvilken ruteform der er valgt.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; det vektorlag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Hvis vektorlaget allerede findes, vil du blive bedt om at angive et andet navn. Vektorlaget vil indeholde et lag for hvert af f&oslash;lgende: ruter, ikke-tildelte udgangspunkter og ikke-tildelte destinationer, n&aring;r nogle udgangspunkter ikke kan knyttes til deres respektive destinationer.
+            </p>
+            <p>Hvis du v&aelig;lger  <b>Medtag rutelag</b>, gemmes hver rute fra resultatet ogs&aring; som rutelag. Et rutelag indeholder alle oplysninger for en bestemt rute, s&aring;som de stop, der er tildelt til ruten, samt rejsevejledningen. Det er nyttigt at oprette rutelag, hvis du gerne vil dele individuelle ruter med andre medlemmer i din organisation, eller hvis du &oslash;nsker at foretage yderligere redigering af ruterne ved hj&aelig;lp af knappen <b>K&oslash;rselsvejledninger</b> i kortviseren. Rutelagene bruger det navn, der er angivet for vektorlaget, som pr&aelig;fiks, og det rutenavn, der genereres som en del af analysen, tilf&oslash;jes for at oprette et unikt navn for hvert rutelag.
+            </p>
+            <p>Det maksimale antal rutelag, der kan oprettes, er  1.000. Hvis resultatet indeholder mere end  1.000 ruter, og feltet  <b>Medtag rutelag</b> er markeret, vil v&aelig;rkt&oslash;jet kun oprette output-featuretjenesten.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat i</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor vektorlaget og rutelagene &ndash; hvis de er oprettet &ndash;  vil blive gemt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

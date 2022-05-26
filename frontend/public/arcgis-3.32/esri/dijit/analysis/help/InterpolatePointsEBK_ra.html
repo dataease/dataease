@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolate Points</h2><p/>
+        <h2><img src="./images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Interpolate Points tool"></h2>
+        <hr/>
+    <p>This tool allows you to predict values at new locations based on measurements from a collection of points. The tool takes point data with values at each point and returns a raster of predicted values.
+    </p>
+    <p>Other use cases of this tool include the following:
+
+        <ul>
+            <li>An air quality management district has sensors that measure pollution levels. Interpolate Points can be used to predict pollution levels at locations that don't have sensors, such as locations with at-risk populations&mdash;schools or hospitals, for example.
+                
+
+            </li>
+            <li>Predict heavy metal concentrations in crops based on samples taken from individual plants.
+                
+
+            </li>
+            <li>Predict soil nutrient levels (nitrogen, phosphorus, potassium, and so on) and other indicators (such as electrical conductivity) in order to study their relationships to crop yield and prescribe precise amounts of fertilizer for each location in the field.
+                
+
+            </li>
+            <li>Meteorological applications include prediction of temperatures, rainfall, and associated variables (such as acid rain).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Choose point layer containing locations with known values</h2></div>
+        <hr/>
+        <div>
+            <p>The point layer that contains the points where the values have been measured.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Choose field to interpolate</h2></div>
+        <hr/>
+        <div>
+            <p>Choose the field whose values you wish to interpolate. The field must be numeric.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimize for</h2></div>
+        <hr/>
+        <div>
+            <p>Choose your preference for speed versus accuracy.
+            </p>
+            <p>More accurate predictions take longer to calculate. This parameter alters the default values of several other parameters of Interpolate Points in order to optimize speed of calculation, accuracy of results, or a balance of the two. By default, the tool will optimize for balance.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Transform data to normal distribution</h2></div>
+        <hr/>
+        <div>
+            <p>Choose whether to transform your data to the normal distribution.
+            </p>
+            <p>Interpolation is most accurate for data that follows a normal (bell-shaped) distribution. If your data does not appear to be normally distributed, you should perform a transformation.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Size of local models</h2></div>
+        <hr/>
+        <div>
+            <p>Interpolate Points works by building local interpolation models that are mixed together to create the final prediction map. This parameter controls how many points will be contained in each local model. Smaller values will make results more local and can reveal small-scale effects, but it may introduce some instability in the calculations. Larger values will be more stable, but some local effects may be missed.
+            </p>
+            <p>The value can range from 30 to 500, but typical values are between 50 and 200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Number of Neighbors</h2></div>
+        <hr/>
+        <div>
+            <p>Predictions are calculated based on neighboring points. This parameter controls how many points will be used in the calculation. Using a larger number of neighbors will generally produce more accurate results, but the results take longer to calculate.
+            </p>
+            <p>This value can range from 1 to 64, but typical values are between 5 and 15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Output cell size</h2></div>
+        <hr/>
+        <div>
+            <p>The cell size and unit for the output rasters.
+            </p>
+            <p>The available units are Feet, Miles, Meters, and Kilometers.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Output prediction error</h2></div>
+        <hr/>
+        <div>
+            <p>Choose whether you want to create a raster of standard errors for the predicted values.
+            </p>
+            <p>Standard errors are useful because they provide information about the reliability of the predicted values. A simple rule of thumb is that the true value will fall within two standard errors of the predicted value 95 percent of the time. For example, suppose a new location gets a predicted value of 50 with a standard error of 5. This means that this tool's best guess is that the true value at that location is 50, but it reasonably could be as low as 40 or as high as 60. To calculate this range of reasonable values, multiply the standard error by 2, add this value to the predicted value to get the upper end of the range, and subtract it from the predicted value to get the lower end of the range.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map. The default name is based on the tool name and the input layer name. If the layer already exists, you will be prompted to provide another name.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Derivar Novos Locais</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="Derivar Novos Locais"></h2>
+        <hr/>
+    <p>Esta ferramenta deriva novos elementos na sua &aacute;rea de estudo que correspondam a um conjunto de crit&eacute;rios especificados por si. Estes crit&eacute;rios podem ser baseados em consultas de atributos (por exemplo, parcelas que est&atilde;o vazias) e consultas espaciais (por exemplo, parcelas que se encontram em zonas de inunda&ccedil;&atilde;o).
+
+    </p>
+    <p>Se a op&ccedil;&atilde;o  <b>Utilizar extens&atilde;o do mapa actual</b> est&aacute; validada, ser&atilde;o analisados apenas os elementos que se encontrem vis&iacute;veis na actual extens&atilde;o do mapa. Se n&atilde;o marcar a op&ccedil;&atilde;o, ser&atilde;o analisados todos os elementos na camada de an&aacute;lise, mesmo que estejam fora da extens&atilde;o atual do mapa.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>Derivar novas localizaçoes que correspondam à(s) seguinte(s) expressão(ões)</h2></div>
+        <hr/>
+        <div>
+            <p>Clique no bot&atilde;o  <b>Adicionar Express&atilde;o</b> para definir uma express&atilde;o. Pode inserir v&aacute;rias express&otilde;es. Depois de introduzir as express&otilde;es e clicar no bot&atilde;o <b>Executar An&aacute;lise</b>, os elementos da camada de an&aacute;lise s&atilde;o filtrados utilizando cada uma das express&otilde;es. As por&ccedil;&otilde;es de elementos que satisfazem todas as express&otilde;es s&atilde;o escritas para a camada de resultado.
+            </p>
+            <p>Existem dois tipos b&aacute;sicos de express&otilde;es que podem ser criadas: de atributos e espacial. Express&otilde;es de atributos s&atilde;o consultas com base em valores de campos, tais como  <code>onde o nome &eacute; 'San Francisco'</code>. Existem quatro tipos de express&otilde;es espaciais:
+                <ul>
+                    <li> <b>a uma dist&acirc;ncia menor que</b>: partes de um elemento a uma dist&acirc;ncia menor que um elemento de outra camada.  Por exemplo, encontrar as partes de parcelas que est&atilde;o a menos de 500 metros do rio Los Angeles.
+                    </li>
+                    <li> <b>cont&eacute;m completamente</b>: o elemento deve conter a totalidade de um elemento de outra camada.  Por exemplo, encontrar bacias hidrogr&aacute;ficas que cont&ecirc;m completamente parcelas designadas para uso industrial. Nenhuma parte da parcela pode estar fora da bacia hidrogr&aacute;fica.
+                    </li>
+                    <li> <b>completamente contido</b>: o elemento deve rdtsr totalmente rodeado por um elemento de outra camada.  Por exemplo, encontrar zonas escolares que est&atilde;o completamente contidas dentro dos limites de uma cidade. Nenhuma parte da zona escolar pode estar fora dos limites da cidade.
+                    </li>
+                    <li> <b>intersetar</b>. o elemento ou partes do elemento devem sobrepor-se a ou intersetar um elemento de outra camada.  Por exemplo, encontrar &aacute;reas com vegeta&ccedil;&atilde;o queimada causada por v&aacute;rios fogos num parque nacional. &Aacute;reas queimadas fora dos limites do parque n&atilde;o ser&atilde;o inclu&iacute;das.
+                    </li>
+                    <li> <b>Mais pr&oacute;ximo de</b>: o elemento tem de ser o que se encontra mais pr&oacute;ximo de um elemento noutra camada. Por exemplo, encontrar o espa&ccedil;o verde mais pr&oacute;ximo de cada escola.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Cada express&atilde;o espacial possui uma nega&ccedil;&atilde;o correspondente, &agrave; exce&ccedil;&atilde;o de  <b>mais pr&oacute;ximo de</b>; <b>n&atilde;o se encontra a uma dist&acirc;ncia menor do que</b>, <b>n&atilde;o cont&eacute;m completamente</b>, <b>n&atilde;o completamente contido</b>, e <b>n&atilde;o interseta</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se o nome da camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Guardar resultado em</b> pode definir o nome da pasta em <b>O Meu Conte&uacute;do</b> onde o resultado ser&aacute; guardado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

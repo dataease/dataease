@@ -1,0 +1,119 @@
+<div class="esriAnalysis">
+    <div data-dojo-type="dijit/layout/ContentPane" style="margin-top:0.5em; margin-bottom: 0.5em;">
+      <div data-dojo-attach-point="_mergeLayersToolContentTitle" class="analysisTitle">
+        <table class="esriFormTable" > 
+          <tr>
+            <td class="esriToolIconTd"><div class="mergeLayersIcon"></div></td>
+            <td class="esriAnalysisTitle" data-dojo-attach-point="_toolTitle">
+							<label data-dojo-attach-point="_titleLbl">${i18n.mergeLayers}</label>
+							<nav class="breadcrumbs"  data-dojo-attach-point="_analysisModeLblNode" style="display:none;">
+								<a href="#" class="crumb breadcrumbs__modelabel" data-dojo-attach-event="onclick:_handleModeCrumbClick" data-dojo-attach-point="_analysisModeCrumb"></a>
+								<a href="#" class="crumb is-active" data-dojo-attach-point="_analysisTitleCrumb" style="font-size:16px;">${i18n.mergeLayers}</a>
+							</nav>               
+            </td>
+            <td>
+              <div class="esriFloatTrailing padBottom0">
+                  <div class="esriFloatLeading">
+                    <a href="#" class='esriFloatLeading helpIcon' esriHelpTopic="toolDescription"></a>
+                  </div>
+                  <div class="esriFloatTrailing">
+                    <a href="#" data-dojo-attach-point="_closeBtn" title="${i18n.close}" class="esriAnalysisCloseIcon"></a>
+                  </div>              
+              </div>                
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div style="clear:both; border-bottom: #CCC thin solid; height:1px;width:100%;"></div>
+    </div>
+    <div data-dojo-type="dijit/form/Form" data-dojo-attach-point="_form" readOnly="true">
+       <table class="esriFormTable"  data-dojo-attach-point="_mergeLayersTable" style="border-collapse:collapse;border-spacing:5px;" cellpadding="5px" cellspacing="5px"> 
+         <tbody>
+           <tr data-dojo-attach-point="_titleRow">
+             <td colspan="3" class="sectionHeader" data-dojo-attach-point="_mergeLayersDescription" >${i18n.mergeLayersDefine}</td>
+           </tr>
+           <tr data-dojo-attach-point="_analysisLabelRow" style="display:none;">
+            <td colspan="2" class="width-90 padBottom0">
+              <label class="esriFloatLeading  esriTrailingMargin025 esriAnalysisNumberLabel">${i18n.oneLabel}</label>
+              <label class="esriAnalysisStepsLabel">${i18n.analysisLayerLabel}</label>
+            </td>
+            <td class="shortTextInput padBottom0">
+              <a href="#" class='esriFloatTrailing helpIcon' esriHelpTopic="inputLayer"></a>
+            </td>
+           </tr>
+           <tr data-dojo-attach-point="_selectAnalysisRow" style="display:none;">
+            <td  colspan="3" class="padBottom0">
+              <select class="esriLeadingMargin1 longInput esriLongLabel"  style="margin-top:1.0em;" data-dojo-type="dijit/form/Select" data-dojo-attach-point="_analysisSelect" data-dojo-attach-event="onChange:_handleAnalysisLayerChange"></select>
+            </td>
+          </tr>            
+          <tr>
+            <td colspan="2" class="width-90 padBottom0">
+              <label class="esriFloatLeading esriTrailingMargin025 esriAnalysisNumberLabel">${i18n.oneLabel}</label>
+              <label class="esriAnalysisStepsLabel">${i18n.chooseMergeLayer}</label>
+            </td>  
+            <td class="shortTextInput padBottom0">
+              <a href="#" class='esriFloatTrailing helpIcon' esriHelpTopic="MergeLayer" data-dojo-attach-point="_esriHelpMergeLayer"></a>
+            </td>
+          </tr>
+          <tr>    
+            <td colspan="3">
+                <select class="esriLeadingMargin1 longInput esriLongLabel"  style="margin-top:1.0em;" data-dojo-props="required:true" data-dojo-type="dijit/form/Select" data-dojo-attach-point="_mergeLayersSelect" data-dojo-attach-event="onChange:_handleLayerChange"></select>
+            </td>
+          </tr>     
+          <tr>
+            <td colspan="2">
+              <label class="esriFloatLeading esriTrailingMargin025 esriAnalysisNumberLabel">${i18n.twoLabel}</label>
+              <label class="esriAnalysisStepsLabel">${i18n.mergeFieldsLabel}</label>
+            </td>
+            <td class="shortTextInput padBottom0">
+              <a href="#" class='esriFloatTrailing helpIcon' esriHelpTopic="MergingAttributes" data-dojo-attach-point="_esriHelpMergingAttributes"></a> 
+            </td>          
+          </tr>  
+          <tr data-dojo-type="esri/dijit/analysis/components/AddMergingAttributes" data-dojo-attach-point="_mergingAttributesWidget" data-dojo-props="showGeoAnalyticsParams:${showGeoAnalyticsParams}, addAsRow:true">
+          </tr>        
+ 	      <tr>
+            <td colspan="2">
+              <label class="esriFloatLeading esriTrailingMargin025 esriAnalysisNumberLabel">${i18n.threeLabel}</label>
+              <label class="esriAnalysisStepsLabel">${i18n.outputLayerLabel}</label>
+            </td>
+            <td class="shortTextInput padBottom0">
+              <a href="#" class='esriFloatTrailing helpIcon' esriHelpTopic="OutputName" data-dojo-attach-point="_esriHelpOutputName"></a> 
+            </td>             
+          </tr>
+          <tr>
+            <td colspan="3">
+              <input type="text" data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="trim:true,required:true" class="esriOutputText esriLeadingMargin1" data-dojo-attach-point="_outputLayerInput"></input>
+            </td>                
+          </tr>
+          <tr>
+            <td colspan="3">
+              <div class="esriLeadingMargin1" data-dojo-attach-point="_chooseFolderRow">
+                <label style="width:9px;font-size:smaller;">${i18n.saveResultIn}</label>
+                <input class="longInput" data-dojo-attach-point="_webMapFolderSelect" data-dojo-type="dijit/form/FilteringSelect" trim="true" style="width:60%;"></input>
+              </div>              
+            </td>
+          </tr>         
+      </tbody>         
+     </table>
+    </div>
+    <div data-dojo-attach-point="_mergesToolContentButtons" style="padding:5px;margin-top:5px;border-top:solid 1px #BBB;">
+      <div >
+        <a class="esriFloatTrailing esriSmallFont"  href="#" data-dojo-attach-point="_showCreditsLink">${i18n.showCredits}</a>
+       <label data-dojo-attach-point="_chooseExtentDiv"class="esriSelectLabel esriExtentLabel">
+         <input type="radio" data-dojo-attach-point="_useExtentCheck" data-dojo-type="dijit/form/CheckBox" data-dojo-props="checked:true" name="extent" value="true"/>
+           ${i18n.useMapExtent}
+       </label>
+      </div>
+      <button data-dojo-type="dijit/form/Button" type="submit" data-dojo-attach-point="_saveBtn" class="esriLeadingMargin4 esriAnalysisSubmitButton" data-dojo-attach-event="onClick:_handleSaveBtnClick">
+          ${i18n.runAnalysis}
+      </button>
+    </div>
+    <div data-dojo-type="dijit/Dialog" title="${i18n.creditTitle}" data-dojo-attach-point="_usageDialog" style="width:40em;">
+      <div data-dojo-type="esri/dijit/analysis/CreditEstimator"  data-dojo-attach-point="_usageForm"></div>
+    </div>    
+    <div class="esriFormWarning esriRoundedBox" data-dojo-attach-point="_errorMessagePane" style="display:none;">
+      <a href="#" title="${i18n.close}" class="esriFloatTrailing esriAnalysisCloseIcon" title='${i18n.close}' data-dojo-attach-event="onclick:_handleCloseMsg">
+      </a>
+      <span data-dojo-attach-point="_bodyNode"></span>
+    </div>
+</div>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Feld berechnen</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Feld berechnen"></h2>
+        <hr/>
+    <p> Dieses Werkzeug arbeitet mit einem Eingabe-Layer, um Werte f&uuml;r ein neues oder ein vorhandenes Feld zu berechnen. Erstellen Sie einen Arcade-Ausdruck, um die Werte zu berechnen, mit denen Features gef&uuml;llt werden sollen. Wenn Ihre Daten Zeitdaten vom Typ &quot;Sofort&quot; sind, k&ouml;nnen Sie zus&auml;tzlich Ausdr&uuml;cke erstellen, die Tracking-bezogen sind.
+    </p>
+    <p>Als Beispiel sei angenommen, Sie m&ouml;chten das vorhandene Feld  <i>TotalSales</i> &auml;ndern. Dieses Feld soll durch die Summe der Gesamtums&auml;tze in 2016 und 2017 dargestellt werden. Mit diesen Feldern im Ausdruck k&ouml;nnen Sie den Feldwert als <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre> berechnen.
+    </p>
+    <p>Als weiteres Beispiel sei angenommen, Sie verwenden GPS-Messungen zum Erfassen von Position, Zeit, Bus-ID und Geschwindigkeit der Busse in einer Stadt. Es soll das neue Feld  <i>SpeedFrom3</i> erstellt werden, das den Mittelwert der Geschwindigkeiten der letzten 3 erfassten GPS-Messungen f&uuml;r jedes Feature ermittelt. F&uuml;r diese Berechnung verwenden wir eine Tracking-bezogene Berechnung, bei der der Track (also die Spur) ein Bus mit einer bestimmten Bus-ID ist. Die Berechnung zum Bestimmen der Durchschnittsgeschwindigkeit der vorherigen 3 Zeitintervalle und des aktuellen Zeitintervalls lautet <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Layer für die Berechnung von Feldwerten auswählen für</h2></div>
+        <hr/>
+        <div>
+            <p>Die Punkte, Linien, Fl&auml;chen oder Tabellen, in denen die berechneten Feldwerte enthalten sein sollen.  
+            </p>
+            <p>Sie k&ouml;nnen nicht nur einen Layer aus der Karte ausw&auml;hlen, sondern auch unten in der Dropdown-Liste die Option  <b>Analyse-Layer ausw&auml;hlen</b> ausw&auml;hlen, um zu Ihren Inhalten f&uuml;r ein Big-Data-Dateifreigabe-Dataset bzw. -Feature-Layer zu navigieren.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Feldwerte für das Feld berechnen</h2></div>
+        <hr/>
+        <div>
+            <p>Das neue oder vorhandene Feld, in dem die berechneten Werte enthalten sein sollen, und der Datentyp dieses Feldes. Wenn Sie Werte f&uuml;r ein Feld berechnen, das bereits vorhanden ist, muss der Datentyp nicht abgeglichen werden. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Einen Ausdruck für die Berechnung der Feldwerte erstellen</h2></div>
+        <hr/>
+        <div>
+            <p>F&uuml;gen Sie mit dem Ausdruck-Generator einen Ausdruck hinzu, um Feldwerte zu berechnen. 
+            </p>
+            <p>Als Beispiel sei angenommen, die Werte der Felder  <i>income</i> und <i>bonus</i> sollen addiert werden. Dazu muss der Ausdruck <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;]</code> hinzugef&uuml;gt werden.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>Der Ausdruck ist Tracking-bezogen</h2></div>
+        <hr/>
+        <div>
+            <p>Geben Sie an, ob Ihr Ausdruck Tracking-bezogen ist. Ein Tracking-bezogener Ausdruck beinhaltet eine Formatierung wie       <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. Bei Tracking-bezogenen Ausdr&uuml;cken sind Felder zum Identifizieren der einzelnen Spuren erforderlich. Spuren k&ouml;nnen aus Punkten, Linien, Fl&auml;chen oder Tabellen bestehen. Erforderlich ist dabei nur, dass die Eingabe eine Spur-ID enth&auml;lt und die Daten Zeitdaten vom Typ &quot;Sofort&quot; sind.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Daten mit Zeitintervallen analysieren</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie fest, ob Sie Werte f&uuml;r Spuren mithilfe von Zeitintervallen berechnen m&ouml;chten, die Ihre Eingaben f&uuml;r die Analyse segmentieren. Wenn Sie Zeitintervalle verwenden, m&uuml;ssen Sie das zu verwendende Zeitintervall und optional die Bezugszeit festlegen. Wird keine Bezugszeit festgelegt, wird der 1.&nbsp;Januar&nbsp;1970 verwendet. 
+            </p>
+            <p>Wenn Sie die Zeitgrenze beispielsweise auf 1&nbsp;Tag festlegen, beginnend am 1.&nbsp;Januar&nbsp;1990 um 9:00&nbsp;Uhr, wird jede Spur f&uuml;r jeden Tag um 9:00&nbsp;Uhr abgeschnitten und innerhalb dieses Segments analysiert. 
+            </p>
+            <p>Zeitintervalle sind eine bequeme M&ouml;glichkeit, die Rechenzeit zu beschleunigen, da kleinere Spuren schnell f&uuml;r die Analyse erstellt werden. Wenn die Unterteilung nach einem wiederholt auftretenden Zeitintervall sinnvoll f&uuml;r Ihre Analyse ist, ist sie f&uuml;r die Big-Data-Verarbeitung zu empfehlen.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p> Der Name des Layers, der erstellt wird.  Wenn Sie in einen ArcGIS Data Store schreiben, werden Ihre Ergebnisse in  <b>Eigene Inhalte</b> gespeichert und der Karte hinzugef&uuml;gt. Wenn Sie in eine Big-Data-Dateifreigabe schreiben, werden Ihre Ergebnisse in der Big-Data-Dateifreigabe gespeichert und  ihrem Manifest hinzugef&uuml;gt. Sie werden nicht der Karte hinzugef&uuml;gt. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, kann das Werkzeug nicht ausgef&uuml;hrt werden.
+            </p>
+            <p>Wenn Sie &uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> in ArcGIS Data Store (Big Data Store vom Typ &quot;relational&quot; oder &quot;spatiotemporal&quot;) schreiben, k&ouml;nnen Sie den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

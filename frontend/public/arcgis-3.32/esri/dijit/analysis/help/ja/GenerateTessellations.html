@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>テッセレーションの生成</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="テッセレーションの生成"></h2>
+        <hr/>
+    <p>このツールは、指定した形状およびサイズに基づいて分析範囲上にテッセレーションを生成します。
+    </p>
+    <p>このツールの使用では、 <b>[現在のマップ範囲を使用]</b> チェックボックスが無効に設定されます。この理由は、テッセレーションの生成に使用される範囲は <b>[範囲の定義]</b> パラメーターによって制御されるためです。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>形状の選択</h2></div>
+        <hr/>
+        <div>
+            <p>作成するテッセレーションの形状またはジオメトリ。使用可能な形状は、 <code>[四角]</code>、 <code>[六角形]</code>、 <code>[六角形 (縦)]</code>、 <code>[三角形]</code>、または <code>[菱形]</code> です。
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>分析範囲の定義</h2></div>
+        <hr/>
+        <div>
+            <p>テッセレーションがカバーする範囲またはエリア。この範囲は、現在のマップ範囲を使用するか、既存のレイヤーの範囲を使用するか、範囲として使用するエリアを対話的に描画して決定できます。
+            </p>
+            <p>範囲を決定するためにフィーチャ レイヤーが選択されている場合は、交差するテッセレーションのみを維持するオプションが有効になります。このオプションがオンの場合、指定の範囲レイヤー内にあるフィーチャをカバーするか、それらのフィーチャと交差するテッセレーションのみが結果のテッセレーション レイヤーに生成されます。
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>オフ
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="全範囲をカバー">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>オン
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="フィーチャをカバー">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>次の値を指定してビン サイズを定義</h2></div>
+        <hr/>
+        <div>
+            <p>各セルのサイズ。セル サイズは、平方単位を指定するか、次の計測 (d = 距離) を使用して計算された距離を指定して決定できます。
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>四角
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="四角のテッセレーション">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>六角形
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="六角形のテッセレーション">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>六角形 (縦)
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="六角形 (縦) のテッセレーション">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>三角形
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="三角形のテッセレーション">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>菱形
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="菱形のテッセレーション">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p>これは、 <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前です。レイヤーがすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存先]</b> ドロップダウン メニューを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

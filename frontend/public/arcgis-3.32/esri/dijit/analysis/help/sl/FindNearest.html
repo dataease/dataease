@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Poišči najbližje</h2><p/>
+        <h2><img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="Najdi najbližje"></h2>
+        <hr/>
+    <p>To orodje najde najbližje geoobjekte ter jih razvrsti po razdalji do najbližjih geoobjektov. Da najde najbližje, lahko orodje meri po zračni razdalji ali z izbranim načinom potovanja. Obstajajo možnosti za omejitev &scaron;tevila najbližjih geobjektov za iskanje ali iskalnega dosega, v katerem se jih i&scaron;če. Rezultati tega orodja vam lahko pomagajo odgovoriti na naslednje vrste vpra&scaron;anj:
+        <ul>
+            <li>Kateri je najbližji park od tukaj?
+            </li>
+            <li>Do katere bolni&scaron;nice se vozim najmanj časa? Kako dolgo bi pot trajala v torek ob 17:30 med prometno konico?
+            </li>
+            <li>Kak&scaron;ne so cestne razdalje med temi večjimi mesti?
+            </li>
+            <li>Kateri od teh pacientov bivajo znotraj treh kilometrov od teh kemičnih tovarn?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Orodje Najdi najbližje vrne sloj, ki vsebuje najbližje geoobjekte in linijski sloj, ki povezuje izhodi&scaron;čne lokacije z najbližjimi lokacijami. Linijski sloj vsebuje informacije o izhodi&scaron;čnih in najbližjih lokacijah ter vmesnih razdaljah.
+    </p>
+    <p>Če je obkljukana možnost  <b>Uporabi trenutni obseg karte</b>, bodo kot izhodi&scaron;čni in potencialno najbližji geoobjekti upo&scaron;tevani samo objekti, vidni znotraj trenutnega obsega karte. Če je možnost odkljukana, bodo upo&scaron;tevani vsi geoobjekti v vhodnem sloju, tudi če so zunaj trenutnega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Navedite izhodiščne lokacije</h2></div>
+        <hr/>
+        <div>
+            <p>Orodje Najdi najbližje meri od geoobjektov v sloju, ki ga navedete tukaj (izhodi&scaron;čne lokacije), do lokacij, ki jih navedete v naslednjem parametru. Orodje podpira do  5.000 geoobjektov v vsakem sloju. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>Najdi najbližje lokacije v</h2></div>
+        <hr/>
+        <div>
+            <p>Orodje Najdi najbližje meri od vsakega od geoobjektov v prvem sloju do lokacij v tem sloju. Orodje podpira do  5.000 lokacij v vsakem sloju. </p>
+            <p>Poleg izbire sloja s karte lahko izberete  <b>Izberi sloj za analizo</b> ki se nahaja v spodnjem delu spustnega menija. Ta možnost odpre galerijo, kjer lahko brskate in izberete sklope podatkov iz različnih virov za uporabo v svoji analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Izmera</h2></div>
+        <hr/>
+        <div>
+            <p>Izberite iskanje najbližjih lokacij na podlagi zračne razdalje ali izbranega načina potovanja. Načini potovanja so omogočeni samo, ko va&scaron; vhodni sloj vsebuje točke. Razpoložljive načine potovanja določi administrator va&scaron;e organizacije. Ko uporabljate enega izmed načinov potovanja, so meritve narejene vzdolž cest ali pe&scaron;poti in upo&scaron;tevajo veljavna pravila, kot so enosmerne ulice, prepovedano zavijanje itd.
+            </p>
+            <p>Ko merite med linijami in poligoni, je najdena razdalja od ali do najbližje točke po liniji ali meji poligona. 
+            </p> 
+            <p>Ko izberete  <b>čas vožnje</b>, <b>čas vožnje po neasfaltiranih cestah</b> ali <b>čas vožnje s tovornjakom</b>, lahko izberete način merjenja časa vožnje.
+                <ul>
+                    <li>
+                        <p>Odkljukajte  <b>Uporabi promet</b>, da najdete najbližji geoobjekt na podlagi statičnih potovalnih hitrosti, kot so hitrostne omejitve, in ne upo&scaron;teva spreminjajočih se hitrosti, ki jih povzročajo spreminjajoče prometne razmere.
+                        </p>
+                        <p>To je možnost, ki jo izberete, če želite vedeti, kaj je v splo&scaron;nem najbližje, ne pa tudi nujno najbližje ob upo&scaron;tevanju prometnih razmer ob določenem času in dnevu.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Obkljukajte  <b>Uporabi promet</b>, da najdete najbližje geoobjekte na podlagi podanega časa začetka in spreminjajočih se prometnih razmer. Če izberete tudi možnost <b>Trenutni promet</b>, se čas odhoda iz izhodi&scaron;čnih točk nastavi na trenuten čas, trenutne in predvidene hitrosti prometa pa prihajajo od senzorjev in vsebin, da ugotovite, kateri geoobjekti so najbližji. Predvidene hitrosti prometa se izračunajo glede na hitrosti trenutnega prometa, pretekle hitrosti in trenutne dogodke, kot je vreme. Hitrosti prometa so predvidene 12 ur v prihodnost, da lahko premaknete drsnik in nastavite čas odhoda do 12 ur vnaprej.
+                        </p>
+                        <p>Uporabite te nastavitve trenutnega prometa, da izveste, katere geoobjekte je mogoče doseči v najkraj&scaron;em času, če se odpravite zdaj, čez eno uro in tako naprej.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Če obkljukate možnost  <b>Uporabi promet</b> in izberete <b>Promet, temelječ na tipičnih razmerah za</b> dan in čas, orodje najde najbližje geoobjekte na podlagi preteklih povprečij hitrosti za vsak petminutni interval v običajnem tednu. Rezultati vključujejo promet, vendar odstranijo vpliv trenutnih prometnih razmer in dogodkov, ki lahko močno odstopajo od običajnih.
+                        </p>
+                        <p>Te nastavitve preteklega prometa lahko uporabite npr. za vpra&scaron;anje: &raquo;Katere geoobjekte je mogoče doseči najhitreje, če je odhod v sredo ob 11:30?&laquo; 
+                        </p>
+                        <p>Čas, ki ga nastavite, upo&scaron;teva časovni pas, v katerem se nahajajo va&scaron;i izhodi&scaron;čni geoobjekti. Če torej nastavite čas na 8:00 in imate dva izhodi&scaron;čna geoobjekta, enega v New Yorku in drugega v Los Angelesu, bo najbližja lokacija najdena tako, da bo predviden čas odhoda ob 8:00. Vzhodni čas in 8:00. Pacifi&scaron;ki čas.
+                        </p>
+                    </li>
+                </ul>
+                Upo&scaron;tevajte, da ko vozilo pelje stran od točke, se trenutni čas in prometne razmere spreminjajo. To orodje upo&scaron;teva te spremembe, če obkljukate možnost <b>Uporabi promet</b>; vendar vse regije ne podpirajo prometnih podatkov. Kliknite povezavo <b>Glej razpoložljivost</b> na orodju, da preverite, ali je na voljo na va&scaron;em &scaron;tudijskem območju. 
+            </p>
+            <p>Pri  <b>času vožnje s tovornjakom</b> se lahko uporabljajo dinamične hitrosti vožnje na podlagi prometa, a le do z zakonom dovoljene omejitve hitrosti za tovornjake. Na primer, če je dinamična hitrost za ulico na podlagi trenutnega prometa 65 km/h, omejitev hitrosti za tovornjake na tej ulici pa je 50 km/h na uro, bo pri izračunu uporabljena hitrost 50 km/h za to ulico.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Izberi sloje ovire</h2></div>
+        <hr/>
+        <div>
+            <p> Ena ali več geoobjektov, ki imajo vlogo začasnih omejitev (pregrad) pri potovanju po ulicah. Pregrado je mogoče določiti z uporabo točkovnih, linijskih ali poligonskih geoobjektov.
+            </p>
+            <p>Točkovna ovira lahko prikazuje padlo drevo, nesrečo, padlo električno linijo oziroma kar koli, kar popolnoma blokira promet na določeni točki vzdolž ulice. Potovanje po ulici je dovoljeno, vendar ne skozi oviro. Do 250 geoobjektov lahko opredelite kot točkovne ovire.
+            </p>
+            <p>Linijska ovira prepoveduje potovanje na območju, kjer se ovira križa z ulico. Na primer, z linijsko oviro je mogoče prikazati parado ali protest, ki blokira promet po več uličnih segmentih. Če &scaron;tevilo geoobjektov ulice, ki se križajo z linijskimi ovirami, presega 500, orodje javi napako.
+            </p>
+            <p>Poligonska ovira prepoveduje potovanje na območju, kjer se poligon križa z ulico. En način uporabe te vrste ovire je prikaz poplav, ki pokrivajo območja uličnega omrežja, in zaradi katerih je potovanje po cesti nemogoče. Če &scaron;tevilo geoobjektov ulice, ki se križajo s poligonskimi ovirami, presega 2000, orodje javi napako.
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>Za vsako lokacijo v vhodnem sloju</h2></div>
+        <hr/>
+        <div>
+            <p>Za omejitev iskanja najbližjih lokacij imate dve možnosti. Ena možnost je omejitev največjega &scaron;tevila najbližjih lokacij, ki jih naj najde glede na izhodi&scaron;čno lokacijo. Najdete lahko en najbližji park, dva najbližja parka in tako naprej. Druga možnost je nastavitev največje iskalne razdalje ali časa vožnje.
+            </p>
+            <p>Če odkljukate možnosti, je največje &scaron;tevilo najbližjih lokacij za iskanje 100 (omejitev orodja), največji iskalni doseg pa ni omejen.
+            </p>
+            <p>Čas obdelave je odvisen od &scaron;tevila izhodi&scaron;čnih lokacij, &scaron;tevila bližnjih lokacij in največjega iskalnega dosega. Ob več lokacijah ali večjem iskalnem dosegu je za obdelavo potrebnega več časa.
+            </p>
+            <p>Ko je pri iskalnem dosegu postavljena omejitev, je mogoče, da orodje ne bo na&scaron;lo nobenih najbližjih lokacij ali pa bo najdenih manj lokacij, kot je največje &scaron;tevilo najbližjih lokacij, ki ste jih določili.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>To je ime geoobjektnega sloja, ki bo ustvarjen v  <b>Moji vsebini</b> in dodan na karto. Če geoobjektni sloj že obstaja, boste morali navesti drugo ime. Geoobjektni sloj bo vseboval dva sloja: eden bo predstavljal najbližje lokacije in drugi linije, ki povezujejo vhodne lokacije z najbližjimi lokacijami.
+            </p>
+            <p>Če izberete  <b>Vključi usmerjevalne sloje</b>, se vsaka pot iz rezultata prav tako shrani kot usmerjevalni sloj. Usmerjevalni sloj vsebuje vse informacije za določeno pot, kot so dodeljeni postanki, kot tudi navodila za pot. Ustvarjanje usmerjevalnega sloja je uporabno, če želite deliti posamezne poti z drugimi uporabniki v va&scaron;i organizaciji ali nadalje spremeniti poti s pomočjo gumba <b>Navodila za pot</b> v pregledovalniku kart. Usmerjevalni sloj uporablja samodejno generirano enolično ime, ki je sestavljeno iz predpone imena vhodnega geoobjektnega sloja.
+            </p>
+            <p>Največje &scaron;tevilo ustvarjenih usmerjevalnih slojev je  1.000. Če rezultat vsebuje več kot  1.000 poti in če je obkljukano  <b>Vključi usmerjevalne sloje</b>, bo orodje ustvarilo samo izhodno geoobjektno storitev.
+            </p>
+            <p>Z uporabo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moji vsebini</b>, kjer bodo, če bodo ustvarjeni, shranjeni geoobjektni in usmerjevalni sloji.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Cerca centroides</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Cerca centroides"></h2>
+        <hr/>
+    <p>L'eina funciona amb una capa d'entitats multipunt, de l&iacute;nies o d'&agrave;rees per determinar el centre representatiu de cada entitat.
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s s'analitzaran les entitats de la capa d'entrada multipunt, de l&iacute;nies o d'&agrave;rees que siguin visibles a l'extensi&oacute; de mapa actual.  Si l'opci&oacute; est&agrave; desactivada, s'analitzaran totes les entitats de la capa d'entrada, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu la capa les entitats de la qual es faran servir per generar centroides</h2></div>
+        <hr/>
+        <div>
+            <p> Capa multipunt, de l&iacute;nies o d'&agrave;rees que es far&agrave; servir per trobar centroides.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b>, que es troba al final de la llista desplegable. Aquesta opci&oacute; obre una galeria on podeu cercar i seleccionar datasets de diversos or&iacute;gens per u utilitzar-los a l'an&agrave;lisi. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Mostra'm les ubicacions de sortida</h2></div>
+        <hr/>
+        <div>
+            <p> Si s'ha activat <b>al centroide real</b> (opci&oacute; per defecte), la sortida retornar&agrave; la ubicaci&oacute; real del centroide per a cada entitat d'entrada. Els centroides s'ubicaran de la manera seg&uuml;ent:
+                <ul>
+                    <li>Entitats multipunt: el centroide de sortida s'ubicar&agrave; a les coordenades x i y mitjanes de tots els punts de l'entitat multipunt.
+                    </li>
+                    <li>Entitats de l&iacute;nies: el centroide de sortida s'ubicar&agrave; a les coordenades x i y mitjanes ponderades dels punts mitjos de tots els segments de l&iacute;nies de l'entitat de l&iacute;nies. La ponderaci&oacute; es basa en la longitud del segment.
+                    </li>
+                    <li>Entitats d'&agrave;rees: el centroide de sortida s'ubicar&agrave; al centre de l'&agrave;rea.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Si s'ha activat  <b>contingudes a les entitats d'entrada</b>, les entitats de punts de sortida s'inclouran o estaran dins de cada entitat d'entrada. Les entitats de punts resultants apareixeran de la manera seg&uuml;ent:
+                <ul>
+                    <li>Entitats multipunt: el centroide de sortida coincidir&agrave; amb un dels punts del grup multipunt.
+                    </li>
+                    <li>Entitats de l&iacute;nies: el centroide de sortida s'ubicar&agrave; a la l&iacute;nia.  Si la l&iacute;nia &eacute;s corba, la sortida s'ubicar&agrave; al punt mig de la l&iacute;nia. 
+                    </li>
+                    <li>Entitats d'&agrave;rees: el punt de sortida s'ubicar&agrave; dins de l'entitat d'&agrave;rees.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa.  El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si el nom de la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Mitjan&ccedil;ant el men&uacute; desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

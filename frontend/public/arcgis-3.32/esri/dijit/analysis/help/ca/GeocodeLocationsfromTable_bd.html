@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Geocodifica les ubicacions a partir d'una taula</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Geocodifica les ubicacions a partir d'una taula"></h2>
+        <hr/>
+    <p>La geocodificaci&oacute; converteix adreces en coordenades. Aquesta eina converteix adreces d'una taula de recursos compartits de fitxers de dades massives en una capa d'entitats amb les coordenades com a columnes addicionals.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Trieu una taula d'entrada</h2></div>
+        <hr/>
+        <div>
+            <p>Taula d'entrada amb les adreces que es geocodificaran. 
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Trieu un localitzador</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu un servei de localitzador respecte del qual fer la geocodificaci&oacute;. Si el servei de localitzador que voleu utilitzar no es troba al men&uacute; desplegable, poseu-vos en contacte amb el vostre administrador perqu&egrave; configuri el servei de localitzador per a la geocodificaci&oacute; per lots.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>País</h2></div>
+        <hr/>
+        <div>
+            <p>Si totes les adreces s&oacute;n d'un pa&iacute;s, seleccioneu-lo per garantir la major exactitud possible dels resultats. En cas contrari, deixeu aquest par&agrave;metre buit.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Seleccioneu els camps de dades</h2></div>
+        <hr/>
+        <div>
+            <p>El servei de localitzador espera determinats camps a les dades, com ara l'adre&ccedil;a, la ciutat, l'estat i el codi postal. Assigneu els camps de dades del fitxer o la taula d'entrada als camps que espera el localitzador mitjan&ccedil;ant els quadres desplegables. Com m&eacute;s camps assigneu, m&eacute;s exactes seran els resultats. Si la taula d'entrada t&eacute; totes les dades en una columna, seleccioneu  <b>Camp &uacute;nic</b> i trieu un camp de dades del men&uacute; desplegable. En cas contrari, seleccioneu <b>Diversos camps</b> i assigneu els camps de localitzador adequats a les diverses columnes de camps de la taula.
+            </p>
+        </div>
+    </div>
+    <div id="includeAttributes">
+        <div><h2>Per a cada ubicació</h2></div>
+        <hr/>
+        <div>
+            <p>Incloeu els camps addicionals que ha retornat el servei d'ubicaci&oacute;. Si aquesta opci&oacute; est&agrave; activada, es retornaran tots els camps creats pel localitzador. Si est&agrave; desactivada, es retornaran les dades d'entrada amb les coordenades geocodificades. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom del resultat de sortida</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la capa que es crear&agrave;.  Si esteu escrivint en un ArcGIS Data Store, els resultats es desaran a  <b>El meu contingut</b> i s'afegiran al mapa. Si esteu escrivint en un recurs compartit de fitxers de dades massives, els resultats s'emmagatzemaran en aquest recurs i s'afegiran al seu manifest. No s'afegiran al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, l'eina no funcionar&agrave;.
+            </p>
+            <p>Si escriviu a l' ArcGIS Data Store (magatzem de dades massives relacional o espaciotemporal) mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta a <b>El meu contingut</b>, on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

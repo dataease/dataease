@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rikastage mitme muutujaga ruudustikust</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Rikastage mitme muutujaga ruudustikust"></h2>
+        <hr/>
+    <p>T&ouml;&ouml;riist Rikastage mitme muutujaga ruudustikust &uuml;hendab mitme muutujaga ruudustiku atribuudid t&otilde;husalt punktkihiga.
+    </p>
+    <p>Mitme muutujaga ruudustik on mis tahes kiht, mis on loodud mitme muutujaga ruudustiku t&ouml;&ouml;riista abil, mis paneb mitmest kihist p&auml;rit atribuudid kokku hulknurkade &uuml;heks ruudustikuks. Kui mitme muutujaga kihti kasutada rikastamiseks, siis v&otilde;imaldab see kiiresti lisada suure ja mitmek&uuml;lgse andmekogumiku punktandmetele, et kasutada seda edaspidises ruumianal&uuml;&uuml;sis.
+    </p>
+    <p>Oletame n&auml;iteks, et saite kihi uute kuriteos&uuml;ndmuste kohta, mis esinesid viimase aasta jooksul kogu linnas. Soovite modelleerida seoseid kuritegude sageduse ning erinevate demograafiliste, majanduslike ja geograafiliste tegurite vahel. Teil on juurdep&auml;&auml;s andmetele, mis kirjeldab neid tegureid, kuid mid ahoitakse viies erinevas kihis erinevate geomeetriliste t&uuml;&uuml;pidena. Lisaks hoitakse m&otilde;ningaid kihte suurandmeteandmefailis,   samalajal kui muid hoitakse objektiteenustes . Kui loote selle teabe salvestamiseks  mitme muutujaga ruudustiku ja &uuml;hendate seej&auml;rel ruudustikukuriteos&uuml;ndmustega, kasutades t&ouml;&ouml;riista  Rikasta mitme muutujaga ruudustikust, saate t&otilde;husalt &uuml;hendada v&auml;ga erinevaid atribuute oma punktikihiga, kasutades ainult t&ouml;&ouml;riista kaht k&auml;ivitust. Seej&auml;rel saate &uuml;hendatud atribuute kasutada selgitavate muutujatena ja tulemkihi abil alustada kuritegude sageduse mudeli loomist.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Valige rikastatavad punktobjektid</h2></div>
+        <hr/>
+        <div>
+            <p>Punktobjektid, mida rikastatakse mitme muutujaga ruudustiku abil.
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Valige mitme muutujaga ruudustik, millest rikastatakse</h2></div>
+        <hr/>
+        <div>
+            <p>Mitme muutujaga ruudustik sisaldab atribuute, mis &uuml;hendatakse sisendpunkti funktsioonidega. Kiht peab olema loodud t&ouml;&ouml;riista Loo mitme muutujaga ruudustik abil ja peab olema majutatud objektikiht. Mitme muutujaga ruudustiku kihte, mida hoitakse suurandmeteandmefailis,   selle t&ouml;&ouml;riista sisendina ei toetata.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Vali lisatavad muutujad</h2></div>
+        <hr/>
+        <div>
+            <p>Atribuudid mitme muutujaga ruudustiku kihis, mis &uuml;hendatakse sisendpunkti funktsioonidega, kui punktobjektid l&otilde;ikuvad ruudustikuga.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Loodavakihi nimi.  Kui kirjutate andmelattu ArcGIS Data Store, salvestatakse teie tulemused  <b>Minu sisus</b> ja lisatakse kaardile. Kui kirjutate suurandmete failikettale, salvestatakse teie andmed suurandmete failikettale  ja lisatakse  selle manifestifailile. Seda  ei lisata kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui see kiht on juba olemas, siis t&ouml;&ouml;tlemine nurjub.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

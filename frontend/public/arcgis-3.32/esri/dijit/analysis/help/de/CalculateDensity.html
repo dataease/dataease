@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Dichte berechnen</h2><p/>
+        <h2><img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" alt="Dichte berechnen"></h2>
+        <hr/>
+    <p>Das Werkzeug &quot;Dichte berechnen&quot; erstellt eine Dichtekarte aus Punkt- oder Linien-Features, indem bekannte Mengen einiger Ph&auml;nomene (als Attribute der Punkte oder Linien dargestellt) auf der Karte verteilt werden. Das Resultat ist ein Layer mit Fl&auml;chen, die von geringster bis h&ouml;chster Dichte klassifiziert sind.   
+
+    </p>
+    <p>Bei der Punkteingabe stellt jeder Punkt die Position eines Ereignisses und der Ergebnis-Layer die Anzahl der Ereignisse pro Fl&auml;cheneinheit dar. Ein h&ouml;herer Dichtewert an einer neuen Position bedeutet, dass sich mehr Punkte in der N&auml;he dieser Position befinden. In vielen F&auml;llen kann der Ergebnis-Layer als Risikoprognose f&uuml;r zuk&uuml;nftige Ereignisse interpretiert werden. Wenn die Eingabepunkte beispielsweise Positionen mit Blitzeinschl&auml;gen darstellen, kann der Ergebnis-Layer als Risikoprognose f&uuml;r zuk&uuml;nftige Blitzeinschl&auml;ge interpretiert werden.
+    </p>
+    <p>Bei der Linieneingabe stellt die Oberfl&auml;che der Liniendichte die Gesamtzahl der Linien dar, die sich in der N&auml;he einer Position befinden. Die Einheiten der berechneten Dichtewerte sind die Linienl&auml;nge pro Fl&auml;cheneinheit. Wenn die Linien beispielsweise Fl&uuml;sse darstellen, stellt der Ergebnis-Layer die Gesamtl&auml;nge von Fl&uuml;ssen innerhalb des Suchradius dar. Anhand dieses Ergebnisses k&ouml;nnen Fl&auml;chen identifiziert werden, die f&uuml;r Weidetiere geeignet sind.
+    </p>
+    <p> Nachfolgend finden Sie weitere Anwendungsf&auml;lle dieses Werkzeugs:
+        <ul>
+            <li>Erstellung von Kriminalit&auml;tsdichtekarten, um Polizeidienststellen bei der entsprechenden Zuteilung von Ressourcen zu unterst&uuml;tzen.
+            </li>
+            <li>Berechnen der Dichte von Krankenh&auml;usern in einem Bezirk. Der Ergebnis-Layer zeigt Fl&auml;chen mit hoher und niedriger Erreichbarkeit von Krankenh&auml;usern. Anhand dieser Informationen kann entschieden werden, ob neue Krankenh&auml;user gebaut werden m&uuml;ssen.
+            </li>
+            <li>Identifizieren von Fl&auml;chen, die aufgrund historischer Waldbrandstandorte ein hohes Waldbrandrisiko aufweisen.
+            </li>
+            <li>Ermitteln von Gemeinden, die weit von wichtigen Fernstra&szlig;en entfernt sind, um zu planen, wo neue Stra&szlig;en gebaut werden m&uuml;ssen
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punkt- oder Linien-Layer zum Berechnen der Dichte auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Punkt- oder Linien-Layer, f&uuml;r den die Dichte berechnet wird. 
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Zählfeld verwenden</h2></div>
+        <hr/>
+        <div>
+            <p>Stellen Sie ein Feld bereit, das die Anzahl der Ereignisse an jeder Position angibt. Wenn Sie beispielsweise &uuml;ber Punkte verf&uuml;gen, die St&auml;dte darstellen, k&ouml;nnen Sie ein Feld als Z&auml;hlfeld f&uuml;r die Einwohnerzahl verwenden. Im resultierenden Bev&ouml;lkerungsdichte-Layer werden in der N&auml;he von St&auml;dten mit gr&ouml;&szlig;eren Einwohnerzahlen gr&ouml;&szlig;ere Bev&ouml;lkerungsdichten dargestellt.
+            </p>
+            <p> Bei Verwendung der Standardoption &quot;Kein Z&auml;hlfeld&quot; wird angenommen, dass jede Position eine einzelne Zahl darstellt.
+            </p>
+        </div>
+    </div>
+    <div id="radius">
+        <div><h2>Suchentfernung</h2></div>
+        <hr/>
+        <div>
+            <p>Geben Sie eine Entfernung ein, die angibt, in welchem Umkreis nach Punkt- oder Linien-Features bei der Berechnung von Dichtewerten gesucht werden soll. Wenn Sie beispielsweise eine Suchentfernung von 10.000 Metern angeben, wird die Dichte jeder Position im Ausgabe-Layer basierend auf Features berechnet, die sich innerhalb einer Entfernung von 10.000 Metern von der Position befinden. Jede Position, die keine Ereignisse innerhalb von 10.000 Metern aufweist, erh&auml;lt einen Dichtewert von Null.     
+
+            </p>
+            <p>Wenn keine Entfernung angegeben wird, wird ein Standardwert berechnet, der auf den Positionen der Eingabe-Features und den Werten im Z&auml;hlfeld (falls ein Z&auml;hlfeld festgelegt wurde) basiert.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Ausgabe beschränken auf</h2></div>
+        <hr/>
+        <div>
+            <p>Zeichnen oder stellen Sie einen Layer bereit, indem Sie die Fl&auml;che angeben, in der Dichten berechnet werden sollen. Wenn Sie beispielsweise die Dichte von Fisch in einem See berechnen, k&ouml;nnen Sie die Grenze des Sees in diesem Parameter verwenden. Die Ausgabe wird nur innerhalb der Grenze des Sees dargestellt.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Klassifizieren nach</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie fest, wie Dichtewerte in Fl&auml;chen klassifiziert werden sollen.
+                <ul>
+                    <li>Gleiches Intervall &ndash; Fl&auml;chen werden so erstellt, dass der Bereich der Dichtewerte f&uuml;r jede Fl&auml;che gleich ist.
+                    </li>
+                    <li>Geometrisches Intervall &ndash; Fl&auml;chen basieren auf Klassenintervallen, die eine geometrische Reihe darstellen. Bei dieser Methode wird sichergestellt, dass in jedem Klassenbereich ungef&auml;hr dieselbe Anzahl von Werten in jede Klasse f&auml;llt und dass die &Auml;nderungen zwischen den einzelnen Intervallen relativ einheitlich sind.
+                    </li>
+                    <li>Nat&uuml;rliche Unterbrechungen &ndash; Klassenintervalle f&uuml;r Fl&auml;chen basieren auf nat&uuml;rlichen Gruppierungen der Daten. Es werden Werte der Klassengrenzen identifiziert, die &auml;hnliche Werte m&ouml;glichst gut gruppieren und die Unterschiede zwischen den Klassen maximieren. 
+                    </li>
+                    <li>Gleiche Fl&auml;che &ndash; Fl&auml;chen werden so erstellt, dass die Gr&ouml;&szlig;e jeder Fl&auml;che gleich ist. Wenn der Ergebnis-Layer beispielsweise mehr Werte mit einer h&ouml;heren als mit einer niedrigen Dichte aufweist, werden mehr Fl&auml;chen f&uuml;r hohe Dichten erstellt.
+                    </li>
+                    <li>Standardabweichung &ndash; Fl&auml;chen werden auf Grundlage der Abweichung der vorhergesagten Dichtewerte erstellt. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Anzahl der Klassen</h2></div>
+        <hr/>
+        <div>
+            <p>Gibt die Anzahl der Klassen (Bereich vorhergesagter Werte) im Ergebnis-Layer an. Jede Klasse definiert die Grenze von Fl&auml;chen. Die Werte dieser Klassen werden durch den oben genannten Parameter 
+ <b>Klassifizieren nach</b> festgelegt.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Ausgabe-Flächeneinheiten</h2></div>
+        <hr/>
+        <div>
+            <p>Geben Sie die Ausgabe-Fl&auml;cheneinheit an. Dichte ist die Anzahl geteilt durch die Fl&auml;che. Mit diesem Parameter wird festgelegt, in welcher Einheit die Fl&auml;che in der Dichteberechnung angegeben wird.  
+
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>คำนวณความลาดชัน</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="เครื่องมือคำนวณความลาดชันสำหรับ Portal"></h2>
+        <hr/>
+    <p>เครื่องมือนี้จะสร้างพื้นผิวที่แสดงให้เห็นความลาดชันของการใส่ข้อมูลระดับความสูงได้ ความลาดชันหมายถึงอัตราการเปลี่ยนแปลงของระดับความสูงสำหรับแต่ละเซลล์ค่าความสูงในรูปแบบดิจิตอล (DEM)
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>เลือกข้อมูลในการคำนวณความลาดชัน</h2></div>
+        <hr/>
+        <div>
+            <p>ชั้นข้อมูลความสูงจากความลาดชันจะถูกคำนวณ
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>ระบุปัจจัยปรับระดับความสูง</h2></div>
+        <hr/>
+        <div>
+            <p>ใส่ค่า z-factor
+            </p>
+            <p>ค่า z-factor เป็นปัจจัยการปรับใช้ในการแปลงค่าระดับความสูงสำหรับสองวัตถุประสงค์ :
+ 
+                <ul>
+                    <li>การแปลงหน่วยระดับความสูง (เช่น เมตรหรือฟุต) ไปยังหน่วยค่าพิกัดแนวนอนของชั้นข้อมูล, ซึ่งอาจจะเป็นฟุต, เมตร, หรือองศา
+                        
+  
+                    </li>
+                    <li>เพื่อเพิ่มความถูกต้องในแนวตั้งสำหรับผลภาพ
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>จากฟุต
+                    </p>
+                </td>
+                <td>
+                    <p>จากเมตร
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>จากฟุต
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0.3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>จากเมตร
+                    </p>
+                </td>
+                <td>
+                    <p>3.28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>ชื่อของชั้นข้อมูลผลลัพธ์</h2></div>
+        <hr/>
+        <div>
+            <p>ชื่อของชั้นข้อมูลที่จะถูกสร้างขึ้นใน  <b>เนื้อหาของฉัน</b> และเพิ่มไปยังแผนที่ ชื่อเริ่มต้นจะขึ้นอยู่กับชื่อเครื่องมือและชื่อชั้นข้อมูลอินพุต ถ้าชั้นข้อมูลนี้มีอยู่แล้ว คุณจะถูกขอให้ตั้งชื่อใหม่
+            </p>
+            <p>คุณสามารถระบุชื่อโฟลเดอร์ใน  <b>My Content</b> ที่ผลลัพธ์จะบันทึกโดยการใช้ <b>กล่อง drop-down</b> บันทึกผลใน
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/infographics/simpleInfographic/dataDrilling/panels/US/Internet",["../../ChartBuilder"],function(b){var a={};a.internetConnectionHome={states:"n,p,i",defaultState:"i",stateSettings:{n:{yAxisTitle:"Number of adults"},p:{yAxisTitle:"Percent of adults"}},fieldInfo:{isChart:!0,chartJson:b.createChart({title:"Internet Access at Home",points:[{label:"Cable modem",fullName:"ElectronicsInternet.MP19003A_B"},{label:"DSL",fullName:"ElectronicsInternet.MP19004A_B"},
+{label:"Fiber optic",fullName:"ElectronicsInternet.MP19005A_B"},{label:"High speed connection",fullName:"ElectronicsInternet.MP19007A_B"}],visualProps:{sorting:"Descending"}})}};return a});

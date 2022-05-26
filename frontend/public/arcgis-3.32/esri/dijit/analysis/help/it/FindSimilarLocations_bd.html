@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Trova località simili</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Trova localit&agrave; simili"></h2>
+        <hr/>
+    <p>In base ai criteri specificati, lo strumento Trova localit&agrave; simili consente di valutare la somiglianza di localit&agrave; presenti nel layer di ricerca candidati con una o pi&ugrave; localit&agrave; di riferimento. Questo strumento consente di rispondere a domande quali: 
+        <ul>
+            <li>Quali negozi sono pi&ugrave; simili a quelli con fatturato migliore in relazione ai profili cliente?
+            </li>
+            <li>Sulla base delle caratteristiche dei villaggi colpiti pi&ugrave; duramente da un'infezione, quali altri villaggi sono ad alto rischio?
+            </li>
+        </ul>
+        Per rispondere a simili domande, &egrave; necessario specificare le localit&agrave; di riferimento, le localit&agrave; di ricerca candidate e i campi che rappresentano i criteri da abbinare. Il primo layer di input deve contenere le localit&agrave; di riferimento o da utilizzare per il confronto.  Pu&ograve; ad esempio trattarsi di un layer contenente i negozi con fatturato migliore oppure i villaggi colpiti pi&ugrave; duramente dall'infezione. Si deve quindi specificare il layer contenente le localit&agrave; di ricerca candidate. Pu&ograve; trattarsi di tutti i negozi o di tutti gli altri villaggi. &Egrave; infine necessario identificare uno o pi&ugrave; campi da utilizzare per misurare la somiglianza. Lo strumento Trova localit&agrave; simili classificher&agrave; quindi tutte le localit&agrave; di ricerca candidate in base alla percentuale di somiglianza con le localit&agrave; di riferimento sulla base dei valori specificati in tutti i campi selezionati.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegli il layer contenente le posizioni di riferimento</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer contenente le posizioni di riferimento da associare. 
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>È possibile utilizzare tutte le località o effettuare una selezione</h2></div>
+        <hr/>
+        <div>
+            <p>Se necessario, utilizzare i pulsanti di selezione per identificare le localit&agrave; di riferimento. Questa opzione &egrave; disponibile solo se le feature sono disegnate sulla mappa e non sono disponibili per una condivisione file Big Data.  Se, ad esempio, il layer di input contiene tutte le localit&agrave;, ovvero quelle di riferimento e quelle di ricerca candidate, sar&agrave; necessario utilizzare uno degli strumenti di selezione per identificare le localit&agrave; di riferimento.  Se si creano due layer distinti, uno con le localit&agrave; di riferimento e l'altro con tutte le localit&agrave; di ricerca candidate, non &egrave; necessario effettuare una selezione.
+            </p>
+            <p>Se &egrave; presente pi&ugrave; di una localit&agrave; di riferimento, viene creata un'unica localit&agrave; ottenuta calcolando la media dei valori di ciascun campo utilizzato per l'analisi della somiglianza.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Cerca località simili in</h2></div>
+        <hr/>
+        <div>
+            <p>Le feature di ricerca candidate presenti in questo layer verranno classificate a partire da quella pi&ugrave; simile fino a quella meno simile. 
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Basa somiglianza su</h2></div>
+        <hr/>
+        <div>
+            <p>i campi selezionati costituiranno i criteri per valutare la somiglianza. Se si seleziona un campo per la popolazione e il reddito, le localit&agrave; di ricerca candidate con punteggio inferiore (migliore) saranno quelle con valori simili alle localit&agrave; di riferimento in relazione alla popolazione e al reddito.
+            </p>
+        </div>
+    </div>
+    <div id="matchMethod">
+        <div><h2>Determina il più simile e il meno simile utilizzando</h2></div>
+        <hr/>
+        <div>
+            <p>Il metodo selezionato determina il tipo di abbinamento. 
+                <ul>
+                    <li>Il metodo dei  <b>valori di campo</b> utilizza le differenze quadrate dei valori standardizzati. Si tratta dell'impostazione predefinita.
+                    </li>
+                    <li>Il metodo dei  <b>profili di campo</b> utilizza la matematica della somiglianza coseno per confrontare il profilo dei valori standardizzati. L'utilizzo dei profili di attributo richiede l'uso di almeno due campi di analisi.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Mostra</h2></div>
+        <hr/>
+        <div>
+            <p>&Egrave; possibile visualizzare tutte le localit&agrave; di ricerca candidate classificate a partire da quella pi&ugrave; simile a quella meno simile oppure specificare il numero di risultati desiderati. 
+                <ul>
+                    <li>Se si specificano  <b>tutte le localit&agrave; da quella pi&ugrave; simile a quella meno simile</b>, tutte le feature presenti nel layer di ricerca candidato verranno inclusi nel layer dei risultati in ordine di classificazione. Verr&agrave; restituito un massimo di 10.000 risultati.
+                    </li>
+                    <li>Se si specifica il  <code>numero di localit&agrave;</code> <code>pi&ugrave;, meno o pi&ugrave; e meno</code> <b>simili</b>, si determina quanti candidati pi&ugrave;, meno o pi&ugrave; o meno simili verranno inclusi nel layer dei risultati. Il valore massimo consentito &egrave; 10.000.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="appendFields">
+        <div><h2>Scegli campi da aggiungere a risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Facoltativamente, &egrave; possibile aggiungere campi ai dati dal layer della ricerca. Per impostazione predefinita, verranno aggiunti tutti i campi.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome layer risultati</h2></div>
+        <hr/>
+        <div>
+            <p> Il nome del layer che verr&agrave; creato.  Se si scrive su un ArcGIS Data Store, i risultati saranno salvati in  <b>I miei contenuti</b> e aggiunti alla mappa. Se si scrive su una condivisione file Big Data, i risultati saranno memorizzati nella condivisione file Big Data e aggiunti al suo Manifest. Non saranno aggiunti alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, lo strumento non verr&agrave; eseguito.
+            </p>
+            <p>Questo layer dei risultati conterr&agrave; le posizioni di riferimento e il numero di feature di ricerca candidate classificate che sono state specificate.   Se il nome del layer dei risultati esiste gi&agrave;, verr&agrave; chiesto di rinominarlo.
+            </p>
+            <p>Quando si scrive su  ArcGIS Data Store (data store relazionale o Spatiotemporal Big Data Store) usando la casella a discesa  <b>Salva risultato in</b>, &egrave; possibile specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

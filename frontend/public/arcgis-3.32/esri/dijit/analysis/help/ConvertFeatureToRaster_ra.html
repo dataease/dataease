@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Convert Feature to  Raster</h2><p/>
+        <h2><img src="./images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Convert Feature to Raster tool"></h2>
+        <hr/>
+    <p>This tool converts features to a raster dataset.
+    </p>
+    <p>Any feature class containing point, line, or polygon features can be converted to a raster dataset.
+    </p>
+    <p>The cell center is used to decide the value of the output raster pixel.
+    </p>
+    <p>The input field type determines the type of output raster. If the field is integer, the output raster will be integer; if it is floating point, the output will be floating point.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose feature layer to convert</h2></div>
+        <hr/>
+        <div>
+            <p>The input feature layer to convert to a raster dataset.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Choose field</h2></div>
+        <hr/>
+        <div>
+            <p>Choose the field that will be used to assign values to the output raster.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Output cell size</h2></div>
+        <hr/>
+        <div>
+            <p>The cell size and unit for the output rasters.
+            </p>
+            <p>The available units are Miles, Feet, Kilometers, and Meters. The default is Feet.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map. The default name is based on the tool name and the input layer name. If the layer already exists, you will be prompted to provide another name.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

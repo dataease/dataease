@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/id/AddBarrierLayers",{addBarriers:"Pilih layer penghalang",pointBarrier:"Penghalang titik",lineBarrier:"Penghalang garis",polygonBarrier:"Penghalang poligon",choosePointBarrier:"Pilih layer penghalang titik",chooseLineBarrier:"Pilih layer penghalang garis",choosePolygonBarrier:"Pilih layer penghalang poligon",selectPointBarrier:"Pilih penghalang titik",selectLineBarrier:"Pilih penghalang garis",selectPolygonBarrier:"Pilih penghalang poligon"});

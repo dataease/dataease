@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Pixelek osztályozása deep learning használatával</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Pixelek oszt&aacute;lyoz&aacute;sa deep learning haszn&aacute;lat&aacute;val"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z tan&iacute;tott deep learning modellt futtat egy bemeneti raszteren egy oszt&aacute;lyozott raszter l&eacute;trehoz&aacute;s&aacute;ra, &eacute;s minden &eacute;rv&eacute;nyes pixelnek van hozz&aacute;rendelt oszt&aacute;ly felirata.
+    </p>
+    <p>Ha az  <b>Aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;s</b> be van jel&ouml;lve, akkor a program csak az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen l&aacute;that&oacute; raszter ter&uuml;letet elemzi. Ha nincs bejel&ouml;lve, akkor az eg&eacute;sz rasztert elemzi, akkor is, ha az k&iacute;v&uuml;l esik az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Válassza ki a pixelek osztályozásához használt képet</h2></div>
+        <hr/>
+        <div>
+            <p>A bementi k&eacute;p az oszt&aacute;lyoz&aacute;s&aacute;hoz.
+            </p>
+            <p>Lehet raszteres adatszolg&aacute;ltat&aacute;si URL, raszteres r&eacute;teg vagy raszteres adatszolg&aacute;ltat&aacute;si r&eacute;teg.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Válassza ki a pixelek osztályozásához használt deep learning modellt</h2></div>
+        <hr/>
+        <div>
+            <p>Bemeneti deep learning csomag ( <code>.dlpk</code>) elem.
+            </p>
+            <p>A deep learning csomag ebből &aacute;ll: Esri modelldefin&iacute;ci&oacute;s JSON-f&aacute;jl ( <code>.emd</code>), deep learning bin&aacute;ris modellf&aacute;jl, valamint opcion&aacute;lisan az alkalmazand&oacute; Python raszterfunkci&oacute;.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Adja meg a deep learning modell argumentumait</h2></div>
+        <hr/>
+        <div>
+            <p>A funkci&oacute;argumentumokat a Python raszterfunkci&oacute; oszt&aacute;lyhivatkoz&aacute;sban a bemeneti modell defini&aacute;lja. Itt lehet list&aacute;zni a kieg&eacute;sz&iacute;tő deep learning param&eacute;tereket &eacute;s argumentumokat k&iacute;s&eacute;rletekhez &eacute;s finom&iacute;t&aacute;sokhoz, mint p&eacute;ld&aacute;ul konfidenciak&uuml;sz&ouml;b&ouml;t az &eacute;rz&eacute;kenys&eacute;g &aacute;ll&iacute;t&aacute;s&aacute;hoz.
+            </p>
+            <p>Az argumentumok nev&eacute;t az eszk&ouml;z t&ouml;lti fel a Python modulb&oacute;l kiolvasva (raszterelemző szerver).
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Eredményréteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az Eredm&eacute;ny ment&eacute;si helye leg&ouml;rd&uuml;lő mezőben megadhatja a  <b>Saj&aacute;t tartalom</b>mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z <b>menti az eredm&eacute;nyt</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Luo ajoaika-alueet</h2><p/>
+        <h2><img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" alt="Luo ajoaika-alueet"></h2>
+        <hr/>
+    <p>Luo ajoaika-alueet -toiminto luo alueet, jotka ovat saavutettavissa esimerkiksi tietyn ajoajan kuluessa tai tietylt&auml; ajo- tai k&auml;velyet&auml;isyydelt&auml;. Toiminto mittaa et&auml;isyyksi&auml; yhdest&auml; tai useasta pisteest&auml; (enint&auml;&auml;n 1&nbsp;000) teit&auml; tai kevyen liikenteen v&auml;yli&auml; k&auml;ytt&auml;en ja luo karttatason, jonka avulla saat vastauksen seuraavanlaisiin kysymyksiin:
+        <ul>
+            <li>Mihin voin ajaa t&auml;&auml;lt&auml; 30 minuutissa?
+            </li>
+            <li>Mihin voin ajaa t&auml;&auml;lt&auml; 30 minuutissa kello 17.30:n ruuhka-aikaan?
+            </li>
+            <li>Mit&auml; paikkoja on kahden kilometrin k&auml;velyet&auml;isyydell&auml; hotellistani?
+            </li>
+            <li>Mille alueille palomiehet ehtiv&auml;t viidess&auml; minuutissa? 
+            </li>
+            <li>Miten palontorjuntavalmius paranisi, jos t&auml;h&auml;n rakennettaisiin uusi paloasema?
+            </li>
+            <li>Mitk&auml; ovat liiketoimintani markkina-alueet?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Saat vastauksen kysymyksiisi vain katsomalla tulosalueita. Vaihtoehtoisesti voit suorittaa ylim&auml;&auml;r&auml;isen analyysin tulosalueiden perusteella. Esimerkiksi Kokoa pisteet -ty&ouml;kalun k&auml;ytt&ouml; ajoaika-alueita ja v&auml;est&ouml;tietoja hy&ouml;dynt&auml;m&auml;ll&auml; voi auttaa m&auml;&auml;ritt&auml;m&auml;&auml;n, mik&auml; myym&auml;l&auml;n sijainti olisi paras parhaan asiakaskunnan saavuttamiseksi. 
+    </p>
+    <p>
+        <table>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        <tr><td valign="baseline"><img src="../images/tip.png"></td><td valign="baseline"><h2>Tip:&ensp;</h2></td>
+        <td valign="baseline">
+            <p>Jos haluat luoda alueita mittaamalla suoran yhteyden maantieyhteyksien sijasta, k&auml;yt&auml; Luo puskurit -ty&ouml;kalua.
+            </p>
+        </td></tr>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        </table>
+    </p>
+    <p>Jos vaihtoehto  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> on valittuna, toiminto luo ajoaika- tai et&auml;isyysalueet vain nykyisess&auml; laajuudessa n&auml;kyvien kohteiden perusteella. Jos vaihtoehto ei ole valittuna, kaikkia kohteita k&auml;ytet&auml;&auml;n, vaikka ne eiv&auml;t kuuluisi karttalaajuuteen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse pistekarttataso, jonka lähistön ajoaika-alueet haluat laskea</h2></div>
+        <hr/>
+        <div>
+            <p>Pistekohteet, joiden l&auml;hist&ouml;ll&auml; olevat alueet lasketaan. Voit valita alueiden laskentatavan matkustustavan (ajaminen autolla tai rekka-autolla tai k&auml;vely) ja mittaustavan (aika tai et&auml;isyys) perusteella.
+            </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p>
+            <p>Ty&ouml;kalu voi n&auml;ytt&auml;&auml; enint&auml;&auml;n 1 000 kohdetta kussakin l&auml;ht&ouml;karttatasossa.
+
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Mitta</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse matkustustapa (auto, rekkaliikenne tai k&auml;vely) ja mittaustapa (aika tai et&auml;isyys). Organisaatiosi p&auml;&auml;k&auml;ytt&auml;j&auml; m&auml;&auml;ritt&auml;&auml; k&auml;ytett&auml;viss&auml; olevat matkustustavat. Kun olet valinnut matkustus- ja mittaustavan, anna kesto tai et&auml;isyys, joka voi olla enint&auml;&auml;n  5 tuntia (300 minuuttia) tai  300 mailia (482,80 kilometri&auml;). 
+            </p>
+            <p>Matkustussuunta ( <b>Poisp&auml;in palvelusta</b> tai <b>Kohti palvelua</b>) voi vaikuttaa siihen, miten alueet luodaan. Luo ajoaika-alueet noudattaa yksisuuntaisia katuja, v&auml;ltt&auml;&auml; kiellettyj&auml; k&auml;&auml;ntymissuuntia ja noudattaa muita s&auml;&auml;nt&ouml;j&auml; matkustussuunnan perusteella. Matkustussuunta tulisi valita l&auml;ht&ouml;aineiston sijaintien tyyppien ja analyysin kontekstin perusteella. Esimerkiksi pizzerian jakelun ajoaika-alue tulisi luoda poisp&auml;in palvelusta, kun taas sairaalan ajoaika-alue tulisi luoda palvelua kohti.
+            </p>
+            <p>Kun valitset  <b>ajoajan</b>, <b>ajoajan maaseudulla</b> tai <b>rekkaliikenteen ajan</b>, voit valita eri vaihtoehdoista, miten ajoaika mitataan.
+                <ul>
+                    <li>
+                        <p>Poista valinta  <b>K&auml;yt&auml; liikennett&auml;</b>, kun haluat luoda ajoaika-alueita kiinteiden nopeuksien mukaan. T&auml;m&auml;n toiminnon avulla voit k&auml;ytt&auml;&auml; yleist&auml; ajoaika-aluetta sen alueen sijasta, joka lasketaan l&auml;ht&ouml;ajan ja muuttuvien liikenneolosuhteiden mukaan.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Valitse  <b>K&auml;yt&auml; liikennett&auml;</b>, kun haluat luoda ajoaika-alueita tietyn aloitusajan ja muuttuvien liikenneolosuhteiden mukaan. Kun valitset lis&auml;ksi vaihtoehdon <b>Reaaliaikaiset liikennetiedot</b>, l&auml;ht&ouml;aika l&auml;ht&ouml;pisteist&auml; on kuluva aika ja todelliset ja ennustetut liikennenopeudet perustuvat anturi- ja sy&ouml;tetietoihin. Ennustetut liikennenopeudet lasketaan todellisten liikennenopeuksien, toteutuneiden nopeuksien t&auml;m&auml;n hetkisten olosuhteiden kuten s&auml;&auml;n perusteella. Liikennenopeusennusteet ulottuvat 12 tunnin p&auml;&auml;h&auml;n, joten l&auml;ht&ouml;aikaa voi siirt&auml;&auml; korkeintaan 12 tuntia eteenp&auml;in.
+                        </p>
+                        <p>N&auml;iden liikenneasetusten avulla voi selvitt&auml;&auml;, mitk&auml; alueet ehtii saavuttaa l&auml;htem&auml;ll&auml; heti, tunnin kuluttua jne.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Kun valitset vaihtoehdot  <b>K&auml;yt&auml; liikennett&auml;</b> ja <b>Liikenne tavanomaisissa oloissa kohteelle</b> jonkin p&auml;iv&auml;n ja kellonajan osalta, toiminto luo ajoaika-alueet historiallisten nopeuskeskiarvojen (viiden minuutin v&auml;lein viikon ajalta) perusteella. Tulokset sis&auml;lt&auml;v&auml;t liikenteen, mutta niist&auml; on poistettu nykyisten liikenneolosuhteiden vaikutus, mik&auml; voi merkitt&auml;v&auml;sti vaihdella.
+                        </p>
+                        <p>Liikenteen historia-asetusten avulla voi kysy&auml; esimerkiksi &quot;Mitk&auml; alueet voin yleens&auml; saavuttaa, kun l&auml;hden liikkeelle kello 11.30 keskiviikkona?&quot;. 
+                        </p>
+                        <p>Asettamasi aika noudattaa l&auml;ht&ouml;pisteiden mukaista aikavy&ouml;hykett&auml;. Jos l&auml;ht&ouml;aika on esimerkiksi klo 8 ja l&auml;ht&ouml;pisteit&auml; on kaksi, toinen New Yorkissa ja toinen Los Angelesissa, ajoaika-alueiden luomiseen k&auml;ytet&auml;&auml;n USA:n it&auml;rannikon aikavy&ouml;hykkeen (Eastern Time) l&auml;ht&ouml;aikaa klo 8 ja vastaavasti Tyynenmeren aikavy&ouml;hykkeen (Pacific Time) l&auml;ht&ouml;aikaa klo 8.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Huomaa, ett&auml; kun auto liikkuu pisteest&auml; poisp&auml;in, aika kuluu ja liikenneolot muuttuvat. Ajoaika-alueiden ty&ouml;kalu ottaa n&auml;m&auml; vaihtelut huomioon, kun valitset  <b>Ajoaika</b> ja <b>K&auml;yt&auml; liikennett&auml;</b>. Kaikki alueet eiv&auml;t kuitenkaan tue liikennett&auml;. Napsauta ty&ouml;kalun <b>Katso saatavuus</b> -linkki&auml;, jotta n&auml;et, onko se saatavilla tarkastelualueellasi.
+            </p>
+            <p> <b>Rekkaliikenteen aika</b> voi k&auml;ytt&auml;&auml; dynaamisia matkanopeuksia liikenteen perusteella, mutta vain lakim&auml;&auml;r&auml;iseen rekkaliikenteen nopeusrajoitukseen asti. Jos kadun dynaaminen nopeus on 65 kilometri&auml; tunnissa reaaliaikaisen liikenteen perusteella mutta kadun rekkaliikenteen nopeusrajoitus on 55 kilometri&auml; tunnissa, laskelma k&auml;ytt&auml;&auml; kyseisell&auml; kadulla 55 kilometrin tuntinopeutta.
+            </p>
+            <p> <b>K&auml;velyaika</b> ja <b>K&auml;velyet&auml;isyys</b> k&auml;ytt&auml;v&auml;t kiinte&auml;&auml; nopeutta 5 kilometri&auml; tunnissa (3,1 mailia tunnissa) ja seuraavat kevyen liikenteen v&auml;yli&auml; ja soveltuvia katuja (tietyt autoliikennett&auml; koskevat s&auml;&auml;nn&ouml;t, kuten yksisuuntaiset kadut, ohitetaan). </p>
+            <p> <b>Et&auml;isyys rekka-autolla</b> k&auml;ytt&auml;&auml; kiinteit&auml; nopeuksia ja noudattaa raskasta liikennett&auml; koskevia s&auml;&auml;nt&ouml;j&auml;. <b>Ajoet&auml;isyys</b> ja <b>Ajoet&auml;isyys maaseudulla</b> k&auml;ytt&auml;v&auml;t puolestaan kiinteit&auml; nopeuksia ja noudattavat ajoneuvoja, kuten autoja, koskevia s&auml;&auml;nt&ouml;j&auml;.
+            </p> 
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Valitse esteiden karttatasot</h2></div>
+        <hr/>
+        <div>
+            <p> V&auml;hint&auml;&auml;n yksi kohde, joka toimii tilap&auml;isen&auml; rajoitteena (esteen&auml;) liikuttaessa taustalla olevilla kaduilla. Voit m&auml;&auml;ritt&auml;&auml; esteet k&auml;ytt&auml;m&auml;ll&auml; piste-, viiva- tai aluekohteita.
+            </p>
+            <p>Piste-este voi mallintaa kaatunutta puuta, onnettomuutta, katkennutta s&auml;hk&ouml;linjaa tai mit&auml; tahansa, joka katkaisee liikenteen tietyss&auml; kohdassa kadulla. Liikkuminen on sallittu kadulla, mutta ei esteen kohdalla. Voit m&auml;&auml;ritt&auml;&auml; enint&auml;&auml;n 250 piste-esteen&auml; toimivaa kohdetta.
+            </p>
+            <p>Viivaeste est&auml;&auml; liikkumisen miss&auml; tahansa kohdassa, jossa este riste&auml;&auml; katujen kanssa. Esimerkiksi paraatia tai mielenosoitusta, joka est&auml;&auml; liikenteen usealla katuosuudella, voidaan mallintaa viivaesteell&auml;. Jos kaikkien viivaesteiden leikkaamien katukohteiden m&auml;&auml;r&auml; on yli 500, ty&ouml;kalu palauttaa virheen.
+            </p>
+            <p>Alue-este est&auml;&auml; liikkumisen miss&auml; tahansa kohdassa, jossa alue riste&auml;&auml; katujen kanssa. T&auml;m&auml;ntyyppist&auml; estett&auml; voi k&auml;ytt&auml;&auml; esimerkiksi sellaisten katuverkoston kattavien tulvien mallintamiseen, jotka tekev&auml;t liikkumisen kaduilla mahdottomaksi. Jos kaikkien alue-esteiden leikkaamien katukohteiden m&auml;&auml;r&auml; on yli 2 000, ty&ouml;kalu palauttaa virheen.
+            </p>
+        </div>
+    </div>
+    <div id="DissolveType">
+        <div><h2>Eri pisteistä alkavat alueet</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse, miten eri l&auml;ht&ouml;pisteist&auml; alkavat jaetut alueet k&auml;sitell&auml;&auml;n, kun ne saavuttavat toisensa. Vaihtoehdot:
+                <ul>
+                    <li> <b>P&auml;&auml;llekk&auml;isyys</b>&mdash;Eri l&auml;ht&ouml;pisteiss&auml; olevat alueet voivat kattaa saman tiealueen. T&auml;m&auml; on tarpeen, kun halutaan tiet&auml;&auml;, mitk&auml; l&auml;ht&ouml;pisteet voivat saavuttaa tietyn sijainnin annetussa ajassa tai m&auml;&auml;ritetylt&auml; et&auml;isyydelt&auml;.
+                    </li>
+                    <li> <b>Sulauta</b>&mdash;Kaikki alueet yhdistyv&auml;t yhdeksi, ja sijainti voi kuulua vain yhteen alueeseen. T&auml;m&auml; on tarpeen, kun haluat tiet&auml;&auml; ainoastaan sen, ett&auml; alue voidaan saavuttaa tietyss&auml; ajassa tai tietyll&auml; et&auml;isyydell&auml;.
+                    </li>
+                    <li> <b>Jako</b>&mdash;Eri l&auml;ht&ouml;sijaintien alueet, jotka menisiv&auml;t p&auml;&auml;llekk&auml;in, jaetaan keskelt&auml; siten, ett&auml; ne rajoittuvat toisiinsa. T&auml;m&auml; on tarpeen, kun haluat n&auml;hd&auml;, mitk&auml; alueet kuuluvat tiettyyn l&auml;ht&ouml;pisteiden aika- tai et&auml;isyysalueeseen. Samalla n&auml;et, mik&auml; l&auml;ht&ouml;piste on l&auml;hinn&auml; aluetta.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="showHoles">
+        <div><h2>Näytä saavuttamattomat alueet aukkoina</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml;, sis&auml;lt&auml;v&auml;tk&ouml; tulosalueet aukkoja, jos joitakin katuja ei voi saavuttaa  <b>mittaustavan</b> ajan tai et&auml;isyyden takia tai matkustustavan asettamien rajoitusten takia.
+            </p>
+            <p>T&auml;m&auml;n parametrin avulla luodut ajoaika-alueet rajoittuvat 15 minuuttiin tai 15 mailiin (24 kilometriin).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen tason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttatason nimi on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+    <div id="includeReachableStreets">
+        <div><h2>Sisällytä saavutettavat kadut</h2></div>
+        <hr/>
+        <div>
+            <p>Sis&auml;llyt&auml; kadut, joita k&auml;ytet&auml;&auml;n ajoaika-alueiden luontiin tuloskarttatasona. 
+            </p>
+            <p>Luo ajoaika-alueet mittaa palvelun ulottuvuuden katuverkostoa pitkin ja luo sen j&auml;lkeen ajoaika-alueet kuljettujen katujen perusteella. T&auml;st&auml; syyst&auml; alueet ovat arvio kuljetuista kaduista. Jos analyysisi tarkoituksena on selvitt&auml;&auml;, mitk&auml; kadut sis&auml;ltyv&auml;t tiettyyn matkustuset&auml;isyyteen tai -aikaan palvelusta, saavutettavien katujen luonti voi olla tarkempi mitta kuin ajoaika-alueiden k&auml;ytt&auml;minen sen arviointiin, onko tietty katu saavutettavissa.
+            </p>
+            <p>T&auml;m&auml;n parametrin avulla luodut ajoaika-alueet rajoittuvat 15 minuuttiin tai 15 mailiin (24 kilometriin).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

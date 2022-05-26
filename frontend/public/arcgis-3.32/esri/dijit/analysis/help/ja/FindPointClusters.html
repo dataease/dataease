@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>ポイント クラスターの検索</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="ポイント クラスターの検索"></h2>
+        <hr/>
+    <p>このツールは、空間分布に基づき周辺ノイズ内でポイント フィーチャのクラスターを検索します。
+    </p>
+    <p> <b>[現在のマップ範囲を使用]</b> をオンにすると、現在のマップ範囲内にある入力ポイント レイヤーのフィーチャだけが解析されます。オフの場合、入力ポイント レイヤーのすべてのフィーチャが、現在のマップ範囲内になくても解析されます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>クラスターの検索対象となるレイヤーを選択します。</h2></div>
+        <hr/>
+        <div>
+            <p>クラスターが検出されるポイント レイヤー。
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>クラスターと見なす最小ポイント数</h2></div>
+        <hr/>
+        <div>
+            <p>クラスターと見なされるフィーチャの最小数。フィーチャ数が指定した数よりも少ないクラスターはノイズと見なされます。
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>検索範囲を設定 (オプション)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>フィーチャを同じクラスターの一部と見なす最大距離。空白のままにすると、ツールは HDBSCAN を実行します。これは、さまざまな距離を使用し、密度の異なるクラスターをまばらなノイズから分離します。値が指定されている場合は DBSCAN が実行されます。これは、指定した距離を使用して、密度の高いクラスターをまばらなノイズから分離します。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p>これは、 <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前です。デフォルト名は、ツール名と入力レイヤー名に基づいて設定されます。レイヤー名がすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存先]</b> ドロップダウン メニューを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

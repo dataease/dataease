@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Joindre les entités</h2><p/>
+        <h2><img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" alt="Joindre des entit&eacute;s"></h2>
+        <hr/>
+    <p>L&rsquo;outil Entit&eacute;s jointes fonctionne avec deux couches. Entit&eacute;s jointes joint des attributs d'une entit&eacute; &agrave; une autre en fonction des relations spatiales, temporelles et attributaires ou d'une combinaison des trois. L'outil d&eacute;termine toutes les entit&eacute;s en entr&eacute;e qui r&eacute;pondent &agrave; des conditions de jointure sp&eacute;cifi&eacute;es et joint la deuxi&egrave;me couche en entr&eacute;e &agrave; la premi&egrave;re. Vous pouvez joindre toutes les entit&eacute;s aux entit&eacute;s d'appariement ou synth&eacute;tiser les entit&eacute;s d'appariement.
+    </p>
+    <p>L'outil Entit&eacute;s jointes peut s'appliquer aux points, lignes, surfaces et tables. Pour r&eacute;aliser une jointure temporelle, vos donn&eacute;es en entr&eacute;e doivent &ecirc;tre de type temporel. Pour r&eacute;aliser une jointure spatiale, vos donn&eacute;es doivent poss&eacute;der une g&eacute;om&eacute;trie. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Choisir une couche cible</h2></div>
+        <hr/>
+        <div>
+            <p>La couche cible sera dot&eacute;e des attributs issus de la couche de jointure ajout&eacute;e &agrave; sa table.
+            </p>
+            <p>L'analyse avec la relation spatiale  <b>Proche</b> requiert un syst&egrave;me de coordonn&eacute;es projet&eacute;es. Vous pouvez d&eacute;finir le <b>syst&egrave;me de coordonn&eacute;es de traitement</b> dans <b>Environnements d'analyse</b>. Si votre syst&egrave;me de coordonn&eacute;es de traitement n&rsquo;est pas d&eacute;fini sur un syst&egrave;me de coordonn&eacute;es projet&eacute;es, vous &ecirc;tes invit&eacute; &agrave; le configurer lorsque vous lancez <b>Run analysis (Ex&eacute;cuter l&rsquo;analyse)</b> .
+            </p>
+            <p>Outre le fait de choisir une couche de votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante pour parcourir votre contenu et rechercher une couche d&rsquo;entit&eacute;s ou un jeu de donn&eacute;es de partage de fichiers Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Choisir la couche à joindre à la couche cible</h2></div>
+        <hr/>
+        <div>
+            <p>La couche de jointure avec les attributs sera ajout&eacute;e &agrave; la couche cible.
+            </p>
+            <p>Outre le fait de choisir une couche de votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante pour parcourir votre contenu et rechercher une couche d&rsquo;entit&eacute;s ou un jeu de donn&eacute;es de partage de fichiers Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Choisir l'opération de jointure</h2></div>
+        <hr/>
+        <div>
+            <p>Ceci d&eacute;termine le mode de traitement des jointures entre les couches cible et de jointure dans la sortie si plusieurs entit&eacute;s de jointure pr&eacute;sentent la m&ecirc;me relation &agrave; la couche en cours de jointure. Vous avez le choix entre deux op&eacute;rations de jointure&nbsp;:
+                <ul>
+                    <li> <b>Joindre un vers un</b>&nbsp;: cette option synth&eacute;tise toutes les entit&eacute;s d'appariement sur chaque entit&eacute; en cours de jointure.
+                    </li>
+                    <li> <b>Joindre un vers plusieurs</b>&nbsp;: cette option joint toutes les entit&eacute;s d'appariement &agrave; la couche de jointure.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Supposons par exemple que vous vouliez rechercher les supermarch&eacute;s situ&eacute;s &agrave; moins de 2&nbsp;kilom&egrave;tres d&rsquo;un march&eacute; de producteurs. Dans ce cas, la couche cible poss&egrave;de une seule entit&eacute; repr&eacute;sentant un march&eacute; de producteurs et la couche de jointure repr&eacute;sente les &eacute;piceries locales et poss&egrave;de des attributs, tels que les ventes annuelles totales. L&rsquo;outil Entit&eacute;s jointes permet de trouver cinq &eacute;piceries qui r&eacute;pondent &agrave; ces crit&egrave;res. Si vous avez sp&eacute;cifi&eacute; une op&eacute;ration de jointure de type  <b>Join one to many (Joindre un vers plusieurs)</b>, vous obtenez cinq entit&eacute;s dans votre r&eacute;sultat, chaque ligne repr&eacute;sentant le march&eacute; de producteurs et un supermarch&eacute;. Si vous avez sp&eacute;cifi&eacute; une relation de type <b>Join one to one (Joindre un vers un)</b>, vous obtenez une entit&eacute; repr&eacute;sentant le march&eacute; de producteurs et les informations synth&eacute;tis&eacute;es des supermarch&eacute;s, par exemple le total (2), ainsi que d&rsquo;autres statistiques, telles que la somme des ventes annuelles.
+            </p>
+        </div>
+    </div>
+    <div id="joinOptions">
+        <div><h2>Sélectionner une ou plusieurs jointures</h2></div>
+        <hr/>
+        <div>
+            <p>Sp&eacute;cifie l&rsquo;option de jointure utilis&eacute;e. Vous pouvez appliquer un, deux ou trois types de jointure parmi les suivantes&nbsp;: 
+                <ul>
+                    <li> <b>Spatial</b>&nbsp;: utilise une relation spatiale sp&eacute;cifi&eacute;e pour joindre les entit&eacute;s. Dans ce cas, les deux couches doivent poss&eacute;der une g&eacute;om&eacute;trie.
+                    </li>
+                    <li> <b>Temporel</b>&nbsp;: utilise une relation temporelle pour joindre les entit&eacute;s. Ce temps doit &ecirc;tre activ&eacute; sur les deux couches.
+                    </li>
+                    <li> <b>Attribut</b>&nbsp;: joint les entit&eacute;s en fonction de champs &eacute;gaux.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Choisir une relation spatiale</h2></div>
+        <hr/>
+        <div>
+            <p>La relation spatiale qui va d&eacute;terminer si les entit&eacute;s sont jointes les unes aux autres. Les relations disponibles suivantes d&eacute;pendent du type de g&eacute;om&eacute;trie (point, polyligne, polygone) utilis&eacute; comme entit&eacute;s en entr&eacute;e&nbsp;:
+                <ul>
+                    <li> <b>Intersects (Intersecte)</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si elles s&rsquo;intersectent.
+                    </li>
+                    <li> <b>Est &eacute;gal &agrave;</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si elles poss&egrave;dent la m&ecirc;me g&eacute;om&eacute;trie.
+                    </li>
+                    <li> <b>Proche (Near)</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si elles se trouvent &agrave; une distance sp&eacute;cifi&eacute;e les unes des autres. La couche cible doit se trouver dans un syst&egrave;me de coordonn&eacute;es projet&eacute;es ou la r&eacute;f&eacute;rence spatiale de traitement doit &ecirc;tre d&eacute;finie sur un syst&egrave;me de coordonn&eacute;es projet&eacute;es &agrave; l&rsquo;aide de l&rsquo;option <b>Analysis Environments (Environnements d&rsquo;analyse)</b> si une relation spatiale de type <b>Near (Proche)</b> est utilis&eacute;e.
+                    </li>
+                    <li> <b>Contains (Contient)</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si la couche cible est contenue dans les entit&eacute;s de jointure.
+                    </li>
+                    <li> <b>Within (Distance de recherche)</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si la couche cible se trouve dans les entit&eacute;s de jointure.
+                    </li>
+                    <li> <b>Touches (Touche)</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si elles comportent une limite qui touche l&rsquo;entit&eacute; cible.
+                    </li>
+                    <li> <b>Croise</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si elles poss&egrave;dent un contour d'intersection.
+                    </li>
+                    <li> <b>Superpositions</b>&nbsp;: les entit&eacute;s sont jointes si elles se superposent.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearSpatial">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            <p> Sp&eacute;cifie le rayon appliqu&eacute; &agrave; une relation proche spatiale.
+            </p>
+            <p>Imaginons, par exemple, que vous poss&eacute;dez un jeu de donn&eacute;es repr&eacute;sentant une centrale nucl&eacute;aire et un jeu de donn&eacute;es repr&eacute;sentant des r&eacute;sidences. Vous pouvez d&eacute;finir une distance spatiale proche d&rsquo;un kilom&egrave;tre pour rechercher les maisons situ&eacute;es &agrave; moins d&rsquo;un kilom&egrave;tre de la centrale nucl&eacute;aire.
+            </p> 
+        </div>
+    </div>
+    <div id="temporalRelationship">
+        <div><h2>Choisir une relation temporelle</h2></div>
+        <hr/>
+        <div>
+            <p>La relation temporelle qui va d&eacute;terminer si les entit&eacute;s sont jointes les unes aux autres. Cette option n&rsquo;est disponible que si le temps est activ&eacute; sur les deux couches. Les relations spatiales d&eacute;pendent du type de temps (instantan&eacute; ou intervalle) utilis&eacute; pour les entit&eacute;s en entr&eacute;e. Les relations temporelles disponibles sont les suivantes&nbsp;:
+                <ul>
+                    <li> <b>Meets (Rejoint)</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si la premi&egrave;re entit&eacute; rejoint la deuxi&egrave;me.
+                    </li>
+                    <li> <b>Met By (Rejoint par)</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si la premi&egrave;re entit&eacute; est rejointe par la deuxi&egrave;me.
+                    </li>
+                    <li> <b>Overlaps (Superpositions)</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si la premi&egrave;re entit&eacute; se superpose &agrave; la deuxi&egrave;me.
+                    </li>
+                    <li> <b>Overlapped By (Superpos&eacute; par)</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si la premi&egrave;re entit&eacute; est superpos&eacute;e par la deuxi&egrave;me.
+                    </li>
+                    <li> <b>During (Pendant)</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si la premi&egrave;re entit&eacute; a lieu pendant la deuxi&egrave;me.
+                    </li>
+                    <li> <b>Contains (Contient)</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si la premi&egrave;re entit&eacute; contient la deuxi&egrave;me.
+                    </li>
+                    <li> <b>Equals (Est &eacute;gal &agrave;)</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si la premi&egrave;re entit&eacute; est &eacute;gale &agrave; la deuxi&egrave;me.
+                    </li>
+                    <li> <b>Finishes (Termine)</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si la premi&egrave;re entit&eacute; termine la deuxi&egrave;me.
+                    </li>
+                    <li> <b>Finished By (Termin&eacute; par)</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si la premi&egrave;re entit&eacute; est termin&eacute;e par la deuxi&egrave;me.
+                    </li>
+                    <li> <b>Starts (D&eacute;marre)</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si la premi&egrave;re entit&eacute; d&eacute;marre la deuxi&egrave;me.
+                    </li>
+                    <li> <b>Started By (D&eacute;marr&eacute; par)</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si la premi&egrave;re entit&eacute; est d&eacute;marr&eacute;e par la deuxi&egrave;me.
+                    </li>
+                    <li> <b>Intersects (Intersecte)</b>&nbsp;: les entit&eacute;s sont appari&eacute;es si les heures intersectent tout.
+                    </li>
+                    <li> <b>Proche</b>&nbsp;: les entit&eacute;s sont jointes si elles se trouvent proches les unes des autres, selon une heure sp&eacute;cifi&eacute;e.
+                    </li>
+                    <li> <b>Near Before (Proche avant)</b>&nbsp;: les entit&eacute;s sont jointes si la premi&egrave;re entit&eacute; est avant la deuxi&egrave;me et dans le temps sp&eacute;cifi&eacute;.
+                    </li>
+                    <li> <b>Near After (Proche apr&egrave;s)</b>&nbsp;: les entit&eacute;s sont jointes si la premi&egrave;re entit&eacute; est apr&egrave;s la deuxi&egrave;me et dans le temps sp&eacute;cifi&eacute;.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearTemporal">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            
+            <p>Sp&eacute;cifie le rayon temporel appliqu&eacute; &agrave; une relation proche temporelle. Une relation proche temporelle inclut les champs  <b>Near (Proche)</b>, <b>Near Before (Proche avant)</b> et <b>Near After (Proche apr&egrave;s)</b>.
+            </p>
+            <p>Consid&eacute;rons, par exemple que vous poss&eacute;dez une couche d&rsquo;incidents de bateaux et une couche des pistes GPS d&rsquo;un ouragan. Vous pouvez rechercher les incidents de bateaux au sein d&rsquo;une distance sp&eacute;cifi&eacute;e de pistes d&rsquo;ouragan &agrave; la fois dans l&rsquo;espace (1&nbsp;kilom&egrave;tre) et dans le temps (5&nbsp;heures). Dans ce cas, les incidents de bateau sont joints aux ouragans qui se sont produits &agrave; proximit&eacute; les uns des autres dans l'espace et dans le temps.
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Choisir les champs à apparier</h2></div>
+        <hr/>
+        <div>
+            <p>Apparie les valeurs dans un champ d&rsquo;une couche aux valeurs dans un champ d&rsquo;une autre couche. 
+            </p>
+            <p>Si, par exemple, vous poss&eacute;dez une couche g&eacute;ographique r&eacute;gionale d&rsquo;adresses r&eacute;sidentielles (notamment un champ  <i>ZIP</i>) et un jeu de donn&eacute;es tabulaire de donn&eacute;es d&eacute;mographiques sanitaires par code postal (champ nomm&eacute; <i>HEALTHZIP</i>), vous pouvez joindre le jeu de donn&eacute;es concernant la sant&eacute; aux donn&eacute;es r&eacute;sidentielles en appariant le champ <i>ZIP</i> au champ <i>HEALTHZIP</i>. Cette op&eacute;ration g&eacute;n&egrave;re une couche des r&eacute;sidences comportant les donn&eacute;es sanitaires correspondantes.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Ajouter des statistiques (facultatif)</h2></div>
+        <hr/>
+        <div>
+            <p>Calcule les statistiques sur les entit&eacute;s jointes si l&rsquo;op&eacute;ration de jointure est  <b>Join one to one (Joindre un vers un)</b>. Toutes les statistiques sont calcul&eacute;es par d&eacute;faut.
+            </p>
+            <p>Vous pouvez calculer des statistiques sur des entit&eacute;s synth&eacute;tis&eacute;es. Dans les champs num&eacute;riques, vous pouvez calculer ce qui suit&nbsp;: 
+                <ul>
+                    <li>Count (Total)&nbsp;: calcule le nombre de valeurs non Null. Il peut &ecirc;tre utilis&eacute; sur des champs num&eacute;riques ou des cha&icirc;nes. Le total de [Null, 0, 2] est &eacute;gal &agrave; 2.
+                    </li>
+                    <li>Somme&nbsp;: somme des valeurs num&eacute;riques dans un champ. La somme de [Null, 0, 3] est &eacute;gale &agrave; 3.
+                    </li>
+                    <li>Moyenne&nbsp;: moyenne des valeurs num&eacute;riques. La moyenne de [0, 2, Null] est &eacute;gale &agrave; 1.
+                    </li>
+                    <li>Min&nbsp;: valeur minimale d'un champ num&eacute;rique. La valeur minimale de [0, 2, Null] est &eacute;gale &agrave; 0. 
+                    </li>
+                    <li>Max&nbsp;: valeur maximale d'un champ num&eacute;rique. La valeur maximale de [0, 2, Null] est &eacute;gale &agrave; 2.
+                    </li>
+                    <li>Plage&nbsp;: plage d'un champ num&eacute;rique. Elle est calcul&eacute;e pour correspondre aux valeurs minimales soustraites de la valeur maximale. La plage de [0, Null, 1] est &eacute;gale &agrave; 1. La plage de [Null, 4] est &eacute;gale &agrave; 0.
+                    </li>
+                    <li>Variance&nbsp;: variance d'un champ num&eacute;rique dans une piste. La variance de [1] est la valeur Null. La variance de [null, 1,0,1,1] est &eacute;gale &agrave; 0,25.
+                    </li>
+                    <li>Ecart type&nbsp;: &eacute;cart type d'un champ num&eacute;rique. L'&eacute;cart type de [1] est la valeur Null. L&rsquo;&eacute;cart type de [null, 1,0,1,1] est &eacute;gale &agrave; 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Dans les champs de cha&icirc;ne, vous pouvez calculer ce qui suit&nbsp;:
+                <ul>
+                    <li>Total&nbsp;: le nombre de cha&icirc;nes diff&eacute;rentes de la valeur Null.
+                    </li>
+                    <li>Tout&nbsp;: cette statistique est un &eacute;chantillon al&eacute;atoire d'une valeur de cha&icirc;ne dans le champ sp&eacute;cifi&eacute;.
+                    </li>
+                </ul>
+                Toutes les statistiques sont calcul&eacute;es sur des valeurs non nulles. La couche obtenue contient un nouveau champ pour chaque statistique calcul&eacute;e. Vous pouvez ajouter des statistiques en choisissant un attribut et une statistique.
+            </p>
+            <p>Toutes les statistiques sont calcul&eacute;es sur des valeurs non nulles. La couche obtenue contient un nouveau champ pour chaque statistique calcul&eacute;e. Vous pouvez ajouter des statistiques en choisissant un attribut et une statistique.
+            </p>
+        </div>
+    </div>
+    <div id="joinCondition">
+        <div><h2>Créer une expression pour Joindre les entités par (facultatif)</h2></div>
+        <hr/>
+        <div>
+            <p>Applique une condition &agrave; des champs sp&eacute;cifi&eacute;s. Seules les entit&eacute;s comprenant des champs remplissant ces conditions seront jointes.
+            </p>
+            <p>Si, par exemple, vous souhaitez appliquer une jointure &agrave; un jeu de donn&eacute;es en ciblant uniquement les entit&eacute;s dont la valeur  <i>health_spending</i> &agrave; 20&nbsp;pour cent de <i>income</i>, appliquez une condition de jointure de <code>$target[&quot;health_spending&quot;] &gt; ($join[&quot;income&quot;] * .20)</code> en utilisant le champ <i>health_spending</i> du premier jeu de donn&eacute;es (celui auquel les entit&eacute;s sont jointes) et le champ <i>income</i> du deuxi&egrave;me jeu de donn&eacute;es (celui qui est joint).
+            </p>
+            <p>Vous pouvez appliquer des conditions de jointure &agrave; l'aide du calculateur d'expression.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Choisir un stockage des données</h2></div>
+        <hr/>
+        <div>
+            <p>Les r&eacute;sultats de g&eacute;oanalyse sont stock&eacute;s dans un r&eacute;pertoire de donn&eacute;es et s&rsquo;affichent en tant que couche d&rsquo;entit&eacute;s dans  Portal for ArcGIS. Dans la plupart des cas, les r&eacute;sultats doivent &ecirc;tre stock&eacute;s dans le stockage des donn&eacute;es spatio-temporelles, ce qui est le param&egrave;tre par d&eacute;faut. Dans certains cas, il peut &ecirc;tre judicieux d&rsquo;enregistrer les r&eacute;sultats dans un data store relationnel. Voici les raisons pour lesquelles stocker les r&eacute;sultats dans le data store relationnel&nbsp;: 
+                <ul>
+                    <li>Vous pouvez utiliser les r&eacute;sultats en mode de collaboration de portail &agrave; portail.
+                    </li>
+                    <li>Vous pouvez activer la synchronisation de vos r&eacute;sultats.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Vous ne devez pas utiliser le data store relationnel&nbsp;si vous pensez que vos r&eacute;sultats GeoAnalytics vont augmenter et que vous devez tirer parti des fonctionnalit&eacute;s du le data store Big Data spatio-temporel pour g&eacute;rer les grands volumes de donn&eacute;es.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la couche &agrave; cr&eacute;er. Si vous &eacute;crivez sur une instance ArcGIS Data Store, les r&eacute;sultats seront enregistr&eacute;s dans  <b>My Content (Mon contenu)</b> et ajout&eacute;s &agrave; la carte. Si vous &eacute;crivez sur un partage de fichiers Big Data, les r&eacute;sultats seront enregistr&eacute;s dans le partage de fichiers Big Data et ajout&eacute;s &agrave; son manifeste. Il ne sera pas ajout&eacute; &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, l'outil &eacute;choue.
+            </p>
+            <p>Lors de l&rsquo;&eacute;criture sur  ArcGIS Data Store (r&eacute;pertoire de donn&eacute;es relationnelles ou spatio-temporelles) via la zone de liste d&eacute;roulante  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>, vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> o&ugrave; le r&eacute;sultat sera enregistr&eacute;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

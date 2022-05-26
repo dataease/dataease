@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>偵測事件</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="偵測事件"></h2>
+        <hr/>
+    <p> 此工具使用點、線、區域或表格之具備時間功能的圖層來表示即時時間。藉助循序排序的圖徵（稱為軌跡），此工具可判定哪些圖徵是感興趣的事件。事件是由您指定的條件決定。
+    </p>
+    <p>首先，工具會使用一或多個欄位來判定哪些圖徵屬於某條軌跡。藉由在每個圖徵上使用時間，會循序排序軌跡並套用事件條件。會將符合開始事件條件的圖徵標記為事件。您可以選擇性地套用結束事件條件；當結束條件為 true 時，圖徵就不再是事件。將使用原始圖徵（使用代表事件名稱的新欄），並指出哪些圖徵符合事件條件來傳回結果。您可以傳回所有原始圖徵，或僅傳回作為事件的圖徵。
+    </p>
+    <p>例如，假設 GPS 測量出每 10 分鐘會出現颶風。每一次 GPS 測量會記錄颶風的名稱、位置、記錄時間和風速。您可以使用這些欄位來建立事件，其中風速大於 208 公里/小時的測量都是標題為 <code>災難</code>的事件。若未設定結束條件，會在圖徵不再符合開始條件時結束事件（風速下降到少於 208）。
+    </p>
+    <p>舉另一個例子，假設您正在使用稱為  <code>contaminateLevel</code> 的欄位來偵測您當地供水的化學濃度。您知道建議的水平少於 0.01 mg/L，且危險水平高於 0.03 mg/L。若要偵測值高於 0.03mg/L 的事件，並在污染水平回復正常前保留事件，可使用開始條件 <code>contaminateLevel &gt; 0.03</code> 和結束條件 <code>contaminateLevel &lt; 0.01</code> 來建立事件。這將標記值超過 0.03mg/L 的任何序列，直到他們回到少於 0.01 的值。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇要從中偵測事件的圖層</h2></div>
+        <hr/>
+        <div>
+            <p>將用來尋找事件的點、線、區域或表格。輸入圖層必須是包含圖徵且啟用時間功能（其表示即時時間），以及具有可用來識別軌跡的一或多個欄位。
+            </p>
+            <p>除了從地圖選擇圖層外，您也可以選擇下拉式清單底部的 <b>選擇分析圖層</b>，以瀏覽到大數據檔案分享資料集或圖徵圖層的內容。
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>選擇用來識別軌跡的一或多個欄位</h2></div>
+        <hr/>
+        <div>
+            <p>表示軌跡識別碼的欄位。您可以使用一或多個欄位來表示軌跡的唯一值。
+            </p>
+            <p>例如，若要重新建構颶風的軌跡，可以將颶風名稱作為軌跡欄位。
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>建立表達式條件來表示事件的開頭</h2></div>
+        <hr/>
+        <div>
+            <p>使用表達式建立器新增表達式來判斷事件的內容。如果指定的條件是 true，則圖徵是事件。若未指定結束條件，則會在開始條件不再是 true 時結束事件。
+            </p>
+            <p>例如，假設您想要在欄位  <code>concentration_1</code> 和 <code>concentration_2</code> 的總和大於 <code>concentration_3</code> 時收到警示。若要這麼做，請套用條件 <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>。
+            </p>
+            <p>如果您想瞭解集中隨時間變化的情況，並想要在目前的  <code>concentration_1</code> 大於 <code>concentration_2</code> 先前的兩個測量時予以改變，則可使用 <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code> 之類的表達式。
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>建立表達式條件來表示事件的結尾 (選用)</h2></div>
+        <hr/>
+        <div>
+            <p>（選用）使用表達式建立器新增條件來判斷事件的結束。如果指定的結束條件為 true，圖徵不再是事件。若未指定結束條件，則會在開始條件不再是 true 時結束事件。
+            </p>
+            <p>例如，假設您想要在欄位  <code>concentration_1</code> 和 <code>concentration_2</code> 的總和大於 <code>concentration_3</code> 時收到警示，及在 <code>concentration_4</code> 少於 <code>concentration_1</code> 時結束事件。若要這麼做，請套用開始條件 <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> 和結束條件 <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>。
+            </p>
+            <p>如果您想要在目前的  <code>concentration_1</code> 和前四次測量的平均值大於第一次測量時結束事件，則可使用 <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code> 之類的表達式。
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>詳情介紹</h2></div>
+        <hr/>
+        <div>
+            <p>所有輸出方法都會將欄位附加至原始圖徵。有兩個方法可判定傳回哪些圖徵：
+                <ul>
+                    <li> <b>所有圖徵</b> - 這是預設值。將傳回輸入中的所有圖徵。
+                    </li>
+                    <li> <b>僅限事件</b> - 此方法只會傳回作為事件的圖徵。不會傳回不視為事件的任何圖徵。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>使用時間間隔分析資料（選用）</h2></div>
+        <hr/>
+        <div>
+            <p>指定是否要使用時間間隔偵測事件，該時間間隔將分段輸入圖徵以進行分析。如果使用時間間隔，必須設定要使用的時間間隔並（選用）設定參考時間。若未設定參考時間，將使用 1970 年 1 月 1 日。
+            </p>
+            <p>例如，若將時間邊界設為 1 天（從 1990 年 1 月 1 日上午 9:00 起算），則會在每天上午 9:00 截斷每一個軌跡，並在該時段內進行分析。
+            </p>
+            <p>使用時間間隔可快速地加快計算時間，因為它會快速建立較小的軌跡以進行分析。如果按重複發生的時間間隔進行分割有利於分析，則建議將其運用於大數據處理。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p> 將建立之圖層的名稱。若是寫入到 ArcGIS Data Store，您的結果將儲存於<b>我的內容</b>並新增至地圖中。若是寫入到大數據檔案分享，您的結果將儲存於大數據檔案分享並新增至其資訊清單中。不會將它新增到地圖。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層已存在，工具將失敗。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式方塊寫入到 ArcGIS Data Store（關聯式或大型的時空資料儲存庫）時，可以在<b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

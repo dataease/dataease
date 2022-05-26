@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Cerca ubicacions similars</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Cerca ubicacions similars"></h2>
+        <hr/>
+    <p>En funci&oacute; dels criteris que especifiqueu, l'eina Cerca ubicacions similars mesura la similitud de les ubicacions de la capa de cerca de candidats amb una o diverses ubicacions de refer&egrave;ncia.  Aquesta eina pot respondre preguntes com ara 
+        <ul>
+            <li>Quins dels vostres establiments s&oacute;n els m&eacute;s similars a aquells que tenen els millors resultats pel que fa als perfils dels clients?
+            </li>
+            <li>Prenent com a refer&egrave;ncia les caracter&iacute;stiques de les poblacions m&eacute;s afectades per la malaltia, quines altres estan en alt risc?
+            </li>
+        </ul>
+        Per respondre preguntes com aquestes, heu de proporcionar les ubicacions de refer&egrave;ncia, les ubicacions de cerca candidates i els camps que representen els criteris que voleu comparar.  La primera capa d'entrada hauria de contenir les ubicacions o punts de refer&egrave;ncia.  Per exemple, una capa que contingui les botigues amb els millors resultats o les poblacions m&eacute;s afectades per la malaltia.  A continuaci&oacute;, podeu especificar la capa que cont&eacute; les ubicacions de cerca candidates.  Poden ser tots els vostres establiments o totes les altres poblacions.  Finalment, heu d'identificar un o diversos camps que s'utilitzaran per mesurar la similitud.  L'eina Cerca ubicacions similars classificar&agrave; totes les ubicacions de cerca candidates segons la semblan&ccedil;a amb les ubicacions de refer&egrave;ncia de tots els camps que h&agrave;giu seleccionat.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu la capa que conté les ubicacions de referència</h2></div>
+        <hr/>
+        <div>
+            <p>Capa que cont&eacute; les ubicacions de refer&egrave;ncia amb les quals s'ha d'establir la coincid&egrave;ncia. 
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Podeu fer servir totes les ubicacions o fer una selecció</h2></div>
+        <hr/>
+        <div>
+            <p>Feu servir els botons de selecci&oacute; per identificar les ubicacions de refer&egrave;ncia, si &eacute;s necessari. Aquesta opci&oacute; nom&eacute;s est&agrave; disponible si totes les entitats s'han dibuixat al mapa (no disponible per a un recurs compartit de fitxer de dades massives).  Per exemple, si la capa d'entrada cont&eacute; totes les ubicacions (tant les de refer&egrave;ncia com les candidates), haureu de fer servir una de les eines de selecci&oacute; per identificar les ubicacions de refer&egrave;ncia.  Si creeu dues capes independents, una amb les ubicacions de refer&egrave;ncia i l'altra amb totes les ubicacions de cerca candidates, no cal que feu cap selecci&oacute;.
+            </p>
+            <p>Si hi ha m&eacute;s d'una ubicaci&oacute; de refer&egrave;ncia, es crea una &uacute;nica ubicaci&oacute; amb la mitja dels valors de cadascun dels camps emprats per analitzar la similitud.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Cerca ubicacions similars a</h2></div>
+        <hr/>
+        <div>
+            <p>Les entitats de cerca candidates d'aquesta capa es classificaran de m&eacute;s a menys similars. 
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Basa la similitud en</h2></div>
+        <hr/>
+        <div>
+            <p>Els camps que seleccioneu seran els criteris emprats per avaluar la similitud.  Si seleccioneu un camp de poblaci&oacute; i d'ingressos, per exemple, les ubicacions de cerca candidates amb les classificacions m&eacute;s baixes (les millors) seran aquelles que tinguin valors de poblaci&oacute; i d'ingressos similars als de les ubicacions de refer&egrave;ncia.
+            </p>
+        </div>
+    </div>
+    <div id="matchMethod">
+        <div><h2>Determina els més i menys similars mitjançant</h2></div>
+        <hr/>
+        <div>
+            <p>El m&egrave;tode que seleccioneu determinar&agrave; la manera d'establir la coincid&egrave;ncia. 
+                <ul>
+                    <li>El m&egrave;tode  <b>valors de camp</b> utilitza les difer&egrave;ncies quadrades dels valors estandarditzats. Aquesta &eacute;s l'opci&oacute; per defecte.
+                    </li>
+                    <li>El m&egrave;tode  <b>perfils de camp</b> utilitza matem&agrave;tiques de similitud de cosinus per comparar el perfil dels valors estandarditzats. L'&uacute;s de perfils d'atributs requereix l'&uacute;s de dos camps d'an&agrave;lisi com a m&iacute;nim.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Mostra-m'ho</h2></div>
+        <hr/>
+        <div>
+            <p>Podeu veure totes les ubicacions de cerca candidates classificades de m&eacute;s a menys similars, o b&eacute; podeu especificar el nombre de resultats que voleu veure. 
+                <ul>
+                    <li>Si especifiqueu  <b>totes les ubicacions, de la m&eacute;s similar a la menys similar</b>, totes les entitats de la capa de cerca de candidats s'inclouran a la capa de resultats per ordre de classificaci&oacute;. Es retornar&agrave; un m&agrave;xim de 10.000 resultats.
+                    </li>
+                    <li>Si especifiqueu el  <code>nombre d'ubicacions</code> <code>m&eacute;s, menys o m&eacute;s i menys</code> <b>similars</b>, heu de determinar la quantitat de candidats m&eacute;s, menys o m&eacute;s i menys similars que s'han d'incloure a la capa de resultats. El valor m&agrave;xim perm&egrave;s &eacute;s de 10.000.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="appendFields">
+        <div><h2>Trieu camps que s'afegiran als resultats</h2></div>
+        <hr/>
+        <div>
+            <p>De manera opcional, afegiu camps a les dades des de la capa de cerca. Per defecte, s'afegiran tots els camps.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la capa que es crear&agrave;.  Si esteu escrivint en un ArcGIS Data Store, els resultats es desaran a  <b>El meu contingut</b> i s'afegiran al mapa. Si esteu escrivint en un recurs compartit de fitxers de dades massives, els resultats s'emmagatzemaran en aquest recurs i s'afegiran al seu manifest. No s'afegiran al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, l'eina no funcionar&agrave;.
+            </p>
+            <p>Aquesta capa de resultats contindr&agrave; les ubicacions de refer&egrave;ncia i el nombre d'entitats de cerca candidates classificades que h&agrave;giu especificat.   Si el nom de la capa de resultats ja existeix, se us demanar&agrave; que en canvieu el nom.
+            </p>
+            <p>Si escriviu a l' ArcGIS Data Store (magatzem de dades massives relacional o espaciotemporal) mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta a <b>El meu contingut</b>, on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

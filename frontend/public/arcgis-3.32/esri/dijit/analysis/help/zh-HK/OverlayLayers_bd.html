@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>疊加圖層</h2><p/>
+        <h2><img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" alt="疊加圖層"></h2>
+        <hr/>
+    <p>疊加圖層將兩個或更多個圖層合併為一個圖層。您可以認為疊加是透過地圖堆疊，查看並建立包含在堆疊中發現之所有資訊的單一地圖。疊加操作不僅合併線圖徵，所有參與疊加的圖徵屬性也傳遞到最終產品。疊加用於回答一個最基本的地理問題：什麼在什麼上？ 以下是範例：
+        <ul>
+            <li>哪些宗地位於百年一遇的洪泛區中？ （「在...中」是「在...上」的另一種表達方式。）
+                  
+            </li>
+            <li>什麼土地利用在什麼土壤類型上？
+                 
+            </li>
+            <li>什麼井在廢棄的軍事基地中？
+            </li>
+        </ul>
+        
+    </p>
+    <p>如果勾選 <b>使用目前地圖範圍</b>，则僅對目前地圖範圍中可見的輸入圖層和叠加圖層內的圖徵執行疊加。如果未勾選，則叠加輸入圖層和叠加圖層中的所有圖徵，即使它們處於目前地圖範圍以外。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇輸入圖層</h2></div>
+        <hr/>
+        <div>
+            <p>將要進行叠加的點、線或區域圖層。
+            </p>
+            <p class="OnlineOnly">除了從地圖選擇圖層，您也可以選擇下拉清單底部的 <b>選擇生動地圖集分析圖層</b>或 <b>選擇分析圖層</b>。此操作將開啟一個圖庫，其中包含可用於多種分析的圖層集合。 
+            </p>
+        </div>
+    </div>
+    <div id="overlayLayer">
+        <div><h2>選擇疊加圖層</h2></div>
+        <hr/>
+        <div>
+            <p>要叠加到輸入圖層上的圖層。
+            </p>
+            <p>除了從地圖選擇圖層外，您也可以選擇下拉式清單底部的 <b>選擇分析圖層</b>，以瀏覽到大數據檔案分享資料集或圖徵圖層的內容。
+            </p>
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>選擇疊加方法</h2></div>
+        <hr/>
+        <div>
+            <p>叠加方法定義了輸入圖層和叠加圖層的合併方式。
+
+                <ul>
+                    <li> <b>相交</b> - 結果僅包括叠加圖層中與輸入圖層圖徵相重叠的圖徵或圖徵的部分。當線圖徵或區域圖徵相交時，您可以指定作爲輸出的圖徵類型。
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>點與點相交
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="點與點輸入">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="點與帶有點輸出的點">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>線與線相交 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="線與線輸入">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="線與帶有線輸出的線 ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>區域與區域相交
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="區域與區域輸入">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="區域與帶有區域輸出的區域">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>清除</b> - 結果將包括叠加圖層中不與輸入圖層的區域相重叠的圖徵或圖徵的部分。疊加圖層可以包含區域圖徵、線圖徵或點圖徵。
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。其圖徵類型將與輸入和疊加圖層相同（區域、線或點）。預設名稱參照叠加方法以及輸入圖層名稱。如果已存在該名稱的圖層，系統將提示您提供其他名稱。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式方塊，可以在 <b>我的內容</b>中指定儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

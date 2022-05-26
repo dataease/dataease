@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Elegir mejores instalaciones</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Elegir mejores instalaciones"></h2>
+        <hr/>
+    <p>Elegir mejores instalaciones le permite elegir las mejores ubicaciones para las instalaciones. La herramienta asigna ubicaciones con demanda para las instalaciones a fin de satisfacer el objetivo especificado.
+    </p>
+    <p>Las instalaciones representan ubicaciones que ofrecen alg&uacute;n tipo de servicio, como estaciones de bomberos, colegios, bibliotecas, tiendas o centros de distribuci&oacute;n. Las ubicaciones con demanda representan ubicaciones que tienen demanda para los servicios que ofrecen las instalaciones, como puntos de bloque censal que resumen la poblaci&oacute;n de una determinada &aacute;rea.
+    </p>
+    <p>La herramienta Elegir mejores instalaciones puede ayudarte a responder a preguntas como:
+        <ul>
+            <li>Ante una emergencia, &iquest;c&oacute;mo se pueden asignar los hogares al centro de ayuda en caso de desastre correcto cuando la capacidad de camas es limitada y no se debe superar?
+            </li>
+            <li>&iquest;C&oacute;mo puede asignar barrios a su biblioteca m&aacute;s cercana y encontrar el n&uacute;mero de posibles usuarios a los que presta servicio cada biblioteca? 
+            </li>
+            <li>&iquest;C&oacute;mo puede encontrar la mejor ubicaci&oacute;n para un centro de distribuci&oacute;n de alimentaci&oacute;n que minimice la duraci&oacute;n total del viaje (y, por lo tanto, los costes) para la entrega a una cadena de tiendas de alimentaci&oacute;n?
+            </li>
+            <li>&iquest;D&oacute;nde deber&iacute;a ubicarse un nuevo parque para garantizar que la mayor&iacute;a de los residentes de una ciudad viven a cinco minutos andando del parque?
+            </li>
+            <li>&iquest;Cu&aacute;les son las mejores ubicaciones para varias tiendas de animales en un condado a fin de que el 40% de los propietarios de mascotas de ese condado no est&eacute;n a m&aacute;s de diez minutos en coche de una de las tiendas?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Objetivo</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique el objetivo que se debe satisfacer a la hora de asignar ubicaciones con demanda a las instalaciones.
+            </p>
+            <p>Con Elegir mejores instalaciones puede especificar el tipo de problema que est&aacute; solucionando: el objetivo. La herramienta est&aacute; optimizada para ofrecer una soluci&oacute;n para ese objetivo concreto. Independientemente del objetivo, b&aacute;sicamente se utiliza el mismo m&eacute;todo subyacente para llegar a una soluci&oacute;n; la cantidad de demanda de una determinada ubicaci&oacute;n con demanda se asigna a la instalaci&oacute;n m&aacute;s cercana. Los objetivos var&iacute;an dependiendo de c&oacute;mo se maneje la interacci&oacute;n entre la distancia (o la duraci&oacute;n) y la demanda. La herramienta tiene en cuenta la distancia/duraci&oacute;n del viaje y la cantidad de demanda y, en algunos casos, la capacidad de las instalaciones. Por ejemplo, si el objetivo da prioridad a minimizar la duraci&oacute;n del viaje, aun as&iacute; la herramienta intentar&aacute; maximizar, de forma secundaria, la demanda que se asigna. De forma similar, si el objetivo es maximizar la demanda que se asigna, la herramienta lo har&aacute; minimizando la duraci&oacute;n del viaje (asignando ubicaciones con demanda a la instalaci&oacute;n m&aacute;s cercana en lugar de asignar tan solo una instalaci&oacute;n cualquiera).
+            </p>
+            <p>Seg&uacute;n los datos y la configuraci&oacute;n que utilices, diferentes objetivos pueden generar los mismos resultados o parecidos. Sin embargo, debe especificar el objetivo m&aacute;s apropiado para su an&aacute;lisis.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Asignar a instalaciones existentes</h2></div>
+        <hr/>
+        <div>
+            <p>Utilice este objetivo si no desea ubicar instalaciones nuevas y desea asignar la demanda a las instalaciones existentes que puedan tener una capacidad limitada o ilimitada.    
+            </p>
+            <p>Con este objetivo, la demanda se asigna a las instalaciones seg&uacute;n la capacidad de la instalaci&oacute;n y la cantidad de demanda del &aacute;rea circundante. La demanda se asigna a la instalaci&oacute;n m&aacute;s cercana hasta que se agota la capacidad disponible. Si especificas un rango de viaje m&aacute;ximo, todas las ubicaciones con demanda que est&eacute;n m&aacute;s all&aacute; de este rango no se asignar&aacute;n a ninguna instalaci&oacute;n, aunque no se haya asignado toda la demanda.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Minimizar viaje</h2></div>
+        <hr/>
+        <div>
+            <p>Utilice este objetivo si desea buscar las instalaciones para las que se minimiza la duraci&oacute;n total del viaje o la distancia del viaje entre las ubicaciones con demanda y las instalaciones.
+            </p>
+            <p>Este objetivo suele ser aplicable cuando existe un viaje entre la instalaci&oacute;n y todas las ubicaciones con demanda peri&oacute;dicamente. Este objetivo se podr&iacute;a utilizar, por ejemplo, para minimizar la distancia total que recorren las mercanc&iacute;as desde los centros de distribuci&oacute;n hasta las tiendas, o para seleccionar un centro para una conferencia de forma que se minimice la duraci&oacute;n del viaje para todos los asistentes.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Maximizar la cobertura</h2></div>
+        <hr/>
+        <div>
+            <p>Utilice este objetivo si desea maximizar la cantidad de demanda que queda cubierta con una determinada duraci&oacute;n o distancia de las instalaciones.    
+            </p>
+            <p>Con este objetivo se eligen las instalaciones con las que se asigna la m&aacute;xima cantidad de demanda, de forma que toda la demanda de cada ubicaci&oacute;n con demanda se asigne a la instalaci&oacute;n m&aacute;s pr&oacute;xima a ella.
+            </p>
+            <p>Para este objetivo se precisa un rango de viaje m&aacute;ximo limitado; de lo contrario, toda la demanda se podr&iacute;a asignar a una &uacute;nica instalaci&oacute;n. Las ubicaciones con demanda que est&eacute;n m&aacute;s all&aacute; de la distancia o la duraci&oacute;n respecto a cualquiera de las instalaciones no se asignar&aacute;n (en este caso se mostrar&aacute;n los lugares donde no se est&aacute; satisfaciendo la demanda y los lugares donde pueden ser necesarias m&aacute;s instalaciones).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Maximizar cobertura con capacidad</h2></div>
+        <hr/>
+        <div>
+            <p>Utilice este objetivo si desea maximizar la cantidad de demanda que queda cubierta con las instalaciones, aunque estas tengan una capacidad limitada.    
+            </p>
+            <p>Con este objetivo se eligen las instalaciones con las que se asigna la m&aacute;xima cantidad de demanda sin superar la capacidad de las instalaciones. Toda la demanda de cada ubicaci&oacute;n con demanda se asigna a la instalaci&oacute;n m&aacute;s pr&oacute;xima a ella que tenga capacidad disponible (es decir, si el hecho de asignar una ubicaci&oacute;n con demanda a una instalaci&oacute;n hace que se supere la capacidad disponible de esa instalaci&oacute;n, la ubicaci&oacute;n con demanda no se asignar&aacute;, en lugar de asignar una parte de la demanda).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Cubrir un porcentaje de demanda</h2></div>
+        <hr/>
+        <div>
+            <p>Utilice este objetivo si desea saber cu&aacute;ntas instalaciones necesita como m&iacute;nimo para cubrir un determinado porcentaje de demanda.
+            </p>
+            <p>Con este objetivo se elige la cantidad m&iacute;nima de instalaciones necesarias para alcanzar el porcentaje de demanda especificado. Para una ubicaci&oacute;n con demanda que est&eacute; dentro del rango de viaje m&aacute;ximo de dos o m&aacute;s instalaciones, su demanda se dividir&aacute; proporcionalmente entre las instalaciones bas&aacute;ndose en la distancia a cada una de ellas. Este objetivo se suele utilizar cuando las personas pueden elegir la instalaci&oacute;n que desean visitar y donde se supone que, por lo general, visitan la instalaci&oacute;n m&aacute;s cercana (siempre que el resto de aspectos sean iguales).
+            </p>
+            <p>A diferencia de otros objetivos donde se eligen las instalaciones y donde se especifican cu&aacute;ntas instalaciones se deben seleccionar, con este objetivo se elige una cantidad de instalaciones personalizada, dependiendo del porcentaje de demanda que desea satisfacer. Supone que las instalaciones no tienen una capacidad limitada.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Medir</h2></div>
+        <hr/>
+        <div>
+            <p>Igual que con otras herramientas en las que se utiliza el viaje en los an&aacute;lisis, puede especificar si el viaje se debe medir en distancia o en tiempo y tambi&eacute;n puede elegir entre varios modos de viaje, como a pie, tiempo de conducci&oacute;n, distancia de conducci&oacute;n rural, etc&eacute;tera. Los modos de viaje disponibles vienen determinados por el administrador de su organizaci&oacute;n. Al usar  <b>Tiempo de conducci&oacute;n</b>, <b>Tiempo de conducci&oacute;n (medio rural)</b> o <b>Tiempo en cami&oacute;n</b>, puede incluir opcionalmente el tr&aacute;fico de un d&iacute;a de la semana y una hora del d&iacute;a concretos.
+            </p>
+            <p> Para asignar con precisi&oacute;n las ubicaciones con demanda a las instalaciones, debes especificar si el viaje es desde las instalaciones hasta las ubicaciones con demanda (por ejemplo, desde estaciones de bomberos hasta las casas) o desde las ubicaciones con demanda hasta las instalaciones (como los usuarios hacia las bibliotecas). Elegir mejores instalaciones tendr&aacute; en cuenta la direcci&oacute;n del viaje en calles de sentido &uacute;nico, si puede girar, si en las intersecciones no se permite girar a la izquierda, etc&eacute;tera, dependiendo de si el viaje es hacia fuera, desde la instalaci&oacute;n hasta las ubicaciones con demanda, o hacia dentro, desde las ubicaciones con demanda hasta las instalaciones.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Capa de ubicaciones de demanda</h2></div>
+        <hr/>
+        <div>
+            <p>Las entidades de puntos que representan ubicaciones que tienen demanda para los servicios que ofrecen las instalaciones. La herramienta asigna estas ubicaciones con demanda a las instalaciones apropiadas seg&uacute;n el objetivo seleccionado.
+            </p>
+            <p>Las ubicaciones con demanda tienen asociada una cantidad de demanda. Usa una constante para especificar el valor en el caso de que todas las ubicaciones con demanda tengan la misma demanda. Si la cantidad de demanda var&iacute;a por ubicaci&oacute;n con demanda, utiliza un campo de la capa de ubicaciones con demanda para especificar el valor para cada ubicaci&oacute;n con demanda.
+            </p>
+            <p>La demanda se asignar&aacute; a las instalaciones hasta que se asigne toda la demanda, independientemente de lo alejadas que est&eacute;n las ubicaciones con demanda de las instalaciones. Puede asignar un rango de viaje m&aacute;ximo hacia la capa de ubicaciones de demanda para crear un valor l&iacute;mite de distancia o de tiempo; todas las ubicaciones con demanda que est&eacute;n m&aacute;s all&aacute; de este valor l&iacute;mite no se asignar&aacute;n. Usa una constante para especificar el valor en el caso de que todas las ubicaciones con demanda tengan el mismo rango de viaje m&aacute;ximo. Si el rango de viaje m&aacute;ximo var&iacute;a por ubicaci&oacute;n con demanda, utiliza un campo de la capa de ubicaciones con demanda para especificar el valor para cada ubicaci&oacute;n con demanda.
+            </p>
+            <p>Si el tipo de objetivo es  <b>Cubrir un porcentaje de demanda</b>, deber&aacute; especificar el porcentaje de demanda m&iacute;nimo que desea que cubran las instalaciones.
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+            <p>La herramienta admite hasta 10.000 entidades en la capa de ubicaciones con demanda.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Capa de instalaciones requeridas</h2></div>
+        <hr/>
+        <div>
+            <p>Las entidades de puntos que representan ubicaciones que act&uacute;an como instalaciones proporcionando alg&uacute;n tipo de servicio. Normalmente, las instalaciones requeridas representan ubicaciones que ya existen en comparaci&oacute;n con instalaciones candidatas que suelen representar las ubicaciones en las que se crear&aacute;n o colocar&aacute;n instalaciones nuevas. A la hora de asignar ubicaciones con demanda, la herramienta utiliza las instalaciones de la  <b>Capa de instalaciones requeridas</b> antes de utilizar una instalaci&oacute;n de la <b>Capa de instalaciones candidatas</b>.
+            </p>
+            <p>Las instalaciones requeridas pueden tener una capacidad ilimitada (es decir, pueden satisfacer toda la demanda que se les asigna) o pueden tener una capacidad limitada. Si todas las instalaciones tienen la misma capacidad limitada (como el n&uacute;mero de hogares a los que puede prestar servicio una estaci&oacute;n de bomberos, por ejemplo, 4.000), debes especificar un valor de constante. Si la capacidad var&iacute;a entre las instalaciones (como la cantidad de plazas disponibles para los estudiantes de primer a&ntilde;o de un instituto), deber&aacute;s especificar un campo que contenga el valor de capacidad para cada instalaci&oacute;n).
+            </p>
+            <p>La herramienta admite hasta 100 entidades en la  <b>Capa de instalaciones requeridas</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Capa de instalaciones candidatas</h2></div>
+        <hr/>
+        <div>
+            <p>Las entidades de puntos que representan ubicaciones que act&uacute;an como instalaciones proporcionando alg&uacute;n tipo de servicio. Normalmente, las instalaciones candidatas representan ubicaciones en las que se crear&aacute;n o colocar&aacute;n instalaciones nuevas, en lugar de las instalaciones necesarias, que suelen representar ubicaciones que ya existen.
+            </p>
+            <p>Seg&uacute;n el objetivo de su an&aacute;lisis, deber&aacute; especificar la cantidad de instalaciones candidatas que se podr&aacute; elegir entre un conjunto de candidatos. Si especificas tanto instalaciones requeridas como candidatas, la herramienta utiliza las instalaciones de la  <b>Capa de instalaciones requeridas</b> antes de utilizar una instalaci&oacute;n de la <b>Capa de instalaciones candidatas</b>.
+            </p>
+            <p>Las instalaciones candidatas pueden tener una capacidad ilimitada (es decir, pueden satisfacer toda la demanda que se les asigna) o pueden tener una capacidad limitada. Si todas las instalaciones tienen la misma capacidad limitada (como el n&uacute;mero de hogares a los que puede prestar servicio una estaci&oacute;n de bomberos, por ejemplo, 4.000), debes especificar un valor de constante. Si la capacidad var&iacute;a entre las instalaciones (como la cantidad de plazas disponibles para los estudiantes de primer a&ntilde;o de un instituto), deber&aacute;s especificar un campo que contenga el valor de capacidad para cada instalaci&oacute;n).
+            </p>
+            <p>La herramienta admite hasta 1.000 entidades en la  <b>Capa de instalaciones candidatas</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Seleccionar capas de barrera</h2></div>
+        <hr/>
+        <div>
+            <p> Una o varias entidades que act&uacute;an como restricciones temporales (barreras) al viajar por las calles subyacentes. Puede especificar las barreras mediante entidades poligonales, de puntos o l&iacute;neas.
+            </p>
+            <p>Una barrera de punto puede modelar un &aacute;rbol ca&iacute;do, un accidente, una l&iacute;nea el&eacute;ctrica ca&iacute;da o cualquier cosa que bloquee completamente el tr&aacute;fico en una posici&oacute;n concreta a lo largo de la calle. Se permite el desplazamiento por la calle, pero no por la barrera. Puede especificar hasta 250 entidades para que act&uacute;en como barreras de punto.
+            </p>
+            <p>Una barrera de l&iacute;nea proh&iacute;be viajar a cualquier punto en que la barrera interseque las calles. Por ejemplo, un desfile o una protesta que bloquee el tr&aacute;fico por varios segmentos de calle se puede modelar con una barrera de l&iacute;nea. Si el n&uacute;mero de las entidades de calle intersecadas por todas las barreras de l&iacute;nea supera 500, la herramienta devuelve un error.
+            </p>
+            <p>Una barrera de pol&iacute;gono proh&iacute;be viajar a cualquier punto en que el pol&iacute;gono interseque las calles. Un uso de este tipo de barrera consiste en modelar inundaciones cubriendo &aacute;reas de la red de calles que hacen inviables los viajes por carretera. Si el n&uacute;mero de las entidades de calle intersecadas por todas las barreras de pol&iacute;gono supera 2.000, la herramienta devuelve un error.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa.  El nombre predeterminado se basa en el nombre de la herramienta y el nombre de la capa de entrada. Si el nombre de capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>La capa resultante incluir&aacute; una capa para cada uno de los elementos siguientes: instalaciones que tienen asignadas demandas, ubicaciones con demanda que est&aacute;n asignadas a instalaciones y l&iacute;neas de asignaci&oacute;n que conectan las ubicaciones con demanda con sus instalaciones asignadas. Las l&iacute;neas de asignaci&oacute;n se dibujan como l&iacute;neas rectas; sin embargo, la duraci&oacute;n del viaje o la distancia del viaje entre la instalaci&oacute;n y la ubicaci&oacute;n con demanda siempre se basa en el modo de viaje especificado y no utilizando distancias en l&iacute;nea recta.
+            </p>
+            <p>Con el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

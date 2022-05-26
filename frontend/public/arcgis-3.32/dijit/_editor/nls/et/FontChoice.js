@@ -1,0 +1,2 @@
+//>>built
+define("dijit/_editor/nls/et/FontChoice",{fontSize:"Suurus",fontName:"Font",formatBlock:"Formaat",serif:"seriifidega","sans-serif":"groteskkiri",monospace:"p\u00fcsisamm",cursive:"kursiiv",fantasy:"fantaasia",noFormat:"Puudub",p:"L\u00f5ik",h1:"Pealkiri",h2:"Alapealkiri",h3:"Ala-alapealkiri",pre:"Eelvormindatud",1:"eriti v\u00e4ike",2:"v\u00e4ga v\u00e4ike",3:"v\u00e4ike",4:"keskmine",5:"suur",6:"v\u00e4ga suur",7:"eriti suur"});

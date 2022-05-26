@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Punten interpoleren</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Punten interpoleren"></h2>
+        <hr/>
+    <p>   De tool Punten interpoleren voorspelt waarden op nieuwe locaties op basis van metingen vanaf een verzameling van punten. De tool neemt puntgegevens met waarden op elk punt en retourneert gebieden die worden geclassificeerd op voorspelde waarden. Bijvoorbeeld
+        <ul>
+            <li>Een dienst voor het beheer van de luchtkwaliteit heeft sensoren die de mate van vervuiling meet. Punten interpoleren kan worden gebruikt om de mate van vervuiling te voorspellen op locaties waar geen sensoren zijn, zoals locaties met risicopopulaties, zoals scholen of ziekenhuizen.
+            </li>
+            <li>Voorspel concentraties van zware metalen in gewassen op basis van monsters die worden genomen van individuele planten.
+            </li>
+            <li>Voorspel niveaus van voedingsstoffen in de bodem (stikstof, fosfor, kalium enzovoort) en andere indicatoren (zoals elektrische geleidbaarheid) om hun relatie met gewasopbrengsten te onderzoeken en geschikte hoeveelheden meststoffen voor elke locatie in het veld voor te schrijven.
+
+            </li>
+            <li>Meteorologische toepassingen zijn onder andere de voorspelling van de temperatuur, neerslag en verwante variabelen (zoals zure regen). 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies puntlaag met locaties met bekende waarden</h2></div>
+        <hr/>
+        <div>
+            <p>De puntlaag om te gebruiken als de basis van interpolatie.  
+
+            </p>
+            <p>Naast het kiezen van een laag uit uw kaart, kunt u  <b>Analyselaag kiezen</b> selecteren onderaan de vervolgkeuzelijst. Met deze optie wordt een galerij geopend waarin u kunt bladeren naar en datasets van verschillende bronnen kunt selecteren die u in uw analyse kunt gebruiken. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Kies een veld om te interpoleren</h2></div>
+        <hr/>
+        <div>
+            <p>Kies het veld dat de waarden bevat die u wilt interpoleren.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Optimaliseer voor</h2></div>
+        <hr/>
+        <div>
+            <p>Kies uw voorkeur voor snelheid versus nauwkeurigheid. Het berekenen van nauwkeurigere voorspellingen duurt langer.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Fouten in voorspelling van uitvoer</h2></div>
+        <hr/>
+        <div>
+            <p> Als deze optie is geselecteerd, wordt een laag met standaardfouten voor de interpolatievoorspellingen gemaakt. De naam van de uitvoerlaag zal de naam zijn van de resultaatlaag met daaraan toegevoegd de fouten.
+            </p>
+            <p>Standaardfouten zijn handig omdat deze informatie bieden over de betrouwbaarheid van de voorspelde waarden. Een eenvoudige vuistregel is dat de waarde true in 95 procent van de gevallen binnen twee standaardfouten van de voorspelde waarde zal vallen. Stel bijvoorbeeld dat een nieuwe locatie een voorspelde waarde van 50 krijgt met een standaardfout van 5. Dit betekent dat de beste inschatting van deze tool is dat de waarde true op die locatie 50 bedraagt, maar dat deze redelijkerwijs ook tussen 40 en 60 zou kunnen liggen. Om het bereik met redelijke waarden te berekenen, vermenigvuldigt u de standaardfout met 2. Vervolgens voegt u deze waarde toe aan de voorspelde waarde om de bovengrens van het bereik te kennen en trekt u deze waarde af van de voorspelde waarde om de ondergrens van het bereik te kennen.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Classificeer op</h2></div>
+        <hr/>
+        <div>
+            <p>Kies hoe voorspelde waarden worden geclassificeerd in gebieden.
+                <ul>
+                    <li>Geometrisch interval: gebieden worden gebaseerd op klasse-intervallen die een geometrische reeks hebben. Deze methode zorgt ervoor dat elk klassebereik ongeveer hetzelfde aantal waarden binnen elke klasse heeft en dat de wijziging tussen intervallen consistent is.
+                    </li>
+                    <li>Gelijk interval: gebieden worden gemaakt zodat het bereik van voorspelde waarden gelijk is voor elk gebied.
+                    </li>
+                    <li>Gelijk gebied: gebieden worden gemaakt zodat het aantal gegevenswaarden in elk gebied gelijk is. Als de gegevens bijvoorbeeld meer hoge waarden hebben dan lage waarden, zullen er meer gebieden worden gemaakt voor hoge waarden.
+                    </li>
+                    <li>Handmatig: met deze optie kunt u uw eigen bereik met waarden voor gebieden defini&euml;ren. Deze waarden worden ingevoerd in de onderstaande parameter  <b>Waarden van klassebreekpunten</b>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Aantal klassen</h2></div>
+        <hr/>
+        <div>
+            <p>Geeft het aantal klassen (bereik van voorspelde waarden) in de resultaatlaag weer. Elke klasse definieert de grens van gebieden. De waarden van deze klassen zullen worden bepaald door de bovenstaande parameter 
+ <b>Classificeer op</b>.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Waarden van klassebreekpunten</h2></div>
+        <hr/>
+        <div>
+            <p>Voer de gewenste klassebreekpuntwaarden in gescheiden door spaties. Als u bijvoorbeeld klassebreekpunten wilt op de waarden 1,5, 3 en 7, dan voert u  <code>1,5 3 7</code> in. Deze waarden bepalen de bovengrens van elke klasse, zodat het aantal klassen gelijk zal zijn aan het aantal ingevoerde waarden. Er worden geen gebieden gemaakt voor locaties met voorspelde waarden boven de grootste ingevoerde breekpuntwaarde. U moet minstens twee waarden invoeren en maximaal 32.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Uitvoer bijsnijden naar</h2></div>
+        <hr/>
+        <div>
+            <p>Teken een laag of geef deze op om het gebied op te geven waar u wilt dat het resultaat wordt getekend. Als u bijvoorbeeld metingen van verontreiniging in een meer wilt interpoleren, kunt u de grens van het meer gebruiken in deze parameter en de uitvoer zal alleen tekenen binnen de grens van het meer.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Voorspel op deze locaties</h2></div>
+        <hr/>
+        <div>
+            <p>Teken een laag die puntlocaties weergeeft of geef deze op om voorspellingswaarden te berekenen. Hiermee kunt u voorspellingen maken voor specifieke locaties die voor u interessant zijn. Als de invoerlaag bijvoorbeeld metingen van verontreinigingsniveaus weergeeft, kunt u deze parameter gebruiken om de verontreinigingsniveaus te voorspellen van locaties met grote risicopopulaties, zoals scholen of ziekenhuizen. U kunt deze informatie vervolgens gebruiken om aanbevelingen te doen aan gezondheidszorgdiensten op deze locaties.
+            </p>
+            <p>Indien aanwezig geeft deze tool een puntlaag weer met voorspellingen op de opgegeven locaties. De naam van de uitvoerlaag zal de naam zijn van de resultaatlaag met daaraan toegevoegd de punten.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laagnaam al bestaat, wordt u gevraagd een nieuwe naam te verschaffen.
+            </p>
+            <p>Met behulp van het vervolgkeuzemenu  <b>Resultaat opslaan in</b> kunt u de naam van een map opgeven in <b>Mijn Content</b> waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

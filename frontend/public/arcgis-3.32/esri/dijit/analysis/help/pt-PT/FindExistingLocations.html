@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Encontrar Locais Existentes</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Encontrar Locais Existentes"></h2>
+        <hr/>
+    <p>Esta ferramenta cria novos elementos na &aacute;rea de estudo que cumprem um conjunto de crit&eacute;rios definidos por si. Estes crit&eacute;rios podem ser baseados em consultas de atributos (por exemplo, parcelas que est&atilde;o vazias) e rela&ccedil;&otilde;es (por exemplo, a uma milha do rio). 
+    </p>
+    <p>Se  <b>Use uma extens&atilde;o de mapa actual</b> est&aacute; validado, apenas elementos na camada de entrada vis&iacute;vel dentro da extens&atilde;o de mapa actual que ser&aacute; analisada.  Se n&atilde;o marcar a op&ccedil;&atilde;o, ser&atilde;o analisados todos os elementos na camada de an&aacute;lise, mesmo que estejam fora da extens&atilde;o atual do mapa.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Escolher camada contendo elementos que pretende e utilizar atributos e consultas espaciais.</h2></div>
+        <hr/>
+        <div>
+            <p>O ponto, linha, ou camada de &aacute;rea para a qual pretende encontrar elementos numa combina&ccedil;&atilde;o de atributos e consultas espaciais especificado abaixo.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, pode selecionar  <b>Escolher Camada de An&aacute;lise</b> que se encontra na parte inferior da lista pendente. Esta op&ccedil;&atilde;o abre uma galeria, na qual pode navegar e selecionar conjuntos de dados de v&aacute;rias fontes para utilizar na sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Construa uma consulta para descobrir elementos</h2></div>
+        <hr/>
+        <div>
+            <p>Clique no bot&atilde;o  <b>Adicionar Express&atilde;o</b> para definir uma express&atilde;o. Pode inserir v&aacute;rias express&otilde;es. Ap&oacute;s introduzir as express&otilde;es e clicar o bot&atilde;o <b>Executar An&aacute;lise</b> , elementos na sua camada de entrada s&atilde;o filtrados atrav&eacute;s de cada express&atilde;o.  Os elementos que satisfazem todas as express&otilde;es s&atilde;o inclu&iacute;dos na camada de resultados.
+            </p>
+            <p>Existem dois tipos b&aacute;sicos de express&otilde;es que podem ser criadas: de atributos e espacial. Express&otilde;es de atributos s&atilde;o consultas com base em valores de campos, tais como  <code>onde o nome &eacute; 'San Francisco'</code>. Existem quatro tipos de express&otilde;es espaciais:
+                <ul>
+                    <li> <b>a uma dist&acirc;ncia de</b>: o elemento deve estar dentro de uma dist&acirc;ncia de um elemento noutra camada.  Por exemplo, encontrar as parcelas que se encontram a menos de 500 metros de dist&acirc;ncia do rio de Los Angeles.
+                    </li>
+                    <li> <b>cont&eacute;m completamente</b>: o elemento deve conter a totalidade de um elemento de outra camada.  Por exemplo, encontrar bacias hidrogr&aacute;ficas que cont&ecirc;m completamente parcelas designadas para uso industrial. Nenhuma parte da parcela pode estar fora da bacia hidrogr&aacute;fica.
+                    </li>
+                    <li> <b>completamente contido</b>: o elemento deve rdtsr totalmente rodeado por um elemento de outra camada.  Por exemplo, encontrar zonas escolares que est&atilde;o completamente contidas dentro dos limites de uma cidade. Nenhuma parte da zona escolar pode estar fora dos limites da cidade.
+                    </li>
+                    <li> <b>interseta</b>: o elemento cont&eacute;m uma parte de um elemento noutra camada.  Por exemplo, encontrar parcelas que intersetam rios. Qualquer parte do rio que passa atrav&eacute;s de uma parcela ou toca os seus limites, interseta a parcela.
+                    </li>
+                    <li> <b>Mais pr&oacute;ximo de</b>: o elemento tem de ser o que se encontra mais pr&oacute;ximo de um elemento noutra camada.  Por exemplo, encontrar o restaurante mais pr&oacute;ximo de cada hotel.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Cada express&atilde;o espacial possui uma nega&ccedil;&atilde;o correspondente, &agrave; exce&ccedil;&atilde;o de  <b>mais pr&oacute;ximo de</b>; <b>n&atilde;o se encontra a uma dist&acirc;ncia menor do que</b>, <b>n&atilde;o cont&eacute;m completamente</b>, <b>n&atilde;o completamente contido</b>, e <b>n&atilde;o interseta</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se o nome da camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Guardar resultado em</b> pode definir o nome da pasta em <b>O Meu Conte&uacute;do</b> onde o resultado ser&aacute; guardado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

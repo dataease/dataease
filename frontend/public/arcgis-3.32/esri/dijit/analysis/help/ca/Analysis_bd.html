@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="bdToolbox">
+        <p> El GeoAnalytics distribueix el treball d'an&agrave;lisi a l' ArcGIS GeoAnalytics Server. Aix&ograve; us permet analitzar dades m&eacute;s r&agrave;pid amb diversos equips . Les eines seg&uuml;ents estan disponibles: <ul>
+                <li> Consolida punts
+                </li>
+                <li> Crea una quadr&iacute;cula de diverses variables
+                </li>
+                <li> Descriu el dataset
+                </li>
+                <li> Uneix les entitats
+                </li>
+                <li> Reconstrueix els recorreguts
+                </li>
+                <li> Resumir els atributs
+                </li>
+                <li> Resumir dins de
+                </li>
+                <li> Geocodifica les ubicacions a partir d'una taula
+                </li>
+                <li> Enriqueix des de la quadr&iacute;cula de diverses variables
+                </li>
+                <li> Detecta incidents
+                </li>
+                <li> Cerca ubicacions similars
+                </li>
+                <li> Calcula la densitat
+                </li>
+                <li> Cerca cl&uacute;sters de punts
+                </li>
+                <li> Cerca punts calents
+                </li>
+                <li> Classificaci&oacute; i regressi&oacute; forestals
+                </li>
+                <li> Regressi&oacute; lineal generalitzada
+                </li>
+                <li> Crea &agrave;rees d'influ&egrave;ncia
+                </li>
+                <li> Afegeix dades
+                </li>
+                <li> Calcula el camp
+                </li>
+                <li> Copia al Data Store
+                </li>
+                <li> Superposa les capes
+                </li>
+                <li> Dissol els l&iacute;mits
+                </li>
+                <li> Fusiona les capes
+                </li>
+                <li> Retalla la capa 
+                </li>
+            </ul>
+            
+        </p>
+        <p>El GeoAnalytics se centra en l'an&agrave;lisi de grans quantitats de dades amb l'&egrave;mfasi en els patrons espacials i temporals. 
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Summarize Data</h2>
+        <hr/>
+        <p> The Summarize Data toolset contains tools that calculate total counts, lengths, areas, and basic descriptive statistics of features and their attributes within areas or near other features.
+            <ul>
+                <li> <b>Aggregate Points</b> calculates statistics about points that fall within specified areas or bins.
+                </li>
+                <li> <b>Build Multi-Variable Grid</b> generates a grid of square or hexagonal bins and calculates values for each bin based on the proximity of each input layer.
+                </li>
+                <li> <b>Describe Dataset</b> calculates a summary of your input, and can optionally generate a sample of your input layer.
+                </li>
+                <li> <b>Join Features</b> calculates statistics about features that share a spatial, temporal, or attribute relationship with other features.
+                </li>
+                <li> <b>Reconstruct Tracks</b> calculates statistics about points or polygons that belong to the same track and reconstructs inputs into tracks.
+                </li>
+                <li> <b>Summarize Attributes</b> calculates statistics about feature or tabular data that share attributes.
+                </li>
+                <li> <b>Summarize Within</b> calculates statistics for area features and attributes that overlap each other.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Consolida punts</h2></td>
+                    <td>
+                    <img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" class="titleImage" alt="Consolida punts">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Mitjan&ccedil;ant una capa d'entitats de punts i una capa d'entitats d'&agrave;rees o bins definits per una dist&agrave;ncia especificada, aquesta eina determina quins punts es troben dins de cada &agrave;rea o bin i calcula estad&iacute;stiques de tots els punts de dins de cada &agrave;rea o bin. Tamb&eacute; podeu aplicar la funci&oacute; d'interval de temps amb aquesta eina. 
+            </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>Donades les ubicacions de punts d'incidents delictius, compteu el nombre de delictes per comtat o per altres districtes administratius.
+                    </li>
+                    <li>Cerqueu els ingressos m&eacute;s alts i m&eacute;s baixos per ubicacions de franqu&iacute;cies mitjan&ccedil;ant bins de 100quil&ograve;metres.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="BuildMultiVariableGridTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Crea una quadrícula de diverses variables</h2></td>
+                    <td>
+                    <img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" class="titleImage" alt="Diagrama del flux de treball Afegeix dades">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>L'eina Crear una quadr&iacute;cula de diverses variables genera una quadr&iacute;cula de bins quadrats o hexagonals i calcula els valors de cada bin segons la proximitat d'una o diverses capes d'entrada.
+            </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>Amb diverses capes d'infraestructura de transport p&uacute;blic especificades, quina part de la ciutat &eacute;s menys accessible amb transport p&uacute;blic?
+                    </li>
+                    <li>Amb les capes de vies navegables especificades, com ara llacs i rius, com es diu la massa d'aigua m&eacute;s propera a cada ubicaci&oacute; dels EUA?
+                    </li>
+                    <li>Amb una capa d'ingressos d'una unitat familiar especificada, en quin lloc dels EUA es dona la variaci&oacute; d'ingressos m&eacute;s gran en un radi de 50 milles?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DescribeDatasetTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Descriu el dataset</h2></td>
+                    <td>
+                    <img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" class="titleImage" alt="Diagrama de flux de treball de Descriu el dataset">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Resumiu les entitats d'entrada amb estad&iacute;stiques, capes de mostra i visualitzacions. Podeu triar que es mostri una capa de mostra o una capa d'extensi&oacute;.
+            </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>Consulteu les estad&iacute;stiques de resum calculades per entendre quins valors cont&eacute; el vostre dataset.
+                    </li>
+                    <li>En lloc de dibuixar tot el dataset, creeu una capa de subconjunt per visualitzar les entitats i els seus atributs quan s'afegeixin a un mapa.
+                    </li>
+                    <li>Estalvieu temps i recursos, i executeu l'an&agrave;lisi en una capa de mostra abans d'executar l'an&agrave;lisi al dataset sencer.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Uneix les entitats</h2></td>
+                    <td>
+                    <img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" class="titleImage" alt="Uneix les entitats">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Podeu utilitzar capes d'entitats o dades tabulars per unir entitats i registres en funci&oacute; de les relacions especifiques entre les capes o taules d'entrada.  Les unions es determinaran per les relacions espacials, temporals i d'atributs i, si ho desitgeu, podeu calcular el resum de les estad&iacute;stiques.  
+            </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>Un cop especificades les ubicacions de punts d'incidents delictius d'una hora, uniu-hi les dades de delinq&uuml;&egrave;ncia mitjan&ccedil;ant l'especificaci&oacute; d'una relaci&oacute; espacial de delictes a una dist&agrave;ncia d'1 quil&ograve;metre entre si i que s'han produ&iuml;t amb una difer&egrave;ncia m&agrave;xima d'1 hora per determinar si hi ha una seq&uuml;&egrave;ncia de delictes propers en espai i temps.
+                    </li>
+                    <li>Amb una taula proporcionada de codis postal amb informaci&oacute; demogr&agrave;fica i entitats d'&agrave;rees que representen edificis residencials, uniu la informaci&oacute; demogr&agrave;fica a les resid&egrave;ncies perqu&egrave; cada resid&egrave;ncia tingui la informaci&oacute;.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ReconstructTracksTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Reconstrueix els recorreguts</h2></td>
+                    <td>
+                    <img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" class="titleImage" alt="Reconstrueix els recorreguts">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Amb una capa amb la funci&oacute; de temps habilitada d'entitats de punts o pol&iacute;gons que representi un  <code>instant</code> en el temps, aquesta eina determina quines entitats d'entrada pertanyen a un recorregut i demana les entrades de manera seq&uuml;encial en el temps. Les estad&iacute;stiques es calculen de manera opcional per a les entitats d'entrada a cada recorregut.
+            </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>Amb les ubicacions de punts i l'hora de les mesures d'un hurac&agrave;, calculeu la velocitat mitjana i la pressi&oacute; m&agrave;xima del vent de l'hurac&agrave;.
+                    </li>
+                    <li>Utilitzeu les mesures GPS dels vaixells per reconstruir les rutes mar&iacute;times com a l&iacute;nies. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeAttributesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Resumir els atributs</h2></td>
+                    <td>
+                    <img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" class="titleImage" alt="Diagrama de Resumir els atributs">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Aquesta eina utilitza dades tabulars o d'entitats per resumir les estad&iacute;stiques de camps espec&iacute;fics. 
+            </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>Amb les ubicacions de botigues d'alimentaci&oacute; amb un camp  <i>COMPANY_NAME</i> especificades, feu un resum de les botigues pel nom d'empresa amb la finalitat de determinar les estad&iacute;stiques de cada empresa.
+                    </li>
+                    <li>Amb la taula de botigues d'alimentaci&oacute; amb els camps  <i>COMPANY_NAME</i> i <i>COUNTY</i> proporcionada, feu un resum de les botigues pel nom d'empresa i el comtat amb la finalitat de determinar les estad&iacute;stiques de cada empresa a cada comtat.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Resumir dins de</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Resumir dins de">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Cerca &agrave;rees (i porcions d'&agrave;rees) que se superposen entre dues capes i calcula estad&iacute;stiques sobre la superposici&oacute;. 
+            </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>Donada una capa d'&agrave;rees de conques hidrogr&agrave;fiques i una capa d'&agrave;rees d'&uacute;s del s&ograve;l per tipus d'&uacute;s, calculeu la superf&iacute;cie total del tipus d'&uacute;s del s&ograve;l per a cada conca hidrogr&agrave;fica. 
+                    </li>
+                    <li>Donada una capa de parcel&middot;les d'un comtat i una capa de l&iacute;mits de ciutats, resumiu el valor mitj&agrave; de les parcel&middot;les buides en cada ciutat.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="regularsize">
+        <h2>Cerca ubicacions</h2>
+        <hr/>
+        <p>Aquestes eines es fan servir per identificar &agrave;rees que compleixin els diversos criteris que especifiqueu.   
+            <ul>
+                <li> <b>Detecta incidents</b> funciona amb les capes que tenen la funci&oacute; de temps habilitada per determinar quines entitats compleixen una condici&oacute; espec&iacute;fica.
+                </li>
+                <li> <b>Geocodifica les ubicacions a partir d'una taula</b> converteix adreces en coordenades.
+                </li>
+                <li> <b>Cerca ubicacions similars</b> cerca les ubicacions m&eacute;s similars a una o diverses ubicacions de refer&egrave;ncia en funci&oacute; dels criteris que especifiqueu.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DetectIncidentsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Detecta incidents</h2></td>
+                    <td>
+                    <img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" class="titleImage" alt="Detecta incidents">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Aquesta eina funciona amb una capa de punts, l&iacute;nies, &agrave;rees o taules que t&eacute; la funci&oacute; de temps habilitada i que representa un instant de temps.   Mitjan&ccedil;ant entitats ordenades de manera seq&uuml;encial, anomenades recorreguts, aquesta eina determina quines entitats s&oacute;n incidents d'inter&egrave;s. Els incidents estaran determinats per les condicions que especifiqueu. 
+            </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>Detecteu les mesures d'huracans de la categoria 4 segons l'atribut de la velocitat del vent.
+                    </li>
+                    <li>Amb les mesures GPS del moviment dels vaixells i un camp que representi la velocitat del vaixell, trobeu mesures que superin 1,5 vegades la mitjana de les cinc mesures anteriors.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Geocodifica les ubicacions a partir d'una taula</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="Geocodifica les ubicacions a partir d'una taula">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Converteix adreces en coordenades. Utilitzeu aquesta eina en taules de recursos compartits de fitxers de dades massives.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Cerca ubicacions similars</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="Cerca ubicacions similars">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>En funci&oacute; dels criteris que especifiqueu, per a la cerca ubicacions similars es mesura la similitud de les ubicacions de la capa de cerca de candidats amb una o diverses ubicacions de refer&egrave;ncia. 
+            </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples: 
+                <ul>
+                    <li>Per cercar les deu botigues m&eacute;s similars, examineu el nombre d'empleats i les vendes anuals.
+                    </li>
+                    <li>Per cercar les 100 ciutats m&eacute;s similars, examineu la relaci&oacute; entre la poblaci&oacute;, el creixement anual i la recaptaci&oacute; d'impostos.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="largesize">
+        <h2>Analitza els patrons</h2>
+        <hr/>
+        <p>  Aquestes eines us ajuden a identificar, quantificar i visualitzar els patrons espacials de les vostres dades.
+            <ul>
+                <li> <b>Calcula la densitat</b> pren quantitats conegudes d'algun fenomen i les dispersa pel mapa.
+                </li>
+                <li> <b>Cerca punts calents</b> identifica clusteritzacions estad&iacute;sticament significatives al patr&oacute; espacial de les vostres dades.
+                </li>
+                <li> <b>Cerca cl&uacute;sters de punts</b> cerca cl&uacute;sters d'entitats de punts dins del soroll de l'entorn en funci&oacute; de la seva distribuci&oacute; espacial.
+                </li>
+                <li> <b>Classificaci&oacute; i regressi&oacute; forestals</b> crea models i genera prediccions mitjan&ccedil;ant una adaptaci&oacute; de l'algoritme de bosc aleatori de Leo Breiman, un m&egrave;tode d'aprenentatge autom&agrave;tic supervisat.
+                </li>
+                <li> <b>Regressi&oacute; lineal generalitzada</b> genera prediccions o modela una variable dependent des del punt de vista de la seva relaci&oacute; amb un conjunt de variables explicatives.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calcula la densitat</h2></td>
+                    <td>
+                    <img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" class="titleImage" alt="Calcula la densitat">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>L'eina Calcula la densitat crea un mapa de densitat a partir de les entitats de punts mitjan&ccedil;ant la difusi&oacute; de quantitats conegudes del mateix fenomen (que es representen com a atributs dels punts) al mapa. El resultat &eacute;s una capa d'&agrave;rees que representen la densitat.
+            </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>C&agrave;lcul de les densitats d'hospitals en un comtat.  La capa de resultats mostrar&agrave; les &agrave;rees amb una accessibilitat alta i baixa als hospitals. Aquesta informaci&oacute; es pot utilitzar per decidir on s'haurien de construir hospitals nous.
+                    </li>
+                    <li>Identificaci&oacute; d'&agrave;rees amb un alt risc d'incendi forestal en funci&oacute; de l'historial d'ubicacions d'aquests incendis.
+                    </li>
+                    <li>Localitzaci&oacute; de comunitats allunyades de les carreteres principals per planificar on s'haurien de construir carreteres noves.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Cerca clústers de punts</h2></td>
+                    <td>
+                    <img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" class="titleImage" alt="Cerca cl&uacute;sters de punts">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>L'eina Cerca cl&uacute;sters de punts cerca cl&uacute;sters d'entitats de punts dins del soroll de l'entorn en funci&oacute; de la seva distribuci&oacute; espacial.
+            </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>Cerqueu unitats familiars infectades per plagues per ajudar a orientar els esfor&ccedil;os d'eradicaci&oacute;.  
+                    </li>
+                    <li>Informeu i actueu en les necessitats de rescat i evacuaci&oacute; segons la mida i la ubicaci&oacute; dels cl&uacute;sters mitjan&ccedil;ant tuits geolocalitzats que segueixin els riscos naturals o atacs terroristes.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Cerca punts calents</h2></td>
+                    <td>
+                    <img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" class="titleImage" alt="Cerca punts calents">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>L'eina Cerca punts calents determinar&agrave; si hi ha cap clusteritzaci&oacute; estad&iacute;sticament significativa al patr&oacute; espacial de les vostres dades. 
+                <ul>
+                    <li>Els vostres punts (delictes, arbres, accidents de tr&agrave;nsit) estan realment clusteritzats?  Com en podeu estar segur?
+                    </li>
+                    <li>Heu descobert realment un punt calent estad&iacute;sticament significatiu (de despesa, mortalitat infantil, notes d'examen sistem&agrave;ticament altes) o el mapa explicaria una hist&ograve;ria diferent si en canvi&eacute;ssiu els s&iacute;mbols?
+                    </li>
+                </ul>
+                L'eina Cerca punts calents us ajudar&agrave; a respondre aquestes preguntes amb confian&ccedil;a.
+            </p>
+            <br/>
+        </div>
+        <div id="ForestBasedClassificationAndRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Classificació i regressió forestals</h2></td>
+                    <td>
+                    <img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" class="titleImage" alt="Diagrama de flux de treball de classificaci&oacute; i regressi&oacute; forestals">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>L'eina Classificaci&oacute; i regressi&oacute; forestals defineix i genera prediccions mitjan&ccedil;ant una adaptaci&oacute; de l'algoritme de bosc aleatori de Leo Breiman, que &eacute;s un m&egrave;tode d'aprenentatge autom&agrave;tic supervisat
+            </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>Donades les dades sobre l'aparici&oacute; de praderia submarina, aix&iacute; com un nombre de variables explicatives mediambientals que es representen com els dos atributs que s'han enriquit amb una quadr&iacute;cula de diverses variables per calcular les dist&agrave;ncies a les f&agrave;briques aig&uuml;es amunt i els ports principals, les futures aparicions de praderia submarina es podran predir segons les projeccions d'aquestes mateixes variables explicatives mediambientals.
+                          
+                    </li>
+                    <li>Suposem que teniu dades del rendiment agr&iacute;cola de centenars de granges a tot el pa&iacute;s, juntament amb altres atributs de cadascuna de les granges (nombre d'empleats, superf&iacute;cie, etc.). Amb aquestes dades, podeu proporcionar un conjunt d'entitats que representin granges on no teniu el rendiment agr&iacute;cola (per&ograve; s&iacute; que teniu totes les altres variables), i fer una predicci&oacute; sobre aquesta relaci&oacute;.
+                    </li>
+                    <li>Els valors de l'habitatge es poden predir segons els preus de les cases venudes durant l'any en curs. El preu de venda dels habitatges venuts, juntament amb informaci&oacute; sobre el nombre d'habitacions, la dist&agrave;ncia a les escoles, la proximitat a les carreteres i vies principals, la mitjana d'ingressos i els &iacute;ndex de delinq&uuml;&egrave;ncia, es poden utilitzar per predir els preus de venda d'immobles similars.
+                         
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeneralizedLinearRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Regressió lineal generalitzada</h2></td>
+                    <td>
+                    <img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" class="titleImage" alt="Diagrama de flux de treball de GeneralizedLinearRegression">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>L'eina Regressi&oacute; lineal generalitzada genera prediccions o modela una variable dependent des del punt de vista de la seva relaci&oacute; amb un conjunt de variables explicatives.  Aquesta eina es pot utilitzar per ajustar models continu (OLS), binari (log&iacute;stic) i de recompte (Poisson).
+            </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>Quines caracter&iacute;stiques demogr&agrave;fiques contribueixen a alts &iacute;ndexs d'&uacute;s del transport p&uacute;blic?
+                    </li>
+                    <li>Hi ha una relaci&oacute; positiva entre el vandalisme i els robatoris?
+                    </li>
+                    <li>Quines variables prediuen de manera efectiva el volum de trucades al 911?  Donades futures projeccions, quina &eacute;s la demanda prevista de recursos de resposta davant d'emerg&egrave;ncies?
+                    </li>
+                    <li>Quines variables afecten les taxes de natalitat baixes?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="smallsize">
+        <h2>Utilitza la proximitat</h2>
+        <hr/>
+        <p>Aquestes eines ajuden a respondre una de les preguntes m&eacute;s habituals de l'an&agrave;lisi espacial: &quot;Qu&egrave; hi ha a prop de qu&egrave;?&quot;
+            <ul>
+                <li> <b>Crea &agrave;rees d'influ&egrave;ncia</b> crea &agrave;rees a una dist&agrave;ncia especificada de les entitats.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CreateBuffersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Crea àrees d'influència</h2></td>
+                    <td>
+                    <img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" class="titleImage" alt="Crea &agrave;rees d'influ&egrave;ncia">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Una &agrave;rea d'influ&egrave;ncia &eacute;s una &agrave;rea que cobreix una dist&agrave;ncia determinada d'una entitat de punts, l&iacute;nies o pol&iacute;gons.
+            </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>Mitjan&ccedil;ant entitats de riu lineals, creeu una &agrave;rea d'influ&egrave;ncia de cada riu multiplicant per 50 l'amplada del riu per determinar un l&iacute;mit riberenc proposat.
+                    </li>
+                    <li>Amb &agrave;rees proporcionades que representen pa&iuml;sos, creeu una &agrave;rea d'influ&egrave;ncia de cada pa&iacute;s per 200 milles n&agrave;utiques per determinar el l&iacute;mit mar&iacute;tim.  
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Manage Data</h2>
+        <hr/>
+        <p>These tools are used for the day-to-day management of geographic and tabular data. 
+            <ul>
+                <li> <b>Append Data</b> appends features to an existing hosted feature layer.
+                </li>
+                <li> <b>Calculate Field</b> creates a new field or modifies an existing field and creates a new layer in your contents.
+                </li>
+                <li> <b>Clip Layer</b> copies features that intersect a defined area of interest. 
+                </li>
+                <li> <b>Copy to Data Store</b> copies data to your ArcGIS Data Store and creates a layer in your contents. 
+                </li>
+                <li> <b>Dissolve Boundaries</b> merges areas that share a common boundary or attribute value.
+                </li>
+                <li> <b>Merge Layers</b> copies all features from two layers into a single result layer.
+                </li>
+                <li> <b>Overlay Layers</b> combines two or more layers into a single layer.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CopyToDataStoreTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Copia al Data Store</h2></td>
+                    <td>
+                    <img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" class="titleImage" alt="Copia al Data Store">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Copia una taula o capa d'entitats d'entrada en un  ArcGIS Data Store i crea una capa al vostre contingut de l'ArcGIS Enterprise. </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>Copieu una col&middot;lecci&oacute; de fitxers  <code>.csv</code> d'un recurs compartit de fitxers de dades massives al magatzem de dades espaciotemporal per a la seva visualitzaci&oacute;.
+                    </li>
+                    <li>Copieu les entitats de l'extensi&oacute; de mapa actual que es troben al magatzem de dades espaciotemporal al magatzem de dades relacional.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="CalculateFieldTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calcula el camp</h2></td>
+                    <td>
+                    <img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" class="titleImage" alt="Calcula el camp">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Calcula els valors d'un camp nou o existent i crea una capa al vostre contingut a l' ArcGIS Enterprise. </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>Modifiqueu un camp existent anomenat  <i>total</i> perqu&egrave; sigui la suma dels ingressos dels camps <i>total_2016</i>, <i>total_2017</i> i <i>total_2018</i>.
+                    </li>
+                    <li>Creeu un nou camp per classificar els nivells de risc segons els valors de camps com ara  <i>windspeed</i> i <i>pollutant</i>.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ClipLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Retalla la capa</h2></td>
+                    <td>
+                    <img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" class="titleImage" alt="Retalla la capa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Retalla les entitats d'entrada de les &agrave;rees d'inter&egrave;s definides. El resultat de sortida ser&agrave; un subconjunt d'entitats d'entrada. 
+            </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples: 
+                <ul>
+                    <li>Creeu un subconjunt d'edificis en risc que es trobin dins de les zones d'inundacions costeres.
+                    </li>
+                    <li>Determineu quines carreteres principals passen per les vostres &agrave;rees de desenvolupament potencials.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DissolveBoundariesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Dissol els límits</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Dissol els l&iacute;mits">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Fusiona les entitats d'&agrave;rees que s'intersequen o que comparteixen un valor de camp com&uacute; per crear entitats contig&uuml;eso de diverses parts.
+            </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>Creeu una entitat &uacute;nica que representi l'estat de Hawaii. Per fer-ho, dissoleu els l&iacute;mits de les illes de Hawaii.
+                    </li>
+                    <li>Combineu les &agrave;rees d'estudi similars segons el tipus de s&ograve;l per obtenir un dataset de tipus de s&ograve;l contigu.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Superposa les capes</h2></td>
+                    <td>
+                    <img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" class="titleImage" alt="Superposa les capes">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Combina dues o m&eacute;s capes en una de sola.  La superposici&oacute; s'utilitza per respondre una de les preguntes geogr&agrave;fiques m&eacute;s essencials: &quot;Qu&egrave; est&agrave; a sobre de qu&egrave;?&quot; 
+            </p>
+            <p>A continuaci&oacute; s'indiquen algunsexemples:
+                <ul>
+                    <li>Quines parcel&middot;les estan dins de les planes d'inundaci&oacute;de 100 anys? (Dins &eacute;s nom&eacute;s una altra forma de dir a sobre de.)
+                          
+                    </li>
+                    <li>Quin &uacute;s del s&ograve;l est&agrave; a sobre de quin tipus de s&ograve;l?
+                         
+                    </li>
+                    <li>Quins pous estan dins de bases militars abandonades?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="AppendDataTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Afegeix dades</h2></td>
+                    <td>
+                    <img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" class="titleImage" alt="Diagrama del flux de treball Afegeix dades">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Afegeix entitats a una capa allotjada existent del vostre contingut a l' ArcGIS Enterprise. </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>Actualitzeu la capa d'entitats 2018_Sales cada mes a mesura que els informes estiguin disponibles.
+                    </li>
+                    <li>Afegiu datasets de seguiment d'huracans dels anys 2016 i 2017 en un dataset d'huracans mestre.
+                    </li>
+                    <li>Recopileu i afegiu datasets de diversos or&iacute;gens amb diferents esquemes mitjan&ccedil;ant l'assignaci&oacute; de camps personalitzada.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Fusiona les capes</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="Fusiona les capes">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Combina dues capes d'entitats per crear una capa de resultats &uacute;nica. Tots els camps de la capa de fusi&oacute; s'inclouran per defecte, o b&eacute; podeu especificar regles de fusi&oacute; personalitzades per definir l'esquema resultant.  
+            </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>Fusioneu tres capes que continguin informaci&oacute; demogr&agrave;fica d'Anglaterra, Gal&middot;les i Esc&ograve;cia per formar una sola capa de Gran Bretanya.
+                    </li>
+                    <li>Combineu dues capes que continguin informaci&oacute; de parcel&middot;les de municipis contigus, i conserveu nom&eacute;s els camps que tinguin el mateix nom i el mateix tipus a les dues capes.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>Enriquiment de dades</h2>
+        <hr/>
+        <p>Aquestes eines us ajuden a explorar el car&agrave;cter de les &agrave;rees.
+            <ul>
+                <li> <b>Enriqueix des de la quadr&iacute;cula de diverses variables</b> uneix atributs d'una capa de la quadr&iacute;cula de diverses variables a una capa de punts.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichFromMultiVariableGridTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Enriqueix des de la quadrícula de diverses variables</h2></td>
+                    <td>
+                    <img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" class="titleImage" alt="Enriqueix des de la quadr&iacute;cula de diverses variables">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Uneix de manera eficient els atributs d'una quadr&iacute;cula de diverses variables a una capa de punts, el que us permet afegir r&agrave;pidament una col&middot;lecci&oacute; gran i diversa d'informaci&oacute; per assenyalar dades per al seu &uacute;s en an&agrave;lisis espacials posteriors. 
+            </p>
+            <p>A continuaci&oacute; s'indiquen alguns exemples:
+                <ul>
+                    <li>Donada una capa que cont&eacute; milions d'incidents de tall del subministrament el&egrave;ctric, enriquiu les entitats d'incidents amb informaci&oacute; sobre l'&uacute;s t&iacute;pic, els riscos mediambientals i les condicions de la infraestructura per estudiar la relaci&oacute; entre aquests factors i la freq&uuml;&egrave;ncia dels talls del subministrament el&egrave;ctric. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

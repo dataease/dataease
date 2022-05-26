@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Hitta hotspots</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Hitta hotspots"></h2>
+        <hr/>
+    <p>Med verktyget Hitta hotspots kan du fastst&auml;lla om det finns statistiskt signifikanta kluster i det geografiska m&ouml;nstret f&ouml;r dina data. 
+        <ul>
+            <li>&Auml;r dina punkter (brottsfall, tr&auml;d eller trafikolyckor) verkligen klustrade?  Hur kan du vara s&auml;ker p&aring; det?
+            </li>
+            <li>Har du verkligen uppt&auml;ckt en statistiskt signifikant hotspot eller skulle kartan ber&auml;tta n&aring;got annat om du &auml;ndrade hur den symboliseras?
+            </li>
+        </ul>
+        Verktyget Hitta hotspots hj&auml;lper dig besvara de h&auml;r fr&aring;gorna med s&auml;kerhet.
+    </p>
+    <p>Till och med slumpm&auml;ssiga geografiska m&ouml;nster uppvisar n&aring;gon grad av klustring. Det &auml;r dessutom naturligt f&ouml;r v&aring;ra &ouml;gon och hj&auml;rnor att f&ouml;rs&ouml;ka hitta m&ouml;nster &auml;ven n&auml;r det inte finns n&aring;gra. D&auml;rf&ouml;r kan det vara sv&aring;rt att veta om m&ouml;nstren i dina data &auml;r resultatet av verkliga geografiska processer eller slumpen. Detta &auml;r orsaken till att forskare och analytiker anv&auml;nder statistiska metoder som Hitta hotspots (Getis-Ord Gi*) f&ouml;r att m&auml;ta geografiska m&ouml;nster. N&auml;r du hittar statistiskt signifikant klustring i dina data har du v&auml;rdefull information. Om du vet var och n&auml;r klustring uppst&aring;r kan det ge viktiga ledtr&aring;dar om processerna som leder till de m&ouml;nster du ser. Kunskapen om att till exempel bostadsinbrott &auml;r betydligt h&ouml;gre i vissa grannskap kan vara avg&ouml;rande f&ouml;r att ta fram effektiva f&ouml;rebyggande strategier, f&ouml;rdela polisens knappa resurser, starta bevakningsprogram, bemyndiga st&ouml;rre polisunders&ouml;kningar eller identifiera m&ouml;jliga g&auml;rningsm&auml;n.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Välj det lager som hotspots ska beräknas för</h2></div>
+        <hr/>
+        <div>
+            <p>Det punktlager som hotspots och coldspots ska hittas i.
+            </p>
+            <p>Denna analys anv&auml;nder lagringsplatser och kr&auml;ver ett projicerat koordinatsystem. Du kan ange  <b>Bearbetande koordinatsystem</b> i <b>Analysmilj&ouml;</b>. Om ditt bearbetande koordinatsystem inte &auml;r inst&auml;llt som ett projicerat koordinatsystem, blir du uppmanad att st&auml;lla in det n&auml;r du anv&auml;nder <b>K&ouml;r analys</b> .
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Hitta kluster med hög och låg</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Den h&auml;r analysen besvarar fr&aring;gan: Var klustras h&ouml;ga och l&aring;ga v&auml;rden geografiskt?
+            </p>
+            <p>Om dina data utg&ouml;rs av punkter och du v&auml;ljer  <b>Punktantal</b>, analyserar verktyget den geografiska ordningen av punktgeoobjekten f&ouml;r att besvara fr&aring;gan: Var har punkterna ov&auml;ntat bildat kluster eller spridits ut?
+            </p>
+            <p>Om du v&auml;ljer ett f&auml;lt analyserar verktyget den geografiska ordningen f&ouml;r v&auml;rden som kopplas till varje geoobjekt f&ouml;r att besvara fr&aring;gan: Var har de h&ouml;ga respektive l&aring;ga v&auml;rdena bildat kluster?
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Välj lagerplatsstorlek för aggregering</h2></div>
+        <hr/>
+        <div>
+            <p>Det avst&aring;nd som anv&auml;nds f&ouml;r att skapa lagringsplatserna som ska anv&auml;ndas f&ouml;r att analysera dina indatapunkter.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Hitta hotspots med tidssteg (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Om tid &auml;r aktiverat p&aring; punktlagret och det &auml;r av typen tidspunkt, kan du analysera med tidssteg.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Tidsstegsintervall</h2></div>
+        <hr/>
+        <div>
+            <p>Tidsintervall som anv&auml;nds f&ouml;r att generera tidssteg. Tiden kan justeras till start- eller sluttiden f&ouml;r indata eller till en angiven referenstid.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Tidsstegsintervall</h2></div>
+        <hr/>
+        <div>
+            <p>Tidsintervall som anv&auml;nds f&ouml;r att generera tidssteg. Tiden kan justeras till start- eller sluttiden f&ouml;r indata eller till en angiven referenstid.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Välj hur tidsstegen ska justeras</h2></div>
+        <hr/>
+        <div>
+            <p>Hur tidsstegen justeras. Det finns tre s&auml;tt att justera tidssteg p&aring;:
+                <ul>
+                    <li> <b>Starttid</b> &ndash; Tidssteg justeras mot det geoobjekt som kommer f&ouml;rst tidsm&auml;ssigt.
+                    </li>
+                    <li> <b>Sluttid</b> &ndash; Tidssteg justeras mot det geoobjekt som kommer sist tidsm&auml;ssigt.
+                    </li>
+                    <li> <b>Referenstid</b> &ndash; Tidssteg justeras mot en angiven tid.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Referenstid som används till att justera tidssteg till</h2></div>
+        <hr/>
+        <div>
+            <p>Datum och tid som anv&auml;nds f&ouml;r att justera tidsstegen.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Välj närområdesstorlek för hotspotberäkningar</h2></div>
+        <hr/>
+        <div>
+            <p>Avst&aring;ndet som anv&auml;nds f&ouml;r att avg&ouml;ra det n&auml;romr&aring;de som anv&auml;nds f&ouml;r hotspotber&auml;kningar. N&auml;romr&aring;det b&ouml;r vara st&ouml;rre &auml;n lagringsplatsstorleken f&ouml;r att se till att varje lagringsplats har minst en granne. Varje lagringsplats analyseras och j&auml;mf&ouml;rs med angr&auml;nsande lagringsplatser.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r en tillf&auml;llig parameter f&ouml;r f&ouml;rhandsversionen f&ouml;r att st&auml;lla in den geografiska referensen f&ouml;r bearbetning. M&aring;nga big data-verktyg kr&auml;ver att ett projicerat koordinatsystem anv&auml;nds som geografisk referens f&ouml;r bearbetning. Som standard anv&auml;nder verktyget indatakoordinatsystemet men misslyckas om det &auml;r ett geografiskt koordinatsystem. Ange WKID f&ouml;r att st&auml;lla in ett projicerat koordinatsystem. Till exempel anges  <b>Web Mercator</b> som <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Välj ett ArcGIS-datalager att spara resultat till</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-resultat sparas i ett datalager och visas som ett geoobjektlager i  Portal for ArcGIS. I de flesta fall ska resultat sparas i det rumstemporala datalagret och det &auml;r standardinst&auml;llningen. I vissa fall &auml;r det ett bra alternativ att spara resultat i det relationella datalagret. F&ouml;ljande &auml;r anledningar till varf&ouml;r du kanske vill spara resultat i det relationella datalagret: 
+                <ul>
+                    <li>Du kan anv&auml;nda resultaten i portal-till-portal-samarbeten.
+                    </li>
+                    <li>Du kan aktivera synkroniseringsfunktioner med dina resultat.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du b&ouml;r inte anv&auml;nda det relationella datalagret om du f&ouml;rv&auml;ntar dig att dina GeoAnalytics-resultat kommer att &ouml;ka och du beh&ouml;ver anv&auml;nda det rumstemporala big data-lagrets funktioner till att hantera stora m&auml;ngder data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p> Namnet p&aring; lagret som ska skapas.  Om du skriver till en ArcGIS Data Store, sparas dina resultat i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om du skriver till en big data-fildelning, lagras dina resultat i big data-fildelningen och l&auml;ggs till i dess manifest. Det l&auml;ggs inte till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns misslyckas verktyget.
+            </p>
+            <p>Resultatlagret visar statistiskt signifikanta kluster med h&ouml;ga och l&aring;ga v&auml;rden eller punktantal. Om lagrets namn redan finns uppmanas du att byta namn p&aring; det.
+            </p>
+            <p>N&auml;r du skriver till   ArcGIS Data Store (relationellt eller rumstempor&auml;rt Big Data-datalager) med listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

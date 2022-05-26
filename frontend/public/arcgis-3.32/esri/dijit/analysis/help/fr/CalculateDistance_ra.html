@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calculer la distance</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Calculer la distance"></h2>
+        <hr/>
+    <p>Cet outil calcule la distance euclidienne, la direction et l&rsquo;allocation d&rsquo;une seule source ou d&rsquo;un ensemble de sources.
+    </p>
+    <p>Cet outil permet, par exemple, d&rsquo;apporter une r&eacute;ponse aux questions suivantes&nbsp;:
+
+        <ul>
+            <li>&Agrave; quelle distance se trouve la ville plus proche&nbsp;?
+                
+
+            </li>
+            <li>&Agrave; quelle distance se trouve la route la plus proche&nbsp;?
+                
+
+            </li>
+            <li>&Agrave; quelle distance se trouve la source d&rsquo;eau la plus proche&nbsp;?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si l&rsquo;option  <b>Utiliser l&rsquo;&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules ces entit&eacute;s qui sont visibles dans la couche en entr&eacute;e au sein de l&rsquo;&eacute;tendue courante de la carte seront analys&eacute;es. Si l&rsquo;option n&rsquo;est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent dans la couche en entr&eacute;e seront analys&eacute;es, m&ecirc;me si elles se trouvent en dehors de l&rsquo;&eacute;tendue courante de l&rsquo;affichage cartographique.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Choisir un raster de couche d’entités d’emplacements pour calculer la distance</h2></div>
+        <hr/>
+        <div>
+            <p>Couche qui d&eacute;finit les sources vers lesquelles la distance sera calcul&eacute;e. La couche peut &ecirc;tre un service d&rsquo;imagerie ou un service d&rsquo;entit&eacute;s.
+            </p>
+            <p>Pour le service d&rsquo;imagerie, le type en entr&eacute;e peut &ecirc;tre entier ou &agrave; virgule flottante.
+            </p>
+            <p>Pour le service d&rsquo;entit&eacute;s, l&rsquo;entr&eacute;e peut &ecirc;tre de type ponctuel, lin&eacute;aire ou surfacique.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Distance maximale à calculer</h2></div>
+        <hr/>
+        <div>
+            <p>Distance de calcul maximale. Si, par exemple; vous fournissez une valeur de 10&nbsp;000&nbsp;m&egrave;tres, la distance euclidienne est calcul&eacute;e &agrave; partir des emplacements source jusqu&rsquo;&agrave; cette valeur (distance).
+            </p>
+            <p>Si aucune valeur n&rsquo;est fournie, la distance est calcul&eacute;e dans la limite de l&rsquo;&eacute;tendue sp&eacute;cifi&eacute;e.
+            </p>
+            <p>Les unit&eacute;s disponibles prises en charge sont les kilom&egrave;tres, les m&egrave;tres, les miles et les pieds.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Taille de cellule en sortie</h2></div>
+        <hr/>
+        <div>
+            <p>Taille de cellule et unit&eacute; des rasters en sortie.
+            </p>
+            <p>Les unit&eacute;s peuvent &ecirc;tre les kilom&egrave;tres, les m&egrave;tres, les miles ou les pieds.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Nom de la couche de résultat de distance</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Nom de la couche de résultat de direction</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>My Content (Mon contenu)</b>. Vous devez fournir un nom qui n&rsquo;existe pas dans <b>My Content (Mon contenu)</b>.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Nom de la couche de résultat d’allocation</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>My Content (Mon contenu)</b>. Vous devez fournir un nom qui n&rsquo;existe pas dans <b>My Content (Mon contenu)</b>.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Choisir un champ d’allocation</h2></div>
+        <hr/>
+        <div>
+            <p>Champ dans la couche source en entr&eacute;e qui contient les valeurs d&eacute;finissant chaque source. Il peut s&rsquo;agir d&rsquo;un champ de type entier ou cha&icirc;ne du jeu de donn&eacute;es source.
+            </p>
+            <p>La valeur par d&eacute;faut est  <i>Value</i>. Si aucun service d&rsquo;entit&eacute;s et aucun champ <i>Value</i> n&rsquo;est disponible, le premier champ de type entier ou cha&icirc;ne disponible sera utilis&eacute;. Si aucun champ valide n'existe, le champ ObjectID (par exemple, OID ou FID, selon le type de l'entit&eacute; entr&eacute;e) est utilis&eacute;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

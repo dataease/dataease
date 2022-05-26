@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Blīvuma aprēķināšana</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="Blīvuma aprēķinā&scaron;anas rīks"></h2>
+        <hr/>
+    <p>&Scaron;is rīks izveido blīvuma karti no punktu vai līniju elementiem, izklājot kartē kādas parādības zināmo daudzumu (attēlots kā punktu vai līniju atribūti). Rezultāts ir slānis ar laukumiem, kas klasificēti no vismazāk blīvā līdz visblīvākajam.
+    </p>
+    <p>Punktu ievadē katram punktam jāattēlo kāda gadījuma vai incidenta atra&scaron;anās vieta, un rezultātu slānim jāattēlo incidentu skaits katrā teritorijā. Lielāka blīvuma vērtība jaunā novietojumā nozīmē, ka &scaron;ī novietojuma tuvumā atrodas vēl citi punkti. Daudzos gadījumos rezultātu slāni var interpretēt kā riska virsmu notikumiem nākotnē. Piemēram, ja ievades punkti attēlo zibens spērienu novietojumus, rezultātu slāni var interpretēt kā riska virsmu turpmākiem zibens spērieniem.
+    </p>
+    <p>Līniju ievadē līnijas blīvuma virsma attēlo kopējo līniju skaitu, kas atrodas katra novietojuma tuvumā. Aprēķinātā blīvuma vērtību mērvienības ir līnijas garums katrā teritorijā. Piemēram, ja līnijas attēlo upes, rezultātu slānis attēlos kopējo upju garumu, kas atrodas meklē&scaron;anas rādiusā. &Scaron;o rezultātu var izmantot, lai identificētu teritorijas, ko var apdzīvot zālēdāji.
+    </p>
+    <p>Citi &scaron;ī rīka lieto&scaron;anas gadījumi ietver:
+
+        <ul>
+            <li>Noziegumu blīvuma kar&scaron;u izveide, lai palīdzētu policijai precīzi izvietot resursus teritorijās ar augstu noziedzības līmeni.
+                
+ 
+            </li>
+            <li>Slimnīcu blīvuma aprēķinā&scaron;ana valstī. Rezultātu slānī būs redzamas teritorijas ar augstu un zemu piekļuves līmeni slimnīcām, un &scaron;o informāciju var izmantot, lai izvēlētos jaunu slimnīcu atra&scaron;anās vietas.
+                
+ 
+            </li>
+            <li>Teritoriju ar augstu meža ugunsgrēku riska līmeni noteik&scaron;ana, pamatojoties uz meža ugunsgrēku vēsturiskajām izcel&scaron;anās vietām.
+                
+ 
+            </li>
+            <li>Apdzīvotu teritoriju, kas atrodas tālu no lielajiem autoceļiem, atra&scaron;ana, lai izplānotu jaunu autoceļu būvniecību.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>Izvēlēties ievades punktu vai līnijas slāni, no kura aprēķināt blīvumu</h2></div>
+        <hr/>
+        <div>
+            <p>Ievades punkts vai līnijas slānis, kas tiks izmantots blīvuma slāņa aprēķinam.
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>Skaita lauka izmantošana</h2></div>
+        <hr/>
+        <div>
+            <p>Lauks, kurā norādīts incidentu skaits katrā novietojumā. Piemēram, ja jums ir punkti, kas attēlo pilsētas, varat izmantot lauku, kurā attēlots pilsētas iedzīvotāju skaits, kā skaita lauku, un rezultātā iegūtajā iedzīvotāju skaita blīvuma slānī būs aprēķināts lielāks iedzīvotāju skaita blīvums to pilsētu tuvumā, kurās ir liels iedzīvotāju skaits.
+            </p>
+            <p>Ja tiek izmantota noklusējuma izvēle  <b>Nav</b>, tiek pieņemts, ka katrs novietojums attēlo atsevi&scaron;ķu skaitu.
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Meklēšanas attālums</h2></div>
+        <hr/>
+        <div>
+            <p>Ievadiet attālumu, lai norādītu, cik tālu meklēt, lai atrastu punktu vai līniju elementus, aprēķinot blīvuma vērtības. Piemēram, ja norādāt meklē&scaron;anas attālumu 10&nbsp;000 metri, jebkura novietojuma blīvuma rādītājs izvades slānī tiek aprēķināts, pamatojoties uz elementiem, kas atrodas 10&nbsp;000 metru diapazonā no &scaron;ī novietojuma. Jebkurai atra&scaron;anās vietai, kurā 10&nbsp;000 metru diapazonā nav neviena incidenta, blīvuma vērtība būs nulle.
+            </p>
+            <p>Ja attālums nav norādīts, tiks aprēķināta noklusējuma vērtība, pamatojoties uz ievades elementu novietojumu un vērtībām skaita laukā (ja skaita lauks ir pieejams).
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>Izvades teritorijas mērvienības</h2></div>
+        <hr/>
+        <div>
+            <p>Norādiet izvades teritorijas vienību. Blīvums ir skaits, kas dalīts ar teritoriju, un &scaron;is parametrs norāda teritorijas vienību blīvuma aprēķinā&scaron;anā.
+            </p>
+            <p>Pieejamās teritorijas platības mērvienības ir kvadrātjūdzes, kvadrātpēdas, kvadrātmetri un kvadrātkilometri.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Izvades šūnas lielums</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;ūnas lielums un izvades mērvienība.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slānis jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Mapes nosaukumu var norādīt mapē  <b>Mans saturs,</b> kur rezultāts tiks saglabāts, izmantojot nolaižamo lodziņu <b>Saglabāt rezultātu</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

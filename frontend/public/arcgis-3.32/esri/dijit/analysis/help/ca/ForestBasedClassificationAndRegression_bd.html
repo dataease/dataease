@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Classificació i regressió forestals</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Diagrama de flux de treball de classificaci&oacute; i regressi&oacute; forestals"></h2>
+        <hr/>
+    <p>Crea models i genera prediccions mitjan&ccedil;ant una adaptaci&oacute; de l'algoritme de bosc aleatori de Leo Breiman, que &eacute;s un m&egrave;tode d'aprenentatge autom&agrave;tic supervisat. Les prediccions es poden fer de variables categ&ograve;riques (classificaci&oacute;) i de variables cont&iacute;nues (regressi&oacute;). Les variables explicatives s&oacute;n camps de la taula d'atributs de les entitats de formaci&oacute;. L'eina es pot executar per generar un model destinat a avaluar el rendiment, o b&eacute; per generar un model i predir els resultats en altres datasets.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Tipus d'anàlisi</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el mode de funcionament de l'eina. L'eina es pot executar per formar un model destinat nom&eacute;s a avaluar el rendiment, o b&eacute; per formar un model i predir les entitats. Els tipus de predicci&oacute; s&oacute;n els seg&uuml;ents:
+                <ul>
+                    <li> <b>Formar un model per avaluar-ne el rendiment</b>: es formar&agrave; un model i s'ajustar&agrave; a les dades d'entrada. Utilitzeu aquesta opci&oacute; per avaluar la precisi&oacute; del model abans de generar prediccions sobre un nou dataset. La sortida d'aquesta opci&oacute; ser&agrave; un servei d'entitats de les dades de formaci&oacute; ajustades, el diagn&ograve;stic del model i una taula opcional de la import&agrave;ncia de les variables.
+                    </li>
+                    <li> <b>Formar un model i predir els valors</b>: es generaran prediccions o classificacions d'entitats. Les variables explicatives s'han de proporcionar tant per a les entitats de formaci&oacute; com per a les entitats que es prediran. La sortida d'aquesta opci&oacute; ser&agrave; un servei d'entitats dels valors predits, el diagn&ograve;stic del model i una taula opcional de la import&agrave;ncia de les variables.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Formar un model per avaluar-ne el rendiment</h2></div>
+        <hr/>
+        <div>
+            <p>Utilitzeu aquest mode si voleu ajustar un model i investigueu l'ajust.
+            </p>
+            <p>Amb aquesta opci&oacute;, el model es formar&agrave; mitjan&ccedil;ant una capa d'entrada. Utilitzeu aquesta opci&oacute; per avaluar la precisi&oacute; del model abans de generar prediccions sobre un nou dataset. Aquesta opci&oacute; generar&agrave; el diagn&ograve;stic del model a la finestra de missatges i aplicar&agrave; el model a les vostres dades de formaci&oacute;.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Formar un model i predir els valors</h2></div>
+        <hr/>
+        <div>
+            <p>Utilitzeu aquest mode si voleu ajustar un model i apliqueu el model al dataset per generar prediccions.
+            </p>
+            <p>Es generaran prediccions o classificacions d'entitats. La sortida d'aquesta opci&oacute; ser&agrave; un servei d'entitats, el diagn&ograve;stic del model i una taula opcional de la import&agrave;ncia de les variables.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Trieu una capa de formació</h2></div>
+        <hr/>
+        <div>
+            <p>Capa d'entitats que cont&eacute; la variable que es predir&agrave; i els camps que s'utilitzaran per generar la predicci&oacute;.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Trieu una capa per predir-ne els valors</h2></div>
+        <hr/>
+        <div>
+            <p>Capa d'entitats que representa les ubicacions on es faran les prediccions. Aquesta capa d'entitats tamb&eacute; ha de contenir totes les variables explicatives proporcionades com a camps que es corresponen amb les utilitzades de les entitats de formaci&oacute;.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Trieu el camp que s'ha de predir</h2></div>
+        <hr/>
+        <div>
+            <p>Camp de les entitats de formaci&oacute; que contenen els valors que s'utilitzaran per formar el model. Aquest camp cont&eacute; valors coneguts (de formaci&oacute;) de la variable, que s'utilitzaran per a la predicci&oacute; en ubicacions desconegudes. Si els valors s&oacute;n categ&ograve;rics (per exemple, Aur&oacute;, Pi, Roure), seleccioneu la casella  <b>Categ&ograve;ric</b>.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Trieu una o més variables explicatives</h2></div>
+        <hr/>
+        <div>
+            <p>Un o diversos camps que representen les variables explicatives (camps) que ajuden a predir el valor o la categoria de la variable que s'ha de predir.  Utilitzeu la casella Categ&ograve;ric per a totes les variables que representen classes o categories (com ara coberta del s&ograve;l, pres&egrave;ncia o abs&egrave;ncia). Especifiqueu el valor cert per a les variables que representen classes o categories, com ara coberta del s&ograve;l, pres&egrave;ncia o abs&egrave;ncia, i el valor fals si la variable &eacute;s cont&iacute;nua.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Nombre d'arbres</h2></div>
+        <hr/>
+        <div>
+            <p>Nombre d'arbres que es crearan al model. En general, es crearan m&eacute;s arbres en una predicci&oacute; del model m&eacute;s precisa, per&ograve; el model tardar&agrave; m&eacute;s a calcular-se. El nombre d'arbres per defecte &eacute;s de 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Mida mínima de les fulles</h2></div>
+        <hr/>
+        <div>
+            <p>Nombre m&iacute;nim d'observacions necessari per mantenir una fulla (que &eacute;s el node terminal en un arbre sense m&eacute;s divisions). El valor m&iacute;nim de regressi&oacute; per defecte &eacute;s 5 i el valor de classificaci&oacute; per defecte &eacute;s 1. Per a grans volums de dades, si s'augmenten aquests nombres es reduir&agrave; el temps d'execuci&oacute; de l'eina.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Profunditat màxima dels arbres</h2></div>
+        <hr/>
+        <div>
+            <p>Nombre m&agrave;xim de divisions que es faran al nivell de l'arbre. Si s'utilitza una profunditat m&agrave;xima alta, es crearan m&eacute;s divisions, el que podria augmentar les possibilitats d'ajustar el model en exc&eacute;s. El valor per defecte est&agrave; controlat per dades i dep&egrave;n del nombre d'arbres creats i del nombre de variables incloses.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Dades disponibles per arbre (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el percentatge d'entitats de la capa de formaci&oacute; utilitzat per a cada arbre de decisi&oacute;. El valor per defecte &eacute;s 100&nbsp;% de les dades. De manera aleat&ograve;ria, s'obtenen mostres per a cada arbre de dos ter&ccedil;os de les dades especificades.
+            </p>
+            <p>Cada arbre de decisi&oacute; del bosc es crea mitjan&ccedil;ant una mostra o un subconjunt aleatori (dos ter&ccedil;os aproximadament) de les dades de formaci&oacute; disponibles. Si s'utilitza un percentatge inferior de les dades d'entrada per a cada arbre de decisi&oacute;, la velocitat de l'eina augmenta per a datasets molt grans.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Nombre de variables mostrejades de manera aleatòria</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el nombre de variables explicatives utilitzades per crear cada arbre de decisi&oacute;.
+            </p>
+            <p>Cadascun dels arbres de decisi&oacute; del bosc es crea mitjan&ccedil;ant un subconjunt aleatori de les variables explicatives especificades. Si s'augmenta el nombre de variables utilitzades en cada arbre de decisi&oacute;, augmentaran les possibilitats d'ajustar el model en exc&eacute;s, especialment si hi ha una o dues variables dominants. Una pr&agrave;ctica habitual &eacute;s utilitzar l'arrel quadrada del nombre total de variables explicatives si la variable que heu de predir &eacute;s num&egrave;rica, o b&eacute; dividir el nombre total de variables explicatives entre 3 si la variable que s'ha de predir &eacute;s categ&ograve;rica.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Trieu com han de coincidir els camps explicatius</h2></div>
+        <hr/>
+        <div>
+            <p>Manera en qu&egrave; les variables corresponents de la capa de formaci&oacute; coincidiran amb les variables de la capa de predicci&oacute;. Nom&eacute;s les variables utilitzades a la formaci&oacute; s'inclouran a la taula.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Nombre d'execucions per validació</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el percentatge (entre un 0&nbsp;% i un 50&nbsp;%) d'entitats de la capa de formaci&oacute; que es reservaran com a dataset de proba per a la validaci&oacute;. El model es formar&agrave; sense aquest subconjunt de dades aleatori, i els valors observats d'aquestes entitats es compararan amb el valor predit. El valor per defecte &eacute;s 10&nbsp;%.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa.  El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, se us demanar&agrave; que escriviu un altre nom.
+            </p>
+            <p>El resultats retornats dependran del tipus d'an&agrave;lisi. Si esteu fent formaci&oacute; per avaluar l'ajust del model, els resultats contindran una capa de dades de formaci&oacute; ajustada al model i informaci&oacute; de resultats que avalua l'ajust del model. Si esteu fent formaci&oacute; i predicci&oacute;, els resultats contindran una capa de dades de formaci&oacute; ajustada al model, una capa dels resultats predits i informaci&oacute; de resultats que avalua l'ajust del model.
+            </p>
+            <p>Mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

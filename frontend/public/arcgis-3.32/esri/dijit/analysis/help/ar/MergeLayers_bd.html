@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>دمج الطبقات</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="دمج الطبقات"></h2>
+        <hr/>
+    <p>تدمج هذه الأداة بين طبقتي معلم لإنشاء طبقة إخراج فردية. يجب أن تتضمن الطبقات المراد دمجها نفس نوع الشكل الهندسي ونوع الوقت. يمكنك التحكم الآن في انضمام ونسخ الحقول من الطبقات المُدخلة. على سبيل المثال:
+        <ul>
+            <li>لدي ثلاث طبقات لإنجلترا وويلز واسكتلندا وأرغب في طبقة واحدة لبريطانيا العظمى. 
+            </li>
+            <li>لدي طبقتان وتتضمن كل منها معلومات قطعة الأرض المتعلقة بالبلدة القريبة. أريد ضمهما معًا إلى طبقة مُفردة مع الاحتفاظ بالحقول التي لها نفس الاسم والنوع فقط في الطبقتين المدخلتين.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>اختر طبقة</h2></div>
+        <hr/>
+        <div>
+            <p>الطبقة ذات معالم المنطقة أو الخط أو النقطة أو جداول التي ستدمج فيها طبقة المعلم الثانية. سيتم تضمين كل الحقول من هذه الطبقة في الطبقة الناتجة.
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>اختيار الطبقة لدمجها</h2></div>
+        <hr/>
+        <div>
+            <p>طبقة المعلم المُراد دمجها مع طبقة الإدخال. يجب أن تتضمن الطبقة المراد دمجها نفس نوع الشكل الهندسي ونوع الوقت كطبقة إدخال.
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>تعديل دمج الحقول</h2></div>
+        <hr/>
+        <div>
+            <p>بصورة افتراضية، سيتم تضمين كل الحقول من طبقتي الإدخال في الإخراج. يمكنك تغيير كيفية تضمين طريقة دمج الحقول من الطبقة في الإخراج باتباع الخيارات التالية:
+                <ul>
+                    <li> <b>إعادة التسمية</b>&mdash;ستتم إعادة تسمية الحقل في المخرجات.
+                    </li>
+                    <li> <b>إزالة</b>&mdash;ستتم إزالة الحقل من المخرجات.
+                    </li>
+                    <li> <b>تطابق</b>&mdash;تتطابق أسماء الحقول.  سيتم نسخ قيم الحقل من الطبقة المُراد دمجها إلى الحقل المُخرج المُطابق.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>إذا احتوت كلتا الطبقتين على حقل باسم مطابق ونوع البيانات، سيتم دمج محتوى كلا الحقلين في حقل واحد بذلك الاسم. لا ينطبق ذلك على الحقول حيث يتم استخدام  <b>تطابُق</b> في معلمة <b>تعديل دمج الحقول</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p> سيتم إنشاء اسم الطبقة في المحتوى. إذا كنت تقوم بالكتابة إلى ArcGIS Data Store، سيتم حفظ نتائجك في  <b>محتواي</b> وإضافته إلى الخريطة. إذا كنت تقوم بالكتابة إلى مشاركة ملف بيانات ضخمة، ستخزن نتائجك في مشاركة ملف البيانات الضخمة وإضافتها إلى البيان الخاص بها. لن تتم إضافتها إلى الخريطة. يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجِدَت الطبقة بالفعل، ستفشل الأداة.
+            </p>
+            <p>عند الكتابة إلى  ArcGIS Data Store (مخزن بيانات ضخمة للموضع المكاني والزماني أو ارتباطية) باستخدام مربع السهم المنسدل  <b>حفظ النتائج في</b>، يمكن تحديد اسم المجلد في <b>محتواي</b> حيث يتم حفظ النتائج.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

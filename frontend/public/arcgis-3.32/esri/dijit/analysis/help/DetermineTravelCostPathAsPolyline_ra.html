@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Determine Travel Cost Path As Polyline</h2><p/>
+        <h2><img src="./images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Determine Travel Cost Path as Polyline tool illustration"></h2>
+        <hr/>
+    <p>This tool calculates the least cost polyline path between sources and known destinations.
+    </p>
+    <p>Example applications include the following:
+        <ul>
+            <li>Find the best route for a new road in terms of construction costs.
+                
+
+            </li>
+            <li>Identify the path to take from several suburban locations (sources) to the closest shopping mall (destination).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only those locations in the input layers that are visible within the current map extent will be analyzed. If unchecked, all locations in both input layers will be analyzed, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Choose raster or feature source layer to determine paths from</h2></div>
+        <hr/>
+        <div>
+            <p>An image service or feature service that identifies the cells from which the least-cost path is determined to the least costly destination.
+            </p>
+            <p>If the input is an image service, the input consists of cells that have valid values (zero is a valid value), and the remaining cells must be assigned NoData.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Choose travel cost raster layer</h2></div>
+        <hr/>
+        <div>
+            <p>A raster defining the impedance or cost to move planimetrically through each cell.
+            </p>
+            <p>The value at each cell location represents the cost-per-unit distance for moving through the cell. Each cell location value is multiplied by the cell resolution while also compensating for diagonal movement to obtain the total cost of passing through the cell.
+            </p>
+            <p>The values of the cost raster can be integer or floating point, but they cannot be negative or zero (you cannot have a negative or zero cost).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Input Destination Raster or Features</h2></div>
+        <hr/>
+        <div>
+            <p>An input that defines the destinations used to calculate the distance. The layer can be raster or feature.
+            </p>
+            <p>If the input is an image service, the input consists of cells that have valid values (zero is a valid value), and the remaining cells must be assigned NoData.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Result polyline layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map. The default name is based on the tool name and the input layer name. If the layer already exists, you will be prompted to provide another name.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Choose type of paths to determine</h2></div>
+        <hr/>
+        <div>
+            <p>Defines the manner in which the values and zones on the input destination data will be interpreted in the cost path calculations.
+            </p>
+            <ul>
+                <li> <b>Best Single</b>&mdash;For all cells or locations on the input destination data, the least-cost path is derived from the location with the minimum of the least-cost paths to source location. This is the default
+                    
+
+                </li>
+                <li> <b>To Each Cell</b>&mdash;For each cell or location with valid values on the input destination data, a least-cost path is determined and saved on the output feature service. With this option, each cell of the input destination data is treated separately, and a least-cost path is determined for each from cell.
+                    
+
+                </li>
+                <li> <b>To Each Zone</b>&mdash;For each zone on the input destination data, a least-cost path is determined and saved on the output feature service. With this option, the least-cost path for each zone begins at the cell or location with the lowest cost distance weighting in the zone.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="destinationField">
+        <div><h2>Choose field to obtain values for destination</h2></div>
+        <hr/>
+        <div>
+            <p>The field used to obtain values for the destination locations.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

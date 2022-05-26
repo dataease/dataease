@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Legjobb létesítmények kiválasztása</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Legjobb l&eacute;tes&iacute;tm&eacute;nyek kiv&aacute;laszt&aacute;sa"></h2>
+        <hr/>
+    <p>A Legjobb l&eacute;tes&iacute;tm&eacute;nyek kiv&aacute;laszt&aacute;sa lehetős&eacute;ggel kiv&aacute;laszthatja a l&eacute;tes&iacute;tm&eacute;nyek legjobb hely&eacute;t. Az eszk&ouml;z &uacute;gy rendeli hozz&aacute; a l&eacute;tes&iacute;tm&eacute;nyekre keresletet mutat&oacute; helyeket a l&eacute;tes&iacute;tm&eacute;nyekhez, hogy a megadott c&eacute;l teljes&uuml;lj&ouml;n.
+    </p>
+    <p>A l&eacute;tes&iacute;tm&eacute;nyek olyan helyeknek felelnek meg, amelyek valamilyen fajt&aacute;j&uacute; szolg&aacute;ltat&aacute;st k&iacute;n&aacute;lnak, mint p&eacute;ld&aacute;ul tűzolt&oacute;s&aacute;gok, iskol&aacute;k, k&ouml;nyvt&aacute;rak, &aacute;ruh&aacute;zak vagy eloszt&oacute;k&ouml;zpontok. A keresleti helyek olyan helyek, amelyeken kereslet mutatkozik a l&eacute;tes&iacute;tm&eacute;nyek &aacute;ltal k&iacute;n&aacute;lt szolg&aacute;ltat&aacute;sok ir&aacute;nt, p&eacute;ld&aacute;ul egy adott ter&uuml;let n&eacute;pess&eacute;g&eacute;t &ouml;sszes&iacute;tő n&eacute;pess&eacute;g-&ouml;sszes&iacute;r&aacute;si blokkok.
+    </p>
+    <p>A Legjobb l&eacute;tes&iacute;tm&eacute;nyek kiv&aacute;laszt&aacute;sa eszk&ouml;z seg&iacute;t v&aacute;laszt tal&aacute;lni p&eacute;ld&aacute;ul az al&aacute;bbi k&eacute;rd&eacute;sekre
+        <ul>
+            <li>V&eacute;szhelyzetben hogyan lehet a h&aacute;ztart&aacute;sokat a megfelelő katasztr&oacute;fav&eacute;delmi k&ouml;zponthoz rendelni, ha az &aacute;gysz&aacute;m korl&aacute;tozott, &eacute;s nem l&eacute;phető t&uacute;l?
+            </li>
+            <li>Hogyan lehet a v&aacute;rosr&eacute;szeket a legk&ouml;zelebbi k&ouml;nyvt&aacute;rfi&oacute;khoz hozz&aacute;rendelni, &eacute;s hogyan hat&aacute;rozhat&oacute; meg az egyes fi&oacute;kok &aacute;ltal potenci&aacute;lisan kiszolg&aacute;lhat&oacute; tagl&eacute;tsz&aacute;m? 
+            </li>
+            <li>Hogyan tal&aacute;lhat&oacute; meg a legjobb hely egy &eacute;lelmiszer&uuml;zlet sz&aacute;m&aacute;ra, minim&aacute;lisra cs&ouml;kkentve ezzel az &eacute;lelmiszer &uuml;zletl&aacute;nc &aacute;rusz&aacute;ll&iacute;t&aacute;s&aacute;nak teljes utaz&aacute;si idej&eacute;t (&eacute;s ez&aacute;ltal k&ouml;lts&eacute;g&eacute;t)?
+            </li>
+            <li>Hol l&eacute;tes&uuml;lj&ouml;n &uacute;j park, hogy a legt&ouml;bb v&aacute;roslak&oacute; &ouml;t perc s&eacute;t&aacute;val el&eacute;rje valamelyik parkot?
+            </li>
+            <li>Melyek a legjobb helyek t&ouml;bb kis&aacute;llat-keresked&eacute;s sz&aacute;m&aacute;ra egy megy&eacute;ben, ha az a c&eacute;l, hogy a megy&eacute;ben a kis&aacute;llat-tulajdonosok 40 sz&aacute;zal&eacute;ka ne legyen t&iacute;z perc aut&oacute;&uacute;tn&aacute;l t&aacute;volabb valamelyik keresked&eacute;stől?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Cél</h2></div>
+        <hr/>
+        <div>
+            <p>Hat&aacute;rozza meg a keresleti helyek l&eacute;tes&iacute;tm&eacute;nyekhez val&oacute; hozz&aacute;rendel&eacute;sekor teljes&iacute;tendő c&eacute;lt.
+            </p>
+            <p>A Legjobb l&eacute;tes&iacute;tm&eacute;nyek kiv&aacute;laszt&aacute;sa lehetős&eacute;ggel megadhatja a megoldand&oacute; probl&eacute;m&aacute;t &ndash; a c&eacute;lt. Az eszk&ouml;z optimaliz&aacute;l&aacute;s&aacute;nak k&ouml;sz&ouml;nhetően megold&aacute;st ny&uacute;jt az adott c&eacute;lra. Tekintet n&eacute;lk&uuml;l a c&eacute;lra, l&eacute;nyeg&eacute;ben ugyanaz a m&ouml;g&ouml;ttes m&oacute;dszer haszn&aacute;latos a megold&aacute;s el&eacute;r&eacute;s&eacute;re &ndash; egy adott keresleti helyen mutatkoz&oacute; kereslet mennyis&eacute;g&eacute;nek a legk&ouml;zelebbi l&eacute;tes&iacute;tm&eacute;nyhez t&ouml;rt&eacute;nő hozz&aacute;rendel&eacute;se. A c&eacute;lok a t&aacute;vols&aacute;g (vagy idő) &eacute;s a kereslet k&ouml;z&ouml;tti k&ouml;lcs&ouml;nhat&aacute;st&oacute;l f&uuml;ggően v&aacute;ltoznak. Az eszk&ouml;z figyelembe veszi a menett&aacute;vols&aacute;got/-időt &eacute;s a keresleti mennyis&eacute;get, &eacute;s &ndash; bizonyos esetekben &ndash; a l&eacute;tes&iacute;tm&eacute;nyek kapacit&aacute;s&aacute;t. Ha a c&eacute;l p&eacute;ld&aacute;ul az utaz&aacute;si idő cs&ouml;kkent&eacute;s&eacute;t r&eacute;szes&iacute;ti előnyben, az eszk&ouml;z m&aacute;sodsorban akkor is t&ouml;rekszik a felosztott kereslet maximaliz&aacute;l&aacute;s&aacute;ra. Hasonl&oacute;k&eacute;ppen, ha a c&eacute;l a felosztott kereslet maximaliz&aacute;l&aacute;sa, az eszk&ouml;z ezt az utaz&aacute;si idő minim&aacute;lisra cs&ouml;kkent&eacute;s&eacute;vel hajtja v&eacute;gre (azzal, hogy keresleti helyeket a legk&ouml;zelebbi l&eacute;tes&iacute;tm&eacute;nyhez rendeli hozz&aacute;, nem csup&aacute;n valamelyik l&eacute;tes&iacute;tm&eacute;nyhez).
+            </p>
+            <p>Az adatokt&oacute;l &eacute;s az alkalmazott be&aacute;ll&iacute;t&aacute;sokt&oacute;l f&uuml;ggően k&uuml;l&ouml;nb&ouml;ző c&eacute;lok azonos vagy hasonl&oacute; eredm&eacute;nyekre vezethetnek. Aj&aacute;nlott azonban az elemz&eacute;shez legmegfelelőbb c&eacute;lt megadni.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Hozzárendelés létező létesítményekhez</h2></div>
+        <hr/>
+        <div>
+            <p>Haszn&aacute;lja ezt a c&eacute;lt, ha nem k&iacute;v&aacute;n &uacute;j l&eacute;tes&iacute;tm&eacute;nyeket keresni, &eacute;s szeretn&eacute; a keresletet megl&eacute;vő l&eacute;tes&iacute;tm&eacute;nyekhez rendelni, amelyek lehetnek korl&aacute;tozott vagy korl&aacute;tlan kapacit&aacute;s&uacute;ak.    
+            </p>
+            <p>Ez a c&eacute;l hozz&aacute;rendeli a keresletet a l&eacute;tes&iacute;tm&eacute;nyekhez a l&eacute;tes&iacute;tm&eacute;ny kapacit&aacute;sa &eacute;s a k&ouml;rnyező ter&uuml;let keresleti mennyis&eacute;ge alapj&aacute;n. A keresletet a legk&ouml;zelebbi l&eacute;tes&iacute;tm&eacute;nyhez rendeli hozz&aacute; a rendelkez&eacute;sre &aacute;ll&oacute; kapacit&aacute;s el&eacute;r&eacute;s&eacute;ig. Ha megad egy maxim&aacute;lis menettartom&aacute;nyt, akkor a tartom&aacute;nyon t&uacute;li keresleti helyek nem lesznek l&eacute;tes&iacute;tm&eacute;nyhez hozz&aacute;rendelve akkor sem, ha a kereslet teljes feloszt&aacute;sa m&eacute;g nem t&ouml;rt&eacute;nt meg.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Utazás minimalizálása</h2></div>
+        <hr/>
+        <div>
+            <p>Haszn&aacute;lja ezt a c&eacute;lt l&eacute;tes&iacute;tm&eacute;nyek keres&eacute;s&eacute;re &uacute;gy, hogy az &aacute;ltal&aacute;nos utaz&aacute;si idő vagy utaz&aacute;si t&aacute;vols&aacute;g a keresleti helyek &eacute;s a l&eacute;tes&iacute;tm&eacute;nyek k&ouml;z&ouml;tt minim&aacute;lis legyen.
+            </p>
+            <p>Ez a c&eacute;l gyakran alkalmazhat&oacute; a l&eacute;tes&iacute;tm&eacute;ny &eacute;s az &ouml;sszes keresleti hely k&ouml;z&ouml;tti rendszeres utaz&aacute;s eset&eacute;n. A c&eacute;l haszn&aacute;lata aj&aacute;nlott p&eacute;ld&aacute;ul az eloszt&oacute;k&ouml;zpontokb&oacute;l az &uuml;zletekbe t&ouml;rt&eacute;nő &aacute;rusz&aacute;ll&iacute;t&aacute;s sor&aacute;n &ouml;sszess&eacute;g&eacute;ben megtett &uacute;t minimaliz&aacute;l&aacute;s&aacute;hoz, vagy egy konferencia helysz&iacute;n&eacute;nek az &ouml;sszes r&eacute;sztvevő utaz&aacute;si idej&eacute;nek minimaliz&aacute;l&aacute;s&aacute;val t&ouml;rt&eacute;nő kiv&aacute;laszt&aacute;s&aacute;hoz.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Lefedettség maximalizálása</h2></div>
+        <hr/>
+        <div>
+            <p>Haszn&aacute;lja ezt a c&eacute;lt, ha maximaliz&aacute;lni k&iacute;v&aacute;nja egy adott időn vagy l&eacute;tes&iacute;tm&eacute;nyektől val&oacute; t&aacute;vols&aacute;gon bel&uuml;l lefedett keresleti mennyis&eacute;get.    
+            </p>
+            <p>Ez a c&eacute;l kiv&aacute;lasztja a l&eacute;tes&iacute;tm&eacute;nyeket a maxim&aacute;lis keresleti mennyis&eacute;get &uacute;gy felosztva, hogy az egyes keresleti helyek teljes kereslet&eacute;t hozz&aacute;rendeli a legk&ouml;zelebbi l&eacute;tes&iacute;tm&eacute;nyhez.
+            </p>
+            <p>Enn&eacute;l a c&eacute;ln&aacute;l sz&uuml;ks&eacute;ges egy v&eacute;ges maxim&aacute;lis menettartom&aacute;ny; m&aacute;sk&uuml;l&ouml;nben előfordulhat, hogy a program a teljes keresletet egyetlen l&eacute;tes&iacute;tm&eacute;nyhez rendeli hozz&aacute;. A program nem hajtja v&eacute;gre a hozz&aacute;rendel&eacute;st azokn&aacute;l a keresleti helyekn&eacute;l, amelyek k&iacute;v&uuml;l esnek minden l&eacute;tes&iacute;tm&eacute;ny t&aacute;vols&aacute;g&aacute;n vagy idej&eacute;n (ez megmutatja, hogy hol nincs kiel&eacute;g&iacute;tve a kereslet, &eacute;s hol van sz&uuml;ks&eacute;g esetleg tov&aacute;bbi l&eacute;tes&iacute;tm&eacute;nyekre).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Lefedettség maximalizálása kapacitás szerint</h2></div>
+        <hr/>
+        <div>
+            <p>Haszn&aacute;lja ezt a c&eacute;lt, ha maximaliz&aacute;lni k&iacute;v&aacute;nja a l&eacute;tes&iacute;tm&eacute;nyek &aacute;ltal lefedett keresleti mennyis&eacute;get, de a l&eacute;tes&iacute;tm&eacute;nyek kapacit&aacute;sa korl&aacute;tozott.    
+            </p>
+            <p>Ez a c&eacute;l kiv&aacute;lasztja a l&eacute;tes&iacute;tm&eacute;nyeket a maxim&aacute;lis keresleti mennyis&eacute;get &uacute;gy felosztva, hogy egyik l&eacute;tes&iacute;tm&eacute;ny kapacit&aacute;s&aacute;t ne l&eacute;pje t&uacute;l. Az egyes keresleti helyeken mutatkoz&oacute; keresletet a legk&ouml;zelebbi, kapacit&aacute;ssal rendelkező l&eacute;tes&iacute;tm&eacute;nyhez rendeli hozz&aacute; (vagyis, ha egy keresleti hely l&eacute;tes&iacute;tm&eacute;nyhez t&ouml;rt&eacute;nő hozz&aacute;rendel&eacute;se meghaladn&aacute; a l&eacute;tes&iacute;tm&eacute;ny rendelkez&eacute;sre &aacute;ll&oacute; kapacit&aacute;s&aacute;t, akkor nem rendeli hozz&aacute; a keresleti helyet, hanem csak a kereslet egy r&eacute;sz&eacute;t).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Kereslet adott százalékának lefedése</h2></div>
+        <hr/>
+        <div>
+            <p>Haszn&aacute;lja ezt a c&eacute;lt, ha szeretn&eacute; kider&iacute;teni, hogy legal&aacute;bb h&aacute;ny l&eacute;tes&iacute;tm&eacute;ny sz&uuml;ks&eacute;ges a kereslet adott sz&aacute;zal&eacute;k&aacute;nak lefed&eacute;s&eacute;hez.
+            </p>
+            <p>Ez a c&eacute;l kiv&aacute;lasztja, hogy legal&aacute;bb h&aacute;ny l&eacute;tes&iacute;tm&eacute;ny sz&uuml;ks&eacute;ges a kereslet megadott sz&aacute;zal&eacute;k&aacute;nak el&eacute;r&eacute;s&eacute;hez. Ha a keresleti hely k&eacute;t vagy t&ouml;bb l&eacute;tes&iacute;tm&eacute;ny maxim&aacute;lis menettartom&aacute;ny bel&uuml;l tal&aacute;lhat&oacute;, akkor a program az egyes l&eacute;tes&iacute;tm&eacute;nyektől val&oacute; t&aacute;vols&aacute;g ar&aacute;ny&aacute;ban osztja fel a keresletet a l&eacute;tes&iacute;tm&eacute;nyek k&ouml;z&ouml;tt. Ez a c&eacute;l gyakran haszn&aacute;lhat&oacute; olyankor, ha az emberek v&aacute;laszthatnak, hogy melyik l&eacute;tes&iacute;tm&eacute;nyt keresik fel, &eacute;s &aacute;ltal&aacute;ban felt&eacute;telezhető, hogy a legk&ouml;zelebbi l&eacute;tes&iacute;tm&eacute;nyt keresik fel (ha minden m&aacute;s megegyezik).
+            </p>
+            <p>Elt&eacute;rően a l&eacute;tes&iacute;tm&eacute;nyeket kiv&aacute;laszt&oacute; m&aacute;s c&eacute;lokt&oacute;l, amelyekn&eacute;l megadhat&oacute; a kiv&aacute;lasztand&oacute; l&eacute;tes&iacute;tm&eacute;nyek sz&aacute;ma, ez a c&eacute;l a kiel&eacute;g&iacute;teni k&iacute;v&aacute;nt kereslet sz&aacute;zal&eacute;kar&aacute;nya alapj&aacute;n kiv&aacute;lasztja a felhaszn&aacute;l&oacute; helyett a l&eacute;tes&iacute;tm&eacute;nyek sz&aacute;m&aacute;t. A c&eacute;l azt felt&eacute;telezi, hogy a l&eacute;tes&iacute;tm&eacute;nyek kapacit&aacute;sa nem korl&aacute;tozott.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Mérés</h2></div>
+        <hr/>
+        <div>
+            <p>Az elemz&eacute;s sor&aacute;n az utaz&aacute;st figyelembe vevő m&aacute;s eszk&ouml;z&ouml;kh&ouml;z hasonl&oacute;an megadhatja, hogy az utaz&aacute;s m&eacute;r&eacute;se t&aacute;vols&aacute;g vagy idő szerint t&ouml;rt&eacute;njen-e, &eacute;s v&aacute;laszthat k&uuml;l&ouml;nf&eacute;le utaz&aacute;si m&oacute;dok k&ouml;z&uuml;l, mint p&eacute;ld&aacute;ul gyalogl&aacute;si idő, utaz&aacute;si idő, vid&eacute;ki utaz&aacute;si t&aacute;vols&aacute;g &eacute;s &iacute;gy tov&aacute;bb. Az el&eacute;rhető utaz&aacute;si m&oacute;dokat a szervezet rendszergazd&aacute;ja hat&aacute;rozza meg. A  <b>Utaz&aacute;si idő</b>, <b>Vid&eacute;ki utaz&aacute;si idő</b>, vagy <b>Tehersz&aacute;ll&iacute;t&aacute;si idő</b> haszn&aacute;lat&aacute;val opcion&aacute;lisan belefoglalhatja a sz&aacute;m&iacute;t&aacute;sba a h&eacute;t adott napj&aacute;nak &eacute;s az adott napszaknak a forgalm&aacute;t.
+            </p>
+            <p> A keresleti helyek l&eacute;tes&iacute;tm&eacute;nyekhez t&ouml;rt&eacute;nő pontos hozz&aacute;rendel&eacute;se &eacute;rdek&eacute;ben adja meg, hogy az utaz&aacute;s a l&eacute;tes&iacute;tm&eacute;nyektől (p&eacute;ld&aacute;ul tűzolt&oacute;&aacute;llom&aacute;sokr&oacute;l) a keresleti helyekre vagy a keresleti helyekről a l&eacute;tes&iacute;tm&eacute;nyekbe (p&eacute;ld&aacute;ul a tagok a k&ouml;nyvt&aacute;rakba) t&ouml;rt&eacute;nik-e. A Legjobb l&eacute;tes&iacute;tm&eacute;nyek kiv&aacute;laszt&aacute;sa sz&aacute;m&iacute;t&aacute;sba veszi az egyir&aacute;ny&uacute; utakon a halad&aacute;si ir&aacute;nyt, hogy lehetős&eacute;g van-e befordulni egy utc&aacute;ba, hogy nem tilos-e balra fordulni a kereszteződ&eacute;sben &eacute;s &iacute;gy tov&aacute;bb, att&oacute;l f&uuml;ggően, hogy az utaz&aacute;s a l&eacute;tes&iacute;tm&eacute;nyből kiindul&oacute;an a keresleti helyekre, vagy a keresleti helyekről a l&eacute;tes&iacute;tm&eacute;nyekbe t&ouml;rt&eacute;nik-e.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Keresleti helyek réteg</h2></div>
+        <hr/>
+        <div>
+            <p>A l&eacute;tes&iacute;tm&eacute;nyek &aacute;ltal k&iacute;n&aacute;lt szolg&aacute;ltat&aacute;sok ir&aacute;nt keresletet mutat&oacute; helyeknek megfelelő, pontszerű vektor elemek. Az eszk&ouml;z hozz&aacute;rendeli ezeket a keresleti helyeket a megfelelő l&eacute;tes&iacute;tm&eacute;nyekhez a kiv&aacute;lasztott c&eacute;l alapj&aacute;n.
+            </p>
+            <p>A keresleti helyekhez hozz&aacute;rendelt keresleti mennyis&eacute;g tartozik. Ha a kereslet minden keresleti helyen azonos, akkor egy &aacute;lland&oacute; haszn&aacute;lat&aacute;val megadhatja az &eacute;rt&eacute;ket. Ha a keresleti mennyis&eacute;g keresleti hely szerint v&aacute;ltozik, akkor a Keresleti helyek r&eacute;teg egyik mezőj&eacute;ben megadhatja az egyes keresleti helyekhez tartoz&oacute; &eacute;rt&eacute;ket.
+            </p>
+            <p>A program az &ouml;sszes kereslet feloszt&aacute;s&aacute;ig folytatja a kereslet l&eacute;tes&iacute;tm&eacute;nyekhez t&ouml;rt&eacute;nő hozz&aacute;rendel&eacute;s&eacute;t, tekintet n&eacute;lk&uuml;l arra, hogy milyen messze vannak a keresleti helyek a l&eacute;tes&iacute;tm&eacute;nyektől. Egy maxim&aacute;lis menettartom&aacute;nyt a Keresleti helyek r&eacute;teghez hozz&aacute;rendelve l&eacute;trehozhat egy t&aacute;vols&aacute;g- vagy időhat&aacute;rt &ndash; a hat&aacute;r&eacute;rt&eacute;ken t&uacute;li keresleti helyek hozz&aacute;rendel&eacute;se nem t&ouml;rt&eacute;nik meg. Ha a legnagyobb menettartom&aacute;ny minden keresleti helyen azonos, akkor egy &aacute;lland&oacute; haszn&aacute;lat&aacute;val megadhatja az &eacute;rt&eacute;ket. Ha a maxim&aacute;lis menettartom&aacute;ny keresleti hely szerint v&aacute;ltozik, akkor a Keresleti helyek r&eacute;teg egyik mezőj&eacute;ben megadhatja az egyes keresleti helyekhez tartoz&oacute; &eacute;rt&eacute;ket.
+            </p>
+            <p>Ha a c&eacute;l t&iacute;pusa a  <b>Kereslet adott sz&aacute;zal&eacute;k&aacute;nak lefed&eacute;se</b>, akkor meg kell adnia, hogy a l&eacute;tes&iacute;tm&eacute;nyeknek a kereslet legal&aacute;bb h&aacute;ny sz&aacute;zal&eacute;k&aacute;t kell lefedni&uuml;k.
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p>
+            <p>Az eszk&ouml;z a Keresleti helyek r&eacute;teg ak&aacute;r 10&nbsp;000 vektoros elem&eacute;t t&aacute;mogatja.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Szükséges célállomás réteg</h2></div>
+        <hr/>
+        <div>
+            <p>A valamilyen fajt&aacute;j&uacute; szolg&aacute;ltat&aacute;s ny&uacute;jt&aacute;s&aacute;val l&eacute;tes&iacute;tm&eacute;ny szerepet bet&ouml;ltő helyeknek megfelelő, pontszerű vektor elemek. A sz&uuml;ks&eacute;ges l&eacute;tes&iacute;tm&eacute;nyek &aacute;ltal&aacute;ban m&aacute;r l&eacute;tező helyek, szemben a potenci&aacute;lis l&eacute;tes&iacute;tm&eacute;nyekkel, amelyek &aacute;ltal&aacute;ban azok a helyek, ahov&aacute; &uacute;j l&eacute;tes&iacute;tm&eacute;nyek &eacute;p&uuml;lnek vagy ker&uuml;lnek. Keresleti helyek hozz&aacute;rendel&eacute;sekor az eszk&ouml;z a  <b>Sz&uuml;ks&eacute;ges c&eacute;l&aacute;llom&aacute;s r&eacute;teg</b> l&eacute;tes&iacute;tm&eacute;nyeit haszn&aacute;lja a <b>Potenci&aacute;lis c&eacute;l&aacute;llom&aacute;s r&eacute;teg</b> l&eacute;tes&iacute;tm&eacute;nyei előtt.
+            </p>
+            <p>A sz&uuml;ks&eacute;ges l&eacute;tes&iacute;tm&eacute;nyek kapacit&aacute;sa lehet korl&aacute;tlan (vagyis kiel&eacute;g&iacute;thetik a teljes hozz&aacute;juk rendelt keresletet) vagy korl&aacute;tozott. Ha az &ouml;sszes l&eacute;tes&iacute;tm&eacute;nyek azonos, korl&aacute;tozott kapacit&aacute;s&uacute; (p&eacute;ld&aacute;ul egy tűzolt&oacute;&aacute;llom&aacute;sr&oacute;l kiszolg&aacute;lhat&oacute; h&aacute;ztart&aacute;sok sz&aacute;ma kb. 4000), adjon meg egy &aacute;lland&oacute; &eacute;rt&eacute;ket. Ha a k&uuml;l&ouml;nb&ouml;ző l&eacute;tes&iacute;tm&eacute;nyek kapacit&aacute;sa v&aacute;ltoz&oacute; (p&eacute;ld&aacute;ul az egyes gimn&aacute;ziumok kezdő &eacute;vfolyam&aacute;nak f&eacute;rőhelyei), akkor adjon meg egy mezőt, amely tartalmazza az egyes l&eacute;tes&iacute;tm&eacute;nyek kapacit&aacute;s&eacute;rt&eacute;k&eacute;t.
+            </p>
+            <p>Az eszk&ouml;z a  <b>Sz&uuml;ks&eacute;ges c&eacute;l&aacute;llom&aacute;s r&eacute;teg</b> ak&aacute;r 100 vektoros elem&eacute;t t&aacute;mogatja.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Potenciális célállomás réteg</h2></div>
+        <hr/>
+        <div>
+            <p>A valamilyen fajt&aacute;j&uacute; szolg&aacute;ltat&aacute;s ny&uacute;jt&aacute;s&aacute;val l&eacute;tes&iacute;tm&eacute;ny szerepet bet&ouml;ltő helyeknek megfelelő, pontszerű vektor elemek. A potenci&aacute;lis l&eacute;tes&iacute;tm&eacute;nyek &aacute;ltal&aacute;ban olyan helyeknek felelnek meg, ahov&aacute; &uacute;j l&eacute;tes&iacute;tm&eacute;nyek &eacute;p&uuml;lnek vagy ker&uuml;lnek, szemben a sz&uuml;ks&eacute;ges l&eacute;tes&iacute;tm&eacute;nyekkel, amelyek &aacute;ltal&aacute;ban m&aacute;r l&eacute;tező helyeknek felelnek meg.
+            </p>
+            <p>Az elemz&eacute;s c&eacute;lj&aacute;t&oacute;l f&uuml;ggően meg kell adnia a potenci&aacute;lis l&eacute;tes&iacute;tm&eacute;nyek sz&aacute;m&aacute;t a potenci&aacute;lis jel&ouml;ltek halmaz&aacute;b&oacute;l t&ouml;rt&eacute;nő kiv&aacute;laszt&aacute;shoz. Ha a sz&uuml;ks&eacute;ges &eacute;s a potenci&aacute;lis l&eacute;tes&iacute;tm&eacute;nyeket egyar&aacute;nt megadja, az eszk&ouml;z előbb a  <b>Sz&uuml;ks&eacute;ges c&eacute;l&aacute;llom&aacute;s r&eacute;teg</b> l&eacute;tes&iacute;tm&eacute;nyeit haszn&aacute;lja, majd azut&aacute;n a <b>Potenci&aacute;lis c&eacute;l&aacute;llom&aacute;s r&eacute;teg</b> l&eacute;tes&iacute;tm&eacute;nyeit.
+            </p>
+            <p>A potenci&aacute;lis l&eacute;tes&iacute;tm&eacute;nyek kapacit&aacute;sa lehet korl&aacute;tlan (vagyis kiel&eacute;g&iacute;thetik a teljes hozz&aacute;juk rendelt keresletet) vagy korl&aacute;tozott. Ha az &ouml;sszes l&eacute;tes&iacute;tm&eacute;nyek azonos, korl&aacute;tozott kapacit&aacute;s&uacute; (p&eacute;ld&aacute;ul egy tűzolt&oacute;&aacute;llom&aacute;sr&oacute;l kiszolg&aacute;lhat&oacute; h&aacute;ztart&aacute;sok sz&aacute;ma kb. 4000), adjon meg egy &aacute;lland&oacute; &eacute;rt&eacute;ket. Ha a k&uuml;l&ouml;nb&ouml;ző l&eacute;tes&iacute;tm&eacute;nyek kapacit&aacute;sa v&aacute;ltoz&oacute; (p&eacute;ld&aacute;ul az egyes gimn&aacute;ziumok kezdő &eacute;vfolyam&aacute;nak f&eacute;rőhelyei), akkor adjon meg egy mezőt, amely tartalmazza az egyes l&eacute;tes&iacute;tm&eacute;nyek kapacit&aacute;s&eacute;rt&eacute;k&eacute;t.
+            </p>
+            <p>Az eszk&ouml;z a  <b>Potenci&aacute;lis c&eacute;l&aacute;llom&aacute;s r&eacute;teg</b> ak&aacute;r 1000 vektoros elem&eacute;t t&aacute;mogatja.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Határrétegek kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p> Egy vagy t&ouml;bb olyan funkci&oacute;, ami ideiglenes korl&aacute;toz&aacute;sk&eacute;nt műk&ouml;dik (hat&aacute;rk&eacute;nt), amikor az &eacute;rintett utc&aacute;kon k&ouml;zlekedik. A korl&aacute;tokat a pontok, vonalak vagy polygon tulajdons&aacute;gaival hat&aacute;rozhatja meg.
+            </p>
+            <p>Egy korl&aacute;t pont lehet egy let&ouml;r&ouml;tt fa&aacute;g, egy k&ouml;zleked&eacute;si baleset, egy leszakadt elektromos vezet&eacute;k, vagy b&aacute;rmi, ami egy adott helyen teljes m&eacute;rt&eacute;kben megakad&aacute;lyozza az utcai k&ouml;zleked&eacute;st. A k&ouml;zleked&eacute;s enged&eacute;lyezett az utc&aacute;n, de a korl&aacute;t ponton t&uacute;l m&aacute;r nem. Legfeljebb 250 olyan funkci&oacute;t hat&aacute;rozhat meg, ami hat&aacute;rk&eacute;nt műk&ouml;dhet.
+            </p>
+            <p>A korl&aacute;t vonal megakad&aacute;lyozza a k&ouml;zleked&eacute;st minden olyan ponton, ahol az keresztezi az utc&aacute;t. P&eacute;ld&aacute;ul egy felvonul&aacute;s vagy t&uuml;ntet&eacute;s megakad&aacute;lyozza a k&ouml;zleked&eacute;st t&ouml;bb utca szakaszon is, ez&eacute;rt ezt korl&aacute;t vonallal lehet modellezni. Ha az utc&aacute;t keresztező korl&aacute;t vonalak sz&aacute;ma meghaladja az 500-at, akkor az eszk&ouml;z hiba&uuml;zenetet ad.
+            </p>
+            <p>A polygon korl&aacute;t megakad&aacute;lyozza a k&ouml;zleked&eacute;st minden olyan ponton, ahol az keresztezi az utc&aacute;t. Ilyen jellegű korl&aacute;t lehet p&eacute;ld&aacute;ul egy &aacute;rad&aacute;s, ami utc&aacute;k eg&eacute;sz h&aacute;l&oacute;zat&aacute;t fedi le, &iacute;gy megakad&aacute;lyozva a k&ouml;zleked&eacute;st. Ha az utc&aacute;t keresztező polygonok sz&aacute;ma meghaladja az 2000-et, akkor az eszk&ouml;z hiba&uuml;zenetet ad.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredményréteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az eredm&eacute;ny r&eacute;teg egy-egy r&eacute;teget tartalmaz az al&aacute;bbiak mindegyik&eacute;hez: l&eacute;tes&iacute;tm&eacute;nyek, amelyekhez keresletet rendeltek, keresleti helyek, amelyeket l&eacute;tes&iacute;tm&eacute;nyekhez rendeltek, &eacute;s hozz&aacute;rendel&eacute;si vonalak, amelyek &ouml;sszek&ouml;tik a keresleti helyeket a hozz&aacute;juk rendelt l&eacute;tes&iacute;tm&eacute;nyekkel. A hozz&aacute;rendel&eacute;si vonalak egyenesen h&uacute;zott vonalak; azonban a l&eacute;tes&iacute;tm&eacute;ny &eacute;s a keresleti hely k&ouml;z&ouml;tti utaz&aacute;si idő vagy utaz&aacute;si t&aacute;vols&aacute;g mindig a megadott utaz&aacute;si m&oacute;don alapul, &eacute;s nem az egyenes vonallal megrajzolt t&aacute;vols&aacute;gon.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

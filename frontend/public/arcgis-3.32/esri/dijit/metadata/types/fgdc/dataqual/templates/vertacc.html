@@ -1,0 +1,30 @@
+<div data-dojo-attach-point="containerNode">
+
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'vertacc',minOccurs:0,
+      label:'${i18nFgdc.dataqual.vertacc.caption}'">
+      
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'vertaccr',
+        label:'${i18nFgdc.dataqual.vertacc.vertaccr}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+    </div>
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'qvertpa',minOccurs:0,maxOccurs:'unbounded',
+        label:'${i18nFgdc.dataqual.vertacc.qvertpa.caption}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'vertaccv',
+            label:'${i18nFgdc.dataqual.vertacc.qvertpa.vertaccv}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputNumber"></div>
+        </div>
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'vertacce',
+            label:'${i18nFgdc.dataqual.vertacc.qvertpa.vertacce}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+        </div>
+    </div>
+
+  </div>
+  
+</div>

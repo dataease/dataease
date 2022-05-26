@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="bdToolbox">
+        <p> GeoAnalytics mendistribusikan kerja analitik di seluruh ArcGIS GeoAnalytics ServerAnda. Ini memungkinkan Anda menganalisis lebih banyak data lebih cepat dengan beberapa mesin. Alat berikut tersedia: <ul>
+                <li> Titik Agregat
+                </li>
+                <li> Buat Multi-Variable Grid
+                </li>
+                <li> Jelaskan Set Data
+                </li>
+                <li> Gabungkan Fitur
+                </li>
+                <li> Rekonstruksi Jalur
+                </li>
+                <li> Ringkas Atribut
+                </li>
+                <li> Ringkas di Dalam
+                </li>
+                <li> Geocode Lokasi dari Tabel
+                </li>
+                <li> Perkaya dari Multi-Variable Grid
+                </li>
+                <li> Deteksi Insiden
+                </li>
+                <li> Temukan Lokasi Serupa
+                </li>
+                <li> Hitung Kepadatan
+                </li>
+                <li> Temukan Klaster Titik
+                </li>
+                <li> Temukan Hot Spot
+                </li>
+                <li> Klasifikasi dan Regresi Berbasis Hutan
+                </li>
+                <li> Regresi Linear yang Digeneralisasi
+                </li>
+                <li> Buat Buffer
+                </li>
+                <li> Tambahkan Data
+                </li>
+                <li> Hitung Kolom
+                </li>
+                <li> Salin ke Penyimpanan Data
+                </li>
+                <li> Overlay Layer
+                </li>
+                <li> Hilangkan Batas
+                </li>
+                <li> Gabungkan Layer
+                </li>
+                <li> Potong Layer 
+                </li>
+            </ul>
+            
+        </p>
+        <p>GeoAnalytics berfokus menganalisis data berjumlah besar dengan penekanan baik berpola spasial maupun temporal. 
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Summarize Data</h2>
+        <hr/>
+        <p> The Summarize Data toolset contains tools that calculate total counts, lengths, areas, and basic descriptive statistics of features and their attributes within areas or near other features.
+            <ul>
+                <li> <b>Aggregate Points</b> calculates statistics about points that fall within specified areas or bins.
+                </li>
+                <li> <b>Build Multi-Variable Grid</b> generates a grid of square or hexagonal bins and calculates values for each bin based on the proximity of each input layer.
+                </li>
+                <li> <b>Describe Dataset</b> calculates a summary of your input, and can optionally generate a sample of your input layer.
+                </li>
+                <li> <b>Join Features</b> calculates statistics about features that share a spatial, temporal, or attribute relationship with other features.
+                </li>
+                <li> <b>Reconstruct Tracks</b> calculates statistics about points or polygons that belong to the same track and reconstructs inputs into tracks.
+                </li>
+                <li> <b>Summarize Attributes</b> calculates statistics about feature or tabular data that share attributes.
+                </li>
+                <li> <b>Summarize Within</b> calculates statistics for area features and attributes that overlap each other.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Titik Agregat</h2></td>
+                    <td>
+                    <img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" class="titleImage" alt="Titik Agregat">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Dengan menggunakan feature layer titik dan feature layer area atau bin yang didefinisikan oleh jarak tertentu, alat ini menentukan titik-titik mana yang masuk di dalam setiap area atau bin dan menghitung statistik seputar semua titik di masing-masing area atau bin tersebut. Atau Anda dapat menerapkan irisan waktu dengan alat ini. 
+            </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Dengan mengetahui lokasi titik insiden kejahatan, hitung jumlah kejahatan per daerah atau wilayah administratif lainnya.
+                    </li>
+                    <li>Temukan pendapatan bulanan tertinggi dan terendah untuk lokasi waralaba menggunakan 100-kilometer bin.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="BuildMultiVariableGridTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Buat Multi-Variable Grid</h2></td>
+                    <td>
+                    <img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" class="titleImage" alt="Diagram alur kerja Tambahkan Data">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Alat Buat Multi-Variable Grid menghasilkan kotak persegi atau tempat penyimpanan heksagonal dan menghitung variabel untuk setiap kotak berdasarkan kedekatan satu atau lebih layer input.
+            </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Mengingat beberapa layer infrastruktur transportasi umum, bagian kota mana yang paling tidak dapat diakses oleh transportasi umum?
+                    </li>
+                    <li>Dengan adanya layer saluran air, seperti danau dan sungai, apa nama badan air yang paling dekat dengan masing-masing lokasi di AS?
+                    </li>
+                    <li>Dari layer pendapatan rumah tangga yang diberikan, tentukanlah area di Amerika Serikat yang memiliki nilai variasi pendapatan terbesar pada radius 50 mil.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DescribeDatasetTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Jelaskan Set Data</h2></td>
+                    <td>
+                    <img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" class="titleImage" alt="Diagram alur kerja Jelaskan Set Data">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ringkas fitur input dengan statistik, layer sampel, dan visualisasi. Anda dapat memilih untuk menjadikan layer sampel atau layer jangkauan sebagai output.
+            </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Referensikan statistik ringkasan yang dihitung untuk memahami nilai apa yang ada di set data Anda.
+                    </li>
+                    <li>Alih-alih menggambar keseluruhan set data, buat layer subset untuk memvisualisasikan fitur dan atributnya saat ditambahkan ke peta.
+                    </li>
+                    <li>Hemat waktu dan sumber daya dan jalankan analisis pada layer sampel sebelum menjalankan analisis di keseluruhan set data.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Gabungkan Fitur</h2></td>
+                    <td>
+                    <img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" class="titleImage" alt="Gabungkan Fitur">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Menggunakan feature layer atau data tabular, Anda dapat menggabungkan fitur dan catatan berdasarkan hubungan khusus antara layer input atau tabel.  Gabungan akan ditentukan oleh hubungan spasial, temporal, dan atribut, dan statistik ringkasan dapat dihitung secara opsional.  
+            </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Dengan mengetahui lokasi titik kejadian kejahatan dengan waktu, gabungkan data kejahatan pada dirinya dengan menentukan hubungan spasial kejahatan di dalam kisaran 1 kilometer antara satu sama lainnya dan yang terjadi dalam waktu 1 jam dari setiap kejadian untuk menentukan apakah ada urutan kejahatan yang saling berdekatan dalam ruang dan waktu.
+                    </li>
+                    <li>Dengan mengetahui tabel Kode Pos dengan informasi demografis dan fitur area yang mewakili bangunan residensial, gabungkan informasi demografis pada kediaman sehingga setiap kediaman kini memiliki informasi tersebut.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ReconstructTracksTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rekonstruksi Jalur</h2></td>
+                    <td>
+                    <img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" class="titleImage" alt="Rekonstruksi Jalur">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Menggunakan layer titik yang diaktifkan waktu atau poligon yang mewakili  <code>instan</code> dalam waktu, alat ini menentukan fitur input manakah yang dimiliki sebuah jalur dan akan mengurutkan input secara berurutan dalam waktu. Statistik secara opsional dihitung untuk fitur input di dalam setiap jalur.
+            </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Dengan mengetahui lokasi titik dan waktu pengukuran badai, hitung kecepatan angin rata-rata dan tekanan angin maksimal dari badai tersebut.
+                    </li>
+                    <li>Gunakan pengukuran GPS kapal untuk merekonstruksi alur kapal sebagai garis. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeAttributesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Ringkas Atribut</h2></td>
+                    <td>
+                    <img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" class="titleImage" alt="Ringkas Atributdiagram">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Dengan menggunakan data fitur atau tabular, alat ini meringkas statistik untuk kolom yang ditentukan. 
+            </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Dengan mengetahui lokasi toko bahan makanan dengan kolom  <i>COMPANY_NAME</i>, ringkas toko berdasarkan nama perusahaan untuk menentukan statistik setiap perusahaan.
+                    </li>
+                    <li>Dengan adanya tabel toko kelontong dengan kolom  <i>COMPANY_NAME</i> dan <i>COUNTY</i>, rangkum toko dengan nama perusahaan dan daerah untuk menentukan statistik untuk setiap perusahaan di masing-masing daerah.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Ringkas di Dalam</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Ringkas di Dalam">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Menemukan area (dan bagian-bagian area) yang tumpang tindih antara dua layer dan menghitung statistik seputar tumpang tindih tersebut. 
+            </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Dengan mengetahui layer daerah aliran sungai dan layer penggunaan lahan menurut jenis penggunaan lahan, hitung luas total dari jenis penggunaan lahan untuk setiap daerah aliran sungai. 
+                    </li>
+                    <li>Dengan layer persil di suatu daerah dan layer batas kota, ringkas nilai rata-rata dari persil yang ada di dalam setiap kota.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="regularsize">
+        <h2>Temukan Lokasi</h2>
+        <hr/>
+        <p>Alat ini digunakan untuk mengidentifikasi area yang memenuhi sejumlah kriteria yang Anda tetapkan.   
+            <ul>
+                <li> <b>Deteksi Insiden</b> berfungsi dengan layer diaktifkan waktu untuk menentukan fitur mana yang memenuhi kondisi yang ditentukan.
+                </li>
+                <li> <b>Geocode Lokasi dari Tabel</b> mengubah alamat menjadi koordinat.
+                </li>
+                <li> <b>Temukan Lokasi Serupa</b> mencari lokasi yang paling mirip dengan satu atau beberapa lokasi referensi berdasarkan kriteria yang Anda tetapkan.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DetectIncidentsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Deteksi Insiden</h2></td>
+                    <td>
+                    <img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" class="titleImage" alt="Deteksi Insiden">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Alat ini bekerja dengan layer titik, garis, area, atau tabel yang diaktifkan dengan waktu yang mewakili instan dalam waktu.   Dengan menggunakan fitur yang disusun berurutan, yang disebut jalur, alat ini menentukan fitur mana yang merupakan insiden pilihan. Insiden ditentukan oleh kondisi yang Anda tentukan. 
+            </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Mendeteksi pengukuran badai yang merupakan badai Kategori 4 berdasarkan atribut kecepatan angin.
+                    </li>
+                    <li>Menggunakan pengukuran GPS gerakan kapal dengan kolom yang mewakili kecepatan kapal, temukan pengukuran yang lebih besar dari 1,5 kali lima pengukuran sebelumnya.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Geocode Lokasi dari Tabel</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="Geocode Lokasi dari Tabel">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Mengubah alamat menjadi koordinat. Gunakan alat ini pada tabel berbagi file big data.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Cari Lokasi Serupa</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="Cari Lokasi Serupa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Berdasarkan pada kriteria yang Anda tentukan, temukan lokasi serupa dengan mengukur kesamaan lokasi pada layer pencarian dengan satu atau lebih lokasi rujukan. 
+            </p>
+            <p>Berikut ini adalah contohnya: 
+                <ul>
+                    <li>Temukan sepuluh toko yang paling serupa dengan memeriksa jumlah karyawan dan penjualan tahunan.
+                    </li>
+                    <li>Temukan 100 kota paling serupa dengan memeriksa hubungan antara populasi, pertumbuhan tahunan, dan pendapatan pajak.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="largesize">
+        <h2>Analisis Pola</h2>
+        <hr/>
+        <p>  Peralatan ini membantu Anda mengidentifikasi, melakukan kuantifikasi, dan memvisualisasi pola spasial dalam data Anda.
+            <ul>
+                <li> <b>Hitung Kepadatan</b> mengambil kuantitas dari suatu fenomena dan menyebarkan kuantitas ini pada peta.
+                </li>
+                <li> <b>Temukan Hot Spot</b> mengidentifikasi pembuatan klaster yang signifikan secara statistik dalam pola spasial data Anda.
+                </li>
+                <li> <b>Temukan Klaster Titik</b> menemukan klaster fitur titik di derau sekitar berdasarkan distribusi spasialnya.
+                </li>
+                <li> <b>Klasifikasi dan Regresi Berbasis Hutan</b> menciptakan model dan menghasilkan prediksi menggunakan adaptasi algoritme hutan acak Leo Breiman, sebuah metode pembelajaran mesin dengan pengawas.
+                </li>
+                <li> <b>Regresi Linear yang Digeneralisasi</b> membuat prediksi atau model sebagai variabel terikat, dalam hal hubungannya dengan seperangkat variabel penjelas.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Hitung Kepadatan</h2></td>
+                    <td>
+                    <img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" class="titleImage" alt="Hitung Kepadatan">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Alat Hitung Kepadatan membuat peta kepadatan dari fitur titik dengan menyebarkan jumlah beberapa fenomena yang dikenal (diwakilkan sebagai atribut dari titik) lintas peta. Hasilnya adalah layer area yang mewakili kepadatan.
+            </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Menghitung kepadatan rumah sakit dalam sebuah daerah.  Layer hasil akan menampilkan area dengan aksesibilitas tinggi dan rendah terhadap rumah sakit, dan informasi ini dapat digunakan untuk memutuskan tempat rumah sakit baru seharusnya dibangun.
+                    </li>
+                    <li>Mengenali area yang berisiko tinggi akan terjadinya kebakaran hutan berdasarkan lokasi historis kebakaran hutan.
+                    </li>
+                    <li>Menemukan masyarakat yang jauh dari jalan raya utama untuk merencanakan lokasi pembangunan jalan baru.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Temukan Klaster Titik</h2></td>
+                    <td>
+                    <img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" class="titleImage" alt="Temukan Klaster Titik">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Alat Temukan Klaster Titik menemukan klaster fitur titik di sekitar kebisingan berdasarkan distribusi spasial mereka.
+            </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Temukan kelompok hama-rumah tangga yang penuh sesak untuk membantu upaya pemberantasan sasaran.  
+                    </li>
+                    <li>Menginformasikan dan bertindak atas kebutuhan penyelamatan dan evakuasi berdasarkan ukuran dan lokasi klaster menggunakan geo-lokasi di tweet setelah bahaya alam atau serangan teror.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Temukan Hot Spot</h2></td>
+                    <td>
+                    <img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" class="titleImage" alt="Temukan Hot Spot">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Alat Temukan Hot Spot akan menentukan apakah ada kluster yang signifikan secara statistik pada pola spasial data Anda. 
+                <ul>
+                    <li>Apakah titik (kejadian kriminal, pohon, kecelakaan lalu lintas) Anda benar-benar terkluster?  Bagaimana Anda bisa yakin?
+                    </li>
+                    <li>Apakah Anda benar-benar menemukan hot spot yang signifikan secara statistik (untuk pengeluaran, mortalitas bayi, skor tes yang tinggi secara konsisten) atau apakah peta Anda memberikan cerita yang berbeda jika Anda mengubah cara simbolisasinya?
+                    </li>
+                </ul>
+                Alat Temukan Hot Spot akan membantu Anda menjawab pertanyaan tersebut dengan yakin.
+            </p>
+            <br/>
+        </div>
+        <div id="ForestBasedClassificationAndRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Klasifikasi dan Regresi Berbasis Hutan</h2></td>
+                    <td>
+                    <img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" class="titleImage" alt="Diagram alur kerja Klasifikasi dan Regresi Berbasis Hutan">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Model alat Klasifikasi dan Regresi Berbasis Hutan dan menghasilkan prediksi menggunakan adaptasi algoritme hutan acak Leo Breiman, yang mana merupakan metode pembelajaran mesin dengan pengawas
+            </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Dengan data kemunculan rumput laut, juga jumlah variabel penjelas lingkungan yang diwakili sebagai kedua atribut yang telah diperkaya menggunakan multi-variable grid untuk menghitung jarak ke pabrik hulu dan port utama, kemunculan rumput laut di masa mendatang dapat diprediksikan berdasarkan proyeksi masa depan untuk variabel penjelas lingkungan yang sama itu.
+                          
+                    </li>
+                    <li>Anggaplah Anda memiliki data hasil panen pada ratusan pertanian di seluruh negara bersama atribut-atribut lainnya di setiap pertanian itu (jumlah karyawan, areal, dan sebagainya). Menggunakan potongan data ini, Anda dapat menyediakan seperangkat fitur mewakili pertanian tempat Anda tidak memiliki hasil panen (tapi Anda memiliki semua variabel lainnya), dan membuat prediksi tentang hasil panen.
+                    </li>
+                    <li>Nilai perumahan dapat diprediksikan berdasarkan harga rumah yang telah dijual dalam tahun ini. Harga jual rumah dijual bersama dengan informasi tentang jumlah kamar tidur, jarak ke sekolah, kedekatan jarak dengan jalan raya utama, pendapatan rata-rata, dan jumlah kejahatan dapat digunakan untuk memprediksikan harga jual dari rumah serupa.
+                         
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeneralizedLinearRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Regresi Linear yang Digeneralisasi</h2></td>
+                    <td>
+                    <img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" class="titleImage" alt="Diagram alur kerja GeneralizedLinearRegression">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Alat Regresi Linear yang Digeneralisasi  membuat prediksi atau model sebagai variabel terikat dalam hal hubungannya dengan seperangkat variabel penjelas.  Alat ini dapat digunakan untuk mencocokkan model kontinu (OLS), biner (logistic), dan jumlah (Poisson).
+            </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Karakteristik demografi apa yang berperan terhadap tingkat penggunaan transportasi publik yang tinggi?
+                    </li>
+                    <li>Apakah ada hubungan positif antara vandalisme dan perampokan?
+                    </li>
+                    <li>Variabel mana yang secara efektif memprediksikan volume telepon 911?  Dengan proyeksi masa depan, apa permintaan yang diharapkan untuk sumber daya tanggapan darurat?
+                    </li>
+                    <li>Variabel apa yang memengaruhi tingkat kelahiran yang rendah?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="smallsize">
+        <h2>Gunakan Kedekatan Jarak</h2>
+        <hr/>
+        <p>Alat ini membantu Anda menjawab salah satu pertanyaan yang paling sering diajukan dalam analisis spasial: &quot;Apa yang berada di dekat apa?&quot;
+            <ul>
+                <li> <b>Buat Buffer</b> membuat area dengan jarak tertentu dari fitur.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CreateBuffersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Buat Buffer</h2></td>
+                    <td>
+                    <img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" class="titleImage" alt="Buat Buffer">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Buffer adalah sebuah area yang mencakup jarak dari fitur titik, garis, atau poligon yang diberikan.
+            </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Menggunakan fitur sungai linear, buffer setiap sungai dengan 50 kali lebar sungai untuk menentukan batasan riparian yang diusulkan.
+                    </li>
+                    <li>Dengan mengetahui area yang mewakili negara, buffer setiap negara dengan 200 mil laut untuk menentukan batasan maritim.  
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Manage Data</h2>
+        <hr/>
+        <p>These tools are used for the day-to-day management of geographic and tabular data. 
+            <ul>
+                <li> <b>Append Data</b> appends features to an existing hosted feature layer.
+                </li>
+                <li> <b>Calculate Field</b> creates a new field or modifies an existing field and creates a new layer in your contents.
+                </li>
+                <li> <b>Clip Layer</b> copies features that intersect a defined area of interest. 
+                </li>
+                <li> <b>Copy to Data Store</b> copies data to your ArcGIS Data Store and creates a layer in your contents. 
+                </li>
+                <li> <b>Dissolve Boundaries</b> merges areas that share a common boundary or attribute value.
+                </li>
+                <li> <b>Merge Layers</b> copies all features from two layers into a single result layer.
+                </li>
+                <li> <b>Overlay Layers</b> combines two or more layers into a single layer.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CopyToDataStoreTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Salin ke Penyimpanan Data</h2></td>
+                    <td>
+                    <img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" class="titleImage" alt="Salin ke Penyimpanan Data">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Menyalin input feature layer atau tabel ke  ArcGIS Data Store dan membuat layer di konten Anda dalam  ArcGIS Enterprise. </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Salin kumpulan  <code>.csv</code> file big data yang dibagikan ke data store spatiotemporal untuk visualisasi.
+                    </li>
+                    <li>Salin fitur di jangkauan peta saat ini yang disimpan di penyimpanan data spatiotemporal ke penyimpanan data relasional.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="CalculateFieldTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Hitung Kolom</h2></td>
+                    <td>
+                    <img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" class="titleImage" alt="Hitung Kolom">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Menghitung nilai untuk kolom baru atau yang sudah ada dan membuat layer di konten Anda dalam  ArcGIS Enterprise. </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Ubah kolom yang ada bernama  <i>total</i> menjadi jumlah pendapatan dari kolom <i>total_2016</i>, <i>total_2017</i>, dan <i>total_2018</i>.
+                    </li>
+                    <li>Buat kolom baru untuk mengkategorikan tingkat bahaya berdasarkan nilai kolom seperti  <i>windspeed</i> dan <i>pollutant</i>.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ClipLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Potong Layer</h2></td>
+                    <td>
+                    <img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" class="titleImage" alt="Potong Layer">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Memotong fitur input dari area perhatian yang ditentukan. Hasil output akan menjadi subset fitur input. 
+            </p>
+            <p>Berikut ini adalah contohnya: 
+                <ul>
+                    <li>Buat subset pada gedung yang berada dalam risiko yang berada dalam area zona banjir.
+                    </li>
+                    <li>Tentukan jalan utama mana yang melewati area pembangunan Anda yang berpotensi.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Hilangkan Batas</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Hilangkan Batas">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Menggabungkan fitur area yang berpotongan atau memiliki nilai kolom utama yang sama untuk membuat fitur berdampingan atau fitur multibagian.
+            </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Buat fitur tunggal yang mewakili negara bagian Hawaii dengan menghilangkan batas kepulauan Hawaii.
+                    </li>
+                    <li>Gabungkan area studi serupa berdasarkan jenis tanah untuk menghasilkan output set data jenis tanah berdampingan.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Overlay Layer</h2></td>
+                    <td>
+                    <img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" class="titleImage" alt="Overlay Layer">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Menggabungkan dua layer atau lebih ke dalam satu layer.  Overlay digunakan untuk menjawab salah satu dari pertanyaan geografi paling dasar, Apa yang di atas apa? 
+            </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Persil mana yang berada di dalam dataran banjir berusia 100 tahun? (&quot;yang berada di dalam&quot; merupakan kata pengganti untuk &quot;di atas.&quot;)
+                          
+                    </li>
+                    <li>Penggunaan lahan seperti apa di atas jenis tanah apa?
+                         
+                    </li>
+                    <li>Sumur apa yang berada di pangkalan militer kosong?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="AppendDataTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Tambahkan Data</h2></td>
+                    <td>
+                    <img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" class="titleImage" alt="Diagram alur kerja Tambahkan Data">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Tambahkan feature ke layer yang ada dan di-host dalam konten Anda di  ArcGIS Enterprise. </p>
+            <p>Berikut ini adalah contonya:
+                <ul>
+                    <li>Perbarui feature layer 2018_Sales setiap bulan saat laporan Anda tersedia.
+                    </li>
+                    <li>Tambahkan set data pelacakan badai dari tahun 2016 dan 2017 ke dalam kumpulan data badai utama.
+                    </li>
+                    <li>Kumpulkan dan tambahkan kumpulan data dari berbagai sumber dengan skema yang berbeda menggunakan pemetaan kolom khusus.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Gabungkan Layer</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="Gabungkan Layer">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Menggabungkan dua feature layer untuk membuat satu layer hasil. Semua kolom dari gabungan layer akan disertakan secara default, atau Anda dapat menentukan peraturan gabungan khusus untuk menjelaskan skema yang dihasilkan.  
+            </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Gabungkan tiga layers berisi informasi demografi dari Inggris, Wales, dan Skotlandia untuk membuat satu layer Inggris Raya.
+                    </li>
+                    <li>Gabungkan dua layer berisi informasi persil untuk kota berdekatan, membiarkan hanya kolom yang memiliki nama dan jenis sama dalam dua layer.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>Pengayaan Data</h2>
+        <hr/>
+        <p>Alat ini membantu Anda mengeksplorasi karakter area.
+            <ul>
+                <li> <b>Perkaya dari Multi-Variable Grid</b> menggabungkan atribut dari layer multi-variable grid ke layer titik.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichFromMultiVariableGridTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Perkaya dari Multi-Variable Grid</h2></td>
+                    <td>
+                    <img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" class="titleImage" alt="Perkaya dari Multi-Variable Grid">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Secara efisien menggabungkan atribut dari multi-variable grid ke layer titik, memungkinkan Anda untuk dengan cepat menambahkan kumpulan informasi yang besar dan beragam ke data titik untuk penggunaan dalam analisis spasial lebih lanjut. 
+            </p>
+            <p>Berikut ini adalah contohnya:
+                <ul>
+                    <li>Dengan layer berisi jutaan insiden pemadaman listrik, perkaya fitur insiden dengan informasi tentang penggunaan khusus, risiko lingkungan, dan kondisi infrastruktur untuk mempelajari hubungan antar faktor-faktor dan frekuensi pemadaman listrik ini. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

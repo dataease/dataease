@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/fi/ClassifyPixelsUsingDeepLearning",{toolDefine:"Luokittele pikselit syv\u00e4oppimisen avulla",outputLayerName:"${layername}_luokiteltu",modelLabel:"Valitse pikselien luokittelussa k\u00e4ytett\u00e4v\u00e4 syv\u00e4oppimismalli",modelArgsLabel:"M\u00e4\u00e4rit\u00e4 syv\u00e4oppimismallin argumentit",nameLabel:"Nimi",valueLabel:"Arvo",queryModelArgsMsg:"Suoritetaan mallin argumenttien kysely\u00e4...",analysisLayerLabel:"Valitse pikselien luokittelussa k\u00e4ytett\u00e4v\u00e4 kuva",
+itemDescription:"Analysointikuvapalvelu on luotu Luokittele pikselit syv\u00e4oppimisen avulla -ratkaisusta",itemTags:"Rasterianalyysin tulos, Luokittele pikselit syv\u00e4oppimisen avulla, ${layername}",itemSnippet:"Analysointikuvapalvelu on luotu Luokittele pikselit syv\u00e4oppimisen avulla -ratkaisusta"});

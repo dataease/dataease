@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Create Buffers</h2><p/>
+        <h2><img src="./images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Create Buffers"></h2>
+        <hr/>
+    <p>A buffer is an area that covers a given distance from a point, line, or area feature. 
+    </p>
+    <p>Buffers are typically used to create areas that can be further analyzed using a tool such as Overlay Layers. For example, if the question is &quot;What buildings are within one mile of the school?&quot;, the answer can be found by creating a one-mile buffer around the school and using the Overlay Layers tool to overlay the buffer with the layer containing building footprints.  The end result is a layer of  those buildings within one mile of the school.  
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the features that are visible within the current map extent will be buffered.  If unchecked, all features in the input layer will be buffered, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose layer containing features to buffer</h2></div>
+        <hr/>
+        <div>
+            <p>The point, line, or area features to be buffered.
+
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Enter buffer size</h2></div>
+        <hr/>
+        <div>
+            <p>You can enter a single distance value or multiple values, separating each value with a space.  You can also specify an attribute on the input layer that contains the distance value by clicking  <b>Field</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>Options</h2></div>
+        <hr/>
+        <div>
+            <p>Choose how you want overlapping buffers to be handled. For any buffer that is on top of another buffer, the areas in common  can be kept (Overlap) or combined (Dissolve). When using  <b>Dissolve</b>, all buffers are dissolved together into a single multi-part feature, removing any overlap.
+            </p>  
+            <p> When using multiple distances, you can choose how to represent the distance from the last buffer distance;   for example, if the distances are 10 and 14:
+                <ul>
+                    <li>Choosing  <b>Rings</b> results in buffers that go from 0 to 10 and 10 to 14.
+                    </li>
+                    <li>Choosing  <b>Disks</b> results in buffers that go from 0 to 10 and 0 to 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>Options</h2></div>
+        <hr/>
+        <div>
+            <p>Choose how you want overlapping buffers to be handled. For any buffer that is on top of another buffer, the areas in common  can be kept (Overlap) or combined (Dissolve).  When using  <b>Dissolve</b>, all buffers are dissolved together into a single multi-part feature, removing any overlap.
+            </p>
+            <p>When creating a single buffer around area features (one distance entered), you can choose whether the feature being buffered is included or excluded in the result buffer.
+            </p>
+            <p>When using multiple distances, you can choose how to represent the distance from the last buffer distance;   for example, if the distances are 10 and 14:
+                <ul>
+                    <li>Choosing  <b>Rings</b> results in buffers that go from 0 to 10 and 10 to 14.
+                    </li>
+                    <li>Choosing  <b>Disks</b> results in buffers that go from 0 to 10 and 0 to 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>Options</h2></div>
+        <hr/>
+        <div>
+            <p>Choose how you want overlapping buffers to be handled. For any buffer that is on top of another buffer, the areas in common  can be kept (Overlap) or combined (Dissolve). When using  <b>Dissolve</b>, all buffers are dissolved together into a single multi-part feature, removing any overlap.
+            </p>
+            <p>When creating a single buffer around lines (one distance entered), you can choose which side of the line to buffer.  Typically, you choose both sides.  Left and right are determined as if you were walking from the first x,y coordinate of the line (the start coordinate) to the last x,y coordinate of the line (the end coordinate).  Choosing left or right usually means you know that the line features were created and stored in a particular direction (for example, upstream or downstream in a river network).   At the ends of lines the buffer can be rounded (Round) or be straight across (Flat).
+            </p>
+            <p>When creating multiple buffers (more than one  distance), you can choose how to represent the distance from the last buffer distance;   for example, if the distances are 10 and 14:
+                <ul>
+                    <li>Choosing  <b>Rings</b> results in buffers that go from 0 to 10 and 10 to 14.
+                    </li>
+                    <li>Choosing  <b>Disks</b> results in buffers that go from 0 to 10 and 0 to 14.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>Options</h2></div>
+        <hr/>
+        <div>
+            <p>Once you choose a layer to buffer, you can choose how you want overlapping buffers to be handled. For any buffer that is on top of another buffer, the areas in common  can be kept (Overlap) or combined (Dissolve). When using  <b>Dissolve</b>, all buffers are dissolved together into a single multi-part feature, removing any overlap.  In addition, you can specify how multiple distances are to be represented.   For layers containing line features, you can choose which side of the line to buffer.  For layers containing area features, you can choose whether the feature being buffered is included or excluded in the result buffer.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>This is the name of the layer that will be created in  <b>My Content</b>  and added to the map.  The default  name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down menu, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>距離の計算</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="距離の計算"></h2>
+        <hr/>
+    <p>このツールは、1 つのソースまたはソースのセットからのユークリッド距離、方向、および割り当てを計算します。
+    </p>
+    <p>適用例として、次のような質問に答えることが挙げられます。
+
+        <ul>
+            <li>最も近い都市までの距離。
+                
+
+            </li>
+            <li>最も近い道路までの距離。
+                
+
+            </li>
+            <li>最も近い水源までの距離。
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>[現在のマップ範囲を使用]</b> をオンにすると、現在のマップ範囲内に表示されている入力レイヤーのフィーチャだけが解析されます。オフの場合、入力レイヤーのすべてのフィーチャが、現在のマップ表示範囲内になくても解析されます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>距離を計算するフィーチャ位置レイヤーのラスターを選択</h2></div>
+        <hr/>
+        <div>
+            <p>距離を計算するソースを定義するレイヤー。レイヤーは、イメージ サービスでもフィーチャ サービスでもかまいません。
+            </p>
+            <p>イメージ サービスの場合、入力タイプは整数または浮動小数点数です。
+            </p>
+            <p>フィーチャ サービスの場合、入力はポイント、ライン、ポリゴンです。
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>計算する最大距離</h2></div>
+        <hr/>
+        <div>
+            <p>計算する最大距離。たとえば、10,000 メートルの値を指定した場合、ソースの位置からその値 (距離) までのユークリッド距離が計算されます。
+            </p>
+            <p>値が指定されない場合、定義された範囲までの距離が計算されます。
+            </p>
+            <p>使用できる単位は、「キロメートル」、「メートル」、「マイル」、および「フィート」です。
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>出力セル サイズ</h2></div>
+        <hr/>
+        <div>
+            <p>出力ラスターのセル サイズと単位。
+            </p>
+            <p>単位には、キロメートル、メートル、マイル、フィートを使用できます。
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>結果距離レイヤーの名前</h2></div>
+        <hr/>
+        <div>
+            <p> <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前。デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>結果方向レイヤーの名前</h2></div>
+        <hr/>
+        <div>
+            <p> <b>[マイ コンテンツ]</b> に作成されるレイヤーの名前。 <b>[マイ コンテンツ]</b> に現在存在しない名前を指定する必要があります。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>結果割り当てレイヤーの名前</h2></div>
+        <hr/>
+        <div>
+            <p> <b>[マイ コンテンツ]</b> に作成されるレイヤーの名前。 <b>[マイ コンテンツ]</b> に現在存在しない名前を指定する必要があります。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>割り当てフィールドの選択</h2></div>
+        <hr/>
+        <div>
+            <p>各ソースを定義する値を保持する、入力ソース レイヤー上のフィールド。ソース データセットの整数フィールドまたは文字列フィールドを使用できます。
+            </p>
+            <p>デフォルトは  <i>Value</i> です。フィーチャ サービスを使用していて、 <i>Value</i> フィールドを使用できない場合、使用可能な 1 番目の整数フィールドまたは文字列フィールドが使用されます。有効なフィールドが存在しない場合は、ObjectID フィールド (たとえば、フィーチャ入力のタイプによって、OID または FID など) が使用されます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

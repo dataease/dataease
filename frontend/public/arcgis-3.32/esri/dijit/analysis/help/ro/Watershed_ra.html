@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Bazin hidrografic</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Sarcină bazin hidrografic"></h2>
+        <hr/>
+    <p>Acest instrument stabilește zona de contribuție de deasupra unui set de celule dintr-un raster.
+    </p>
+    <p>Un bazin hidrografic este zona ascendentă care contribuie cu debit &mdash;de apă, &icirc;n general&mdash;la o evacuare comună ca scurgere concentrată. Poate fi parte dintr-un bazin hidrografic mai mare și, de asemenea, poate include bazine hidrografice mai mici, denumite subbazine.
+    </p>
+    <p>Valoarea fiecărui bazin hidrografic va fi luată din valoarea sursei din rasterul de intrare sau stratul tematic cu punctul de congelare al obiectelor spațiale. Atunci c&acirc;nd punctul de congelare este un set de date raster, valorile celulelor sunt folosite implicit. Atunci c&acirc;nd punctul de congelare este un set de date de obiecte spaţiale de tip punct, valorile vor veni de la c&acirc;mpul specificat.
+    </p>
+    <p>Instrumentul Bazin Hidrografic suportă doar un strat tematic raster de direcție a fluxului de intrare D8.
+    </p>
+    <p>La specificarea amplasărilor punctului de congelare de intrare cum ar fi datele obiectului spațial, c&acirc;mpul implicit va fi primul c&acirc;mp valid valabil. Dacă nu există c&acirc;mpuri valabile, va fi folosit c&acirc;mpul ObjectID field (de exemplu, OID sau FID) ca fiind implicit.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Alegeți stratul tematic al direcției fluxului</h2></div>
+        <hr/>
+        <div>
+            <p>Rasterul de intrare care prezintă direcția de curgere din fiecare celulă.
+            </p>
+            <p>Rasterul direcției fluxului poate fi creat folosind instrumentul Direcției Fluxului sau sarcina FlowDirection din serviciul RasterAnalysisTools, utilizat folosind tipul implicit de direcție a fluxului  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Specificați amplasările punctului de congelare de intrare</h2></div>
+        <hr/>
+        <div>
+            <p>Amplasările punctului de congelare de intrare.
+            </p>
+            <p>Pentru un raster, acest lucru reprezintă celulele deasupra cărora va fi stabilită zona de contribuție sau de captare. Toate celulele care nu sunt NoData vor fi folosite ca celule sursă. Pentru o intrare &icirc;n punct, acest lucru reprezintă locaţii deasupra cărora va fi stabilită zona de contribuție sau de captare.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Alegeți câmpul punctului de congelare</h2></div>
+        <hr/>
+        <div>
+            <p>C&acirc;mpul utilizat pentru alocarea valorilor &icirc;n amplasările punctului de congelare.
+            </p>
+            <p>Dacă stratul tematic al punctului de congelare de intrare este un raster, este folosită Valoarea. Dacă este un obiect spațial, este folosit un c&acirc;mp numeric. Dacă acest c&acirc;mp conține valori cu virgulă mobilă, acestea vor fi rotunjite la numere &icirc;ntregi.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic ce va fi creat &icirc;n  <b>Resursele mele</b> şi va fi adăugat pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic rezultat există deja, vi se va solicita să furnizaţi un alt nume.
+            </p>
+            <p>Puteți specifica numele folderului &icirc;n  <b>Resursele mele</b> unde se va salva rezultatul folosind caseta drop-down <b>Salvați rezultatele &icirc;n</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

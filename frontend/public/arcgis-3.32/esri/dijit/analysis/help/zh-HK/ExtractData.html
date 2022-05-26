@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>擷取資料</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="擷取資料"></h2>
+        <hr/>
+    <p>使用此工具可以選擇與下載特定感興趣區域的資料。所選圖層將被新增到 ZIP、CSV 或 KMZ 檔案中。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>待擷取圖層</h2></div>
+        <hr/>
+        <div>
+            <p>它們是內容表中的圖層，可從中擷取圖徵。勾選的圖層將被擷取到生成的 ZIP 檔案或 CSV 檔案中。
+            </p>
+            <p>要擷取顯示在圖層列表中的圖層，您必須擁有資料或資料的所有者必須啟用資料匯出功能。要啟用所擁有數據的匯出功能： 
+                <ul>
+                    <li>請開啟資料的項目描述。
+                    </li>
+                    <li>按一下 <b>設定</b>頁籤。
+                    </li>
+                    <li>向下捲動至 <b>匯出資料</b>部分。
+                    </li>
+                    <li>請勾選 <b>允許其他使用者匯出不同格式</b>.  完成時，按一下 <b>儲存</b>。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果您的分析圖層包含附件，則請注意，僅當輸出資料格式為檔案地理資料庫並且未勾選 <b>裁剪圖徵</b>時才能擷取附件。
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>研究區域</h2></div>
+        <hr/>
+        <div>
+            <p>該區域定義輸出 ZIP 檔案或 CSV 檔案中所包含的圖徵。可選擇的範圍有：
+                <ul>
+                    <li>地圖的目前可見範圍（ <b>與顯示內容相同</b>）。
+                    </li>
+                    <li>內容列表中的某個圖層。如果所選圖層是點或線圖徵，則會將圖層的範圍作為研究區域。
+                    </li>
+                    <li>繪製一個區域以定義研究區域。
+                    </li>
+                </ul>
+                 將擷取所有完全位於地圖範圍內的圖徵。對於跨越地圖範圍邊界或與地圖範圍邊界相交，但沒有完全位於範圍之內的圖徵，您有兩種選擇：
+                <ul>
+                    <li> <b>選擇圖徵</b> - 擷取跨越研究區域邊界的整個圖徵。
+                    </li>
+                    <li> <b>裁剪圖徵</b> - 僅擷取圖徵位於研究區域內的相應部分.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>輸出資料格式</h2></div>
+        <hr/>
+        <div>
+            <p>待擷取資料的格式。在將線圖徵或區域圖徵匯出為 CSV 檔案時，只擷取非空間屬性。匯出點圖徵時，擷取空間和非空間屬性。
+            </p>
+            <p>擷取的資料將使用 Web Mercator 1984 投影。對於 CSV 檔案，會將  <i>Lat</i> 和 <i>Long</i> 欄位附加到 Web Mercator 1984 中具有座標的資料。
+            </p> 
+            <p>支援下列輸出格式：
+                <ul>
+                    <li>逗號分隔值 (CSV) -  <code>.csv</code> 或 <code>.zip</code>
+                    </li>
+                    <li>檔案地理資料庫 -  <code>.zip</code>
+                    </li>
+                    <li>Keyhole 標記語言 (KML) -  <code>.kmz</code> 或 <code>.zip</code>
+                    </li>
+                    <li>Shapefile -  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>輸出檔案名稱</h2></div>
+        <hr/>
+        <div>
+            <p>此為將新增到 <b>我的內容</b>中的項目名稱。項目名稱基於所選的 <b>輸出資料格式</b>。如果該項目已存在，則系統將要求提供其他名稱。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式方塊，可以在 <b>我的內容</b>中指定儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

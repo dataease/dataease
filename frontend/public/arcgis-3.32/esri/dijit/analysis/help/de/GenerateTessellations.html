@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Mosaike generieren</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Mosaike generieren"></h2>
+        <hr/>
+    <p>Mit diesem Werkzeug werden Mosaike in einem Untersuchungsgebiet basierend auf der festgelegten Form und Gr&ouml;&szlig;e generiert.
+    </p>
+    <p>Das Kontrollk&auml;stchen  <b>Aktuelle Kartenausdehnung verwenden</b> ist f&uuml;r dieses Werkzeug deaktiviert, da die zum Generieren der Mosaike verwendete Ausdehnung durch den Parameter <b>Ausdehnung definieren</b> gesteuert wird.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Form auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Form oder Geometrie der Mosaike, die Sie erstellen m&ouml;chten.  Die verf&uuml;gbaren Formen sind  <code>Quadrat</code>, <code>Hexagon</code>, <code>Transversales Hexagon</code>, <code>Dreieck</code> oder <code>Raute</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Untersuchungsgebiet definieren</h2></div>
+        <hr/>
+        <div>
+            <p>Die Ausdehnung oder Fl&auml;che, die die Mosaike abdecken. Die Ausdehnung kann anhand der aktuellen Kartenausdehnung, der Ausdehnung eines vorhandenen Layers oder durch interaktives Zeichnen einer als Ausdehnung zu verwendenden Fl&auml;che bestimmt werden.
+            </p>
+            <p>Wenn ein Feature-Layer zur Bestimmung der Ausdehnung ausgew&auml;hlt wurde, wird die Option &quot;Nur &uuml;berschneidende Mosaike beibehalten&quot; aktiviert.  Ist diese Option aktiviert, werden im resultierenden Mosaik-Layer ausschlie&szlig;lich solche Mosaike generiert, die Features im angegebenen Ausdehnungs-Layer abdecken oder &uuml;berschneiden. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Deaktiviert
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Coverage der vollen Ausdehnung">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Aktiviert
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Feature-Coverage">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Definieren Sie die Abschnittsgröße durch folgende Angaben:</h2></div>
+        <hr/>
+        <div>
+            <p>Die Gr&ouml;&szlig;e der einzelnen Zellen.  Die Zellengr&ouml;&szlig;e kann bestimmt werden, indem Quadrateinheiten festgelegt werden oder eine Entfernung angegeben wird, die sich anhand der folgenden Messwerte berechnen l&auml;sst, wobei d gleich der Entfernung ist: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Quadrat
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Mosaik aus Quadraten">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Hexagon
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Mosaik aus Hexagonen">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Transversales Hexagon
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Mosaik aus transversalen Hexagonen">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Dreieck
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Mosaik aus Dreiecken">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Raute
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Mosaik aus Rauten">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Wenn der Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

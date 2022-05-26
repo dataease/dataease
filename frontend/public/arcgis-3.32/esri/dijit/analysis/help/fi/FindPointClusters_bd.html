@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Etsi pisteklustereita</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="Etsi pisteklustereita"></h2>
+        <hr/>
+    <p> Etsi pisteklustereita -ty&ouml;kalu etsii pistekohdeklustereita ymp&auml;r&ouml;iv&auml;st&auml; kohinasta sijainnin jakauman perusteella.
+    </p>
+    <p>Esimerkiksi er&auml;s kansalaisj&auml;rjest&ouml; tutkii tietty&auml; tuhoel&auml;inten aiheuttamaa sairautta. Siin&auml; on pisteaineistoryhm&auml;, joka edustaa tutkittavan alueen kotitalouksia. Osassa n&auml;ist&auml; on tuhoel&auml;imi&auml;.  Etsi pisteklustereita -ty&ouml;kalun avulla analysoija voi m&auml;&auml;ritt&auml;&auml; tuhoel&auml;inten valtaaman kotitalousklusterin kyseisen alueen paikantamiseksi, jotta tuhoel&auml;inten torjunta voidaan aloittaa.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse karttataso, jolle klusterit etsitään</h2></div>
+        <hr/>
+        <div>
+            <p>Pistekarttataso, miss&auml; klusterit ovat. Karttatasojen on oltava projisoidussa koordinaattij&auml;rjestelm&auml;ss&auml;, tai k&auml;sittelev&auml; koordinaatisto on m&auml;&auml;ritett&auml;v&auml; projisoituun koordinaattij&auml;rjestelm&auml;&auml;n k&auml;ytt&auml;m&auml;ll&auml;  <b>analyysiymp&auml;rist&ouml;j&auml;</b>.
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Valitse käytettävä klusterointimenetelmä</h2></div>
+        <hr/>
+        <div>
+            <p>Klusterointimenetelm&auml;, jota k&auml;ytet&auml;&auml;n pistekohteiden klustereiden erottamiseen ymp&auml;r&ouml;iv&auml;st&auml; kohinasta. Voit k&auml;ytt&auml;&auml; m&auml;&auml;ritetty&auml; et&auml;isyytt&auml; tai itses&auml;&auml;tyv&auml;&auml; klusterointialgoritmia.
+            </p>
+            <p>M&auml;&auml;ritetty et&auml;isyys (DBSCAN) k&auml;ytt&auml;&auml; m&auml;&auml;ritetty&auml; hakualuetta tiheiden klustereiden erottamiseen harvasta kohinasta. M&auml;&auml;ritetty et&auml;isyys (DBSCAN) on nopeampi, mutta sit&auml; voi k&auml;ytt&auml;&auml; vain, jos k&auml;ytett&auml;v&auml; hakualue on selke&auml; ja se havaitsee hyvin kaikki klusterit, jotka voivat olla olemassa. M&auml;&auml;ritetty et&auml;isyys (DBSCAN) l&ouml;yt&auml;&auml; klusterit, joiden tiheys on samankaltainen.
+            </p>
+            <p>Itses&auml;&auml;tyv&auml; menetelm&auml; (HDBSCAN) ei edellyt&auml; hakualueen m&auml;&auml;rityst&auml;, mutta se on hitaampi menetelm&auml;. Itses&auml;&auml;tyv&auml; menetelm&auml; (HDBSCAN) l&ouml;yt&auml;&auml; sellaisten pisteiden klusterit, jotka ovat samankaltaisia kuin m&auml;&auml;ritetty et&auml;isyys (DBSCAN), mutta k&auml;ytt&auml;&auml; vaihtelevia hakualueita, joiden avulla se l&ouml;yt&auml;&auml; klusterit, joiden tiheys vaihtelee. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Klusteriksi laskettavien pisteiden minimimäärä</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;t&auml; parametria k&auml;ytet&auml;&auml;n eri tavoin valitun klusterointitavan mukaan:
+            </p>
+            <p>
+                <ul>
+                    <li>M&auml;&auml;ritetty et&auml;isyys (DBSCAN) &ndash; m&auml;&auml;ritt&auml;&auml; niiden kohteiden m&auml;&auml;r&auml;n, jotka on l&ouml;ydytt&auml;v&auml; tietylt&auml; et&auml;isyydelt&auml; pisteest&auml;, jotta piste alkaa muodostaa klusterin. Et&auml;isyys m&auml;&auml;ritet&auml;&auml;n k&auml;ytt&auml;m&auml;ll&auml;  <b>Rajoita hakualue arvoon</b> -parametria.
+                    </li>
+                    <li>Itses&auml;&auml;tyv&auml; menetelm&auml; (HDBSCAN) &ndash; m&auml;&auml;ritt&auml;&auml; niiden kunkin pisteen naapurina olevien kohteiden m&auml;&auml;r&auml;n (piste mukaan lukien), jotka otetaan huomioon tiheytt&auml; arvioitaessa. T&auml;m&auml; luku on my&ouml;s klusterin pienin sallittu koko klustereita purettaessa.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Rajoita hakualue arvoon</h2></div>
+        <hr/>
+        <div>
+            <p>K&auml;ytett&auml;ess&auml; m&auml;&auml;ritetty&auml; et&auml;isyytt&auml; (DBSCAN), t&auml;m&auml; parametri m&auml;&auml;ritt&auml;&auml; et&auml;isyyden, jonka sis&auml;lt&auml;  <b>klusteriksi laskettavien pisteiden v&auml;himm&auml;ism&auml;&auml;r&auml;n</b> on l&ouml;ydytt&auml;v&auml;. T&auml;t&auml; parametria ei k&auml;ytet&auml;, kun itses&auml;&auml;tyv&auml; menetelm&auml; (HDBSCAN) on valittu k&auml;ytett&auml;v&auml;ksi klusterointimenetelm&auml;ksi.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+            <p>Kun kirjoitat kohteeseen  ArcGIS Data Store  (relaatiotietokantaan perustuvaan tai spatiotemporaaliseen Big Data -s&auml;il&ouml;&ouml;n) k&auml;ytt&auml;m&auml;ll&auml; avattavaa  <b>Tallenna tulos kohteeseen</b> -luetteloa, voit m&auml;&auml;ritt&auml;&auml; kansion nimen <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

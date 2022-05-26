@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>创建视域</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="创建视域"></h2>
+        <hr/>
+    <p>&ldquo;创建视域&rdquo;工具用于创建从观察点可看到地面上对象的区域。输入观察点可以表示观察点（例如地面上的人或火警瞭望塔上的人）或被观察的对象（例如，风力涡轮机、水塔、车辆或其他人）。结果区域为观察点可看到被观察对象的区域，反之亦然：被观察对象也能看到观察点。
+    </p>
+    <p>观察点和被观察对象都距离地面向上有一定高度，这些高度可用于确定可见性。例如，针对地面上 400 英尺的风力涡轮机和 6 英尺的人计算得到的视域通常要比针对 200 英尺的涡轮机和 6 英尺的人计算得到的视域大。
+    </p>
+    <p>请注意，视域的计算不考虑树或建筑物等障碍物。您可以认为计算基于裸露的地面，除了观察点和被观察对象以外空无一物。
+    </p>
+    <p>结果图层包含表示可见区域的区域要素。 <i>Frequency</i> 字段记录可看到每个区域的观察点的数量。例如，如果您拥有五个输入点，每个点均表示一个火警瞭望塔， <i>Frequency</i> 字段将具有 1 到 5 之间的值；值为 1 的区域仅在一个塔的可见范围内，值为 5 的区域在所有塔的可见范围内。结果图层还包含 <i>DEMResolution</i> 字段，该字段记录用于创建视域的数字高程模型 (DEM) 的分辨率。
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则仅对当前地图范围中可见的观察点进行分析。如果未选中，则将分析输入图层中的所有观察点，包括超出当前地图范围的观察点。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>表示观察者位置的点要素</h2></div>
+        <hr/>
+        <div>
+            <p>用作观察点位置的点要素。
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>观察点位置高度</h2></div>
+        <hr/>
+        <div>
+            <p>这是您的观察点位置距离地面的高度。默认值约为一个人的平均身高。
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>地面上其他对象的高度</h2></div>
+        <hr/>
+        <div>
+            <p>这是地面上建筑物或人的高度，用于确立可见性。结果视域为观察点可看到这些其他对象的区域。反之亦然，其他对象也可以看到观察点。
+            </p>
+            <p>
+                <ul>
+                    <li>如果您的观察点表示风力涡轮机，并且您想要确定人站在地面上的哪个位置能够看到涡轮机，请输入人的平均身高（约为 6 英尺）。结果就是人站在地面上能够看到风力涡轮机的区域。
+                    </li>
+                    <li>如果您的观察点表示火警瞭望塔，并且您想要确定哪些火警瞭望塔能够看到高度大于等于 20 英尺的烟流，请输入高度 20 英尺。结果就是火警瞭望塔可以看到至少 20 英尺高的烟流的区域。
+                    </li>
+                    <li>如果您的观察点表示沿道路和小径的观景平台，并且您想要确定能够看到至少 400 英尺高的风力涡轮机的区域，请输入高度 400 英尺。结果就是人站在观景平台上能够看到至少 400 英尺高的风力涡轮机的区域。
+                    </li>
+                    <li>如果您的观察点表示观景平台，并且您想要确定人站在该平台上能够看到的地面的面积大小，请输入 0。结果就是能够从观景平台看到的区域。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>最大可视距离</h2></div>
+        <hr/>
+        <div>
+            <p>该值表示停止计算可见区域的中断距离。超出此距离，就无法确定观察点和其他对象互相能否看见。值越大则计算时间越长。最大允许值为 31 英里（50 千米）。
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该图层名称已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉菜单，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+            <p> 运行此工具不会消耗配额。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

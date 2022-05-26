@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>En İyi Tesisleri Seç</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="En İyi Tesisleri Se&ccedil;"></h2>
+        <hr/>
+    <p>En İyi Tesisleri Se&ccedil; &ouml;zelliği, tesisler i&ccedil;in en iyi konumları se&ccedil;menize olanak tanır. Ara&ccedil;, belirlenen bir amacı ger&ccedil;ekleştirecek bi&ccedil;imde tesise olan talebe g&ouml;re yer tahsisi yapar.
+    </p>
+    <p>Tesisler itfaiye istasyonları, okullar, k&uuml;t&uuml;phaneler, mağazalar veya dağıtım merkezleri gibi hizmet sunan bazı yerleri temsil eder. Talep konumları, belirli bir alandaki n&uuml;fusu &ouml;zetleyen toplu n&uuml;fus noktaları gibi tesis tarafından sunulan hizmet i&ccedil;in talebin bulunduğu yerleri temsil eder.
+    </p>
+    <p>En İyi Tesisleri Se&ccedil; aracı şu soruları cevaplamanızda size yardımcı olabilir:
+        <ul>
+            <li>Acil durum anında, yatak kapasitesinin sınırlı olduğu ve belirli bir değeri aşmaması gerektiğinde evlerde yaşayanlar doğru kurtarma merkezine nasıl y&ouml;nlendirilebilir?
+            </li>
+            <li>&Ccedil;evrede yaşayanları kendilerine en yakın k&uuml;t&uuml;phaneye nasıl y&ouml;nlendirebilir ve her k&uuml;t&uuml;phanenin hizmet verdiği m&uuml;şteri sayısını nasıl bulabilirsiniz? 
+            </li>
+            <li>Satış mağazası zincirine teslimatta toplam nakliye s&uuml;resini (ve dolayısıyla toplam maliyeti) en aza indirecek en uygun sebze meyve dağıtım merkezi konumunu nasıl bulabilirsiniz?
+            </li>
+            <li>Şehir n&uuml;fusunun en b&uuml;y&uuml;k b&ouml;l&uuml;m&uuml;n&uuml;n parka beş dakikalık y&uuml;r&uuml;y&uuml;ş mesafesinde olmasını sağlamak i&ccedil;in yeni bir park nereye yapılmalıdır?
+            </li>
+            <li>&Uuml;lkede evcil hayvan besleyen n&uuml;fusun y&uuml;zde 40'lık diliminin ara&ccedil;la 10 dakikalık bir mesafeden daha uzak olmamasını sağlamak &uuml;zere gerekli sayıdaki evcil hayvan mağazaları i&ccedil;in en uygun yerler neresidir?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Hedef</h2></div>
+        <hr/>
+        <div>
+            <p>Talep konumlarını tesislere atarken ger&ccedil;ekleştirilmesi gereken hedefi belirtin.
+            </p>
+            <p>En İyi Konumu Se&ccedil; ile &ccedil;&ouml;zmekte olduğunuz sorun t&uuml;r&uuml;n&uuml; belirtebilirsiniz&mdash;Hedef. Bu ara&ccedil;, belirli hedef i&ccedil;in bir &ccedil;&ouml;z&uuml;m sağlamak &uuml;zere optimize edilmiştir. Hedeften bağımsız olarak, temelde aynı arka plan y&ouml;ntemi bir &ccedil;&ouml;z&uuml;me ulaşmak i&ccedil;in kullanılmaktadır&mdash;verilen bir hedef konumundaki talep miktarının en yakın tesise atanması. Hedefler, mesafe (ya da s&uuml;re) ile talep arasındaki etkileşimin ele alınma bi&ccedil;imine bağlı olarak değişiklik g&ouml;sterir. Ara&ccedil;, hem seyahat mesafesini/s&uuml;resini hem talep miktarını ve &mdash;bazı durumlarda&mdash;tesis kapasitesini hesaba katar. &Ouml;rneğin, hedef en kısa seyahat s&uuml;resini destekliyorsa, ara&ccedil; ikincil olarak atanan talebi en &uuml;st d&uuml;zeye &ccedil;ıkarmaya &ccedil;alışır. Benzer bi&ccedil;imde, hedef atanan talebi en &uuml;st d&uuml;zeye &ccedil;ıkarırsa, ara&ccedil; bunu seyahat s&uuml;resini en kısa hale getirmeye (talep konumlarını herhangi bir tesis yerine en yakındakine atamaya) &ccedil;alışarak yapar.
+            </p>
+            <p>Elinizdeki verilere ve kullandığınız ayarlara bağlı olarak, farklı hedefler aynı ya da benzer sonu&ccedil;lar ortaya &ccedil;ıkarabilir. Bununla birlikte, analiziniz i&ccedil;in en uygun hedefi belirlemelisiniz.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Mevcut tesislere atama yapın</h2></div>
+        <hr/>
+        <div>
+            <p>Yeni tesis belirlemek istemediğiniz ve talebi sınırlı veya sınırsız kapasiteye sahip mevcut tesislere atamak istediğinizde bu hedefi kullanın.    
+            </p>
+            <p>Bu hedef, talebi tesiste mevcut kapasiteye ve &ccedil;evre b&ouml;lgelerden gelen talep miktarına g&ouml;re tesise atar. Talep, mevcut kapasite karşılanıncaya kadar en yakın tesise atanır. Maksimum seyahat alanını belirlediğinizde, talebin tamamı kapasiteyi dolduracak bi&ccedil;imde atanmamış olsa da, bu alanın dışında kalan talep konumları bir tesise atanmaz.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Seyahati en aza indir</h2></div>
+        <hr/>
+        <div>
+            <p>Talep konumları ve tesisler arasındaki toplam seyahat s&uuml;resini veya seyahat mesafesini en aza indirecek bi&ccedil;imde tesis belirlemek istediğinizde bu hedefi kullanın.
+            </p>
+            <p>Bu hedef, genellikle tesis ve t&uuml;m talep konumları arasında s&uuml;rekli bir seyahat s&ouml;z konusu olduğunda ge&ccedil;erlidir. Bu hedefi, &ouml;rneğin malları dağıtım merkezinden mağazalara g&ouml;nderirken ger&ccedil;ekleşen toplam taşıma mesafesini veya t&uuml;m katılımcılar i&ccedil;in seyahat s&uuml;resini en aza indirecek bir toplantı yeri se&ccedil;mek i&ccedil;in kullanabilirsiniz.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Kapsamı en üst düzeye çıkar</h2></div>
+        <hr/>
+        <div>
+            <p>Bu hedefi, belirli bir zamanda veya tesise belirli bir mesafeden karşılanan talep miktarını en &uuml;st d&uuml;zeye &ccedil;ıkarmak i&ccedil;in kullanabilirsiniz.    
+            </p>
+            <p>Bu hedef, kendisine en yakın tesise atanmış olan her talep konumundan gelen taleple birlikte en b&uuml;y&uuml;k talep miktarının atandığı tesisleri se&ccedil;er.
+            </p>
+            <p>Bu hedef i&ccedil;in sonlu bir maksimum seyahat aralığı gereklidir; aksi takdirde, talebin t&uuml;m&uuml; bir tek tesise atanabilir. Bu mesafenin veya s&uuml;renin dışında kalan tesislerin her birindeki talep konumları i&ccedil;in atama yapılmaz (bu, talebin karşılanmadığı ve ilave tesis gerekebilecek yerleri g&ouml;sterir).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Mevcut kapasiteyle kapsamı en üst düzeye çıkar</h2></div>
+        <hr/>
+        <div>
+            <p>Bu hedefi, sınırlı kapasitesi olan tesisleri kullanarak, tesisler tarafından kapsanan talep miktarını en &uuml;st d&uuml;zeye &ccedil;ıkarmak istediğinizde kullanabilirsiniz.    
+            </p>
+            <p>Bu hedef, herhangi bir tesisin kapasitesini aşmadan en fazla talep miktarı atanabilecek tesisleri belirler. Her talep konumundan gelen toplam talep, kendisine en yakın olan ve boş kapasitesi olan tek tesise atanır (bunun anlamı, talep konumunun tesise atanmasının tesisin mevcut kapasitesini aşması durumunda, talebin bir kısmının atanmasındansa hi&ccedil; talep konumu atanmayacaktır).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Talebin belirli bir yüzdesini karşıla</h2></div>
+        <hr/>
+        <div>
+            <p>Bu hedefi, talebin belirli bir y&uuml;zdesini karşılamanız gereken durumda en az tesis sayısını bulmak istediğinizde kullanabilirsiniz.
+            </p>
+            <p>Bu hedef, talebin karşılanan belirli bir y&uuml;zdesine ulaşmak i&ccedil;in gereken minimum tesis sayısını se&ccedil;er. İki veya daha &ccedil;ok tesisin maksimum seyahat alanında bulunan bir talep konumundaki talep, her bir tesise olan mesafeye g&ouml;re orantısal olarak b&ouml;l&uuml;n&uuml;r. Bu hedef genellikle insanları gidecekleri tesis konusunda alternatife sahip olduğu ve genellikle de en yakın olanı tercih edecekleri (diğer t&uuml;m koşulların eşit olması durumunda) varsayıldığında kullanılır.
+            </p>
+            <p>Tesis belirleyen ve tercih ettiğiniz tesis sayısını belirlediğiniz diğer hedeflerin aksine, bu hedef karşılamak istediğiniz talebin y&uuml;zdesine bağlı olarak tesis sayısını sizin yerinize belirler. Tesislerin sınırlı bir kapasiteye sahip olmadığını varsayar.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Ölçü</h2></div>
+        <hr/>
+        <div>
+            <p>Analizdeki seyahatle ilgili diğer ara&ccedil;larla olduğu gibi, seyahatin mesafe mi yoksa zaman mı kullanılarak &ouml;l&ccedil;&uuml;leceğini belirleyebilir ve y&uuml;r&uuml;y&uuml;ş s&uuml;resi, s&uuml;r&uuml;ş s&uuml;resi, arazide s&uuml;r&uuml;ş s&uuml;resi vb. gibi &ccedil;eşitli seyahat modları arasından se&ccedil;im yapabilirsiniz. Kullanılabilir seyahat modları, kuruluşunuzun y&ouml;neticisi tarafından belirlenir.  <b>S&uuml;r&uuml;ş S&uuml;resi</b>, <b>Arazide S&uuml;r&uuml;ş S&uuml;resi</b> ya da <b>Kamyonla Taşıma S&uuml;resi</b> se&ccedil;eneklerini kullanırken, isteğe bağlı olarak haftanın belirli bir g&uuml;n&uuml; ve g&uuml;n&uuml;n belirli bir saati i&ccedil;in trafik fakt&ouml;r&uuml;n&uuml; de ekleyebilirsiniz.
+            </p>
+            <p> Talep konumlarını tesislere hatasız bi&ccedil;imde atayabilmek i&ccedil;in seyahatin tesislerden talep konumlarına (&ouml;rneğin, itfaiye merkezinden evlere) doğru mu yoksa talep konumlarından tesislere doğru mu (k&uuml;t&uuml;phanelere giden m&uuml;şteriler gibi)  olduğunu belirtin. En İyi Tesisleri Se&ccedil; &ouml;zelliği, tek y&ouml;nl&uuml; yollardaki seyahat y&ouml;n&uuml; i&ccedil;in de ge&ccedil;erlidir, seyahatin dışa (tesisten talep konumlarına) doğru veya i&ccedil;e doğru (talep konumlarından tesislere) doğru olmasına bağlı olarak, bir caddeden diğerine d&ouml;n&uuml;p d&ouml;nemeyeceğinizi, kavşaklarda sola d&ouml;n&uuml;ş olup olmayacağını vb. belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Talep Konumları Katmanı</h2></div>
+        <hr/>
+        <div>
+            <p>Tesisler tarafından sunulan hizmet i&ccedil;in talebin bulunduğu yerleri temsil eden nokta detayları. Ara&ccedil;, belirlenen hedefe bağlı olarak s&ouml;z konusu talep konumlarını uygun tesislere atar.
+            </p>
+            <p>Talep konumları i&ccedil;in ilişkili bir talep miktarı vardır. T&uuml;m talep konumları i&ccedil;in aynı talep miktarı s&ouml;z konusu olduğunda, değeri belirtmek i&ccedil;in bir sabit katsayı kullanın. Talep miktarı talep konumuna g&ouml;re farklılık g&ouml;sterirse, her talep konumu i&ccedil;in değeri belirlemek &uuml;zere Talep Konumları Katmanında bir alan kullanın.
+            </p>
+            <p>Talep konumlarının tesislere olan mesafesinden bağımsız olarak, tamamı atanıncaya kadar talep tesislere dağıtılır. Bir kesme mesafesi veya s&uuml;resi oluşturmak i&ccedil;in Talep Konumları Katmanına en y&uuml;ksek seyahat mesafesi atayabilirsiniz (kesme değerinin dışında kalan talep konumlarına atama yapılmaz). T&uuml;m talep konumları i&ccedil;in aynı en y&uuml;ksek seyahat aralığı s&ouml;z konusu olduğunda, değeri belirtmek i&ccedil;in bir sabit katsayı kullanın. En y&uuml;ksek seyahat aralığı talep konumuna g&ouml;re farklılık g&ouml;sterirse, her talep konumu i&ccedil;in değeri belirlemek &uuml;zere Talep Konumları Katmanında bir alan kullanın.
+            </p>
+            <p>Hedef t&uuml;r&uuml;  <b>Talebin belirli bir y&uuml;zdesini karşılama</b> ise, tesislerin almasını istediğiniz en d&uuml;ş&uuml;k talep miktarını belirtmeniz gerekir.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+            <p>Ara&ccedil;, Talep Konumları Katmanında en &ccedil;ok 10.000 detayı destekler.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>İhtiyaç Duyulan Tesisler Katmanı</h2></div>
+        <hr/>
+        <div>
+            <p>Bir t&uuml;r hizmet sağlayan tesis gibi işleyen yerleri temsil eden nokta detayları. İhtiya&ccedil; duyulan tesisler, yeni tesislerin yapılacağı ya da yerleştirileceği yerleri belirten aday tesislere g&ouml;re genellikle zaten mevcut olan konumları temsil eder. Ara&ccedil;, talep konumlarını yerleştirirken &ouml;ncelikli olarak  <b>İhtiya&ccedil; Duyulan Tesisler Katmanı</b> i&ccedil;indeki tesisleri, daha sonra <b>Aday Tesisler Katmanı</b> i&ccedil;indekileri kullanır.
+            </p>
+            <p>İhtiya&ccedil; duyulan tesislerde sınırsız kapasite (bu, kendilerine atanan talebin t&uuml;m&uuml;n&uuml; karşılayabilecekleri anlamına gelir) veya sınırlı kapasite bulunabilir. Tesislerin t&uuml;m&uuml; aynı sınırlı kapasiteye sahipse (bir itfaiye merkezinin hizmet verebileceği hane sayısı gibi, &ouml;rneğin 4.000), sabit bir değer belirtin. Kapasite tesisler arasında farklılık g&ouml;steriyorsa (her lisede yeni başlayan &ouml;ğrencilere ayrılan dolap sayısı gibi), her tesis i&ccedil;in kapasite değerini i&ccedil;eren bir alan belirtin.
+            </p>
+            <p>Ara&ccedil;,  <b>İhtiya&ccedil; Duyulan Tesisler Katmanı</b> i&ccedil;inde en fazla 100 detayı destekler.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Aday Tesisler Katmanı</h2></div>
+        <hr/>
+        <div>
+            <p>Bir t&uuml;r hizmet sağlayan tesis gibi işleyen yerleri temsil eden nokta detayları. Aday tesisler, zaten mevcut olan konumları g&ouml;steren ihtiya&ccedil; duyulan tesislerin aksine, genellikle yeni tesislerin yapılacağı ya da yerleştirileceği yerleri belirtir.
+            </p>
+            <p>Analiz hedefinize bağlı olarak, aday grubu arasından se&ccedil;ilecek aday tesis sayısını belirtmeniz gerekir. Hem ihtiya&ccedil; duyulan hem de aday tesis belirtmeniz durumunda, ara&ccedil; talep konumlarını yerleştirirken &ouml;ncelikli olarak  <b>İhtiya&ccedil; Duyulan Tesisler Katmanı</b> i&ccedil;indeki tesisleri, daha sonra <b>Aday Tesisler Katmanı</b> i&ccedil;indekileri kullanır.
+            </p>
+            <p>Aday tesislerde sınırsız kapasite (bu, kendilerine atanan talebin t&uuml;m&uuml;n&uuml; karşılayabilecekleri anlamına gelir) veya sınırlı kapasite bulunabilir. Tesislerin t&uuml;m&uuml; aynı sınırlı kapasiteye sahipse (bir itfaiye merkezinin hizmet verebileceği hane sayısı gibi, &ouml;rneğin 4.000), sabit bir değer belirtin. Kapasite tesisler arasında farklılık g&ouml;steriyorsa (her lisede yeni başlayan &ouml;ğrencilere ayrılan dolap sayısı gibi), her tesis i&ccedil;in kapasite değerini i&ccedil;eren bir alan belirtin.
+            </p>
+            <p>Ara&ccedil;,  <b>Aday Tesisler Katmanı</b> i&ccedil;inde en fazla 1.000 detayı destekler.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Engel katmanlarını seç</h2></div>
+        <hr/>
+        <div>
+            <p> Aşağıdaki sokaklarda seyahat ederken ge&ccedil;ici kısıtlamalar (engeller) işlevi g&ouml;recek bir ya da daha fazla &ouml;zellik. Nokta, &ccedil;izgi ve poligon &ouml;zelliklerini kullanarak engel belirleyebilirsiniz.
+            </p>
+            <p>Nokta engel devrilmiş bir ağacı, kazayı, kopmuş bir elektrik hattını veya sokağın belirli bir noktasında trafiği tamamen engelleyen herhangi bir şeyi ifade edebilir. Sokakta harekete izin verilir ancak engel ge&ccedil;ilemez. Nokta engel olarak işlev g&ouml;recek 250'ye kadar &ouml;zellik belirleyebilirsiniz.
+            </p>
+            <p>Hat engel, sokakları kestiği her yerde hareketi engeller. &Ouml;rneğin, birka&ccedil; sokak boyunca trafiği engelleyen bir ge&ccedil;it t&ouml;reni ya da protesto bir &ccedil;izgi bariyeri ile modellenebilir. T&uuml;m hat engeller tarafından kesilen sokak &ouml;zelliği sayısı 500'&uuml; ge&ccedil;tiğinde ara&ccedil; hata verir.
+            </p>
+            <p>&Ccedil;okgen engel, sokakları kestiği her yerde hareketi engeller. Bu engel tipinin kullanımlarından biri sokak ağının alanlarını kaplayan taşkınları modellemektir ve sokakta hareket imkansız hale gelir. T&uuml;m hat engeller tarafından kesilen sokak &ouml;zelliği sayısı 2000'&uuml; ge&ccedil;tiğinde ara&ccedil; hata verir.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adıdır.  Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman adı zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p>Sonu&ccedil; katmanı aşağıdakilerin her biri i&ccedil;in bir katman i&ccedil;erir: kendilerine talep atanmış olan tesisler, tesislere atanmış olan talep konumları ve talep konumlarını kendilerinin atanmış olduğu tesislere bağlayan atama &ccedil;izgileri. Atama &ccedil;izgileri d&uuml;z &ccedil;izgi olarak &ccedil;izilir; ancak, tesis ve talep konumu arasındaki seyahat s&uuml;resi veya seyahat mesafesi her zaman i&ccedil;in belirttiğiniz seyahat moduna g&ouml;redir, d&uuml;z &ccedil;izgi mesafeleri kullanılmaz.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

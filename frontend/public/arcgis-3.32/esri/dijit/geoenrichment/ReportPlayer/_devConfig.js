@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/_devConfig",[],function(){return{showAreaDataUtilUndefinedData:!1,createPlayerCommand:{saveDataJsonAsTextFile:!1,useTestBuild:!1,configUrl:"https://laci2.esri.com/jenkins/job/report-player-jsapi-pr/lastSuccessfulBuild/artifact/release/reportPlayer/config.js",baseUrl:"https://laci2.esri.com/jenkins/job/report-player-jsapi-pr/lastSuccessfulBuild/artifact/release",mainUrl:"https://laci2.esri.com/jenkins/job/report-player-jsapi-pr/lastSuccessfulBuild/artifact/release/dojo/dojo.js",
+esriDijitCssUrl:"https://js.arcgis.com/3.31/dijit/themes/claro/claro.css",esriCssUrl:"https://laci2.esri.com/jenkins/job/report-player-jsapi-pr/lastSuccessfulBuild/artifact/release/reportPlayer/reportPlayer.css"},createPDFCommand:{removeUnicodeChars:!1},preview:{bigValues:!1},charts:{enableEffects:!1,showStatisticsInTooltips:!1},table:{printGridRefresh:!1},emulateErrors:{playerError:!1,contentErrors:!1,themeParseError:!1,metadataParseError:!1,layoutParseError:0,reportContainerRenderError:!1,createReportError:!1,
+createReportNaN:!1}}});

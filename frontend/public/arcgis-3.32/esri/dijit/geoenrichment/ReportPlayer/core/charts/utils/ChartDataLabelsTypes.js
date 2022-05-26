@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/charts/utils/ChartDataLabelsTypes",[],function(){var b={NONE:"None",LABEL:"Label",VALUE:"Value",LABEL_VALUE:"LabelValue",PERCENT:"Percent",LABEL_PERCENT:"LabelPercent",isSupported:function(a){for(var c in b)if(b[c]===a)return!0;return!1},toSupportedValue:function(a){return b.isSupported(a)?a:b.NONE},buildType:function(a){var c="";a.label&&(c="Label");a.value?c+="Value":a.percent&&(c+="Percent");return c||b.NONE},hasLabel:function(a){return a&&-1!==
+a.indexOf("Label")},hasValue:function(a){return a&&-1!==a.indexOf("Value")},hasPercent:function(a){return a&&-1!==a.indexOf("Percent")},has2Values:function(a){return a===b.LABEL_VALUE||a===b.LABEL_PERCENT}};return b});

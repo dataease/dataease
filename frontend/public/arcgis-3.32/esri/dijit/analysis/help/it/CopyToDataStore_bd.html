@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Copia in Data Store</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="Copia in Data Store"></h2>
+        <hr/>
+    <p>Questo strumento consente di prendere un layer di input e di copiarlo in un Data Store. &Egrave; possibile copiare i risultati su  ArcGIS Data Store (Data Store relazionale o Spatiotemporal Big Data Store) e si creer&agrave; un layer nel portale, oppure &egrave; possibile copiare i risultati su un file Big Data. 
+    </p>
+    <p>Ad esempio, &egrave; possibile copiare le feature che sono memorizzate in una  <code>condivisione di file Big Data</code> in un <code>Data Store relazionale</code> e specificare di copiare solo le feature all'interno della mappa corrente. Viene cos&igrave; creato un feature service ospitato contenente solo le feature incluse nell'estensione di mappa specificata.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegli il layer da copiare</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer o la tabella che verr&agrave; copiata. 
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>È possibile utilizzare tutte le feature o effettuare una selezione (facoltativa)</h2></div>
+        <hr/>
+        <div>
+            <p>Facoltativamente, utilizzare il pulsante di selezione per identificare le posizioni da copiare.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Scegliere il data store su cui copiare</h2></div>
+        <hr/>
+        <div>
+            <p>Il Data Store dati in cui verr&agrave; copiato il layer. Questo parametro ignora la selezione effettuata negli  <b>Ambienti di analisi</b> Sono disponibili le seguenti opzioni:
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>Spatiotemporal</b>: questa &egrave; l'impostazione predefinita.
+                            </li>
+                            <li> <b>Relazionale</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>Modelli di output per la condivisione di file Big Data</b>
+                        <ul>
+                            <li>Un elenco di modelli disponibili per la condivisione di file Big Data nel formato  <b>bigDataFileShareName-templateName</b>. I modelli per la condivisione di file Big Data devono essere configurati prima di eseguire lo strumento.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p> Il nome del layer che verr&agrave; creato.  Se si scrive su un ArcGIS Data Store, i risultati saranno salvati in  <b>I miei contenuti</b> e aggiunti alla mappa. Se si scrive su una condivisione file Big Data, i risultati saranno memorizzati nella condivisione file Big Data e aggiunti al suo Manifest. Non saranno aggiunti alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, lo strumento non verr&agrave; eseguito.
+            </p>
+            <p>Quando si scrive su  ArcGIS Data Store (data store relazionale o Spatiotemporal Big Data Store) usando la casella a discesa  <b>Salva risultato in</b>, &egrave; possibile specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

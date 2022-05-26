@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/et/GenerateTessellations",{chooseShape:"Vali kujund",defineExtent:"M\u00e4\u00e4ratle ulatus",defineBin:"M\u00e4\u00e4ratlege salve suurus, kirjeldades selleks:",area:"Piirkond",distance:"Vahemaa",resultLayerName:"Tulemkihi nimi",hexagon:"Kuusnurk",transverseHexagon:"P\u00f5iki kuusnurk",square:"Ruut",triangle:"Kolmnurk",diamond:"Romb",sameAsDisplay:"Sama, mis kuvatakse",emptyBinSize:"Salve suurus ei tohi olla t\u00fchi",currentExtent:"Praegune ulatus",intersectExtent:"Hoidke alles ainult l\u00f5ikuvad tesselatsioonid",
+outputLayerName:"Koostage tesselatsioonid kihile ${extentLayerName}",itemDescription:"Kasutati ulatust kihist ${extentLayerName}.",itemTags:"Anal\u00fc\u00fcsitulemus, Koosta tesselatsioonid, ${extentLayerName}",itemSnippet:"Objektikiht genereeriti tesselatsioonide koostamise algoritmi kaudu."});

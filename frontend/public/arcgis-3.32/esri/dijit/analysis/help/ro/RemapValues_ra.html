@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Recartografiere valori</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="Instrument Recartografiere valori pentru portal"></h2>
+        <hr/>
+    <p>Acest instrument vă permite să modificaţi sau să reclasificaţi valorile pixelilor datelor raster. Valorile pixelilor sunt recartografiate prin specificarea unui interval de valori de pixeli pentru a cartografia o valoare de pixel de ieşire. Valoarea pixelilor de ieşire poate fi o valoare validă sau o valoare NoData, care sunt pixeli care nu au o valoare cunoscută asociată.
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă a hărţii</b>, vor fi recatografiate numai celulele vizibile &icirc;n extinderea curentă a hărţii. Dacă nu se bifează, toate celulele din raster vor fi procesate, chiar dacă se află &icirc;n afara extinderii curente a hărţii.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Date de intrare</h2></div>
+        <hr/>
+        <div>
+            <p>Datele de intrare care vor avea valorile recartografiate.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Remapare valori pixeli la valori noi</h2></div>
+        <hr/>
+        <div>
+            <p>Introduceţi un interval de valori prin specificarea unei valori minime şi maxime, apoi atribuiţi o valoare de ieşire sau o valoare NoData intervalului specificat.
+            </p>
+            <p>Pentru a recartografia un interval nou de valori, faceţi clic pe  <b>Adăugare</b>, ceea ce va adăuga un r&acirc;nd. Faceţi clic pe fiecare valoare pentru a edita tabelul la intervalurile şi valoarea recartografiată de care aveţi nevoie. Atunci c&acirc;nd specificaţi intervalurile de valori, există două reguli importante care sunt utilizate:
+                <ul>
+                    <li>Valoarea minimă din interval este inclusivă, iar cea maximă este exclusivă.
+                    </li>
+                    <li>R&acirc;ndurile din tabel sunt procesate de sus &icirc;n jos.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Tabelul de mai jos arată că valoarea minimă este inclusă &icirc;n rezultat, dar cea maximă nu este inclusă &icirc;n rezultat.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Ordinea intervalurilor specificată &icirc;n tabel este, de asemenea, importantă. R&acirc;ndul de sus al tabelului este procesat primul, apoi cel de sub acesta. Cele două tabele de mai jos indică modul &icirc;n care intervalurile de valori vor produce rezultate diferite, din cauza ordinii r&acirc;ndurilor tabelului.
+            </p> 
+            <p>Tabelul de mai jos prezintă valoarea de ieșire c&acirc;nd prima coloană este sortată numeric:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Tabelul de mai jos prezintă modalitatea &icirc;n care ordonarea diferită a r&acirc;ndurilor va produce valori de ieșire diferite:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Sunt utilizate ambele reguli pentru a reordona valorile. Av&acirc;nd &icirc;n vedere că fiecare r&acirc;nd este procesat de sus &icirc;n jos, aceste valori au prioritate la determinarea rezultatului, chiar şi atunci c&acirc;nd sunt utilizate aceleaşi intervaluri.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic ce va fi creat &icirc;n  <b>Resursele mele</b> şi va fi adăugat pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic rezultat există deja, vi se va solicita să furnizaţi un alt nume.
+            </p>
+            <p>Puteți specifica numele folderului &icirc;n  <b>Resursele mele</b> unde se va salva rezultatul folosind caseta drop-down <b>Salvați rezultatele &icirc;n</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

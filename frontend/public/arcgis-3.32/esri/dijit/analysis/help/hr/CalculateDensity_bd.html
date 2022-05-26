@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Izračunaj gustoću</h2><p/>
+        <h2><img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" alt="Izračunaj gustoću"></h2>
+        <hr/>
+    <p>Alat Izračunaj gustoću stvara kartu gustoće iz točkastih geoobjekata &scaron;irenjem poznatih količina određenog fenomena (predstavljenih kao atributi točaka) &scaron;irom karte. Rezultat je poligonalni sloj klasificiran od najveće do najmanje gustoće.   
+
+    </p>
+    <p>Za unos točaka svaka bi točka trebala predstavljati lokaciju nekog događaja ili incidenta, a sloj rezultata predstavlja zbroj incidenata po jediničnom području. Vrijednost veće gustoće na novoj lokaciji znači da ima jo&scaron; točaka blizu te lokacije.  U mnogo slučajeva, sloj rezultata može se protumačiti kao područje rizika za buduće događaje. Na primjer, ako unesene točke predstavljaju lokacije udara munje, sloj rezultata može se protumačiti kao područje rizika za buduće udare munje.
+    </p>
+    <p>Ostali slučajevi upotrebe za ovaj alat uključuju sljedeće:
+        <ul>
+            <li>Stvaranje karata gustoće zločina kako bi se pomoglo policiji da pravilno raspodijele resurse u područja s visokom stopom zločina.
+            </li>
+            <li>Izračunavanje gustoće bolnica unutar okruga.  Sloj rezultata prikazat će područja s visokom i niskom pristupačno&scaron;ću bolnicama, a ti se podaci mogu iskoristiti za odlučivanje gdje treba sagraditi nove bolnice.
+            </li>
+            <li>Određivanje visoko rizičnih područja za &scaron;umske požare na temelju povijesnih lokacija &scaron;umskih požara.
+            </li>
+            <li>Lociranje zajednica koje se nalaze daleko od velikih prometnica kako bi se planirala izgradnja novih cesta.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite točkasti sloj za izračun gustoće</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti sloj na kojem će se izračunati gustoća.
+            </p>
+            <p>Osim odabira sloja s va&scaron;e karte, možete odabrati  <b>Izaberi sloj za analizu</b> na dnu padajućeg popisa za pretraživanje va&scaron;ih sadržaja za skup podataka za dijeljenje datoteka velikih podataka ili sloj geoobjekta.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Odaberite jedno ili više polja za izračun gustoće (neobavezno)</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite jedno ili vi&scaron;e polja koja određuje broj incidenata na svakoj lokaciji. Na primjer, ako imate točke koje predstavljaju gradove, možete upotrijebiti polje koje predstavlja stanovni&scaron;tvo grada kao polje brojača, a sloj rezultata gustoće stanovni&scaron;tva izračunat će veće gustoće stanovni&scaron;tva blizu gradova s većim brojem stanovni&scaron;tva.
+            </p>
+            <p>Gustoća broja točaka uvijek će se računati.   Ako se ne odaberu polja, za svaku će se lokaciju pretpostaviti da predstavlja jedan broj.
+            </p>
+        </div>
+    </div>
+    <div id="binType">
+        <div><h2>Odaberite oblik ćelije</h2></div>
+        <hr/>
+        <div>
+            <p>Oblik ćelija u koje su agregirane točke i koje se upotrebljavaju za izračun gustoće.
+            </p>
+            <p>Za analizu  <b>kvadratnih</b> ili <b>&scaron;esterokutnih</b> ćelija potreban je predviđeni koordinatni sustav. Možete postaviti <b>Koordinatni sustav obrade</b> u <b>Okruženju za analizu</b>. Ako koordinatni sustav obrade nije postavljen na predviđeni koordinatni sustav, od vas će se tražiti da ga postavite kada <b>pokrenete analizu</b> .
+            </p>
+        </div>
+    </div>
+    <div id="binSizing">
+        <div><h2>Odaberite veličinu ćelije za agregaciju</h2></div>
+        <hr/>
+        <div>
+            <p>Veličina generiranih ćelija. Za četverokutnu ćeliju veličina predstavlja visinu četverokuta. Za &scaron;esterokut veličina predstavlja visinu &scaron;estrokuta (od usporednih strana).
+            </p>
+        </div>
+    </div>
+    <div id="weight">
+        <div><h2>Odaberite ponderiranje gustoće koje želite primijeniti</h2></div>
+        <hr/>
+        <div>
+            <p>Vrsta ponderiranja primijenjenog na izračun gustoće. Postoje dvije opcije:
+                <ul>
+                    <li> <b>Ujednačeno</b> &mdash; Ovime se računa opseg podataka po području.
+                    </li>
+                    <li> <b>Jezgra</b> &mdash; Primjenjuje funkciju jezgre kako bi prilagodila glatku konusnu povr&scaron;inu svakoj točki.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Odaberite veličinu susjedstva</h2></div>
+        <hr/>
+        <div>
+            <p>Veličina područja upotrijebljenog za izračun gustoće. Veličina susjedstva mora biti veća od veličine ćelije.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Odaberite izlazne jedinice za gustoću</h2></div>
+        <hr/>
+        <div>
+            <p>Željene izlazne jedinice vrijednosti gustoće. Prema zadanim postavkama ovo je postavljeno na kvadratne kilometre ili kvadratne milje na temelju zadanih jedinica određenih u va&scaron;em profilu. Ako su vrijednosti gustoće vrlo male, možete povećati veličinu jedinica područja (primjerice, kvadratne metre u kvadratne kilometre) da biste vratili veće vrijednosti. Vrijednosti samo skaliraju rezultat.  
+
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Izračunajte gustoću upotrebom vremenskih koraka (neobavezno)</h2></div>
+        <hr/>
+        <div>
+            <p>Ako je ulazni točkasti sloj ovremenjen i ako je instantne vrste, možete analizirati s pomoću stvaranja vremenskih koraka. Tri su parametra koje možete postaviti kada upotrebljavate vrijeme:
+                <ul>
+                    <li> <b>Interval vremenskog koraka</b>
+                    </li>
+                    <li> <b>Učestalost ponavljanja vremenskog koraka</b>
+                    </li>
+                    <li> <b>Vrijeme s kojim se usklađuju vremenski koraci</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Na primjer, ako imate podatke koji predstavljaju jednu godinu i želite ih analizirati it u koracima od tjedna, postavite <b>Interval vremenskog koraka</b> na <code>1 tjedan</code>. 
+            </p>
+            <p>Na primjer, ako imate podatke koji predstavljaju jednu godinu i želite analiziratiprve tjedne u mjesecu, postavite  <b>Interval vremenskog koraka</b> na <code>1 tjedan</code>, <b>Učestalost ponavljanja vremenskog koraka</b> na <code>1 mjesec</code> i <b>Vrijeme s kojim se usklađuju vremenski koraci </b> na <code>1. siječnja u 12:00 h</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Interval vremenskog koraka</h2></div>
+        <hr/>
+        <div>
+            <p>Vremenski interval kori&scaron;ten za generiranje vremenskih koraka.  <b>Interval vremenskog koraka</b> može se upotrebljavati samostalno ili s parametrima <b>Učestalost ponavljanja vremenskog koraka</b> ili <b>Vrijeme s kojim se usklađuju vremenski koraci</b>.
+            </p>
+            <p>Na primjer, ako želite izraditi vremenske korake između svakog ponedjeljka od 9:00 h do 10:00 h, postavite  <b>Interval vremenskog koraka</b> na <code>1 sat</code>, <b>Učestalost ponavljanja vremenskog koraka</b> na <code>1 tjedan</code> i <b>Vrijeme s kojim se usklađuju vremenski koraci</b> na <code>9:00:00 h u ponedjeljak</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Učestalost ponavljanja vremenskog koraka</h2></div>
+        <hr/>
+        <div>
+            <p> Korak koji se koristi za izračun vremenskog koraka. <b>Učestalost ponavljanja vremenskog koraka</b> može se upotrebljavati samostalno, s parametrom <b>Interval vremenskog koraka</b>, s parametrom <b>Referentno vrijeme</b> ili s oba parametra <b>Interval vremenskog koraka</b> i <b>Vrijeme s kojim se usklađuju vremenski koraci</b>.
+            </p>
+            <p> Na primjer, ako želite izraditi vremenske korake između svakog ponedjeljka od 9:00 h do 10:00 h, postavite <b>Interval vremenskog koraka</b> na <code>1 sat</code>, <b>Učestalost ponavljanja vremenskog koraka</b> na <code>1 tjedan</code> i <b>Vrijeme s kojim se usklađuju vremenski koraci</b> na <code>9:00:00 h u ponedjeljak</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Vrijeme s kojim se usklađuju vremenski koraci</h2></div>
+        <hr/>
+        <div>
+            <p>Datum i vrijeme kori&scaron;teni za poravnanje vremenskih isječaka. Stvaranje vremenskih koraka započet će od ovog vremena i nastavit će se unatrag. Ako se ne odabere referentno vrijeme, stvaranje vremenskih koraka poravnat će se s 1. siječnjem 1970. 
+            </p>
+            <p> Na primjer, ako želite izraditi vremenske korake između svakog ponedjeljka od 9:00 h do 10:00 h, postavite <b>Interval vremenskog koraka</b> na <code>1 sat</code>, <b>Učestalost ponavljanja vremenskog koraka</b> na <code>1 tjedan</code> i <b>Vrijeme s kojim se usklađuju vremenski koraci</b> na <code>9:00:00 h u ponedjeljak</code>.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Prostorna referenca (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je privremeni parametar za predizdanje za postavljanje obrade prostorne reference. Mnogi alati velikih podataka zahtijevaju da se projicirani koordinatni sustav upotrebljava kao prostorna referenca za obradu. Prema zadanim postavkama, alat će koristiti ulazni koordinatni sustav, ali neće biti uspje&scaron;an ako je riječ o geografskom koordinatnom sustavu. Za postavljanje projiciranog koordinatnog sustava unesite WKID. Na primjer,  <b>Web Mercator</b> treba unijeti kao <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Izaberi spremište podataka</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultati geoanalitika pohranjuju se u spremnik podataka i otkriveni su kao sloj geoobjekata u  Portal for ArcGIS. U većini slučajeva rezultate bi trebalo pohraniti u spremniku prostorno-vremenskih podataka i to je zadana postavka. U nekim je slučajevima, spremanje rezultata u spremnik relacijskih podataka dobra opcija. Razlozi za&scaron;to biste htjeli pohraniti rezultate u spremnik relacijskih podataka navedeni su u nastavku: 
+                <ul>
+                    <li>Možete upotrijebiti rezultate u suradnji portal-do-portala.
+                    </li>
+                    <li>Možete omogućiti mogućnosti sinkronizacije rezultata.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ne biste trebali upotrebljavati spremnik relacijskih podataka ako očekujete da će se va&scaron;i geoanalitički podaci povećati i trebate iskoristiti mogućnosti spremnika prostorno-vremenskih podataka za rukovanje velikim količinama podataka.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p> Naziv sloja koji će se stvoriti. Ako pi&scaron;ete na ArcGIS Data Store, va&scaron;i će se rezultati spremiti u  <b>Mojem sadržaju</b> i dodati karti. Ako pi&scaron;ete na dijeljenje datoteka velikih podataka, va&scaron;i će se rezultati pohraniti u dijeljenje datoteka velikih podataka i dodati u manifest. Neće se dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, alat neće biti uspje&scaron;an.
+            </p>
+            <p>Kada pi&scaron;ete na  ArcGIS Data Store (relacijski ili prostorno-vremenski spremnik velikih podataka), upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

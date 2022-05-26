@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Kattuvad kihid</h2><p/>
+        <h2><img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" alt="Kattuvad kihid"></h2>
+        <hr/>
+    <p>Kattuvus &uuml;hendab omavahel kaks v&otilde;i enam kihti &uuml;heks kihiks. V&otilde;ite m&otilde;ista kihtide &uuml;lekatet kui hulga kaartide l&auml;bimist ja &uuml;he konkreetse kaardi loomist k&otilde;ikide nende l&auml;bi t&ouml;&ouml;deldud kaartide informatsiooni hulgast. &Uuml;lekate on m&auml;rksa enamat kui vaid lihtne liitmine; k&otilde;ik objektiga seotud ja anal&uuml;&uuml;sis osalevad atribuudid kantakse samuti tulemkihti &uuml;le. Taolist meetodit kasutatakse geograafias tihti, saamaks vastust k&uuml;simusele &ldquo;Mis on mille kohal?&rdquo; N&auml;ited:
+        <ul>
+            <li>Millised maad on olnud seotud 100 aasta jooksul &uuml;leujutuste piirkonnas? (Esinemine/kattuvus t&auml;hendab teise kihi peal olemist.)
+                  
+            </li>
+            <li>Millist t&uuml;&uuml;pi teed &uuml;hes v&otilde;i teises maakonnas asuvad?
+            </li>
+            <li>Milline maakasutus on &uuml;he v&otilde;i teise mullat&uuml;&uuml;bi levialas?
+                 
+            </li>
+            <li>Millised kaevikud esinevad mahaj&auml;etud s&otilde;jav&auml;eosades?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Kui ruut  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, kaetakse ainult need sisend- ja &uuml;lekattekihi objektid, mis on kaardil praegu n&auml;htavad.  Kui see ruut pole m&auml;rgitud, kaetakse k&otilde;ik sisend- ja &uuml;lekattekihi objektid ka siis, kui neid pole praegu kaardil n&auml;ha.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vali sisendkiht</h2></div>
+        <hr/>
+        <div>
+            <p>Punkti-, joone- v&otilde;i alakiht, mis kaetakse.
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p>
+        </div>
+    </div>
+    <div id="OverlayLayer">
+        <div><h2>Vali ülekatte kiht</h2></div>
+        <hr/>
+        <div>
+            <p>Sisendkihis kaetav kiht.  
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p> 
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Vali ülekatte meetod</h2></div>
+        <hr/>
+        <div>
+            <p>&Uuml;lekatte meetod m&auml;&auml;rab, kuidas sisend- ja &uuml;lekattekihti kombineeritakse.  
+
+                <ul>
+                    <li> <b>&Uuml;hisosa</b> &ndash; tulemus sisaldab &uuml;lekattekihis vaid neid objekte v&otilde;i objektide osasid, mis kattuvad sisendkihi objektidega. Joone ja ala n&auml;htuste l&otilde;ikumisel on v&otilde;imalus m&auml;&auml;rata, millist t&uuml;&uuml;pi n&auml;htusi on soov v&auml;ljundina saada.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Punktid punktidega
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Punktid ja punktide sisend">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Punktid ja punktid punktide v&auml;ljundiga">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Punktid joontega
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-F1E6C6C8-4F51-4063-984D-0FC8D08EB2D2-web.png" alt="Punktid ja joonte sisend">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-02CFAFDC-1B3C-4C4B-A58C-7B0B78BA0B56-web.png" alt="Punktid ja jooned punktide v&auml;ljundiga">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Punktid aladega
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-5EE90BD6-CC3D-4E2F-A5D0-DC57298E8416-web.png" alt="Punktid ja alade sisend">
+                                </p>
+                            </td>
+                            <td> <img src="../images/GUID-5CCA360F-D4C9-43AB-8FB2-E6E62DE93BD4-web.png" alt="Punktid ja alad punktide v&auml;ljundiga">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Jooned joontega 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Jooned ja joonte sisend">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-DDCCB226-6490-4914-B87C-299125466256-web.png" alt="Jooned ja jooned punktide v&auml;ljundiga">
+                                </p>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Jooned ja jooned joonte v&auml;ljundiga ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Jooned aladega
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-E38EB7D6-9D35-4E0D-937A-9FEC4144AF2E-web.png" alt="Jooned ja alade sisend">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-639F492C-BEE7-4A5F-AEBC-325B74FEC766-web.png" alt="Jooned ja alad punktide v&auml;ljundiga">
+                                </p>
+                                <p> <img src="../images/GUID-58DF5CF6-0A56-4717-AD9C-C3BEC8EA6906-web.png" alt="Jooned ja alad joonte v&auml;ljundiga">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Alad aladega
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Alad ja alade sisend">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-3F71AD46-A6A2-436D-8BBA-13E014BB94D0-web.png" alt="Alad ja alad punktide v&auml;ljundiga">
+                                </p>
+                                <p> <img src="../images/GUID-6AF62F09-6D32-4212-97C6-844580E34A22-web.png" alt="Alad ja alad joonte v&auml;ljundiga">
+                                </p>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="Alad ja alad alade v&auml;ljundiga">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>&Uuml;hend</b> &ndash; tulemus sisaldab objekte nii sisendkihist kui ka &uuml;lekattekihist. Valik &Uuml;hend on saadaval ainult siis, kui sisendkiht ja &uuml;lekattekiht sisaldavad m&otilde;lemad pindobjekte.
+                    </li>
+                    <li> <b>Kustuta</b> &ndash; tulemus sisaldab &uuml;lekattekihis vaid neid objekte v&otilde;i objektide osasid, mis ei kattu sisendkihi aladega.  &Uuml;lekattekiht v&otilde;ib sisaldada alade, joonte v&otilde;i punktide objekte.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Kui ruut  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, kaetakse ainult need sisend- ja &uuml;lekattekihi objektid, mis on kaardil praegu n&auml;htavad.  Kui see ruut pole m&auml;rgitud, kaetakse k&otilde;ik sisend- ja &uuml;lekattekihi objektid ka siis, kui neid pole praegu kaardil n&auml;ha.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p> See on selle kihi nimi, mis luuakse jaotises <b>Minu sisu</b> ja lisatakse kaardile.  See peab olema sama geomeetriat&uuml;&uuml;biga (punktid, jooned, pinnad) nagu &uuml;lekatte kiht. Vaikimisi nimi on tuletatud &uuml;lekatte meetodi ja sisendkihi nimetuse j&auml;rgi. Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata kausta nime, kuhu tulemused salvestatakse.
+            </p> 
+        </div>
+    </div>
+</div>
+</html>

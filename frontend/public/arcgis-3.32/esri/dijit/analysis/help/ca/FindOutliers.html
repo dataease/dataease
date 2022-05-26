@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Cerca valors atípics</h2><p/>
+        <h2><img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" alt="Cerca valors at&iacute;pics"></h2>
+        <hr/>
+    <p>L'eina Cerca valors at&iacute;pics determinar&agrave; si hi ha cap valor at&iacute;pic estad&iacute;sticament significatiu al patr&oacute; espacial de les vostres dades. 
+        <ul>
+            <li>Hi ha &agrave;rees an&ograve;males al patr&oacute; de les vostres dades (delictes, arbres, accidents de tr&agrave;nsit)?  Com en podeu estar segur?
+            </li>
+            <li>Heu descobert realment un valor at&iacute;pic estad&iacute;sticament significatiu (de despesa, mortalitat infantil, notes d'examen sistem&agrave;ticament altes) o el mapa explicaria una hist&ograve;ria diferent si en canvi&eacute;ssiu els s&iacute;mbols?
+            </li>
+        </ul>
+        L'eina Cerca valors at&iacute;pics us ajudar&agrave; a respondre aquestes preguntes amb confian&ccedil;a.
+    </p>
+    <p>Cada vegada que mirem un mapa, la nostra vista i el nostre cervell intenten, de forma natural, trobar patrons fins i tot quan no n'hi ha.  Per tant, pot ser dif&iacute;cil saber si els patrons de les dades s&oacute;n el resultat de processos espacials reals en acci&oacute; o d'una simple possibilitat aleat&ograve;ria.  &Eacute;s per aix&ograve; que els investigadors i analistes utilitzen m&egrave;todes estad&iacute;stics com ara Cerca valors at&iacute;pics (I Anselin local de Moran) per quantificar els patrons espacials.  Si trobeu una clusteritzaci&oacute; o valors at&iacute;pics estad&iacute;sticament significatius a les vostres dades, teniu informaci&oacute; valuosa.  Saber on i quan apareixen valors at&iacute;pics pot proporcionar indicis importants sobre els processos que produeixen els patrons que veieu.  El pas seg&uuml;ent seria investigar per qu&egrave; la situaci&oacute; &eacute;s significativament diferent en aquestes &agrave;rees de valors at&iacute;pics.  Saber que els robatoris residencials, per exemple, s&oacute;n significativament m&eacute;s freq&uuml;ents en un barri determinat encara que estigui envoltat de barris amb menys robatoris &eacute;s una informaci&oacute; vital si s'han de dissenyar estrat&egrave;gies de prevenci&oacute; eficaces, assignar recursos policials limitats, iniciar programes de vigil&agrave;ncia ve&iuml;nal, autoritzar investigacions criminals en profunditat o identificar sospitosos potencials.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Trieu la capa de la qual es calcularan els valors atípics</h2></div>
+        <hr/>
+        <div>
+            <p>Capa de punts o d'&agrave;rees on es cercaran valors at&iacute;pics. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Cerca valors atípics de</h2></div>
+        <hr/>
+        <div>
+            <p>Aquesta an&agrave;lisi respon la pregunta: on s&oacute;n els valors at&iacute;pics espacials de les meves dades?  
+            </p>
+            <p>Si les vostres dades s&oacute;n punts i trieu  <b>Recomptes de punts</b>, aquesta eina avaluar&agrave; la distribuci&oacute; espacial de les entitats de punts per respondre la pregunta: on es clusteritzen o es dispersen inesperadament els punts?
+            </p>
+            <p>Si trieu un camp, aquesta eina avaluar&agrave; la distribuci&oacute; espacial dels valors associats amb cada entitat per respondre les preguntes: on hi ha valors baixos envoltats de valors alts?  On hi ha valors alts envoltats de valors baixos?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Compta els punts dins de</h2></div>
+        <hr/>
+        <div>
+            <p>El valor per defecte &eacute;s comptar punts dins d'una malla que ha creat l'eina en funci&oacute; de les dades de punts. Si ho preferiu, podeu comptar els punts en una quadr&iacute;cula hexagonal o proporcionar una capa d'&agrave;rees (que normalment representen els districtes d'informes administratius, com ara districtes censals, l&iacute;mits municipals o comtats) per respondre la pregunta: at&egrave;s el nombre de punts que s'han comptat dins de cada entitat d'&agrave;rees, existeixen ubicacions amb recomptes de punts alts o baixos estad&iacute;sticament significatius en comparaci&oacute; amb les ubicacions ve&iuml;nes?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Defineix la ubicació possible de punts</h2></div>
+        <hr/>
+        <div>
+            <p>Dibuixeu o proporcioneu una capa que defineixi on es poden produir els incidents a fi de respondre la pregunta: dins de les &agrave;rees, hi ha alguna ubicaci&oacute; amb concentracions de punts inesperadament altes o baixes?   
+            </p>
+            <p>Les entitats d'&agrave;rees que dibuixeu o les entitats de la capa d'&agrave;rees que especifiqueu haurien de definir on es podrien trobar els punts.  Per dibuixar aquestes &agrave;rees, feu clic al bot&oacute;  <b>Dibuixa</b> i en una ubicaci&oacute; del mapa per crear una forma d'&agrave;rea.  Per dibuixar &agrave;rees addicionals, torneu a feu clic al bot&oacute; Dibuixa i en una ubicaci&oacute; del mapa per continuar.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Divideix per</h2></div>
+        <hr/>
+        <div>
+            <p>De vegades, &eacute;s possible que vulgueu analitzar patrons que tenen en compte les distribucions subjacents. Per exemple, si els punts representen delictes, amb la divisi&oacute; per la poblaci&oacute; total s'obtindria una an&agrave;lisi dels delictes per c&agrave;pita en lloc d'un recompte de delictes sense processar.  El proc&eacute;s de selecci&oacute; d'un atribut de divisi&oacute; se sol denominar normalitzaci&oacute;.
+            </p>
+            <p> Si trieu <i>Esri Population</i>, s'enriquir&agrave; cada entitat d'&agrave;rees amb valors de poblaci&oacute;, que es faran servir posteriorment com a atribut de divisi&oacute;.  Aquesta opci&oacute; far&agrave; servir cr&egrave;dits.
+            </p>
+        </div>
+    </div>
+    <div id="permutations">
+        <div><h2>Optimitza per a</h2></div>
+        <hr/>
+        <div>
+            <p>Podeu optar per optimitzar la velocitat o la precisi&oacute;.  
+            </p>
+            <p>Aquesta eina utilitza permutacions per determinar quin grau de difer&egrave;ncia hi ha entre el patr&oacute; espacial de les vostres dades i les dades aleat&ograve;ries.  Si s'incrementa la quantitat de permutacions augmenta la precisi&oacute;, per&ograve; tamb&eacute; augmenta el temps de processament.  
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Opcions d'invalidació</h2></div>
+        <hr/>
+        <div>
+            <p>L'eina cercar&agrave; la configuraci&oacute; &ograve;ptima per a les opcions per defecte  <b>Mida de la cel&middot;la</b> i <b>Banda de dist&agrave;ncia</b> en funci&oacute; de les caracter&iacute;stiques de les dades. No obstant aix&ograve;, si hi ha uns valors determinats de <b>Mida de la cel&middot;la</b> o <b>Banda de dist&agrave;ncia</b> que s&oacute;n m&eacute;s adequats per a la vostra an&agrave;lisi, podeu utilitzar les <b>Opcions de substituci&oacute;</b> per definir-los.
+            </p>
+            <p>Les  <b>Opcions de substituci&oacute;</b> tamb&eacute; s&oacute;n &uacute;tils quan s'executen an&agrave;lisis en conjunts de dades diferents, ja que us permeten mantenir valors de <b>Banda de dist&agrave;ncia</b> i <b>Mida de la cel&middot;la</b> coherents en diversos conjunts de dades.  Despr&eacute;s podreu comparar els resultats (per exemple, els &iacute;ndexs d'obesitat i diabetis o fins i tot les taxes delictives de dos anys diferents).
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Mida de la cel·la</h2></div>
+        <hr/>
+        <div>
+            <p>Mida de les cel&middot;les de quadr&iacute;cula que s'utilitza per comptar els punts de dins.  
+            </p>
+            <p>Quan es fa servir una quadr&iacute;cula hexagonal per comptar els punts de dins, s'utilitza la dist&agrave;ncia com a altura dels hex&agrave;gons.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Banda de distància</h2></div>
+        <hr/>
+        <div>
+            <p>Cada entitat s'analitza dins del context de les entitats ve&iuml;nes ubicades dins de la dist&agrave;ncia que especifiqueu.  L'eina calcular&agrave; una dist&agrave;ncia predeterminada autom&agrave;ticament, o b&eacute; podeu utilitzar aquesta opci&oacute; per definir una dist&agrave;ncia concreta que sigui adequada per a la vostra an&agrave;lisi. 
+            </p>
+            <p>Per exemple, si esteu estudiant patrons de despla&ccedil;aments a la feina i sabeu que la dist&agrave;ncia mitjana a la feina &eacute;s de 15 milles (uns 24 quil&ograve;metres), potser voldreu utilitzar una banda de dist&agrave;ncia equivalent.
+            </p>
+        </div>
+    </div>
+    <div id="outlierResultLayer">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Proporcioneu un nom per a la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa.  Aquesta capa de resultats us mostrar&agrave; els valors at&iacute;pics estad&iacute;sticament significatius de recomptes de punts o valors alts i baixos. Si el nom de la capa de resultats ja existeix, se us demanar&agrave; que en canvieu el nom.
+            </p>
+            <p>Mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

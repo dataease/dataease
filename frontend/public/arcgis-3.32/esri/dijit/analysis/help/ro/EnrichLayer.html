@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Îmbogăţire strat tematic</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="&Icirc;mbogăţire strat tematic"></h2>
+        <hr/>
+    <p>Acest instrument vă &icirc;mbogăţeşte datele introduc&acirc;nd informaţii despre persoane, locuri şi afaceri din &icirc;mprejurimile locaţiilor datelor dvs. şi vă permite să răspundeţi la &icirc;ntrebări noi despre locaţii, la care nu puteaţi răspunde numai privind hărţile. De exemplu: ce fel de oameni trăiesc aici? Ce activităţi le plac locuitorilor din această zonă? Care sunt obiceiurile şi stilul lor de viaţă? Ce tip de afaceri există &icirc;n această zonă?
+    </p>
+    <p>Rezultatul va fi un nou strat tematic, conţin&acirc;nd toate informaţiile demografice şi geografice din colecţiile de informaţii date. Aceste informaţii noi sunt adăugate drept c&acirc;mpuri &icirc;n tabel.
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă hartă</b>, vor fi &icirc;mbogăţite numai obiectele spaţiale din stratul tematic de intrare care sunt vizibile din extinderea curentă a hărţii.  Dacă nu se bifează, toate obiectele spaţiale din stratul tematic introdus vor fi &icirc;mbogăţite, chiar dacă se află &icirc;n afara extinderii curente a hărţii.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Alegeţi stratul tematic care va fi îmbogăţit cu date noi</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic punctual, liniar sau de suprafeţe care va fi &icirc;mbogăţit cu date noi de atribute. 
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Variabile de îmbogăţire</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Faceţi clic pe  <b>Selectare variabile</b> pentru a deschide <b>Browserul de date</b>. <b>Browserul de date</b> vă ajută să găsiţi şi să selectaţi variabile de &icirc;mbogăţire individuale sau &icirc;n colecţii.
+            </p>
+            <p>O regiune este selectată automat pe baza datelor dvs. Puteţi alege o altă regiune dacă datele dvs. acoperă mai multe ţări. 
+            </p>
+            <p>Variabilele de &icirc;mbogăţire sunt organizate &icirc;n colecţii de date pentru fi uşor de accesat. La selectarea unei colecţii de date, browserul afişează c&acirc;teva din cele mai populare variabile de &icirc;mbogăţire din colecţia respectivă. &Icirc;n  <b>Continuare navigare</b>, acesta afişează şi categoriile din colecţie. &Icirc;n cadrul fiecărei categorii, puteţi selecta subcategorii &icirc;ntregi sau puteţi pătrunde &icirc;ntr-o subcategorie şi selecta variabile de &icirc;mbogăţire individuale. De asemenea, puteţi utiliza caseta de căutare pentru a găsi o anumită variabilă &icirc;ntr-o categorie.
+            </p>
+            <p>Pe măsură ce selectaţi variabile pentru a le include pentru &icirc;mbogăţire, acestea sunt adăugate &icirc;n coşul de cumpărături aflat &icirc;n colţul  <b>Browserului de date</b>. Utilizaţi acest coş de cumpărături pentru a urmări numărul de variabile pe care le-aţi selectat.
+            </p>
+            <p>Fiecare variabilă selectată va fi adăugată drept c&acirc;mp &icirc;n stratul tematic rezultat.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Definire suprafeţe de îmbogăţit</h2></div>
+        <hr/>
+        <div>
+            <p>Definiţi zona din jurul punctelor sau liniilor dvs. de intrare care va fi &icirc;mbogăţită folosind o distanţă &icirc;n linie dreaptă sau un mod de deplasare selectat. Pentru o distanţă &icirc;n linie dreaptă, introduceţi o valoare de 1.000 mile (1.609 kilometri). Modurile de deplasare pot fi utilizate doar atunci c&acirc;nd stratul dvs. tematic de intrare conţine puncte. Modurile de deplasare disponibile sunt determinate de administratorul organizaţiei dvs. C&acirc;nd utilizaţi unul dintre modurile de deplasare, măsurătorile se fac de-a lungul drumurilor sau traseelor pietonale şi respectă regulile &icirc;n vigoare, cum ar fi sensurile unice, interdicţiile de schimbare a direcţiei şi aşa mai departe. După alegerea modului şi a măsurării, introduceţi o durată sau o distanţă de p&acirc;nă la 5 ore (300 minute) sau 300 de mile (482,8 kilometri).
+            </p>
+            <p>Dacă este selectată opţiunea  <b>Returnare rezultat ca zone limită</b>, rezultatul returnat va fi format din obiecte spaţiale de tip zonă definite de valorile de timp sau distanţă de mai sus.  Dacă opţiunea nu este selectată, rezultatul returnat va fi format din obiecte spaţiale de tip punct.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic care va fi creat &icirc;n  <b>Resursele mele</b> și adăugat &icirc;n hartă.  Numele implicit se bazează pe numele instrumentului și numele stratului tematic de intrare. Dacă numele stratului tematic rezultat există deja, vi se va solicita să furnizați un alt nume.
+            </p>
+            <p>Utiliz&acirc;nd meniul derul&acirc;nd  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

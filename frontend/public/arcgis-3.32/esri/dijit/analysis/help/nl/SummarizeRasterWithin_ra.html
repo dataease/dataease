@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Raster binnenin samenvatten</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Raster binnenin tool samenvatten"></h2>
+        <hr/>
+    <p>Deze tool vat een raster samen gebaseerd op gebieden (zones) bepaald door de eerste invoerlaag.
+    </p>
+    <p>Enkele voorbeelden van de toepassingen zijn onder meer het volgende:
+    </p>
+    <p>
+        <ul>
+            <li>Er is een kaartlaag met stroomgebiedgrenzen en een laag met landgebruikgrenzen per type landgebruik; bereken het totale oppervlak aan landgebruik voor elk stroomgebied.
+                
+
+            </li>
+            <li>Er is een kaartlaag met percelen in een provincie en een kaartlaag met stadsgrenzen; maak een samenvatting van de gemiddelde waarde van lege percelen binnen elke stadsgrens.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Als  <b>Huidige kaartextent gebruiken</b> is aangevinkt, worden alleen de objecten in de invoerlaag en de samen te vatten kaartlaag geanalyseerd die zichtbaar zijn binnen het huidige kaartextent. Als deze optie niet is aangevinkt, worden alle objecten in de invoerlaag en de samen te vatten kaartlaag geanalyseerd, ook als ze zich buiten het huidige kaartextent bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Kies oppervlaktelaag om een rasterlaag samen te vatten binnen bepaalde grenzen</h2></div>
+        <hr/>
+        <div>
+            <p>De laag die de grenzen van de gebieden of zones definieert, die worden samengevat.
+            </p>
+            <p>De laag kan een raster- of objectdata zijn. Voor rasters worden de zones gedefinieerd door alle locaties in de invoer die dezelfde celwaarde hebben. De gebieden hoeven niet aaneengesloten te zijn.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Kies een veld om de grenzen te bepalen</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is het attribuut van de laag dat wordt gebruikt om de grenzen van de gebieden vast te leggen.
+            </p>
+            <p>Stel bijvoorbeeld dat de eerste invoerlaag de grenzen van de managementunit definieert, met attributen die de regio, het district en het perceel-ID van elke eenheid defini&euml;ren. U hebt ook een rasterlaag die de biodiversiteitsindex voor elke locatie definieert. Met het veld dat u selecteert, kunt u besluiten om de gemiddelde biodiversiteit te berekenen op lokaal, districts- of regionaal niveau.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Rasterlaag kiezen voor samenvatten</h2></div>
+        <hr/>
+        <div>
+            <p>De rastercellen in deze laag worden samengevat door de gebieden (zones) waar ze in vallen.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Kies een statistiek om te berekenen</h2></div>
+        <hr/>
+        <div>
+            <p>Zodra u een samen te vatten laag kiest, kunt u optioneel statistieken berekenen van alle numerieke attributen van de punten, lijnen of oppervlakten in de invoerlaag.
+            </p>
+            <p>De beschikbare statistiektypes wanneer het geselecteerde veld integer is, zijn Gemiddeld, Meerderheid, Maximum, Mediaan, Minimum, Minderheid, Reeks, Standaardafwijking, Som en Vari&euml;teit.
+            </p>
+            <p>Als het veld floating-point is, zijn de opties Gemiddeld, Maximum, Minimum, Reeks, Standaardafwijking en Som.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Ontbrekende waarden in berekening negeren</h2></div>
+        <hr/>
+        <div>
+            <p>Als u ervoor kiest om ontbrekende waarden te negeren, worden alleen de cellen die een waarde hebben in de laag om samen te vatten gebruikt om de uitgangswaarde voor dat gebied te bepalen. Als er ontbrekende waarden zijn overal in een gebied, moet er onvoldoende informatie zijn om statistische berekeningen uit te voeren voor alle cellen in die zone en dat gebied ontvangt een nulwaarde (NoData) in de output.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>U kunt de naam van een map opgeven in  <b>Mijn Content</b>, waar het resultaat wordt opgeslagen met het vervolgkeuzemenu <b>Resultaat opslaan in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

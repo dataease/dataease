@@ -1,0 +1,86 @@
+<div class="${options.theme}" role="presentation">
+    <div data-dojo-attach-point="_widgetContainer" class="${_css.widgetContainerClass}" role="presentation">
+        <div class="${_css.stopsContainerClass}" role="presentation">
+            <div id="search-source-container" class="${_css.searchSourceContainerClass}" data-dojo-attach-point="_searchSourceContainerNode">
+                <div data-dojo-attach-point="_searchSourceSelectorContainer"></div>
+            </div>
+            <div class="${_css.stopsTableContainerClass}">
+                <table class="${_css.stopsClass}" data-dojo-attach-point="_dndNode"></table>
+                <div class="${_css.stopsTableCoverClass}" data-dojo-attach-point="_stopsTableCover"></div>
+            </div>
+            <div class="${_css.clearClass}"></div>
+            <div class="${_css.stopsButtonContainerClass}">
+                <div class="${_css.stopsAddDestinationClass}">
+                    <div tabindex="0" role="button" data-dojo-attach-point="_activateButtonNode" title="${_i18n.widgets.directions.activate}" class="${_css.activateButtonClass} ${_css.stopsButtonClass} ${_css.stopsButtonTabClass} ${_css.stopsPressedButtonClass}" data-blur-on-click="true"></div>
+                    <div tabindex="0" role="button" data-dojo-attach-point="_lineBarrierButtonNode" title="${_i18n.widgets.directions.lineBarrier}" class="${_css.lineBarrierButtonClass} ${_css.stopsButtonClass} ${_css.stopsButtonTabClass}" data-blur-on-click="true"></div>
+                    <div role="button" tabindex="0" class="${_css.linkButtonClass} ${_css.stopsAddDestinationBtnClass}" data-dojo-attach-point="_addDestinationNode" data-blur-on-click="true">${_i18n.widgets.directions.addDestination}</div>
+                </div>
+                <div class="${_css.travelModesContainerClass}" data-dojo-attach-point="_travelModeContainerNode">
+                    <div data-dojo-attach-point="_travelModeSelectorContainer"></div>
+                </div>
+                <div tabindex="0" role="button" class="${_css.linkButtonClass} startTimeMenuButton" data-blur-on-click="true" data-dojo-attach-point="_startTimeButtonNodeContainer">
+                    <div data-dojo-attach-point="_startTimeButtonNode">
+                        <span data-dojo-attach-point="_startTimeButtonLabel">${_i18n.widgets.directions.leaveNow}</span>
+                        <div data-dojo-attach-point="_startTimeDDLArrow" class="esriDirectionsDDLArrow"></div>
+                    </div>
+                    <div class="startTimeMenu" data-dojo-attach-point="_startTimeMenu">
+                        <ul role="menu">
+                            <li data-dojo-attach-point="_startTimeMenuLeaveNow" tabindex="0" class="esriRouteZoom startTimeMenuItem" role="menuitemradio" aria-checked="true">${_i18n.widgets.directions.leaveNow}</li>
+                            <li data-dojo-attach-point="_startTimeMenuDepartAt" tabindex="0" class="esriRouteZoom startTimeMenuItem" role="menuitemradio">${_i18n.widgets.directions.departAt}</li>
+                            <li data-dojo-attach-point="_startTimeMenuNone" tabindex="0" class="esriRouteZoom startTimeMenuItem" role="menuitemradio">${_i18n.widgets.directions.noStartTime}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div tabindex="0" role="button" class="${_css.linkButtonClass} ${_css.stopsOptionsButtonClass}" data-dojo-attach-point="_optionsButtonNode" data-blur-on-click="true">${_i18n.widgets.directions.showOptions}</div>
+            	<div class="${_css.clearClass}"></div>
+                <div class="departAtContainer" data-dojo-attach-point="_departAtContainer">
+                    <div id="${id}_directionsDepartAtTime" data-dojo-attach-point="_departAtTimeContainer"></div>
+                    <div id="${id}_directionsDepartAtDate" data-dojo-attach-point="_departAtDateContainer"></div>
+                </div>
+            </div>
+            <div role="presentation" class="${_css.stopsOptionsMenuClass}" data-dojo-attach-point="_optionsMenuNode">
+                <div class="${_css.stopsOptionsCheckboxesClass}">
+                    <ul>
+                        <li class="${_css.stopsFindOptimalOrderClass}" data-dojo-attach-point="_findOptimalOrderItemNode"><input tabindex="0" data-dojo-attach-point="_findOptimalOrderNode" type="checkbox" id="${id}_find_optimal_order" /><label for="${id}_find_optimal_order">${_i18n.widgets.directions.findOptimalOrder}</label></li>
+                        <li class="${_css.stopsReturnToStartClass}" data-dojo-attach-point="_returnToStartItemNode"><input tabindex="0" data-dojo-attach-point="_returnToStartNode" type="checkbox" id="${id}_stopsReturnToStart" /><label for="${id}_stopsReturnToStart">${_i18n.widgets.directions.returnToStart}</label></li>
+                        <li class="${_css.stopsUseTrafficClass}" data-dojo-attach-point="_useTrafficItemNode" title="${_i18n.widgets.directions.trafficLabelLive}">
+                            <input tabindex="0" data-dojo-attach-point="_useTrafficNode" type="checkbox" id="${id}_stopsUseTraffic" /><label for="${id}_stopsUseTraffic">${_i18n.widgets.directions.useTraffic}</label>
+                            <a data-dojo-attach-point="_trafficAvailabilityButton" style="display: none;" href="http://www.arcgis.com/home/item.html?id=b7a893e8e1e04311bd925ea25cb8d7c7" target="_blank"><div class="esriTrafficAvailabilityButton" title="${_i18n.widgets.directions.seeTrafficAvailability}"></div></a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="${_css.stopsOptionsToggleContainerClass}">
+                    <div class="${_css.stopsOptionsUnitsContainerClass}"  data-dojo-attach-point="_agolDistanceUnitsNode">
+                        <div tabindex="0" role="button" class="${_css.stopsOptionsUnitsMiClass} ${_css.stopsButtonClass}" data-dojo-attach-point="_useMilesNode" data-blur-on-click="true">${_i18n.widgets.directions.units.esriMiles.abbr}</div>
+                        <div tabindex="0" role="button" class="${_css.stopsOptionsUnitsKmClass} ${_css.stopsButtonClass} ${_css.stopsButtonTabLastClass} ${_css.stopsPressedButtonClass}" data-dojo-attach-point="_useKilometersNode" data-blur-on-click="true">${_i18n.widgets.directions.units.esriKilometers.abbr}</div>
+                        <div class="${_css.clearClass}"></div>
+                    </div>
+                    <div class="${_css.clearClass}"></div>
+                </div>
+                <div class="${_css.clearClass}"></div>
+            </div>
+            <div class="${_css.stopsGetDirectionsContainerClass}">
+                <div class="getDirectionsBtnContainer">
+                    <div tabindex="0" role="button" class="${_css.stopsButtonClass} ${_css.stopsGetDirectionsClass} esriDisabledDirectionsButton" data-dojo-attach-point="_getDirectionsButtonNode" data-blur-on-click="true">${_i18n.widgets.directions.getDirections}</div>
+                    <div tabindex="0" role="button" class="${_css.linkButtonClass} ${_css.stopsClearDirectionsClass}" data-dojo-attach-point="_clearDirectionsButtonNode" data-blur-on-click="true">${_i18n.widgets.directions.clearDirections}</div>
+                </div>
+                <div class="savePrintBtnContainer" data-dojo-attach-point="_savePrintBtnContainer">
+                    <div tabindex="0" role="button" class="${_css.resultsSaveClass} ${_css.stopsButtonClass} ${_css.stopsButtonTabClass}" data-blur-on-click="true" data-dojo-attach-point="_saveMenuButton" title="${_i18n.widgets.directions.saveTitle}" ></div>
+                    <div tabindex="0" role="button" class="${_css.resultsPrintClass} ${_css.stopsButtonClass} ${_css.stopsButtonTabClass}" data-blur-on-click="true" data-dojo-attach-point="_printButton" title="${_i18n.widgets.directions.print}" ></div>
+                </div>
+            </div>
+            <div role="presentation" class="${_css.stopsOptionsMenuClass} esriSaveContainer" data-dojo-attach-point="_saveMenuNode">
+                <div class="esriLayerNameLabel">${_i18n.widgets.directions.layerName}</div>
+                <input type="text" data-dojo-attach-point="_outputLayerContainer">
+                <div data-dojo-attach-point="_folderSelectorContainer"></div>
+                <div tabindex="0" role="button" class="${_css.stopsButtonClass} esriSaveButton esriDisabledDirectionsButton" data-dojo-attach-point="_saveButton" data-blur-on-click="true">${_i18n.widgets.directions.save}</div>
+                <div tabindex="0" role="button" class="esriLinkButton esriSaveAsButton" data-dojo-attach-point="_saveAsButton" data-blur-on-click="true">${_i18n.widgets.directions.saveAs}</div>
+            </div>
+    	</div>
+    	<div class="${_css.clearClass}"></div>
+    	<div data-dojo-attach-point="_msgNode" role="presentation"></div>
+    	<div class="${_css.resultsContainerClass}" role="presentation">
+        	<div class="${_css.routesContainerClass}" data-dojo-attach-point="_resultsNode" role="presentation"></div>
+    	</div>
+    </div>
+</div>

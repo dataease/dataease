@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Stabilirea rețelei cu costuri optime de deplasare</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="Ilustrarea instrumentului Stabilirea rețelei cu costuri optime de deplasare"></h2>
+        <hr/>
+    <p>Acest instrument calculează rețeaua cu costuri optime dintr-un set de regiuni de introducere.
+    </p>
+    <p>Un exemplu de utilizare a acestui instrument este găsirea celei mai bune rețele pentru vehiculele de urgență.
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă hartă</b>, vor fi analizate numai acele locaţii din stratul tematic de intrare care sunt vizibile &icirc;n extinderea curentă a hărţii. Dacă nu se bifează, toate locaţiile din stratul tematic de intrare vor fi analizate, chiar dacă se află &icirc;n afara extinderii curente a hărţii.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Alegeți rasterul sau stratul tematic al locației pentru a stabili traseele de deplasare dintre</h2></div>
+        <hr/>
+        <div>
+            <p>Regiunile de intrare care vor fi conectate de rețea cu cele mai mici costuri.
+            </p>
+            <p>Regiunile pot fi definite fie de către un serviciu de imagini sau un serviciu de obiecte spaţiale.
+            </p>
+            <p>Pentru serviciul de imagini, regiunile sunt definite de grupuri de celule apropiate (adiacente) de aceeași valoare. Fiecare regiune trebuie să primească un număr unic. Celulele care nu fac parte din nicio regiune trebuie să fie NoData. Tipul rasterului trebuie să fie un număr &icirc;ntreg, iar valorile pot fi pozitive sau negative.
+            </p>
+            <p>Pentru serviciul de obiecte spaţiale, intrarea poate fi un punct, o linie sau un poligon.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Alegeţi stratul tematic raster cu costuri de deplasare</h2></div>
+        <hr/>
+        <div>
+            <p>Un raster care definește impedanța sau costul deplasării planimetrice prin fiecare celulă.
+            </p>
+            <p>Valoarea din fiecare amplasare a celulei reprezintă distanța cost-pe-unitate pentru deplasarea prin celulă. Fiecare valoare de localizare a celulei este &icirc;nmulțită cu rezoluției celulei &icirc;n timp ce se compensează deplasarea pe diagonală pentru a obține costul total al deplasării prin celulă.
+            </p>
+            <p>Valorile rasterului de cost poate fi un număr &icirc;ntreg sau o virgulă mobilă, dar nu pot fi negative sau zero (nu puteți avea un cost negativ sau zero).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Numele stratului tematic poliliniar al traseelor optime rezultante</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic ce va fi creat &icirc;n  <b>Resursele mele</b> şi va fi adăugat pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic rezultat există deja, vi se va solicita să furnizaţi un alt nume.
+            </p>
+            <p>Puteți specifica numele folderului &icirc;n  <b>Resursele mele</b> unde se va salva rezultatul folosind caseta drop-down <b>Salvați rezultatele &icirc;n</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Numele stratului tematic poliliniar al traseelor apropiate rezultante</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic ce va fi creat &icirc;n  <b>Resursele mele</b> şi va fi adăugat pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic rezultat există deja, vi se va solicita să furnizaţi un alt nume.
+            </p>
+            <p>Puteți specifica numele folderului &icirc;n  <b>Resursele mele</b> unde se va salva rezultatul folosind caseta drop-down <b>Salvați rezultatele &icirc;n</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

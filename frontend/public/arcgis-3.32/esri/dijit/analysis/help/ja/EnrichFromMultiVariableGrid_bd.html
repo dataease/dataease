@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>多変数グリッドから情報付加 (Enrich From Multi-Variable Grid)</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="多変数グリッドから情報付加"></h2>
+        <hr/>
+    <p> [多変数グリッドから情報付加 (Enrich From Multi-Variable Grid)] ツールは、多変数グリッドから取得した属性を 1 つのポイント レイヤーに効率的に結合します。
+    </p>
+    <p>多変数グリッドとは、[多変数グリッドの構築 (Build Multi-Variable Grid)] ツールを使用し、複数のレイヤーの属性をポリゴンの 1 つのグリッドに集約して作成されたレイヤーのことです。情報を付加するために多変数グリッドを使用すると、多様で大規模の情報のコレクションをポイント データに簡単に追加して、以降の空間解析で使用することができます。
+    </p>
+    <p>たとえば、ある都市全域で過去 1 年間に発生した新たな犯罪事件のレイヤーを取得したので、 犯罪発生頻度とさまざまな人口学的要因、経済的要因、地理的要因との間のリレーションシップをモデル化するとします。これらの要因について記述したデータにアクセスすることはできますが、このデータはジオメトリ タイプが異なる 5 つの別々のレイヤーに保存されています。さらに、レイヤーの中には、ビッグ データ ファイル共有に格納されているものもあれば、フィーチャ サービスとして格納されているものもあります。この場合、情報を格納するために多変数グリッドを作成し、 [多変数グリッドから情報付加 (Enrich From Multi-Variable Grid)] ツールを使用してグリッドを犯罪事件に結合すれば、ツールを 2 回実行するだけでさまざまな種類の属性をポイント レイヤーに効率的に結合することができます。次に、結合された属性を説明変数として使用し、結果レイヤーを使用した犯罪発生頻度のモデルの構築を開始します。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>情報を付加するポイント フィーチャの選択</h2></div>
+        <hr/>
+        <div>
+            <p>多変数グリッドによって情報を付加するポイント フィーチャ。
+            </p>
+            <p>マップからレイヤーを選択できるだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択し、ビッグ データ ファイル共有データセットまたはフィーチャ レイヤーのコンテンツを参照して選択することもできます。
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>情報付加に使用する多変数グリッドの選択</h2></div>
+        <hr/>
+        <div>
+            <p>入力ポイント フィーチャに結合される属性を含む多変数グリッド レイヤー。このレイヤーは、[多変数グリッドの構築 (Build Multi-Variable Grid)] ツールによって作成されている必要があり、ホスト フィーチャ レイヤーでなければなりません。ビッグ データ ファイル共有に格納されている多変数グリッド レイヤーはこのツールの入力としてサポートされていません。
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>追加する変数の選択</h2></div>
+        <hr/>
+        <div>
+            <p>入力ポイント フィーチャが多変数グリッド レイヤーと交差するたびにポイント フィーチャに結合されるこのグリッド内の属性。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p> 作成されるレイヤーの名前。 ArcGIS Data Store に書き込んでいる場合、結果は  <b>[マイ コンテンツ]</b> に保存され、マップに追加されます。ビッグ データ ファイル共有に書き込んでいる場合、結果はビッグ データ ファイル共有に格納され、そのマニフェストに追加されます。この場合、結果はマップに追加されません。 デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合、このツールは正常に実行されません。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

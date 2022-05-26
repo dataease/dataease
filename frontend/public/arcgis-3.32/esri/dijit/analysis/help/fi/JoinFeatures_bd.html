@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Liitä kohteet</h2><p/>
+        <h2><img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" alt="Liit&auml; kohteet"></h2>
+        <hr/>
+    <p>Liit&auml; kohteet -ty&ouml;kalu toimii kahdella karttatasolla. Liit&auml; kohteet -toiminto liitt&auml;&auml; ominaisuustiedot toisesta kohteesta toiseen kohteeseen sijainti-, aika- ja ominaisuustietosuhteiden tai n&auml;iden yhdistelmien mukaan. Ty&ouml;kalu m&auml;&auml;ritt&auml;&auml; kaikki l&auml;ht&ouml;aineiston kohteet, jotka vastaavat m&auml;&auml;ritettyj&auml; liitt&auml;misen ehtoja ja liitt&auml;&auml; toisen l&auml;ht&ouml;aineiston karttatason ensimm&auml;iseen. Voit vaihtoehtoisesti liitt&auml;&auml; kaikki kohteet vastaaviin kohteisiin tai koostaa vastaavat kohteet.
+    </p>
+    <p>Liit&auml; kohteet -toimintoa voi k&auml;ytt&auml;&auml; pisteisiin, viivoihin, alueisiin ja taulukoihin. Aikaliitos edellytt&auml;&auml;, ett&auml; l&auml;ht&ouml;aineistossa on otettu aika huomioon. Sijaintiliitos edellytt&auml;&auml;, ett&auml; aineistolla on geometria. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Valitse kohdekarttataso</h2></div>
+        <hr/>
+        <div>
+            <p>Kohdekarttataso, jonka taulukkoon liitoskarttatason ominaisuustiedot on lis&auml;tty.
+            </p>
+            <p>Analysointi  <b>L&auml;hell&auml;</b>-sijaintisuhteen avulla edellytt&auml;&auml; projisoitua koordinaattij&auml;rjestelm&auml;&auml;. Voit m&auml;&auml;ritt&auml;&auml; <b>k&auml;sittelev&auml;n koordinaattij&auml;rjestelm&auml;n</b> <b>Analyysiymp&auml;rist&ouml;t</b>-kohdassa. Jos k&auml;sittelev&auml;&auml; koordinaattij&auml;rjestelm&auml;&auml; ei ole m&auml;&auml;ritetty projisoiduksi koordinaattij&auml;rjestelm&auml;ksi, sinua pyydet&auml;&auml;n m&auml;&auml;ritt&auml;m&auml;&auml;n se sellaiseksi, kun valitset <b>Suorita Analyysi</b> .
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Valitse karttataso, joka liitetään kohdekarttatasoon</h2></div>
+        <hr/>
+        <div>
+            <p>Liitoskarttataso, jonka ominaisuustiedot lis&auml;t&auml;&auml;n kohdekarttatasoon.
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Valitse liitostoiminto</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml; m&auml;&auml;ritt&auml;&auml;, miten l&auml;ht&ouml;aineiston karttatasojen v&auml;lisi&auml; liitoksia k&auml;sitell&auml;&auml;n tulosaineistossa, jos useilla liitett&auml;vill&auml; kohteilla on sama suhde liitett&auml;v&auml;&auml;n karttatasoon. Valittavana on kaksi liitostoimintoa:
+                <ul>
+                    <li> <b>Liit&auml; yksi yhteen</b>: T&auml;m&auml; toiminto koostaa kaikki vastaavat kohteet kuhunkin liitett&auml;v&auml;&auml;n kohteeseen.
+                    </li>
+                    <li> <b>Liit&auml; yksi moneen</b>: T&auml;m&auml; toiminto liitt&auml;&auml; kaikki vastaavat kohteet liitoskarttatasoon.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Oletetaan esimerkiksi, ett&auml; haluat l&ouml;yt&auml;&auml; automarketit kahden kilometrin et&auml;isyydell&auml; torista. T&auml;ss&auml; tapauksessa kohdekarttatasolla on yksi toria edustava kohde, ja liitoskarttataso edustaa paikallisia ruokakauppoja. Siihen liittyy ominaisuustietoja, kuten kokonaisvuosimyynti. Liit&auml; kohteet -ty&ouml;kalun avulla saat selville, ett&auml; viisi ruokakauppaa t&auml;ytt&auml;v&auml;t kyseiset ehdot. Jos m&auml;&auml;rit&auml;t  <b>Liit&auml; yksi useaan</b>, -liitostoiminnon, saat tulokseksi viisi kohdetta, ja jokainen rivi edustaa toria ja automarkettia. Jos m&auml;&auml;rit&auml;t <b>Liit&auml; yksi yhteen</b> -suhteen, saat tulokseksi yhden toria edustavan kohteen ja koostetut tiedot automarketeista, kuten m&auml;&auml;r&auml;n (2), ja muita tilastotietoja, kuten vuosimyynnin.
+            </p>
+        </div>
+    </div>
+    <div id="joinOptions">
+        <div><h2>Valitse vähintään yksi liitos</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml; k&auml;ytett&auml;v&auml;n liitt&auml;misvalinnan. Voit k&auml;ytt&auml;&auml; yht&auml;, kahta tai kolmea seuraavista liitostyypeist&auml;: 
+                <ul>
+                    <li> <b>Sijainti</b>: Kohteet liitet&auml;&auml;n k&auml;ytt&auml;m&auml;ll&auml; m&auml;&auml;ritetty&auml; sijaintisuhdetta. T&auml;m&auml; edellytt&auml;&auml;, ett&auml; molemmilla karttatasoilla on geometria.
+                    </li>
+                    <li> <b>Aika</b>: Kohteet liitet&auml;&auml;n k&auml;ytt&auml;m&auml;ll&auml; aikasuhdetta. T&auml;m&auml; edellytt&auml;&auml;, ett&auml; molemmissa karttatasoissa on otettu aika k&auml;ytt&ouml;&ouml;n.
+                    </li>
+                    <li> <b>Ominaisuustieto</b>: Kohteet liitet&auml;&auml;n samanlaisten kenttien perusteella.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Valitse sijaintisuhde</h2></div>
+        <hr/>
+        <div>
+            <p>Sijaintisuhde, joka m&auml;&auml;ritt&auml;&auml;, liitet&auml;&auml;nk&ouml; kohteet toisiinsa. Seuraavat k&auml;ytett&auml;viss&auml; olevat suhteet m&auml;&auml;r&auml;ytyv&auml;t l&auml;ht&ouml;aineiston kohteena k&auml;ytett&auml;v&auml;n geometriatyypin mukaan (piste, moniviiva tai aluekohteet).
+                <ul>
+                    <li> <b>Leikkaukset</b>&mdash;Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos ne leikkaavat toisensa.
+                    </li>
+                    <li> <b>Samanlainen</b>: Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos niill&auml; on samanlainen geometria.
+                    </li>
+                    <li> <b>L&auml;hell&auml;</b>: Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos ne ovat m&auml;&auml;ritetyn et&auml;isyyden p&auml;&auml;ss&auml; toisistaan. Kohdekarttatason on oltava projisoidussa koordinaattij&auml;rjestelm&auml;ss&auml;, tai k&auml;sittelev&auml; koordinaatisto on m&auml;&auml;ritett&auml;v&auml; projisoituun koordinaattij&auml;rjestelm&auml;&auml;n k&auml;ytt&auml;m&auml;ll&auml; <b>analyysiymp&auml;rist&ouml;j&auml;</b>, jos k&auml;ytet&auml;&auml;n spatiaalista <b>L&auml;hell&auml;</b>-suhdetta.
+                    </li>
+                    <li> <b>Sis&auml;lt&auml;&auml;</b>&mdash;Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos kohdekarttataso sis&auml;ltyy liitett&auml;viin kohteisiin.
+                    </li>
+                    <li> <b>Sis&auml;ll&auml;</b>&mdash;Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos kohdekarttataso on liitett&auml;vien kohteiden sis&auml;ll&auml;.
+                    </li>
+                    <li> <b>Kosketukset</b>&mdash;Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos niiden raja koskettaa tavoitekohdetta.
+                    </li>
+                    <li> <b>Risteykset</b>: Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos niill&auml; on riste&auml;v&auml; &auml;&auml;riviiva.
+                    </li>
+                    <li> <b>P&auml;&auml;llekk&auml;inen</b>: Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos ne ovat p&auml;&auml;llekk&auml;in.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearSpatial">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            <p> T&auml;m&auml; et&auml;isyys m&auml;&auml;ritt&auml;&auml; s&auml;teen, jota k&auml;ytet&auml;&auml;n L&auml;hell&auml;-sijaintisuhteessa.
+            </p>
+            <p>Jos esimerkiksi aineistoryhm&auml; edustaa ydinvoimalaa, ja toinen aineistoryhm&auml; edustaa asuinpaikkoja, voit m&auml;&auml;ritt&auml;&auml; 1 kilometrin L&auml;hell&auml;-et&auml;isyyden, jotta l&ouml;yd&auml;t kilometrin et&auml;isyydell&auml; ydinvoimalasta sijaitsevat talot.
+            </p> 
+        </div>
+    </div>
+    <div id="temporalRelationship">
+        <div><h2>Valitse aikasuhde</h2></div>
+        <hr/>
+        <div>
+            <p>Aikasuhde, joka m&auml;&auml;ritt&auml;&auml;, liitet&auml;&auml;nk&ouml; kohteet toisiinsa. T&auml;m&auml; asetus on k&auml;ytett&auml;viss&auml; vain, jos aika on otettu k&auml;ytt&ouml;&ouml;n molemmissa karttatasoissa ja k&auml;ytett&auml;viss&auml; olevat suhteet m&auml;&auml;r&auml;ytyv&auml;t l&auml;ht&ouml;aineiston kohteena k&auml;ytett&auml;v&auml;n aikatyypin (hetken tai aikav&auml;li) mukaan. K&auml;ytett&auml;viss&auml; olevat aikasuhteet:
+                <ul>
+                    <li> <b>Koskettaa</b>&mdash;Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos ensimm&auml;inen kohde koskettaa toista.
+                    </li>
+                    <li> <b>Kosketti kohdetta</b>&mdash;Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos toinen kohde kosketti ensimm&auml;ist&auml;.
+                    </li>
+                    <li> <b>P&auml;&auml;llekk&auml;inen</b>&mdash;Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos ensimm&auml;inen kohde on p&auml;&auml;llekk&auml;in toisen kanssa.
+                    </li>
+                    <li> <b>Toinen p&auml;&auml;llekk&auml;inen</b>&mdash;Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos toinen on p&auml;&auml;llekk&auml;inen ensimm&auml;isen kanssa.
+                    </li>
+                    <li> <b>Aikana</b>&mdash;Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos ensimm&auml;inen kohde on toisen aikana.
+                    </li>
+                    <li> <b>Sis&auml;lt&auml;&auml;</b>&mdash;Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos ensimm&auml;inen kohde sis&auml;lt&auml;&auml; toisen.
+                    </li>
+                    <li> <b>Samanlainen</b>&mdash;Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos ensimm&auml;inen kohde on samanlainen kuin toinen.
+                    </li>
+                    <li> <b>Lopettaa</b>&mdash;Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos ensimm&auml;inen kohde lopettaa toisen.
+                    </li>
+                    <li> <b>Toinen lopettaa</b>&mdash;Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos toinen lopettaa ensimm&auml;isen kohteen.
+                    </li>
+                    <li> <b>Aloittaa</b>&mdash;Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos ensimm&auml;inen kohde aloittaa toisen.
+                    </li>
+                    <li> <b>Toinen aloittaa</b>&mdash;Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos toinen aloittaa ensimm&auml;isen kohteen.
+                    </li>
+                    <li> <b>Leikkaa</b>&mdash;Kohteet t&auml;sm&auml;ytet&auml;&auml;n, jos ajat leikkaavat.
+                    </li>
+                    <li> <b>L&auml;hell&auml;</b>: Kohteet liitet&auml;&auml;n, jos ne ovat l&auml;hell&auml; toisiaan m&auml;&auml;ritettyn&auml; aikana.
+                    </li>
+                    <li> <b>L&auml;hell&auml; ennen</b>&mdash;Kohteet liitet&auml;&auml;n, jos ensimm&auml;inen kohde tulee ennen toista kohdetta m&auml;&auml;ritetyss&auml; ajassa.
+                    </li>
+                    <li> <b>L&auml;hell&auml; j&auml;lkeen</b>&mdash;Kohteet liitet&auml;&auml;n, jos ensimm&auml;inen kohde tulee toisen kohteen j&auml;lkeen m&auml;&auml;ritetyss&auml; ajassa.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearTemporal">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            
+            <p>T&auml;m&auml; m&auml;&auml;ritt&auml;&auml; aikas&auml;teen, jota k&auml;ytet&auml;&auml;n L&auml;hell&auml;-aikasuhteessa. L&auml;hell&auml;-aikasuhde sis&auml;lt&auml;&auml; seuraavat:  <b>L&auml;hell&auml;</b>, <b>L&auml;hell&auml; ennen</b>, ja <b>L&auml;hell&auml; j&auml;lkeen</b>.
+            </p>
+            <p>Jos sinulla on esimerkiksi veneonnettomuuksien karttataso ja hurrikaanin GPS-reittien karttataso, Vvit selvitt&auml;&auml; hurrikaanin reitill&auml; tietyll&auml; et&auml;isyydell&auml; tapahtuneet veneonnettomuudet alueellisesti (yksi kilometri) ja ajallisesti (viisi tuntia). Tuloksena on hurrikaaneihin liitetyt veneonnettomuudet, jotka tapahtuivat alueellisesti ja ajallisesti l&auml;hekk&auml;in.
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Valitse kentät, joihin verrataan</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml; t&auml;sm&auml;ytt&auml;&auml; karttatason kent&auml;n arvot toisen karttatason kent&auml;n arvoihin. 
+            </p>
+            <p>Oletetaan esimerkiksi, ett&auml; sinulla on asuinosoitteiden maanlaajuinen maantieteellinen karttataso (mukaan lukien  <i>ZIP</i>-kentt&auml;) ja taulukkomuotoinen aineistoryhm&auml; terveystiedoista postinumeron mukaan (kent&auml;n nimi <i>HEALTHZIP</i>). Nyt voit liitt&auml;&auml; terveystietojen aineistoryhm&auml;n asuintietoihin t&auml;sm&auml;ytt&auml;m&auml;ll&auml; <i>ZIP</i> -kent&auml;n <i>HEALTHZIP</i> -kentt&auml;&auml;n. Tuloksena on asuinpaikoista muodostuva karttataso vastaavine terveystietoineen.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Lisää tilastotiedot (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>Laskee liitettyjen kohteiden tilastotiedot, jos liitostoiminto on  <b>Liit&auml; yksi yhteen</b>. Kaikki tilastotiedot lasketaan oletuksena.
+            </p>
+            <p>Voit laskea tilastotiedot kohteista, joista on laadittu yhteenveto. Numerokentist&auml; voit laskea seuraavat tilastotiedot: 
+                <ul>
+                    <li>M&auml;&auml;r&auml;: laskee muiden kuin nolla-arvojen m&auml;&auml;r&auml;n.Voidaan k&auml;ytt&auml;&auml; numerokentiss&auml; tai merkkijonoissa. Arvojen [nolla, 0, 2] nolla-arvojen m&auml;&auml;r&auml; on 2.
+                    </li>
+                    <li>Summa: kunkin kent&auml;n numeroarvojen summa. Numeroarvojen [nolla, nolla, 3] summa on 3.
+                    </li>
+                    <li>Keskiarvo: numeroarvojen keskiarvo. Arvojen [0, 2, nolla] keskiarvo on 1.
+                    </li>
+                    <li>Minimi: numerokent&auml;n minimiarvo. Arvojen [0, 2, nolla] minimiarvo on 0. 
+                    </li>
+                    <li>Maksimiarvo: numerokent&auml;n maksimiarvo. Arvojen [0, 2, nolla] maksimiarvo on 2.
+                    </li>
+                    <li>Alue: numerokent&auml;n alue. T&auml;m&auml; lasketaan minimiarvoina, jotka on v&auml;hennetty maksimiarvosta. Arvojen [0, nolla, 1] alue on 1. Arvojen [nolla, 4] alue on 0.
+                    </li>
+                    <li>Varianssi: numerokent&auml;n varianssi reitill&auml;. Arvon [1] varianssi on nolla. Arvojen [nolla, 1,0, 1,1] varianssi on 0,25.
+                    </li>
+                    <li>Vakio keskihajonta: numerokent&auml;n keskihajonta. Arvon [1] varianssi on nolla. Arvojen [nolla, 1,0, 1,1] vakio keskihajonta on 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Merkkijonokentist&auml; voit laskea seuraavat tilastotiedot:
+                <ul>
+                    <li>M&auml;&auml;r&auml;: muiden kuin nolla-merkkijonojen m&auml;&auml;r&auml;.
+                    </li>
+                    <li>Mik&auml; tahansa: T&auml;m&auml; tilastotieto on satunnainen otos m&auml;&auml;ritetyn kent&auml;n merkkijonoarvosta.
+                    </li>
+                </ul>
+                Kaikki tilastotiedot lasketaan muina kuin nolla-arvoina. Tuloskarttataso sis&auml;lt&auml;&auml; uuden kent&auml;n jokaiselle lasketulle tilastotiedolle. Voit lis&auml;t&auml; niin paljon tilastotietoja kuin haluat valitsemalla ominaisuustiedon ja tilastotiedon.
+            </p>
+            <p>Kaikki tilastotiedot lasketaan muina kuin nolla-arvoina. Tuloskarttataso sis&auml;lt&auml;&auml; uuden kent&auml;n jokaiselle lasketulle tilastotiedolle. Voit lis&auml;t&auml; niin paljon tilastotietoja kuin haluat valitsemalla ominaisuustiedon ja tilastotiedon.
+            </p>
+        </div>
+    </div>
+    <div id="joinCondition">
+        <div><h2>Muodosta lauseke, jonka perusteella kohteet liitetään (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>Ottaa ehdon k&auml;ytt&ouml;&ouml;n m&auml;&auml;ritettyihin kenttiin. Vain ne kentiss&auml; olevat kohteet, jotka t&auml;ytt&auml;v&auml;t n&auml;m&auml; ehdot, liitet&auml;&auml;n.
+            </p>
+            <p>Jos esimerkiksi haluat liitt&auml;&auml; aineistoryhm&auml;n vain niille kohteille, joissa  <i>health_spending</i>  on suurempi kuin 20 prosenttia <i>income</i>-arvosta, k&auml;yt&auml; liitosehtoa <code>$target[&quot;health_spending&quot;] &gt; ($join[&quot;income&quot;] * .20)</code> k&auml;ytt&auml;en <i>health_spending</i> -kentt&auml;&auml; ensimm&auml;isest&auml; aineistoryhm&auml;st&auml; (johon aineistoryhm&auml;n kohteet liitet&auml;&auml;n) ja <i>income</i> -kentt&auml;&auml; toisesta aineistoryhm&auml;st&auml; (aineistoryhm&auml;, joka liitet&auml;&auml;n).
+            </p>
+            <p>Liitosehdot voi ottaa k&auml;ytt&ouml;&ouml;n k&auml;ytt&auml;en laskinlauseketta.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Valitse aineistosäilö</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-tulokset tallennetaan aineistos&auml;il&ouml;&ouml;n ja julkaistaan karttatasona   Portal for ArcGIS -portaalissa. Useimmissa tapauksissa tulokset pit&auml;&auml; tallentaa spatiotemporaaliseen tietokantaan (t&auml;m&auml; on oletusarvo). Joissakin tapauksissa, tulosten tallentaminen relaatiotietokantaan on hyv&auml; vaihtoehto. Tiedot kannattaa tallentaa relaatiotietokantaan seuraavista syist&auml;: 
+                <ul>
+                    <li>Voitk&auml;ytt&auml;&auml; portaalissa olevia tuloksiaportaaliyhteisty&ouml;h&ouml;n.
+                    </li>
+                    <li>Voit ottaa k&auml;ytt&ouml;&ouml;n tulosten synkronointitoiminnot.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relaatiotietokantaa ei tule k&auml;ytt&auml;&auml;, jos GeoAnalytics-tulosten m&auml;&auml;r&auml; kasvaa ja sinun t&auml;ytyy hy&ouml;dynt&auml;&auml; spatiotemporaalisen big data -tietokannan toimintoja suurten tietom&auml;&auml;rien k&auml;sittelyyn.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+            <p>Kun kirjoitat kohteeseen  ArcGIS Data Store  (relaatiotietokantaan perustuvaan tai spatiotemporaaliseen Big Data -s&auml;il&ouml;&ouml;n) k&auml;ytt&auml;m&auml;ll&auml; avattavaa  <b>Tallenna tulos kohteeseen</b> -luetteloa, voit m&auml;&auml;ritt&auml;&auml; kansion nimen <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

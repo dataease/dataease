@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolasikan Titik</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Alat Interpolasikan Titik"></h2>
+        <hr/>
+    <p>Alat ini memungkinkan Anda memprediksikan nilai di lokasi baru berdasarkan pengukuran dari suatu kumpulan titik. Alat ini mengambil data titik dengan nilai pada setiap titik dan menampilkan raster nilai prediksi.
+    </p>
+    <p>Contoh lain penggunaan alat ini mencakup hal berikut:
+
+        <ul>
+            <li>Suatu distrik manajemen kualitas udara memiliki sensor yang mengukur tingkat polusi. Interpolasi Titik dapat digunakan untuk memprediksi tingkat polusi di lokasi yang tidak memiliki sensor, seperti lokasi dengan populasi berisiko&mdash;sekolah atau rumah sakit misalnya.
+                
+
+            </li>
+            <li>Memprediksikan konsentrasi logam berat pada hasil panen berdasarkan sampel yang diambil dari masing-masing tanaman.
+                
+
+            </li>
+            <li>Memprediksi tingkat nutrisi tanah (nitrogen, fosfor, potasium, dan lain-lain) dan indikator lainnya (seperti konduktivitas listrik) untuk mempelajari hubungannya dengan hasil panen guna menentukan jumlah pupuk yang tepat untuk masing-masing lokasi.
+                
+
+            </li>
+            <li>Aplikasi meteorologis mencakup prediksi suhu, curah hujan, dan variabel terkait (seperti hujan asam).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Pilih layer titik yang berisi lokasi dengan nilai yang diketahui</h2></div>
+        <hr/>
+        <div>
+            <p>Layer titik yang berisi titik di mana nilai telah diukur.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Pilih kolom untuk diinterpolasi</h2></div>
+        <hr/>
+        <div>
+            <p>Pilih kolom yang nilainya ingin Anda interpolasi. Kolom harus numerik.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimalkan untuk</h2></div>
+        <hr/>
+        <div>
+            <p>Tentukan pilihan Anda untuk kecepatan versus akurasi.
+            </p>
+            <p>Prediksi yang lebih akurat memerlukan waktu penghitungan yang lebih lama. Parameter ini mengubah nilai default beberapa parameter lain Interpolasikan Titik untuk mengoptimalkan kecepatan penghitungan, keakuratan hasil, atau keseimbangan antara keduanya. Secara default, alat akan mengoptimalkan keseimbangan.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Transformasikan data ke distribusi normal</h2></div>
+        <hr/>
+        <div>
+            <p>Pilih apakah akan mengubah data Anda menjadi distribusi normal.
+            </p>
+            <p>Interpolasi paling akurat untuk data yang mengikuti distribusi normal (berbentuk lonceng). Jika data Anda sepertinya tidak terdistribusikan secara normal, Anda harus melakukan transformasi.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Ukuran model lokal</h2></div>
+        <hr/>
+        <div>
+            <p>Interpolasikan Titik bekerja dengan membuat model interpolasi lokal yang digabungkan untuk menciptakan peta prediksi akhir. Parameter ini mengontrol berapa banyak titik yang akan ditampung di dalam setiap model lokal. Nilai-nilai yang lebih kecil akan menjadikan hasil lebih lokal dan dapat mengungkapkan efek berskala kecil, tetapi dapat memperkenalkan instabilitas dalam perhitungan. Nilai-nilai yang lebih besar akan lebih stabil, tetapi beberapa efek lokal mungkin akan hilang.
+            </p>
+            <p>Nilai dapat memiliki rentang antara 30 hingga 500, tetap nilai normal biasanya antara 50 dan 200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Jumlah Tetangga</h2></div>
+        <hr/>
+        <div>
+            <p>Prediksi dihitung berdasarkan titik yang bertetanggaan. Parameter ini mengontrol berapa banyak titik yang akan digunakan dalam perhitungan. Menggunakan jumlah tetangga yang lebih besar umumnya akan memberikan hasil yang lebih akurat, tetapi hasilnya membutuhkan waktu lebih lama untuk dihitung.
+            </p>
+            <p>Nilai ini dapat memiliki rentang antara 1 hingga 64, tetap nilai normal biasanya antara 5 dan 15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Ukuran sel output</h2></div>
+        <hr/>
+        <div>
+            <p>Ukuran dan unit sel untuk raster output.
+            </p>
+            <p>Satuan yang tersedia adalah Kaki, Mil, Meter, dan Kilometer.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Kesalahan prediksi output</h2></div>
+        <hr/>
+        <div>
+            <p>Pilih apakah Anda ingin menciptakan raster kesalahan standar untuk nilai yang diprediksi.
+            </p>
+            <p>Kesalahan standar bermanfaat karena menyediakan informasi mengenai keandalan nilai prediksi. Aturan dasarnya adalah bahwa nilai yang benar berada di antara dua kesalahan standar nilai prediksi 95 persen dari waktu. Contohnya, anggap suatu lokasi baru mendapat nilai prediksi sebesar 50 dengan kesalahan standar 5. Artinya perkiraan terbaik alat ini adalah bahwa nilai yang benar di lokasi tersebut adalah sebesar 50, tetapi bisa saja bernilai lebih rendah sebesar 40 atau lebih tinggi sebesar 60. Untuk menghitung rentang nilai yang wajar, kalikan kesalahan standar dengan 2, kemudian tambahkan nilai ini ke nilai prediksi untuk mendapat batas rentang atas, dan kurangi dari nilai prediksi untuk mendapat batas rentang bawah.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Anda dapat menentukan nama folder di  <b>Konten Saya</b> tempat hasil akan disimpan menggunakan kotak drop-down <b>Simpan hasil di</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

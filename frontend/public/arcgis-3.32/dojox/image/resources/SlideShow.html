@@ -1,0 +1,14 @@
+<div dojoAttachPoint="outerNode" class="slideShowWrapper">
+	<div style="position:relative;" dojoAttachPoint="innerWrapper">
+		<div class="slideShowNav" dojoAttachEvent="onclick: _handleClick">
+			<div class="dijitInline slideShowTitle" dojoAttachPoint="titleNode">${title}</div>
+		</div>
+		<div dojoAttachPoint="navNode" class="slideShowCtrl" dojoAttachEvent="onclick: _handleClick">
+			<span dojoAttachPoint="navPrev" class="slideShowCtrlPrev"></span>
+			<span dojoAttachPoint="navPlay" class="slideShowCtrlPlay"></span>
+			<span dojoAttachPoint="navNext" class="slideShowCtrlNext"></span>
+		</div>
+		<div dojoAttachPoint="largeNode" class="slideShowImageWrapper"></div>		
+		<div dojoAttachPoint="hiddenNode" class="slideShowHidden"></div>
+	</div>
+</div>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Build Multi-Variable Grid</h2><p/>
+        <h2><img src="./images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Append Data workflow diagram"></h2>
+        <hr/>
+    <p>The Build Multi-Variable Grid tool works with one or more layers of point, line, or polygon features. The tool generates a grid of square or hexagonal bins and calculates values for each bin based on the proximity of each input layer. These values can include the following variables: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Distance to Nearest</b>&mdash;The distance from each bin to the nearest feature
+            </li>
+            <li> <b>Attribute of Nearest</b>&mdash;A field value of the feature nearest to each bin
+            </li>
+            <li> <b>Summary of Nearby</b>&mdash;A specified statistic of all features within a distance of each bin
+            </li>
+            <li> <b>Summary of Intersecting</b>&mdash;A specified statistic of all features that intersect each bin
+            </li>
+        </ul>
+        
+    </p>
+    <p>Only variables you specify will be included in the result layer. These variables can help you understand the proximity and distribution of your data. The results can help you begin to answer questions such as the following:
+        <ul>
+            <li>Given multiple layers of public transportation infrastructure, what part of the city is least accessible by public transportation?
+            </li>
+            <li>Given layers of waterways, such as lakes and rivers, what is the name of the water body closest to each  location in the U.S.?
+            </li>
+            <li>Given a layer of household income, where in the U.S. is the variation of income in the surrounding 50 miles the greatest?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Choose the type of bins that will be used to build the multi-variable grid</h2></div>
+        <hr/>
+        <div>
+             
+            <p>The 
+type and size of bins that will be used to create  the multi-variable grid. For the  <b>Square</b> option, the number and units specified determine the height and length of the square. For the <b>Hexagon</b> option, the number and units specified  determine the distance between parallel sides.
+            </p>
+            <p>This analysis uses bins and requires a projected coordinate system. You can set the processing coordinate system in Analysis Environments. If your processing coordinate system is not set to a projected coordinate system, you will be prompted to set it when you run analysis .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Choose input layers and variables that you would like to include in the grid</h2></div>
+        <hr/>
+        <div>
+            <p>Click the  add button ( <b>+</b>) to open the <b>Add Variables</b> window and add a layer to your analysis. In the <b>Add Variables</b> window, choose an input layer and configure the variables you want to calculate for that input layer.
+            </p>
+            <p>Once you have chosen and configured the variables you want to calculate, the layer will be listed in the tool window with any other selected layers. Click the edit button  for any layer to open the  <b>Add Variables</b> window and see all variables configured for that layer. Click the delete button for any layer to remove that layer and all related variables from analysis.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Add Variables</h2></div>
+        <hr/>
+        <div>
+            <p>This window allows you to  choose an input layer and configure the variables you want to calculate for that input layer. To begin, use the  <b>Choose an input layer</b> drop-down menu to select the point, polygon, or line layer you want to add to your analysis.
+            </p>
+            <p>In addition to choosing a layer from your map, you can choose  <b>Choose Analysis Layer</b> at the bottom of the drop-down list to browse to your contents for a big data file share dataset or feature layer. You may optionally apply a filter on your input layer or apply a selection on hosted layers added to your map. Filters and selections are only applied for analysis. 
+            </p>
+            <p>Once you have chosen an input layer, click the  <b>Add a variable</b> button to open a new variable for editing. You must provide a unique name for each variable. This will be the name of the field that is created in the attribute table of the result layer.
+            </p>
+            <p>Use the drop-down menu to select the type of variable to add. Each variable type must be configured with a unique set of parameters, and all parameters are required.
+            </p>
+            <p>Once you have added all desired variables for the chosen layer, click the  <b>Add</b> button to save the variables.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p> The name of the layer that will be created.  If you are writing to an ArcGIS Data Store, your results will be saved in  <b>My
+Content</b> and added to the map. If you are writing to a big data file share, your results will be stored in the big data file share and added to its manifest. It will not be added to the map. The default name is based on the
+tool name and the input layer name. If the layer already exists, the tool will fail.
+            </p>
+            <p>When writing to   ArcGIS Data Store  (relational or spatiotemporal big data store) using the  <b>Save result in</b> drop-down box, you can specify
+the name of a folder in <b>My Content</b> where the result will be
+saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

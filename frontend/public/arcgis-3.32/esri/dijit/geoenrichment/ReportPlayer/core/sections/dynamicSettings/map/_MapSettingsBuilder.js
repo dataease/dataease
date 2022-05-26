@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/sections/dynamicSettings/map/_MapSettingsBuilder",["dojo/aspect","esri/dijit/geoenrichment/when"],function(c,d){return{provideMapSettings:function(e){var a=e.getMapImages()[0];return a?d(a.getRenderPromise(),function(){var b={viewSettings:{getLegendVisible:function(){return a.isLegendVisible()},onLegendVisibilityChanged:function(){}}};c.after(a,"onLegendVisibilityChanged",function(){b.viewSettings.onLegendVisibilityChanged()});return b}):null}}});

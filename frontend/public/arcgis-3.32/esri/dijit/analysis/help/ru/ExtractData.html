@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Извлечь данные</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Извлечь данные"></h2>
+        <hr/>
+    <p>С помощью этого инструмента можно выбрать и загрузить данные для указанной области интереса. Выбранные слои будут добавлены в файлы форматов ZIP, CSV или KMZ.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Слои для извлечения</h2></div>
+        <hr/>
+        <div>
+            <p>Это слои в таблице содержания, из которых можно извлечь данные. Отмеченные слои извлекаются и добавляются в итоговый файл ZIP или CSV.
+            </p>
+            <p>Чтобы слой был виден в списке слоев для извлечения данных, вы должны быть владельцем данных, или владелец данных должен разрешить экспортировать свои данные. Чтобы ваши данные можно было экспортировать, выполните следующие шаги: 
+                <ul>
+                    <li>Откройте диалоговое окно Описание элемента.
+                    </li>
+                    <li>Перейдите на вкладку  <b>Настройки</b>.
+                    </li>
+                    <li>Прокрутите вниз до раздела  <b>Экспорт данных</b>.
+                    </li>
+                    <li>Отметьте  <b>Разрешить пользователям экспорт в другие форматы</b>.  По окончании щелкните <b>Сохранить</b>.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Если слой анализа содержит вложения, они будут извлекаться, только если выходным форматом данных является база геоданных, и опция  <b>Вырезать объекты</b> не отмечена.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Область интереса</h2></div>
+        <hr/>
+        <div>
+            <p>Область, определяющая, какие объекты будут включаться в выходной файл ZIP или CSV. Имеются следующие варианты:
+                <ul>
+                    <li>Текущий видимый экстент карты ( <b>Как у отображаемой области</b>).
+                    </li>
+                    <li>Один из слоев в таблице содержания. Если выбранный слой содержит точечные или линейные объекты, экстент слоя будет использоваться как изучаемая область.
+                    </li>
+                    <li>Обведите область, чтобы задать область изучения.
+                    </li>
+                </ul>
+                 Все объекты, находящиеся целиком внутри экстента карты, будут извлечены. Для объектов, которые находятся на границе экстента карты или пересекаются с ней, но не полностью попадают в экстент, есть два способа обработки:
+                <ul>
+                    <li> <b>Выбрать объекты</b> &ndash; извлекаются все объекты, пересекающие границу изучаемой области.
+                    </li>
+                    <li> <b>Вырезать объекты</b> &ndash; извлекаются только части объектов, расположенные в пределах изучаемой области.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Формат выходных данных</h2></div>
+        <hr/>
+        <div>
+            <p>Формат извлекаемых данных. При экспорте линейных или площадных объектов в файлы CSV, извлекаются только непространственные атрибуты. При экспорте точечных объектов, извлекаются и пространственные и непространственные атрибуты.  
+            </p>
+            <p>Извлеченные данные будут в проекции Web Mercator 1984.  Для файлов CSV, к данным будут добавлены поля  <i>Lat</i> и <i>Long</i> с координатами в проекции Web Mercator 1984.
+            </p> 
+            <p>Поддерживаются следующие выходные форматы:
+                <ul>
+                    <li>Значения, разделенные запятыми (CSV) &shy;  <code>.csv</code> или <code>.zip</code>
+                    </li>
+                    <li>Файловая база геоданных -  <code>.zip</code>
+                    </li>
+                    <li>Язык разметки Keyhole Markup Language (KML) -  <code>.kmz</code> или <code>.zip</code>
+                    </li>
+                    <li>Шейп-файл -  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Имя выходного файла</h2></div>
+        <hr/>
+        <div>
+            <p>Это имя элемента, который будет добавлен в  <b>Мои ресурсы</b>. Имя элемента зависит от выбранного <b>Формата выходных данных</b>.     Если имя элемента уже используется, появится запрос ввести новое имя.
+            </p>
+            <p>С помощью ниспадающего списка поля  <b>Сохранить результат в</b> вы можете задать имя папки в разделе <b>Мои ресурсы</b>, в которую будет записан результат.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

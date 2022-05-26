@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>データのアペンド</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="[データのアペンド] のワークフロー図"></h2>
+        <hr/>
+    <p>このツールは、データを既存のホスト フィーチャ レイヤーに追加します。[データのアペンド] は、元の入力レイヤーを変更しますが、新しい出力レイヤーを生成しません。フィールド名およびフィールド タイプに基づいてフィールドを照合することができ、またはさらに高度なマッチング方法を適用することもできます。
+    </p>
+    <p>以下に例を示します。
+        <ul>
+            <li>あなたは、売上記録を毎月生成する大規模な保険会社の従業員です。年次報告書のために、毎月のデータを集めて分析する必要があります。販売分析を開始するために、毎月の数値が使用可能になった後に、[データのアペンド] を利用して AnnualReport_2018 レイヤーを更新できます。毎月、組織が一貫性のあるスキーマを維持するということがわかっているため、デフォルトのフィールド割り当て方法を使用して、フィールド名およびフィールド タイプに基づいてフィーチャを効率的に追加することができます。
+            </li>
+            <li>10 の環境保護団体が、それぞれの管轄区域内の数十万の気候測定値を収集します。これらの組織は、地域のパターンおよび世界的なパターンをよく理解するために、データを集める必要があります。各組織は、それぞれのデータセットのスキーマを決定します。組織はそれぞれ、温度データおよび風速データに対して異なるフィールド名を指定しました。データセット間のフィールド名の違いを前提として、フィールド割り当てを利用し、温度測定値および風速測定値を各フィールドに追加する方法を指定することができます。
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>追加先のレイヤーを選択</h2></div>
+        <hr/>
+        <div>
+            <p>データの追加先のテーブル、ポイント フィーチャ、ライン フィーチャ、またはポリゴン フィーチャ。
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>追加先のレイヤーは、ツールの実行時に変更されます。続行する前に、このレイヤーを変更することを確認してください。
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>マップからレイヤーを選択できるだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択し、ホスト フィーチャ レイヤーのコンテンツを参照して選択することもできます。
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>追加するレイヤーを選択</h2></div>
+        <hr/>
+        <div>
+            <p>入力レイヤーに追加するテーブル、ポイント フィーチャ、ライン フィーチャ、またはポリゴン フィーチャ。
+            </p>
+            <p>マップからレイヤーを選択できるだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択し、ビッグ データ ファイル共有データセットまたはフィーチャ レイヤーのコンテンツを参照して選択することもできます。
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>すべてのフィーチャを追加するかサブセットを定義 (オプション)</h2></div>
+        <hr/>
+        <div>
+            <p>追加されるフィーチャを識別します。このパラメーターはオプションです。
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>フィールドの追加方法を選択 (オプション)</h2></div>
+        <hr/>
+        <div>
+            <p>追加レイヤー フィールドを入力レイヤーに追加する方法を指定します。デフォルトでは、一致する入力フィールドおよび追加フィールドがすべて追加されます。フィールドは、同じフィールド名およびフィールド タイプを持っている場合に、一致します。必要に応じて、フィールドを一致させる方法を選択するか、Arcade 条件式を計算してフィールド値を入力することができます。
+            </p>
+            <p>たとえば、 <i>field_number</i>、 <i>field_string</i>、 <i>date_field</i>、 <i>unused_field</i> の各フィールドを含む入力レイヤー、および <i>field_string</i>、 <i>field_number</i>、 <i>MY_DATE_FIELD</i> の各フィールドを含む追加レイヤーが存在するとします。
+                <ul>
+                    <li>デフォルトでは、ツールは入力レイヤーの  <i>field_number</i> を追加レイヤーの <i>field_number</i> に一致させ、入力レイヤーの <i>field_string</i> を追加レイヤーの <i>field_string</i> に一致させます。
+                    </li>
+                    <li>デフォルトでは、入力レイヤーの  <i>date_field</i> フィールドおよび <i>unused_field</i> フィールドは、一致するフィールドが追加レイヤーにないため、 <i>null</i> の値が入力されます。
+                    </li>
+                    <li>必要に応じて、デフォルトで自動的に一致しなかったフィールドに、値を追加することができます。たとえば、入力レイヤーの  <i>date_field</i> を、追加フィールドの <i>MY_DATE_FIELD</i> に一致させることができます。これを行うには、1 番目の列内の <i>date_field</i> の横にあるドロップダウン メニューを使用して、2 番目の列内のドロップダウン メニューから <i>MY_DATE_FIELD</i> を選択します。
+                    </li>
+                </ul>
+                 別の例を挙げると、入力レイヤーに数値フィールド <i>value_1</i>、 <i>value_2</i>、 <i>value_3</i>、および <i>my_Average</i> が存在し、追加レイヤーに数値フィールド <i>value_1</i>、 <i>value_2</i>、および <i>value_3</i> が存在するとします。
+                <ul>
+                    <li>デフォルトでは、 <i>value_1</i>、 <i>value_2</i>、および <i>value_3</i> が一致するため、追加されます。
+                    </li>
+                    <li>デフォルトの動作に加えて、 <i>my_Average</i> フィールドの値を計算することができます。複数のフィールドおよび数値演算を使用してこれを行うには、 <i>my_Average</i> の横にある列で <b>[条件式]</b> ドロップダウン オプションを選択し、 <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre> などのカスタム Arcade 条件式を構築します。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

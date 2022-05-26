@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Többváltozós táblázat felépítése</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Az Adat hozz&aacute;fűz&eacute;se munkafolyamat&aacute;nak diagramja"></h2>
+        <hr/>
+    <p>A T&ouml;bbv&aacute;ltoz&oacute;s t&aacute;bl&aacute;zat fel&eacute;p&iacute;t&eacute;se eszk&ouml;z egy vagy t&ouml;bb r&eacute;teg pontszerű, vonalas vagy polygon vektoros elemmel dolgozik. Az eszk&ouml;z n&eacute;gysz&ouml;g vagy hatsz&ouml;g alak&uacute; gyűjtőket tartalmaz&oacute; r&aacute;csh&aacute;l&oacute;t hoz l&eacute;tre, &eacute;s mindegyik gyűjtőh&ouml;z &eacute;rt&eacute;keket sz&aacute;m&iacute;t az egyes bemenő r&eacute;tegek k&ouml;zels&eacute;ge alapj&aacute;n. Az &eacute;rt&eacute;kek az al&aacute;bbi v&aacute;ltoz&oacute;kat tartalmazhatj&aacute;k: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>T&aacute;vols&aacute;g a legk&ouml;zelebbi elemig</b> &ndash; a t&aacute;vols&aacute;g az egyes gyűjtőktől a legk&ouml;zelebbi vektoros elemig
+            </li>
+            <li> <b>A legk&ouml;zelebbi elem attrib&uacute;tuma</b> &ndash; az egyes gyűjtőkh&ouml;z legk&ouml;zelebb eső vektoros elem egy mező&eacute;rt&eacute;ke
+            </li>
+            <li> <b>K&ouml;zeli elemek &ouml;sszegz&eacute;se</b> &ndash; minden egyes gyűjtőtől adott t&aacute;vols&aacute;gon bel&uuml;l eső &ouml;sszes vektoros elem egy meghat&aacute;rozott statisztik&aacute;ja
+            </li>
+            <li> <b>Metsző elemek &ouml;sszegz&eacute;se</b> &ndash; mindegyik gyűjtőt metsző &ouml;sszes vektoros elem meghat&aacute;rozott statisztik&aacute;ja
+            </li>
+        </ul>
+        
+    </p>
+    <p>Az eredm&eacute;nyr&eacute;teg csak az &Ouml;n &aacute;ltal megadott v&aacute;ltoz&oacute;kat fogja tartalmazni. Ezek a v&aacute;ltoz&oacute;k seg&iacute;thetnek meg&eacute;rteni az adatok k&ouml;zels&eacute;g&eacute;t &eacute;s eloszl&aacute;s&aacute;t. Az eredm&eacute;nyek seg&iacute;thetnek v&aacute;laszt tal&aacute;lni az al&aacute;bbihoz hasonl&oacute; k&eacute;rd&eacute;sekre:
+        <ul>
+            <li>Tegy&uuml;k fel, hogy adva van t&ouml;bb, t&ouml;megk&ouml;zleked&eacute;si infrastrukt&uacute;r&aacute;t tartalmaz&oacute; r&eacute;teg. A v&aacute;ros melyik r&eacute;sze a legnehezebben el&eacute;rhető t&ouml;megk&ouml;zleked&eacute;ssel?
+            </li>
+            <li>Tegy&uuml;k fel, hogy adva vannak v&iacute;zi utakat, pl. tavakat &eacute;s foly&oacute;kat tartalmaz&oacute; r&eacute;tegek. Mi a neve az egyes helyekhez legk&ouml;zelebb eső v&iacute;zt&ouml;megnek az Egyes&uuml;lt &Aacute;llamokban?
+            </li>
+            <li>Tegy&uuml;k fel, hogy adva van egy, a h&aacute;ztart&aacute;sok j&ouml;vedelm&eacute;t tartalmaz&oacute; r&eacute;teg. Az Egyes&uuml;lt &Aacute;llamokban hol a legnagyobb a j&ouml;vedelmek vari&aacute;ci&oacute;ja a k&ouml;rnyező 50 m&eacute;rf&ouml;lden bel&uuml;l?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>A többváltozós táblázat felépítéséhez használt gyűjtők típusának kiválasztása</h2></div>
+        <hr/>
+        <div>
+             
+            <p>A t&ouml;bbv&aacute;ltoz&oacute;s t&aacute;bl&aacute;zat l&eacute;trehoz&aacute;s&aacute;hoz haszn&aacute;lt gyűjtők t&iacute;pusa &eacute;s m&eacute;rete. A  <b>N&eacute;gysz&ouml;g</b> lehetős&eacute;g haszn&aacute;lata eset&eacute;n a megadott sz&aacute;m &eacute;s a m&eacute;rt&eacute;kegys&eacute;gek a n&eacute;gysz&ouml;g magass&aacute;g&aacute;t &eacute;s hossz&uacute;s&aacute;g&aacute;t hat&aacute;rozz&aacute;k meg. A <b>Hatsz&ouml;g</b> lehetős&eacute;g haszn&aacute;lata eset&eacute;n a megadott sz&aacute;m &eacute;s a m&eacute;rt&eacute;kegys&eacute;gek a p&aacute;rhuzamos oldalak k&ouml;z&ouml;tti t&aacute;vols&aacute;got hat&aacute;rozz&aacute;k meg.
+            </p>
+            <p>Ez az elemz&eacute;s gyűjtőket haszn&aacute;l, &eacute;s vet&uuml;leti koordin&aacute;ta-rendszert ig&eacute;nyel. A  <b>Feldolgoz&aacute;si koordin&aacute;ta-rendszert</b> az <b>Elemz&eacute;si k&ouml;rnyezetekben</b> &aacute;ll&iacute;thatja be. Ha a feldolgoz&aacute;si koordin&aacute;ta-rendszer nem vet&uuml;leti koordin&aacute;ta-rendszerre van &aacute;ll&iacute;tva, az eszk&ouml;z ennek be&aacute;ll&iacute;t&aacute;s&aacute;t k&eacute;ri az <b>elemz&eacute;s futtat&aacute;sakor</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>A táblázatban használni kívánt bemenő rétegek és változók kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>Kattintson a hozz&aacute;ad&aacute;s gombra ( <b>+</b>) a <b>V&aacute;ltoz&oacute;k hozz&aacute;ad&aacute;sa</b> ablak megnyit&aacute;s&aacute;hoz, &eacute;s adjon egy r&eacute;teget az elemz&eacute;shez. A <b>V&aacute;ltoz&oacute;k hozz&aacute;ad&aacute;sa</b> ablakban v&aacute;lasszon egy bemenő r&eacute;teget, &eacute;s &aacute;ll&iacute;tsa be a kiv&aacute;lasztott bemenő r&eacute;teghez kisz&aacute;m&iacute;tani k&iacute;v&aacute;nt v&aacute;ltoz&oacute;kat.
+            </p>
+            <p>A kisz&aacute;m&iacute;tani k&iacute;v&aacute;nt v&aacute;ltoz&oacute;k kiv&aacute;laszt&aacute;sa &eacute;s be&aacute;ll&iacute;t&aacute;sa ut&aacute;n a r&eacute;teg megjelenik az eszk&ouml;z ablak&aacute;nak list&aacute;j&aacute;ban a t&ouml;bbi kiv&aacute;lasztott r&eacute;teggel egy&uuml;tt. Kattintson b&aacute;rmelyik r&eacute;teg szerkeszt&eacute;s gombj&aacute;ra a  <b>V&aacute;ltoz&oacute;k hozz&aacute;ad&aacute;sa</b> ablak megnyit&aacute;s&aacute;hoz, &eacute;s tekintse meg az adott r&eacute;teghez be&aacute;ll&iacute;tott v&aacute;ltoz&oacute;kat. Kattintson b&aacute;rmelyik r&eacute;teg t&ouml;rl&eacute;s gombj&aacute;ra az adott r&eacute;teg &eacute;s a hozz&aacute; kapcsol&oacute;d&oacute; v&aacute;ltoz&oacute;k elt&aacute;vol&iacute;t&aacute;s&aacute;hoz az elemz&eacute;sből.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Változók hozzáadása</h2></div>
+        <hr/>
+        <div>
+            <p>Ebben az ablakban egy bemenő r&eacute;teget v&aacute;laszthat, &eacute;s be&aacute;ll&iacute;thatja a kiv&aacute;lasztott bemenő r&eacute;teghez kisz&aacute;m&iacute;tani k&iacute;v&aacute;nt v&aacute;ltoz&oacute;kat. Első l&eacute;p&eacute;sk&eacute;nt haszn&aacute;lja a  <b>Bemenő r&eacute;teg v&aacute;laszt&aacute;sa</b> leg&ouml;rd&uuml;lő men&uuml;t az elemz&eacute;shez hozz&aacute;adni k&iacute;v&aacute;nt pont-, polygon- vagy polyline r&eacute;teg kiv&aacute;laszt&aacute;s&aacute;hoz.
+            </p>
+            <p>Ahelyett, hogy egy r&eacute;teget v&aacute;laszt a t&eacute;rk&eacute;p&eacute;ről, v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n l&eacute;vő  <b>Eredm&eacute;nyr&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is, ha a saj&aacute;t tartalomban szeretne big data-f&aacute;jlmegoszt&oacute; adathalmazt vagy vektoros r&eacute;teget keresni.
+            </p>
+            <p>A bemenő r&eacute;teg kiv&aacute;laszt&aacute;sa ut&aacute;n kattintson a  <b>V&aacute;ltoz&oacute; hozz&aacute;ad&aacute;sa</b> gombra egy &uacute;j v&aacute;ltoz&oacute; megnyit&aacute;s&aacute;hoz &eacute;s szerkeszt&eacute;s&eacute;hez. Mindegyik v&aacute;ltoz&oacute;nak egyedi nevet kell adnia. Ez lesz az eredm&eacute;nyr&eacute;teg attrib&uacute;tumt&aacute;bl&aacute;j&aacute;ban l&eacute;trehozott mező neve.
+            </p>
+            <p>A leg&ouml;rd&uuml;lő men&uuml; seg&iacute;ts&eacute;g&eacute;vel v&aacute;lassza ki a hozz&aacute;adni k&iacute;v&aacute;nt v&aacute;ltoz&oacute; t&iacute;pus&aacute;t. Mindegyik v&aacute;ltoz&oacute;t&iacute;pust egyedi param&eacute;terk&eacute;szlettel kell konfigur&aacute;lni, &eacute;s mindegyik param&eacute;ter megad&aacute;sa k&ouml;telező.
+            </p>
+            <p>Miut&aacute;n az &ouml;sszes k&iacute;v&aacute;nt v&aacute;ltoz&oacute;t hozz&aacute;adta a kiv&aacute;lasztott r&eacute;teghez, a v&aacute;ltoz&oacute;k ment&eacute;s&eacute;hez kattintson a  <b>Hozz&aacute;ad&aacute;s</b> gombra.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p> A l&eacute;trehozand&oacute; r&eacute;teg neve.  Ha egy ArcGIS Data Store helyre &iacute;r, akkor  eredm&eacute;nyei a  <b>Saj&aacute;t tartalom</b> alatt lesznek elmentve, &eacute;s hozz&aacute; lesznek adva a t&eacute;rk&eacute;phez. Ha egy big data f&aacute;jlmegoszt&oacute;ba &iacute;r, akkor eredm&eacute;nyei a big data f&aacute;jlmegoszt&oacute;ba lesznek elmentve, &eacute;s hozz&aacute; lesznek adva annak jegyz&eacute;kf&aacute;jlj&aacute;hoz. Nem lesznek hozz&aacute;adva a t&eacute;rk&eacute;phez. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a művelet sikertelen lesz.
+            </p>
+            <p>Ha   ArcGIS Data Store (rel&aacute;ci&oacute;s vagy t&eacute;rbeli-időbeli big data adatt&aacute;rba) &iacute;r az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő mező haszn&aacute;lat&aacute;val, akkor megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

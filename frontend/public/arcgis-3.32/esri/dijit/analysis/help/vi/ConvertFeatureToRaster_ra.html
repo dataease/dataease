@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Chuyển đổi Đối tượng thành Raster</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="C&ocirc;ng cụ Chuyển đổi Đối tượng th&agrave;nh Raster"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y chuyển đổi đối tượng th&agrave;nh một raster dataset.
+    </p>
+    <p>Bất kỳ lớp đối tượng n&agrave;o c&oacute; chứa đối tượng điểm, đường hoặc v&ugrave;ng đều c&oacute; thể được chuyển đổi th&agrave;nh một raster dataset.
+    </p>
+    <p>Phần trung t&acirc;m &ocirc; cell được sử dụng để quyết định gi&aacute; trị điểm ảnh raster đầu ra.
+    </p>
+    <p>Loại trường đầu v&agrave;o x&aacute;c định loại raster đầu ra. Nếu trường l&agrave; integer, raster đầu ra sẽ l&agrave; integer; nếu l&agrave; float, đầu ra sẽ l&agrave; float.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Chọn lớp đối tượng để chuyển đổi</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp đối tượng đầu v&agrave;o để chuyển đổi th&agrave;nh một raster dataset.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Chọn trường</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn trường sẽ sử dụng để g&aacute;n c&aacute;c gi&aacute; trị đến raster đầu ra.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Kích cỡ ô đầu ra</h2></div>
+        <hr/>
+        <div>
+            <p>K&iacute;ch thước cell v&agrave; đơn vị cho c&aacute;c raster đầu ra.
+            </p>
+            <p>C&aacute;c đơn vị c&oacute; sẵn l&agrave; Dặm, Feet, Kil&ocirc;m&eacute;t v&agrave; M&eacute;t. Mặc định l&agrave; Feet.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Bạn c&oacute; thể chỉ định t&ecirc;n của một thư mục trong  <b>Nội dung của t&ocirc;i</b> m&agrave; tại đ&oacute; kết quả sẽ được lưu bằng c&aacute;ch sử dụng hộp xổ xuống <b>Lưu kết quả v&agrave;o</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

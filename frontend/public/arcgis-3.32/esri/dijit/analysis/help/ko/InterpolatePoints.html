@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>포인트 내삽</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="포인트 내삽"></h2>
+        <hr/>
+    <p>   포인트 내삽 도구를 통해 포인트들의 측정값을 기반으로 새 위치의 값을 예측할 수 있습니다. 이 도구는 각 포인트에서 값이 있는 포인트 데이터를 가져가 예측 값으로 분류된 영역을 반환합니다.예를 들면 다음과 같습니다.
+        <ul>
+            <li>공기질 관리 구역에는 오염 수준을 측정하는 센서가 있습니다.포인트 내삽은 학교나 병원 내의 오염 위험도가 높은 곳과 같이 센서가 없는 위치에서 오염 수준을 예측하는 데 사용할 수 있습니다.
+            </li>
+            <li>각 식물에서 채취한 샘플을 기반으로 한 농작물의 중금속 농도를 예측합니다.
+            </li>
+            <li>토양 양분 수준(질소, 인, 칼륨 등) 및 기타 지표(전기 전도성)를 예측하여 이들과 농작물을 수확량과의 관계를 연구하고 농장의 각 위치에 정확한 양의 비료를 사용할 수 있도록 합니다.
+
+            </li>
+            <li>기상 응용프로그램에는 온도, 강우량 및 관련 변수(산성비 등)의 예측이 포함됩니다. 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>값이 있는 위치들로 이루어진 포인트 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>내삽의 기반으로 사용할 포인터 레이어입니다.  
+
+            </p>
+            <p>맵에서 레이어를 선택하는 것 외에도 드롭다운 목록 하단에서  <b>분석 레이어를 선택</b>할 수 있습니다. 해당 옵션을 사용하면 다양한 원본에서 분석에 사용할 데이터셋을 검색하고 선택할 수 있는 갤러리가 열립니다. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>내삽할 필드 선택</h2></div>
+        <hr/>
+        <div>
+            <p>내삽할 값을 포함하고 있는 필드를 선택합니다.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>최적화:</h2></div>
+        <hr/>
+        <div>
+            <p>속도 및 정확성에 대해 우선 순위를 설정합니다.더 정확하게 예측할수록 계산하는 데 오랜 시간이 걸립니다.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>결과 예측 오류</h2></div>
+        <hr/>
+        <div>
+            <p> 선택하는 경우 내삽 예측에 대한 표준 오류 레이어가 생성됩니다.  이 레이어의 이름은 결과 레이어 이름 뒤에 '오류'가 붙은 것입니다.
+            </p>
+            <p>표준 오류는 예측 값의 신뢰도에 관한 정보를 제공하므로 유용합니다.일반적으로 실제 값은 95%의 확률로 예측 값의 2가지 표준 오류 이내에 속하게 됩니다. 예를 들어 새 위치에서 5의 표준 오류가 있는 예측 값 50이 있다고 가정해 보겠습니다.  즉, 이 도구는 해당 위치의 실제 값이 50이지만 40으로 내려가거나 60으로 올라갈 수도 있다고 추측합니다.  이 범위의 합리적인 값을 계산하려면 표준 오류에 2를 곱하고, 이 값을 예측 값에 더하여 범위의 상한값을 구하고, 예측 값에서 이 값을 빼서 범위의 하한값을 구합니다.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>분류 기준</h2></div>
+        <hr/>
+        <div>
+            <p>예측 값을 영역에 분류하는 방법을 선택합니다.
+                <ul>
+                    <li>기하학적인 간격-영역은 기하학적 계열이 있는 클래스 간격에 기반을 둡니다.이 방법으로 각 클래스 범위가 각 클래스 내에서 거의 같은 수의 값을 지니며 간격 간 차이가 일정합니다.
+                    </li>
+                    <li>등간격&mdash;예측 값의 범위가 각 영역에 동일하도록 영역이 생성됩니다.
+                    </li>
+                    <li>동일 영역&mdash;각 영역의 데이터 값 수가 동일하도록 영역이 생성됩니다.예를 들어 데이터에 작은 값보다 큰 값이 더 많은 경우 큰 값을 위해 추가 영역이 생성됩니다.
+                    </li>
+                    <li>수동-이 옵션으로 영역에 대한 고유의 값 범위를 정의할 수 있습니다.이러한 값은 아래의  <b>클래스 구분 값</b> 매개변수에 입력됩니다.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>클래스의 수</h2></div>
+        <hr/>
+        <div>
+            <p>결과 레이어에서 클래스 수를 지정합니다(예측 값 범위).각 클래스는 영역의 경계를 정의합니다.이러한 클래스의 값은 위의  <b>분류:</b> 매개변수에 따라 결정됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>클래스 구분 값</h2></div>
+        <hr/>
+        <div>
+            <p>공백으로 구분된 원하는 클래스 구분 값을 입력합니다.예를 들어 클래스 구분 값으로 1.5, 3 및 7을 원하는 경우  <code>1.5 3 7</code>을 입력합니다.  이러한 값은 각 클래스의 상한을 정의하므로 클래스 수가 입력한 값의 수와 같습니다.예측 값이 입력한 가장 큰 구분 값을 초과하는 위치의 영역은 생성되지 않습니다.최소 2개 (32개 이하)의 값을 입력해야 합니다.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>결과물을 다음에 맞게 클립</h2></div>
+        <hr/>
+        <div>
+            <p>결과를 그릴 영역을 지정하는 레이어를 그리거나 제공합니다.예를 들어 호수 오염 측정을 내삽하는 경우 이 매개변수에서 호수의 경계를 사용할 수 있으며 호수 경계 내에서만 결과가 그려집니다.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>다음 위치에서 예측</h2></div>
+        <hr/>
+        <div>
+            <p>예측 값을 계산하기 위해 포인트 위치를 지정하는 레이어를 그리거나 제공합니다.이렇게 하면 관심 있는 특정 위치에 대해 예측할 수 있습니다.예를 들어 분석 레이어가 오염 수준의 측정을 표시하는 경우 이 매개변수를 사용하여 학교나 병원 내의 오염 위험도가 높은 곳의 오염 수준을 예측할 수 있습니다.  그러고 나면 이 정보를 사용하여 이러한 위치에서 보건 공무원에게 권장 사항을 제공할 수 있습니다.
+            </p>
+            <p>제공된 경우 이 도구의 결과물은 특정 위치의 예측 포인트 레이어입니다. 이 레이어의 이름은 결과 레이어 이름 뒤에 '포인트'가 붙은 것입니다.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에서 생성되어 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어 이름이 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 메뉴를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

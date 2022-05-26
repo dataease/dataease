@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Valgalade loomine</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Valgalade loomine"></h2>
+        <hr/>
+    <p>Selle t&ouml;&ouml;riistaga saate oma sisendkihi iga punkti jaoks m&auml;&auml;ratleda veelahkme ehk &uuml;lesvooluvalgla. 
+    </p>
+    <p>Oletagem n&auml;iteks, et Teil on hulk punkte, mis t&auml;histavad vee saastumist ning soovite kindlaks teha saastumise t&otilde;en&auml;olised allikad. Kuna saastumise allikas peab asuma punktist &uuml;lesvoolu, saate selle t&ouml;&ouml;riistaga kindlaks m&auml;&auml;rata saasteaine allikaid sisaldavad veelahkmed.
+    </p>
+    <p>Teie sisendpunkti asukoht on oluline.  Kui punkt ei asu t&auml;pselt &auml;ravoolujoonel, v&otilde;ivad tulemuseks saadud veelahkmed olla v&auml;ga v&auml;ikesed ja anal&uuml;&uuml;si jaoks kasutud. K&auml;suga  <b>Otsi vahemaad l&auml;hima &auml;ravoolukohani</b> saab sisendpunktide asukohta t&auml;psustada nii, et need j&auml;&auml;ksid t&auml;pselt &auml;ravoolujoonele. Sel viisil saate &uuml;les leida veelahkme, kust vesi voolab &auml;ravoolujoonel asuvasse kohta.  Valgalade leidmiseks kasutatud t&auml;psustatud asukohad kirjutatakse v&auml;ljundikihile &ndash; sisendpunkte ei muudeta.
+    </p>
+    <p>Tulemuseks on kihtide grupp, mis sisaldab kahte kihti:  valgalad ja nende arvutamiseks kasutatud t&auml;psustatud punktid.     
+    </p>
+    <p>Tulemuseks saadud valgaladel on k&otilde;ik Teie sisendpunktide atribuudid koos j&auml;rgmiste t&auml;iendavate atribuutidega:     
+        <ul>
+            <li> <i>PourPtID</i> &ndash; sisaldab sisendpunkti ID-v&auml;&auml;rtust;
+            </li>
+            <li> <i>Area Square Kilometers</i> &ndash; sisaldab valgalast &uuml;lesvoolu asuva valgala pindala ruutkilomeetrites;
+            </li>
+            <li> <i>Description</i> ja <i>DataResolution</i> &ndash; sisaldavad j&auml;lgimise arvutamiseks kasutatud h&uuml;droloogiliste andmetega seotud teavet.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Kui ruut  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, kasutatakse veelahkmete arvutamiseks ainult neid objekte, mis on praegu kaardil n&auml;ha.  Kui see ruut pole m&auml;rgitud, kasutatakse anal&uuml;&uuml;si koostamisel k&otilde;iki sisendkihis olevaid objekte ka siis, kui neid pole praegu kaardil n&auml;ha.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punktifunktsioonid kasutamiseks veekogude arvutamisel</h2></div>
+        <hr/>
+        <div>
+            <p>Iga punkti valgala (&uuml;lesvooluvalgala) arvutatakse eraldi v&auml;lja.  
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Otsi vahemaad lähima äravoolukohani</h2></div>
+        <hr/>
+        <div>
+            <p>Kui Teie sisendpunktid asuvad &auml;ravoolujoonest eemal, on tulemuseks saadud valgalad t&otilde;en&auml;oliselt v&auml;ga v&auml;ikesed ja neist ei pruugi anal&uuml;&uuml;siprotsessis, n&auml;iteks saastumise &uuml;lesvooluallika leidmisel, palju kasu olla.  Enamasti peaks sisendpunkt &auml;ravoolujoonel asuvasse punkti valguvate valgalade leidmiseks asuma l&auml;himal &auml;ravoolujoonel.  L&auml;hima &auml;ravoolujoone leidmiseks m&auml;&auml;rake otsingu ulatus. Kui te ei m&auml;&auml;ra otsinguulatust, kasutab t&ouml;&ouml;riist arvutamiseks konservatiivset otsinguulatust.  
+            </p>
+            <p>Sisendpunkti t&auml;pse asukoha kasutamiseks m&auml;&auml;rake otsinguulatuseks null.  
+            </p>
+            <p>Anal&uuml;&uuml;side h&otilde;lbustamiseks on Esri &auml;ravoolujooned standardsete h&uuml;droloogiamudelite p&otilde;hjal eelnevalt v&auml;lja arvutanud. Kui otsingu ulatuses ei asu &uuml;htegi &auml;ravoolujoont, kasutatakse suurima koguvooluga asukohta otsingu ulatuses.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Vaikenimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui samanimeline kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemused</b> kaudu saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemus salvestatakse.
+            </p>
+            <p> Selle t&ouml;&ouml;riista k&auml;itamine ei kasuta krediiti.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

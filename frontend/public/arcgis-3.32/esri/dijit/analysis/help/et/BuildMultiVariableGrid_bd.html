@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Täiustuse järk „mitme muutujaga võrk“</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Lisa andmete t&ouml;&ouml;voo skeem"></h2>
+        <hr/>
+    <p>T&ouml;&ouml;riista t&auml;iustuse j&auml;rk &bdquo;mitme muutujaga v&otilde;rk&ldquo; t&ouml;&ouml;tab punkt-, joon- v&otilde;i hulknurkobjekti &uuml;he v&otilde;i mitme kihiga. T&ouml;&ouml;riist loob ruudukujuliste v&otilde;i kuusnurksete lahtrite v&otilde;rgu ja arvutab igale lahtrile v&auml;&auml;rtused iga sisendkihi l&auml;heduse j&auml;rgi. Need v&auml;&auml;rtused v&otilde;ivad sisaldada j&auml;rgmisi muutujaid: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Kaugus l&auml;hima objektini</b>&mdash;Kaugus igast lahtrist l&auml;hima objektini
+            </li>
+            <li> <b>L&auml;hima objekti atribuut</b>&mdash; Igale lahtrile l&auml;hima objekti v&auml;ljav&auml;&auml;rtus
+            </li>
+            <li> <b>Lahtri &uuml;mbruse kokkuv&otilde;te</b>&mdash; Statistiline erin&auml;itaja k&otilde;igile objektidele, mis asuvad igast lahtrist teatud kaugusel
+            </li>
+            <li> <b>Lahtri l&otilde;ikepunktide kokkuv&otilde;te</b>&mdash; Statistiline erin&auml;itaja k&otilde;igile objektidele, mis l&otilde;ikuvad iga lahtriga
+            </li>
+        </ul>
+        
+    </p>
+    <p>Tulemuskihti kaasatakse ainult teie poolt m&auml;&auml;ratud muutujad. Need muutujad aitavad m&otilde;ista teie andmete l&auml;hedust ja jaotust. Tulemused aitavad teil leida vastuseid j&auml;rgmistele k&uuml;simustele:
+        <ul>
+            <li>Milline linnaosa on &uuml;histranspordi antud mitut kihti arvestades &uuml;histranspordiga k&otilde;ige halvemini k&auml;ttesaadav?
+            </li>
+            <li>V&otilde;ttes arvesse laevateede, n&auml;iteks j&auml;rvede ja j&otilde;gede kihte, millise nimega veekogu on k&otilde;ige l&auml;hemal igale asukohale USAs?
+            </li>
+            <li>V&otilde;ttes arvesse &uuml;he majapidamise sissetulekut, kus on sissetulekute variatsioon USAs 50 miili raadiuses k&otilde;ige suurem?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Valige lahtrite tüüp, mida kasutatakse mitme muutujaga võrgu loomiseks</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Valige lahtrite t&uuml;&uuml;p ja suurus, mida kasutatakse mitme muutujaga v&otilde;rgu loomiseks. Lahtrite loomisel  <b>ruuduna</b> m&auml;&auml;ratlevad ruudu k&otilde;rguse ja pikkuse m&auml;&auml;ratud arv ja &uuml;hikud. Kui teete valiku <b>Kuusnurk</b> m&auml;&auml;ravad arv ja &uuml;hikud paralleelk&uuml;lgede vahelise vahemaa.
+            </p>
+            <p>See anal&uuml;&uuml;s kasutab salvesid ja n&otilde;uab tasapinnalist ristkoordinaatide s&uuml;steemi.  <b>Koordinaats&uuml;steemi t&ouml;&ouml;tlemise</b> saab m&auml;&auml;rata funktsiooniga <b>Anal&uuml;&uuml;sikeskkonnad</b>. Kui koordinaats&uuml;steemi t&ouml;&ouml;tlemine ei ole m&auml;&auml;ratud tasapinnaliseks ristkoordinaatide s&uuml;steemiks, kuvatakse k&auml;su <b>K&auml;ivita anal&uuml;&uuml;s</b> andmisel selle m&auml;&auml;ramist taotlev h&uuml;pikaken.
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Valige sisendkihid ja muutujad, mida soovite võrku kaasata</h2></div>
+        <hr/>
+        <div>
+            <p>Kl&otilde;psake  lisamise nuppu ( <b>+</b>), et avada aken <b>Lisa muutujad</b> ja lisada kiht oma anal&uuml;&uuml;sile. Valige aknas <b>Lisa muutujad</b> sisendkiht ja konfigureerige muutujad, mida soovite selle sisendkihi puhul arvutada.
+            </p>
+            <p>Kui olete valinud ja konfigureerinud muutujad, mida soovite arvutada, loetletakse see kiht t&ouml;&ouml;riista aknas koos muude valitud kihtidega. Kl&otilde;psake mis tahes kihi redigeerimisnuppu, et avada aken  <b>Lisa muutujad</b> ja vaadata k&otilde;iki selle kihi jaoks konfigureeritud muutujaid. Kl&otilde;psata mis tahes kihi kustutamise nuppu, et eemaldada anal&uuml;&uuml;sist see kiht ja k&otilde;ik sellega seotud muutujad.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Lisa muutujad</h2></div>
+        <hr/>
+        <div>
+            <p>Selles aknas saab valida sisendkihi ja konfigureerida muutujad, mida soovite selle sisendkihi puhul arvutada. Alustamiseks kasutage rippmen&uuml;&uuml;d  <b>Vali sisendkiht</b>, et valida punkt-, hulknurk- v&otilde;i joonkiht, mida soovite oma anal&uuml;&uuml;sile lisada.
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+            <p>P&auml;rast sisendkihi valimist kl&otilde;psake nuppu  <b>Lisa muutuja</b>, et avada redigeerimiseks uus muutuja. Igale muutujale tuleb anda unikaalne nimi. See on v&auml;lja nimi, mis on loodud tulemkihi atribuuditabelis.
+            </p>
+            <p>Lisatava muutuja t&uuml;&uuml;bi valimiseks kasutage rippmen&uuml;&uuml;d. K&otilde;ik muutujat&uuml;&uuml;bid tuleb konfigureerida parameetrite unikaalse komplektiga ja k&otilde;ik parameetrid on vajalikud.
+            </p>
+            <p>Kui olete valitud kihile lisanud k&otilde;ik soovitud muutujad, kl&otilde;psake muutujate salvestamiseks nuppu  <b>Lisa</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Loodavakihi nimi.  Kui kirjutate andmelattu ArcGIS Data Store, salvestatakse teie tulemused  <b>Minu sisus</b> ja lisatakse kaardile. Kui kirjutate suurandmete failikettale, salvestatakse teie andmed suurandmete failikettale  ja lisatakse  selle manifestifailile. Seda  ei lisata kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui see kiht on juba olemas, siis t&ouml;&ouml;tlemine nurjub.
+            </p>
+            <p>Kui salvestate admelattu   ArcGIS Data Store (relatsioonilisse v&otilde;i ajalisruumilisse andmelattu), kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemused salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

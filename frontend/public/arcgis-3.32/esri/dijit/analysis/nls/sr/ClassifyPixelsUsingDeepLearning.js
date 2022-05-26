@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/sr/ClassifyPixelsUsingDeepLearning",{toolDefine:"Klasifikuj piksele pomo\u0107u detaljnog u\u010denja",outputLayerName:"${layername}_classified",modelLabel:"Odaberite model detaljnog u\u010denja koji se koristi za klasifikovanje piksela",modelArgsLabel:"Navedite argumente modela detaljnog u\u010denja",nameLabel:"Naziv",valueLabel:"Vrednost",queryModelArgsMsg:"Izvr\u0161avanje upita za argumente modela...",analysisLayerLabel:"Odaberite snimak koji se koristi za klasifikovanje piksela",
+itemDescription:"Servis za analizu snimaka nastao iz funkcije Klasifikuj piksele pomo\u0107u detaljnog u\u010denja",itemTags:"Rezultat rasterske analize, Klasifikuj piksele pomo\u0107u detaljnog u\u010denja, ${layername}",itemSnippet:"Servis za analizu snimaka nastao iz funkcije Klasifikuj piksele pomo\u0107u detaljnog u\u010denja"});

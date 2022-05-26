@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Reconstruir Caminhos</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="Reconstruir Caminhos"></h2>
+        <hr/>
+    <p> Esta ferramenta funciona com uma camada habilitada ao tempo de fei&ccedil;&otilde;es de &aacute;rea ou ponto que representa um <code>instante</code> no tempo.   Ela primeiro determina quais fei&ccedil;&otilde;es pertencem a um caminho utilizando um identificador. Com a utiliza&ccedil;&atilde;o do tempo em cada localiza&ccedil;&atilde;o, os caminhos s&atilde;o consecutivamente ordenados e transformados em uma linha ou &aacute;rea representando o caminho de movimento com o passar do tempo. Opcionalmente, a entrada pode ser armazenada em buffer por um campo, o que criar&aacute; uma &aacute;rea em cada local. Estes pontos com buffer  ou &aacute;reas de entrada, s&atilde;o ent&atilde;o ligados consecutivamente para criar um caminho como uma &aacute;rea onde a largura &eacute; representante do atributo de interesse. Os caminhos resultantes t&ecirc;m um tempo inicial e final, que representa a primeira e &uacute;ltima fei&ccedil;&atilde;o temporariamente em um caminho fornecido. Quando os caminhos s&atilde;o criados, as estat&iacute;sticas sobre as fei&ccedil;&otilde;es de entrada s&atilde;o calculadas e atribu&iacute;das para o caminho de sa&iacute;da. A estat&iacute;stica mais b&aacute;sica &eacute; a contagem de pontos dentro da &aacute;rea, mas outras estat&iacute;sticas podem ser calculadas tamb&eacute;m.
+    </p>
+    <p>Fei&ccedil;&otilde;es nas camads habilitadas ao tempo podem ser representadas em uma de duas maneiras:
+        <ul>
+            <li>Momento&mdash;Um momento &uacute;nico no tempo
+            </li>
+            <li>Intervalo&mdash;Um tempo inicial e final
+            </li>
+        </ul>
+        
+    </p>
+    <p>Por exemplo, suponha que voc&ecirc; tenha medi&ccedil;&otilde;es de GPS dos furac&otilde;es a cada 10 minutos. Cada medi&ccedil;&atilde;o de GPS registra o nome do furac&atilde;o, local, tempo de registro e velocidade do vento. Com estas informa&ccedil;&otilde;es, voc&ecirc; pode criar caminhos para cada furac&atilde;o utilizando o nome da identifica&ccedil;&atilde;o do caminho e caminhos para cada furac&atilde;o que ser&aacute; gerado. Adicionalmente, voc&ecirc; pode calcular estat&iacute;stica como a velocidade do vento m&eacute;dia, m&aacute;xima e m&iacute;nimo de cada furac&atilde;o, como tamb&eacute;m a contagem das medi&ccedil;&otilde;es dentro de cada caminho.
+    </p>
+    <p>Com a utiliza&ccedil;&atilde;o do mesmo exemplo, voc&ecirc; pode criar o buffer dos seus caminhos pela velocidade do vento. Isto ir&aacute; criar um buffer de cada medi&ccedil;&atilde;o pelo campo da velocidade do vento neste local e ligar as &aacute;reas com buffer, criando uma  &aacute;rea representativa do caminho, como tamb&eacute;m, as altera&ccedil;&otilde;es na velocidade do vento quando os furac&otilde;es progredirem.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolher feições para reconstruir caminhos</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de ponto ou de &aacute;rea que ser&aacute; reconstru&iacute;da nos caminhos. A camada de entrada deve ser habilitada ao tempo com fei&ccedil;&otilde;es que representam um instante no tempo. As camadas de entrada devem estar em um sistema de coordenadas planas ou a refer&ecirc;ncia espacial de processamento deve ser definida para um sistema de coordenadas planas utilizando os  <b>Ambientes de An&aacute;lise</b> se um buffer estiver aplicado.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista suspensa para procurar por seu conte&uacute;do para um conjunto de dados de compartilhamento do arquivo de grandes dados ou camada de fei&ccedil;&atilde;o.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Escolher um ou mais campos para identificar caminhos</h2></div>
+        <hr/>
+        <div>
+            <p>Os campos que representam o identificador do caminho. 
+            </p>
+            <p>Como um exemplo, se voc&ecirc; for reconstruir caminhos de furac&otilde;es, voc&ecirc; pode utilizar o nome de furac&atilde;o como o campo do caminho.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Escolher método para reconstruir caminhos</h2></div>
+        <hr/>
+        <div>
+            <p>O m&eacute;todo utilizado para ligar caminhos e aplicar buffer (se aplic&aacute;vel). O m&eacute;todo  <b>Planar</b> pode calcular os resultados mais rapidamente mas n&atilde;o envolver&aacute; os caminhos na linha de data internacional ou levar&aacute; em conta a forma real da Terra ao criar o buffer. O m&eacute;todo <b>Geod&eacute;sico</b> envolver&aacute; os caminhos na linha de data se for preciso e aplicar&aacute; um buffer geod&eacute;sico para levar em conta o formato da Terra.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Criar uma expressão para gerar o buffer das feições de entrada (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>A equa&ccedil;&atilde;o utilzada para calcular a dist&acirc;ncia de buffer ao redor das fei&ccedil;&otilde;es de entrada. Esta equa&ccedil;&atilde;o pode ser gerada utilizando o calculador de buffer e opera&ccedil;&otilde;es b&aacute;sicas, tais como, adicionar, subtrair, multiplicar e dividir s&atilde;o suportadas. Os valores s&atilde;o calculados utilizando o sistema de an&aacute;lise de coordenadas. As camadas de entrada devem estar em um sistema de coordenadas planas ou a refer&ecirc;ncia espacial de processamento deve ser definida para um sistema de coordenadas planas utilizando os  <b>Ambientes de An&aacute;lise</b> se um buffer estiver aplicado.
+            </p>
+            <p>Uma equa&ccedil;&atilde;o como  <code>$feature.windspeed * 1000</code> aplicaria um buffer de 1.000 multiplicado pelo campo <i>windspeed</i>. Voc&ecirc; pode utilizar mais de um campo no calculador de buffer.
+            </p>
+            <p> Voc&ecirc; tamb&eacute;m pode especificar uma express&atilde;o com informa&ccedil;&otilde;es do caminho. Por exemplo, voc&ecirc; pode calcular a soma do valor do campo <i>windspeed</i> da fei&ccedil;&atilde;o atual e anterior, duas fei&ccedil;&otilde;es com uma equa&ccedil;&atilde;o como <code>$track.field(windspeed).history(-3)</code>. Em cada localiza&ccedil;&atilde;o, a soma da atual <i>windspeed</i>, e anterior, duas medidas seriam calculadas e gerados o buffer.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Selecionar um tempo para dividir caminhos (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Tempo utilizado para dividir caminhos. Se pontos ou &aacute;reas de entrada tiverem uma dura&ccedil;&atilde;o mais longa entre eles que a divis&atilde;o de tempo, eles ser&atilde;o divididos em caminhos diferentes.
+            </p>
+            <p>Se voc&ecirc; especificar uma divis&atilde;o de tempo e uma divis&atilde;o de dist&acirc;ncia, os caminhos ser&atilde;o divididos quando uma ou ambas as condi&ccedil;&otilde;es forem atendidas. 
+            </p>
+            <p>Imagine que voc&ecirc; tinha fei&ccedil;&otilde;es de ponto representando voos de aeronaves, onde o campo de caminho era ID da Aeronave. Esta aeronave poderia fazer viagens m&uacute;ltiplas e seria representada como um caminho.  Se voc&ecirc; soubesse que h&aacute; uma pausa de 1 hora entre os voos, voc&ecirc; poderia utilizar  <code>1 hora</code> j&aacute; que seu caminho divide e cada voo seria dividido em seu pr&oacute;prio caminho.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Dividir por caminhos (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Voc&ecirc; pode dividir os caminhos utilizando tr&ecirc;s m&eacute;todos diferentes. Voc&ecirc; pode utilizar uma combina&ccedil;&atilde;o de nenhum, todos ou alguns dos m&eacute;todos de divis&atilde;o. 
+            </p>
+            <p>As divis&otilde;es podem ser conclu&iacute;das das seguintes maneiras:
+                <ul>
+                    <li> <b>Baseado em uma dist&acirc;ncia entre entradas</b>&mdash;Se pontos ou &aacute;reas de entrada tiverem uma dist&acirc;ncia mais longa entre eles do que a dist&acirc;ncia especificada, eles ser&atilde;o divididos em caminhos diferentes. Por exemplo, se voc&ecirc; especificou uma dist&acirc;ncia de 10 quil&ocirc;metros, pontos sequenciais maiores que 10 quil&ocirc;metros ser&atilde;o caminhos separados.
+                    </li>
+                    <li> <b>Baseado em um tempo entre entradas</b>&mdash;Se pontos ou &aacute;reas de entrada tiverem uma dura&ccedil;&atilde;o maior entre eles do que a divis&atilde;o de tempo, eles ser&atilde;o divididos em caminhos diferentes. Por exemplo, se tivesse fei&ccedil;&otilde;es de ponto representando voos de aeronaves, onde o campo de pista era o ID da aeronave. Esta aeronave poderia fazer viagens m&uacute;ltiplas e seria representada como um caminho.  Se voc&ecirc; soubesse que h&aacute; uma pausa de 1 hora entre os voos, voc&ecirc; poderia utilizar <code>1 hora</code> j&aacute; que seu caminho divide e cada voo seria dividido em seu pr&oacute;prio caminho.
+                    </li>
+                    <li> <b>Em intervalos de tempo definidos</b>&mdash;Dividir utilizando intervalos regulares, especificados por um intervalo de tempo e um tempo de refer&ecirc;ncia. Se voc&ecirc; n&atilde;o especificar um hor&aacute;rio de refer&ecirc;ncia, 1&ordm; de Janeiro de 1970 ser&aacute; utilizado. Por exemplo, se voc&ecirc; especificou 1 ano com um hor&aacute;rio de refer&ecirc;ncia de 2 de Fevereiro de 1990 &agrave;s 10:00, voc&ecirc; dividiria os caminhos em 2 de Fevereiro de 1990 &agrave;s 10:00, 2 de Fevereiro de 1991 &agrave;s 10:00 e continuaria em intervalos de ano.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Se voc&ecirc; especificar v&aacute;rias op&ccedil;&otilde;es de divis&atilde;o, os caminhos ser&atilde;o divididos quando uma ou mais condi&ccedil;&otilde;es forem atendidas. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Selecionar uma distância para dividir caminhos (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Dist&acirc;ncia utilizada para dividir caminhos. Se os pontos ou &aacute;reas de entrada tiverem uma dist&acirc;ncia maior entre eles do que a divis&atilde;o de dist&acirc;ncia, eles ser&atilde;o divididos em caminhos diferentes.
+            </p>
+            <p>Se voc&ecirc; especificar uma divis&atilde;o de tempo e uma divis&atilde;o de dist&acirc;ncia, os caminhos ser&atilde;o divididos quando uma ou ambas as condi&ccedil;&otilde;es forem atendidas. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Adicionar estatísticas (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p> Voc&ecirc; pode calcular as estat&iacute;stica em fei&ccedil;&otilde;es que s&atilde;o resumidas.
+Voc&ecirc; pode calcular o seguinte em campos num&eacute;ricos:
+                <ul>
+                    <li>Contagem&mdash;Calcula o n&uacute;mero de valores diferentes de nulo.
+Pode ser utilizado em campos num&eacute;ricos ou strings. 'A contagem de [null, 0, 2] &eacute; 2.
+                    </li>
+                    <li>Soma&mdash;A soma de valores num&eacute;ricos em um campo. A soma de [null, null, 3] &eacute; 3.
+                    </li>
+                    <li>M&eacute;dia&mdash;A m&eacute;dia de valores num&eacute;ricos. A m&eacute;dia de [0, 2, null] &eacute; 1.
+                    </li>
+                    <li>M&iacute;n&mdash;O valor m&iacute;nimo de um campo num&eacute;rico. O m&iacute;nimo de [0, 2, null] &eacute; 0. 
+                    </li>
+                    <li>M&aacute;x&mdash;O valor m&aacute;ximo de um campo num&eacute;rico. O valor m&aacute;ximo de [0, 2, null] &eacute; 2.
+                    </li>
+                    <li>Alcance&mdash;O alcance de um campo num&eacute;rico. Isto &eacute; calculado como os valores m&iacute;nimos subtra&iacute;dos do valor m&aacute;ximo. O alcance de [0, null, 1] &eacute; 1. O alcance de [null, 4] &eacute; 0.
+                    </li>
+                    <li>Vari&acirc;ncia&mdash;A vari&acirc;ncia de um campo num&eacute;rico em um caminho. A vari&acirc;ncia de [1] &eacute; nula. A vari&acirc;ncia de [null, 1,0,1,1] &eacute; 0,25.
+                    </li>
+                    <li>Desvio padr&atilde;o&mdash;O desvio padr&atilde;o de um campo num&eacute;rico. O desvio padr&atilde;o de [1] &eacute; nulo. O desvio padr&atilde;o de [nulo, 1,0,1,1] &eacute; 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Voc&ecirc; pode calcular o seguinte em campos de strings:
+                <ul>
+                    <li>Contagem&mdash;O n&uacute;mero de strings diferente de nulo.
+                    </li>
+                    <li>Qualquer&mdash;Esta estat&iacute;stica &eacute; uma amostra aleat&oacute;ria de um valor de string no campo especificado.
+                    </li>
+                </ul>
+                Todas as estat&iacute;sticas s&atilde;o calculadas em valores n&atilde;o nulos. A camada resultante conter&aacute; um novo atributo para cada estat&iacute;stica calculada. Qualquer n&uacute;mero de estat&iacute;stica pode ser adicionado ao escolher um atributo e estat&iacute;stica. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Escolher um ArcGIS Data Store para salvar os resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Os resultados do GeoAnalytic s&atilde;o armazenados em um armazenamento de dados e expostos como uma camada de fei&ccedil;&atilde;o no  Portal for ArcGIS. Na maioria dos casos, os resultados devem ser armazenados no armazenamento de dados de espa&ccedil;o-tempo e este &eacute; o padr&atilde;o. Em alguns casos, salvar resultados no armazenamento de dados relacional &eacute; uma boa op&ccedil;&atilde;o. Abaixo est&atilde;o as raz&otilde;es pelas quais voc&ecirc; talvez queira armazenar resultados em  um armazenamento de dados relacional: 
+                <ul>
+                    <li>Voc&ecirc; pode  utilizar os resultados no portal-para-colabora&ccedil;&atilde;o do portal.
+                    </li>
+                    <li>Voc&ecirc; pode habilitar os recursos de sincroniza&ccedil;&atilde;o com seus resultados.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Voc&ecirc; n&atilde;o deve utilizar um armazenamento de dados relacional se voc&ecirc; espera que os resultados do GeoAnalytics aumentem e deseja aproveitar os recursos do armazenamento de grandes dados de espa&ccedil;o-tempo para lidar com grandes quantidades de dados.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se voc&ecirc; estiver gravando em um ArcGIS Data Store, seus resultados ser&atilde;o salvos em  <b>Meu Conte&uacute;do</b> e adicionados no mapa. Se voc&ecirc; estiver gravando em um compartilhamento do arquivo de grandes dados, seus resultados ser&atilde;o armazenados compartilhamento do arquivo de grandes dados  e adicionados em seu   manifesto. N&atilde;o ser&atilde;o adicionados no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existe, a ferramenta falhar&aacute;.
+            </p>
+            <p>Ao gravar no  ArcGIS Data Store  (armazenamento de grandes dados de espa&ccedil;o-tempo ou relacional) utilizando a caixa suspensa  <b>Salvar resultados em</b> , voc&ecirc; pode especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Buscar más cercano</h2><p/>
+        <h2><img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="Buscar m&aacute;s cercano"></h2>
+        <hr/>
+    <p>Esta herramienta busca las entidades m&aacute;s cercanas y genera un informe y clasifica la distancia a las entidades pr&oacute;ximas. Para buscar lo m&aacute;s cercano, la herramienta puede medir con una distancia en l&iacute;nea recta o un modo de viaje seleccionado. Existen opciones para limitar el n&uacute;mero de entidades cercanas para buscar o el intervalo dentro del cual se har&aacute; la b&uacute;squeda. Los resultados de esta herramienta pueden ayudarle a responder las siguientes clases de preguntas:
+        <ul>
+            <li>&iquest;Cu&aacute;l es el parque m&aacute;s cercano desde aqu&iacute;?
+            </li>
+            <li>&iquest;A qu&eacute; hospital puedo llegar en el tiempo de recorrido m&aacute;s breve? &iquest;Cu&aacute;nto durar&iacute;a el trayecto un martes a las 5:30 de la tarde en hora punta?
+            </li>
+            <li>&iquest;Cu&aacute;les son las distancias por carretera entre estas dos grandes ciudades?
+            </li>
+            <li>&iquest;Cu&aacute;l de estos pacientes reside a dos kil&oacute;metros de estas plantas qu&iacute;micas?
+            </li>
+        </ul>
+        
+    </p>
+    <p>La opci&oacute;n Buscar m&aacute;s cercano devuelve una capa que contiene las entidades m&aacute;s cercanas y una capa de l&iacute;neas que vincula las ubicaciones de partida con sus ubicaciones m&aacute;s cercanas. La capa de l&iacute;neas opcional contiene informaci&oacute;n sobre las ubicaciones de partida y cercanas, y las distancias entre ellas.
+    </p>
+    <p>Si se ha activado  <b>Utilizar la extensi&oacute;n de mapa actual al buscar ubicaciones</b>, solo se tendr&aacute;n en cuenta como entidades de partida y potencialmente cercanas aquellas entidades que est&eacute;n visibles en la extensi&oacute;n de mapa actual.  
+Si no se ha activado, se tendr&aacute;n en cuenta todas las entidades de la capa de entrada, aunque est&eacute;n fuera de la extensi&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Especificar las ubicaciones de inicio</h2></div>
+        <hr/>
+        <div>
+            <p>La opci&oacute;n Buscar m&aacute;s cercano mide desde las entidades de la capa que se especifica aqu&iacute; (las ubicaciones iniciales) hasta las ubicaciones especificadas en el siguiente par&aacute;metro.  La herramienta admite hasta  5.000 entidades en cada capa. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>Buscar las ubicaciones más cercanas en</h2></div>
+        <hr/>
+        <div>
+            <p>La opci&oacute;n Buscar m&aacute;s cercano mide desde cada una de las entidades de la primera capa hasta las ubicaciones de esta capa. La herramienta admite hasta  5.000 ubicaciones en cada capa. </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Medir</h2></div>
+        <hr/>
+        <div>
+            <p>Elija si desea buscar las ubicaciones m&aacute;s cercanas bas&aacute;ndose en una distancia en l&iacute;nea recta o un modo de viaje seleccionado. Los modos de viaje solo est&aacute;n habilitados si su capa de entrada contiene puntos. Los modos de viaje disponibles vienen determinados por el administrador de su organizaci&oacute;n.  Al usar uno de los modos de viaje, las mediciones se efect&uacute;an en carreteras o caminos y respetan las reglas aplicables, como por ejemplo las v&iacute;as de sentido &uacute;nico, los giros prohibidos, etc.
+            </p>
+            <p>Cuando se mide entre l&iacute;neas o &aacute;reas, se encuentra la distancia desde o hasta el punto m&aacute;s cercano en la l&iacute;nea, o el l&iacute;mite del &aacute;rea. 
+            </p> 
+            <p>Al elegir  <b>Tiempo de conducci&oacute;n</b>, <b>Tiempo de conducci&oacute;n (medio rural)</b> o <b>Tiempo en cami&oacute;n</b>, dispone de distintas opciones para medir el tiempo de recorrido.
+                <ul>
+                    <li>
+                        <p>Desactive  <b>Utilizar tr&aacute;fico</b> para encontrar los centros m&aacute;s cercanos basados en velocidades de viaje predeterminadas tales como los l&iacute;mites de velocidad en lugar de en velocidades fluctuantes ocasionadas por el cambio en las condiciones del tr&aacute;fico.
+                        </p>
+                        <p>Esta es la opci&oacute;n que debe elegir si desea conocer las ubicaciones cercanas en general, pero no obligatoriamente las condiciones de tr&aacute;fico dadas m&aacute;s cercanas para una hora y un d&iacute;a espec&iacute;fico.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Active  <b>Utilizar tr&aacute;fico</b> para buscar las ubicaciones m&aacute;s cercanas bas&aacute;ndose en una hora de inicio dada y unas condiciones de tr&aacute;fico variables. Si adem&aacute;s elige la opci&oacute;n <b>Tr&aacute;fico en directo</b>, la hora de salida desde las ubicaciones de partida se establece en la hora actual, y se toman como referencia las velocidades de tr&aacute;fico actuales y previstas de los sensores y las fuentes para determinar cu&aacute;les son las entidades m&aacute;s cercanas. Las velocidades de tr&aacute;fico previstas se calculan en funci&oacute;n de las velocidades de tr&aacute;fico en directo, las velocidades hist&oacute;ricas y eventos actuales como las condiciones meteorol&oacute;gicas. Las velocidades de tr&aacute;fico se predicen con 12 horas de antelaci&oacute;n, de modo que puede mover la barra deslizante para establecer la hora de salida hasta 12 horas antes.
+                        </p>
+                        <p>Utiliza esta configuraci&oacute;n de tr&aacute;fico en directo para averiguar a qu&eacute; entidades se puede llegar en el tiempo m&aacute;s corto posible saliendo ahora, dentro de una hora, etc.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Al activar  <b>Utilizar tr&aacute;fico</b> y elegir <b>Tr&aacute;fico basado en las condiciones t&iacute;picas para</b> un d&iacute;a y una hora, la herramienta busca las entidades m&aacute;s cercanas bas&aacute;ndose en las velocidades medias hist&oacute;ricas para cada intervalo de cinco minutos de una semana normal. Los resultados incluyen el tr&aacute;fico pero eliminan la influencia de las condiciones de tr&aacute;fico y los eventos de ese momento, que pueden variar considerablemente de lo habitual.
+                        </p>
+                        <p>Puede utilizar esta configuraci&oacute;n de tr&aacute;fico hist&oacute;rica para preguntar, por ejemplo, &quot;&iquest;A qu&eacute; entidades puedo llegar m&aacute;s r&aacute;pidamente saliendo de las entidades de partida a las 11:30 de la ma&ntilde;ana de un mi&eacute;rcoles?&quot; 
+                        </p>
+                        <p>La hora que establezca utilizar&aacute; la zona horaria en la que se sit&uacute;an sus entidades de partida. Es decir, si establece la hora a las 8:00 de la ma&ntilde;ana y tiene dos entidades de partida, una en la ciudad de Nueva York y otra en Los Angeles, las ubicaciones m&aacute;s cercanas se buscar&aacute;n con hora de salida a las 8:00 de la ma&ntilde;ana. hora del Este y las 8:00 de la ma&ntilde;ana hora del Pac&iacute;fico, respectivamente.
+                        </p>
+                    </li>
+                </ul>
+                Tenga en cuenta que cuando un veh&iacute;culo empieza el recorrido desde un punto, el tiempo transcurre y las condiciones de tr&aacute;fico cambian. Esta herramienta tiene en cuenta estas variaciones si se activa <b>Utilizar tr&aacute;fico</b>; sin embargo, no todas las regiones admiten tr&aacute;fico. Haga clic en el v&iacute;nculo <b>Ver disponibilidad</b> de la herramienta para averiguar si est&aacute; disponible en su &aacute;rea de estudio. 
+            </p>
+            <p> <b>Tiempo en cami&oacute;n</b> puede utilizar velocidades de viaje din&aacute;micas basadas en el tr&aacute;fico, pero solo hasta el l&iacute;mite de velocidad permitido para camiones. Por ejemplo, si la velocidad din&aacute;mica de una calle basada en el tr&aacute;fico en directo es de 65 millas por hora, pero el l&iacute;mite de velocidad para camiones en esa calle es de 55 millas por hora, el c&aacute;lculo utilizar&aacute; 55 millas por hora para esa calle.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Seleccionar capas de barrera</h2></div>
+        <hr/>
+        <div>
+            <p> Una o varias entidades que act&uacute;an como restricciones temporales (barreras) al viajar por las calles subyacentes. Puede especificar las barreras mediante entidades poligonales, de puntos o l&iacute;neas.
+            </p>
+            <p>Una barrera de punto puede modelar un &aacute;rbol ca&iacute;do, un accidente, una l&iacute;nea el&eacute;ctrica ca&iacute;da o cualquier cosa que bloquee completamente el tr&aacute;fico en una posici&oacute;n concreta a lo largo de la calle. Se permite el desplazamiento por la calle, pero no por la barrera. Puede especificar hasta 250 entidades para que act&uacute;en como barreras de punto.
+            </p>
+            <p>Una barrera de l&iacute;nea proh&iacute;be viajar a cualquier punto en que la barrera interseque las calles. Por ejemplo, un desfile o una protesta que bloquee el tr&aacute;fico por varios segmentos de calle se puede modelar con una barrera de l&iacute;nea. Si el n&uacute;mero de las entidades de calle intersecadas por todas las barreras de l&iacute;nea supera 500, la herramienta devuelve un error.
+            </p>
+            <p>Una barrera de pol&iacute;gono proh&iacute;be viajar a cualquier punto en que el pol&iacute;gono interseque las calles. Un uso de este tipo de barrera consiste en modelar inundaciones cubriendo &aacute;reas de la red de calles que hacen inviables los viajes por carretera. Si el n&uacute;mero de las entidades de calle intersecadas por todas las barreras de pol&iacute;gono supera 2.000, la herramienta devuelve un error.
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>Para cada ubicación de la capa de entrada</h2></div>
+        <hr/>
+        <div>
+            <p>Tambi&eacute;n dispone de dos opciones para limitar la b&uacute;squeda de las ubicaciones m&aacute;s cercanas. Una opci&oacute;n es limitar la b&uacute;squeda a un n&uacute;mero m&aacute;ximo de ubicaciones cercanas por ubicaci&oacute;n de partida. Puede buscar el parque m&aacute;s cercano, los dos m&aacute;s cercanos, etc. La otra opci&oacute;n es establecer un tiempo o una distancia de b&uacute;squeda m&aacute;ximo.
+            </p>
+            <p>Si las opciones se desactivan, el n&uacute;mero m&aacute;ximo de ubicaciones cercanas para buscar es 100 (el l&iacute;mite de la herramienta) y el intervalo de b&uacute;squeda es ilimitado.
+            </p>
+            <p>El tiempo de procesamiento depende del n&uacute;mero de ubicaciones de partida, del n&uacute;mero de ubicaciones cercanas y del intervalo de b&uacute;squeda m&aacute;ximo. Cuando hay m&aacute;s ubicaciones o intervalos de b&uacute;squeda m&aacute;s amplios, el tiempo de procesamiento es m&aacute;s largo.
+            </p>
+            <p>Tenga en cuenta que cuando se establece un l&iacute;mite en el intervalo de b&uacute;squeda, es posible que la herramienta no encuentre ninguna ubicaci&oacute;n m&aacute;s cercana dentro de ese intervalo o se encuentren menos ubicaciones que el n&uacute;mero m&aacute;ximo de las localizaciones m&aacute;s cercanas que ha especificado.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre de la capa de entidades que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa. Si la capa de entidades ya existe, se le pedir&aacute; que indique otro nombre. La capa de resultados contendr&aacute; dos capas: una que representa las ubicaciones m&aacute;s cercanas y otra que representa las l&iacute;neas que conectan las ubicaciones de entrada con las ubicaciones m&aacute;s cercanas.
+            </p>
+            <p>Si selecciona  <b>Incluir capas de rutas</b>, cada ruta del resultado se guarda tambi&eacute;n como una capa de rutas. Las capas de rutas incluyen toda la informaci&oacute;n de una determinada ruta, por ejemplo, las paradas asignadas a la ruta y las indicaciones del viaje. Crear capas de rutas resulta &uacute;til si desea compartir rutas concretas con otros miembros de su organizaci&oacute;n o si desea modificar a&uacute;n m&aacute;s las rutas utilizando el bot&oacute;n <b>Indicaciones</b> del Visor de mapas. Las capas de rutas utilizan el nombre proporcionado para la capa de entidades como prefijo y se agrega el nombre de ruta generado como parte del an&aacute;lisis para crear un nombre &uacute;nico para cada capa de rutas.
+            </p>
+            <p>El n&uacute;mero m&aacute;ximo de capas de ruta que se pueden crear es  1,000. Si el resultado contiene m&aacute;s de  1,000 rutas y la opci&oacute;n  <b>Incluye capas de ruta</b> est&aacute; activada, la herramienta solo crear&aacute; el servicio de entidades de salida.
+            </p>
+            <p>En el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute;n la capa de entidades y las capas de rutas, si se han creado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

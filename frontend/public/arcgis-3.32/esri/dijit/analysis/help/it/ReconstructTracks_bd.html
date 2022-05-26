@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Ricostruisci Tracce</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="Ricostruisci tracce"></h2>
+        <hr/>
+    <p> Questo strumento funziona con un layer abilitato per variazioni temporali di feature puntuali o areali che rappresentano un <code>istante</code> nel tempo. Innanzitutto esso determina quali feature appartengono a una traccia utilizzando un identificatore. Utilizzando il tempo in ciascuna posizione, le tracce sono ordinate in modo sequenziale e trasformate in una linea o in un'area che rappresenta la traiettoria del movimento nel tempo. Se lo si desidera, l'input pu&ograve; essere bufferizzato in funzione di un campo e verr&agrave; creata un'area in ciascuna posizione. Questi punti bufferizzati o le aree di input vengono uniti in modo sequenziale per creare una traccia in forma di area laddove la larghezza &egrave; indicativa dell'attributo di interesse. Le tracce generate hanno un'ora di inizio e un'ora di fine, che rappresentano temporalmente la prima e l'ultima feature in una determinata traccia. Quando si creano le tracce, vengono calcolate le statistiche su tutte le feature di input e vengono assegnate alla traccia di output. La statistica pi&ugrave; semplice &egrave; costituita dal numero di punti compresi nell'area, tuttavia &egrave; possibile calcolare anche altre statistiche.
+    </p>
+    <p>Le feature abilitate per variazioni temporali possono essere rappresentate in due modi diversi:
+        <ul>
+            <li>Istante: per un singolo momento di tempo
+            </li>
+            <li>Intervallo: un'ora d'inizio e un'ora di fine
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si supponga, ad esempio, di avere misurazioni GPS di uragani ogni 10 minuti. Ogni misurazione GPS registra il nome dell'uragano, la posizione, l'ora di registrazione e la velocit&agrave; del vento. Con queste informazioni, &egrave; possibile creare tracce per ciascun uragano utilizzando il nome per identificare la traccia. Per ogni uragano verranno generate tracce. Inoltre, &egrave; possibile calcolare statistiche come la velocit&agrave; media, massima e minima del vento di ciascun uragano, nonch&eacute; il numero delle misurazioni all'interno di ciascuna traccia.
+    </p>
+    <p>Utilizzando lo stesso esempio, &egrave; possibile eseguire il buffer delle tracce in funzione della velocit&agrave; del vento. Verr&agrave; eseguito il buffer di ciascuna misurazione in funzione del campo della velocit&agrave; del vento in tale posizione e verranno unite le aree bufferizzate, creando un'area che rappresenta la traiettoria della traccia e le modifiche alla velocit&agrave; del vento e al procedere degli uragani.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegliere le feature da cui ricostruire le tracce</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer puntuale o areale che verr&agrave; ricostruito nelle tracce. Il layer di input deve essere abilitato per le variazioni temporali con feature che rappresentano un'istante nel tempo. Il layer deve essere in un sistema di coordinate proiettate o il riferimento spaziale di elaborazione deve essere impostato su un sistema di coordinate proiettate utilizzando gli  <b>Ambienti di analisi</b> se viene applicato un buffer.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Scegliere uno o più campi per identificare le tracce</h2></div>
+        <hr/>
+        <div>
+            <p>I campi che rappresentano l'identificatore di tracce. 
+            </p>
+            <p>Ad esempio, se si stanno ricostruendo tracce di uragani, si dovrebbe usare il nome dell'uragano come campo della traccia.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Scegliere il metodo utilizzato per ricostruire le tracce</h2></div>
+        <hr/>
+        <div>
+            <p>Metodo utilizzato per unire le tracce e applicare il buffer (se applicabile). Il metodo  <b>Planare</b> consente di calcolare i risultati pi&ugrave; velocemente ma non unisce le tracce in corrispondenza della linea di cambio data internazionale n&eacute; tiene in considerazione la forma effettiva della terra durante il buffering. Il metodo <b>Geodetico</b> consente di unire le tracce in corrispondenza della linea di cambio data e applica un buffer geodetico tenendo in considerazione la forma effettiva della terra.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Creare un'espressione con cui eseguire il buffer di feature di input (facoltativo)</h2></div>
+        <hr/>
+        <div>
+            <p>Equazione utilizzata per calcolare la distanza del buffer intorno alle feature di input. Questa equazione pu&ograve; essere generata utilizzando il calcolatore del buffer e operazioni di base come l'addizione, la sottrazione, la moltiplicazione e la divisione. I valori vengono calcolati utilizzando il sistema di coordinate di analisi. Il layer deve essere in un sistema di coordinate proiettate o il riferimento spaziale di elaborazione deve essere impostato su un sistema di coordinate proiettate utilizzando gli  <b>Ambienti di analisi</b> se viene applicato un buffer.
+            </p>
+            <p>Un'equazione come  <code>$feature.windspeed * 1000</code> applicherebbe un buffer di 1000 moltiplicato per il campo <i>windspeed</i>. &Egrave; possibile utilizzare pi&ugrave; di un campo nel calcolatore del buffer.
+            </p>
+            <p> &Egrave; inoltre possibile specificare un'espressione che prende in considerazione le tracce. Ad esempio, si supponga di calcolare la somma del valore di campo <i>windspeed</i> per la feature attuale e le due feature precedenti con un'equazione quale <code>$track.field(windspeed).history(-3)</code>. In ciascuna posizione, la somma di <i>windspeed</i> attuale e le due misurazioni precedenti vengono calcolate e bufferizzate.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Selezionare un'ora in cui suddividere le tracce (facoltativo)</h2></div>
+        <hr/>
+        <div>
+            <p>Tempo utilizzato per suddividere le tracce. Se i punti o le aree di input hanno tra loro una durata maggiore rispetto alla suddivisione del tempo, verranno suddivisi in tracce differenti.
+            </p>
+            <p>Se si specifica una frazione di tempo e una divisione della distanza, le tracce vengono suddivise quando si soddisfa una o entrambe le condizioni. 
+            </p>
+            <p>Si supponga di avere feature puntuali che rappresentano voli di aerei, in cui il campo della traccia &egrave; l'ID dell'aereo. Questo aereo pu&ograve; effettuare pi&ugrave; voli ma verr&agrave; rappresentato come una sola traccia.  Sapendo che tra un volo e l'altro c'&egrave; una pausa di 1 ora, &egrave; possibile utilizzare  <code>1 ora</code> come suddivisione della traccia e ciascun volo verr&agrave; suddiviso nella propria traccia.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Suddividi tracce (opzionale)</h2></div>
+        <hr/>
+        <div>
+            <p>&Egrave; possibile suddividere le tracce usando tre metodi diversi. &Egrave; possibile usare una combinazione di nessuno, tutti o alcuni dei metodi di suddivisone. 
+            </p>
+            <p>Le suddivisioni possono essere completate nei seguenti modi:
+                <ul>
+                    <li> <b>In base alla distanza tra input</b>: se i punti o i poligoni di input presentano tra di loro una distanza pi&ugrave; lunga della distanza specificata, verranno suddivisi in tracce differenti. Ad esempio, se si &egrave; specificata una distanza di 10 chilometri, i punti sequenziali superiori a 10 chilometri saranno tracce separate.
+                    </li>
+                    <li> <b>In base al tempo tra input</b>: se i punti o i poligoni di input presentano una durata pi&ugrave; lunga rispetto alla suddivisione temporale, verranno suddivisi in tracce differenti. Ad esempio, se si hanno feature puntuali che rappresentano voli di aerei, in cui il campo della traccia &egrave; l'ID dell'aereo. Questo aereo pu&ograve; effettuare pi&ugrave; voli ma verr&agrave; rappresentato come una sola traccia.  Sapendo che tra un volo e l'altro c'&egrave; una pausa di 1 ora, &egrave; possibile utilizzare <code>1 ora</code> come suddivisione della traccia e ciascun volo verr&agrave; suddiviso nella propria traccia.
+                    </li>
+                    <li> <b>A intervalli di tempo definiti</b>: suddivisione mediante intervalli regolari, specificati da un intervallo di tempo e un riferimento temporale. Se non si specifica un riferimento temporale, si user&agrave; il 1 gennaio 1970. Ad esempio, se si &egrave; specificato 1 anno con il 2 febbraio 1990 alle 10:00 come riferimento temporale, si suddivideranno le tracce in 2 febbraio 1990 alle 10:00, 2 febbraio 1991 alle 10:00 e cos&igrave; via a intervalli di un anno.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Se si specificano pi&ugrave; opzioni di suddivisione, le tracce vengono suddivise quando si soddisfano una o pi&ugrave; condizioni. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Selezionare una distanza per suddividere le tracce (facoltativo)</h2></div>
+        <hr/>
+        <div>
+            <p>Distanza utilizzata per suddividere le tracce. Se i punti o le aree di input presentano una distanza pi&ugrave; lunga della divisione della distanza, verranno suddivisi in tracce differenti.
+            </p>
+            <p>Se si specifica una frazione di tempo e una divisione della distanza, le tracce vengono suddivise quando si soddisfa una o entrambe le condizioni. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Aggiungi statistiche (facoltativo)</h2></div>
+        <hr/>
+        <div>
+            <p> &Egrave; possibile calcolare le statistiche su feature riepilogate. Su campi numerici &egrave; possibile calcolare quanto segue:
+                <ul>
+                    <li>Conteggio: calcola il numero di valori nonnull. Pu&ograve; essere utilizzato su campi o stringhe numeriche. Il conteggio di [null, 0, 2] &egrave; 2.
+                    </li>
+                    <li>Somma: la somma dei valori numerici in un campo. La somma di [null, null, 3] &egrave; 3.
+                    </li>
+                    <li>Media: la media di valori numerici. La media di [0, 2, null] &egrave; 1.
+                    </li>
+                    <li>Min: il valore minimo di un campo numerico. Il minimo di [0, 2, null] &egrave; 0. 
+                    </li>
+                    <li>Max: il valore massimo di un campo numerico. Il valore massimo di [0, 2, null] &egrave; 2.
+                    </li>
+                    <li>Intervallo: l'intervallo di un campo numerico. Questo viene calcolato come i valori minimi sottratti dal valore massimo. L'intervallo di [0, null, 1] &egrave; 1. L'intervallo di [null, 4] &egrave; 0.
+                    </li>
+                    <li>Varianza: la varianza di un campo numerico in una traccia. La varianza di [1] is null. La varianza di [null, 1,0,1,1] &egrave; 0,25.
+                    </li>
+                    <li>Deviazione standard: la deviazione standard di un campo numerico. La deviazione standard di [1] &egrave; null. La deviazione standard di [null, 1,0,1,1] &egrave; 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Su campi stringa &egrave; possibile calcolare quanto segue:
+                <ul>
+                    <li>Conteggio: il numero di stringhe nonnull.
+                    </li>
+                    <li>Qualsiasi: questa statistica &egrave; un esempio casuale di un valore stringa nel campo specificato.
+                    </li>
+                </ul>
+                Tutte le statistiche vengono calcolate su valori non null. Il layer risultante includer&agrave; un nuovo campo per ogni statistica calcolata. &Egrave; possibile aggiungere un numero qualsiasi di statistiche scegliendo un attributo e una statistica. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Scegliere un ArcGIS Data Store in cui salvare i risultati</h2></div>
+        <hr/>
+        <div>
+            <p>I risultati di GeoAnalytics sono memorizzati in un data store ed esposti come un feature layer in  Portal for ArcGIS. Nella maggior parte dei casi, i risultati devono essere memorizzati nello Spatiotemporal Data Store e questa &egrave; l'impostazione predefinita. In alcuni casi,, il salvataggio dei risultati nel Data Store relazionale &egrave; un'ottima opzione. Di seguito sono memorizzate le ragioni per memorizzare i risultati nel Data Store relazionale: 
+                <ul>
+                    <li>&Egrave; possibile utilizzare i risultati in una collaborazione tra portali.
+                    </li>
+                    <li>&Egrave; possibile abilitare funzionalit&agrave; di sincronizzazione con i risultati.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Non utilizzare il Data Store relazionale se si prevede un incremento dei risultati GeoAnalytics ed &egrave; necessario sfruttare le funzionalit&agrave; dello Spatiotemporal Big Data Store per gestire grandi quantit&agrave; di dati.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p> Il nome del layer che verr&agrave; creato.  Se si scrive su un ArcGIS Data Store, i risultati saranno salvati in  <b>I miei contenuti</b> e aggiunti alla mappa. Se si scrive su una condivisione file Big Data, i risultati saranno memorizzati nella condivisione file Big Data e aggiunti al suo Manifest. Non saranno aggiunti alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, lo strumento non verr&agrave; eseguito.
+            </p>
+            <p>Quando si scrive su  ArcGIS Data Store (data store relazionale o Spatiotemporal Big Data Store) usando la casella a discesa  <b>Salva risultato in</b>, &egrave; possibile specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

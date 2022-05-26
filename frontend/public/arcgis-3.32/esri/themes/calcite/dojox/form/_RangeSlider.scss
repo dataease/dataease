@@ -1,0 +1,42 @@
+@import "../../dijit/variables/form/sliders";
+.#{$theme-name} {
+  .dojoxRangeSlider {
+    .dijitSliderLeftBumper,
+    .dijitSliderBottomBumper {
+      background: $slider-remainingbar-bg;
+    }
+    .dijitSliderProgressBarH,
+    .dijitSliderLeftBumper {
+      @include transition(none);
+    }
+    .dijitSliderProgressBar {
+      overflow: hidden;
+      cursor: ew-resize;
+    }
+    // Horizontal Slider
+    // --------------------------------------------------
+    .dijitSliderImageHandleH {
+      left: -50%;
+    }
+    .dijitSliderProgressBarH,
+    .dijitSliderMoveableH {
+      right: auto;
+    }
+    // Vertical Slider
+    // --------------------------------------------------
+    .dijitSliderRemainingBarV {
+      margin: 0 $slider-padding;
+    }
+
+    .dijitSliderProgressBarV {
+      position: absolute !important;
+      border-width: 0;
+      cursor: ns-resize;
+    }
+  }
+  .dojoxRangeSliderBarContainer {
+    position: relative;
+    padding: $slider-padding 0;
+  }
+}
+

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Görüş Alanı Oluşturma</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="G&ouml;r&uuml;ş Alanı Oluştur aracı"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, y&uuml;zey topografisi i&ccedil;in bir g&ouml;zlemcinin g&ouml;rebileceği alanları tanımlar. Girdi noktası konumları g&ouml;zlemcileri (yerdeki kişiler veya yangın kulesindeki n&ouml;bet&ccedil;ileri) veya g&ouml;zlemlenen nesneleri (r&uuml;zgar t&uuml;rbinleri, su kuleleri, ara&ccedil;lar veya diğer insanlar) temsil edebilir. Sonu&ccedil;lar, g&ouml;zlemci noktasından g&ouml;r&uuml;lebilen alanları belirtir.
+    </p>
+    <p>Hem g&ouml;zlemciler hem de g&ouml;zlemlenen nesneler yerden belirli bir y&uuml;kseklikte olabilir ve bu y&uuml;kseklikler g&ouml;r&uuml;n&uuml;rl&uuml;ğ&uuml;n belirlenmesinde kullanılabilir. &Ouml;rneğin, 92 m'lik r&uuml;zgar t&uuml;rbinleri ve yerdeki 1,83 m boyundaki insanlar i&ccedil;in hesaplanan bir g&ouml;r&uuml;ş alanı, normal olarak 46 m'lik t&uuml;rbinler ve 1,53 m boyundaki insanlar i&ccedil;in hesaplanan bir g&ouml;r&uuml;ş alanından daha b&uuml;y&uuml;k olacaktır.
+    </p>
+    <p>Sonu&ccedil; katmanı, girdi y&uuml;zeyi rasterındaki her h&uuml;cre konumunun girdi g&ouml;zlemci noktalarından ka&ccedil; kez g&ouml;r&uuml;lebileceğini kaydeder. G&ouml;r&uuml;nmeyen h&uuml;crelere NoData değeri verilir.
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> işaretliyse, yalnızca raster alanı ve ge&ccedil;erli harita yayılımında g&ouml;r&uuml;n&uuml;r olan g&ouml;zlemci noktaları analiz edilir. İşaretli değilse, girdi katmanındaki t&uuml;m g&ouml;zlemci noktaları, ge&ccedil;erli harita yayılımının dışında bile olsa analiz edilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Yükselti yüzeyi</h2></div>
+        <hr/>
+        <div>
+            <p>G&ouml;r&uuml;ş alanını hesaplamak i&ccedil;in kullanılacak y&uuml;kselti y&uuml;zeyi.
+            </p>
+            <p>Girdi y&uuml;zeyinin dikey birimi, yatay biriminden farklıysa (y&uuml;kselti değerleri fit olarak ifade edilirken, koordinat sistemi metre cinsinden ise), y&uuml;zeyin tanımlı bir dikey koordinat sistemi olması gerekir. Bunun nedeni, aracın g&ouml;r&uuml;ş alanı analizi i&ccedil;in bir Z fakt&ouml;r&uuml; hesaplarken dikey (Z) ve yatay (XY) birimleri kullanmasıdır. Dikey koordinat sistemi ve dolayısıyla da Z birimi bilgileri olmadan, ara&ccedil; Z biriminin XY birimiyle aynı olduğunu varsayar. Bunun sonucunda analiz i&ccedil;in 1,0 değerine sahip bir dahili Z fakt&ouml;r&uuml; kullanılır ve bu da beklenmeyen sonu&ccedil;lar verebilir.
+            </p>
+            <p>Y&uuml;kselti y&uuml;zeyi tamsayı ya da bir kayan nokta olabilir.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Gözlemci konumlarını temsil eden nokta detayları</h2></div>
+        <hr/>
+        <div>
+            <p>G&ouml;r&uuml;ş alanları hesaplanırken g&ouml;zlemci konumlarını temsil eden nokta detaylarıdır.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Şunun için optimize et:</h2></div>
+        <hr/>
+        <div>
+            <p>G&ouml;r&uuml;ş alanını hesaplamak i&ccedil;in kullanılacak optimizasyon y&ouml;ntemidir.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Bu y&ouml;ntem işleme hızını optimize ederek, daha y&uuml;ksek performans elde etmek i&ccedil;in işlem hassasiyetinden &ouml;d&uuml;n verir. Varsayılan değerdir.
+
+                </li>
+                <li>Accuracy &mdash; 
+Bu y&ouml;ntem sonu&ccedil; hassasiyeti i&ccedil;in optimize etmeyi ama&ccedil;lar, işleme s&uuml;resi bu nedenle daha uzun olabilir.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maksimum görüş mesafesi</h2></div>
+        <hr/>
+        <div>
+            <p>G&ouml;r&uuml;n&uuml;r alan hesaplamasının durdurulacağı bir kesim mesafesi girin. Bu mesafenin &ouml;tesinde, g&ouml;zlemci noktalarının ve diğer nesnelerin birbirlerini g&ouml;r&uuml;p g&ouml;remeyeceği belirlenemez.
+            </p>
+            <p>Doğrusal bir mesafeyi g&ouml;stermek i&ccedil;in sayısal bir değer girebilir veya girdi g&ouml;zlemci detaylarından sayısal bir alan se&ccedil;ebilirsiniz. Bir alan sağlanırsa, alanda bulunan değerlerin girdi y&uuml;kselti y&uuml;zeyinin xy birimiyle aynı birimde olması gerekir.
+            </p>
+            <p>B&uuml;y&uuml;k değerlerin hesaplama s&uuml;resini artıracağını unutmayın. S&ouml;z konusu değer belirtilmedik&ccedil;e, varsayılan bir maksimum mesafe değeri &ccedil;&ouml;z&uuml;n&uuml;rl&uuml;ğe ve girdi y&uuml;kselti y&uuml;zeyi yayılımına bağlı olarak hesaplanır.
+            </p>
+            <p>Bu parametre, belirli olayları modellemek i&ccedil;in kullanışlıdır. &Ouml;rneğin, g&ouml;r&uuml;n&uuml;rl&uuml;k yayılımını sınırlayarak hafif sis gibi hava koşullarını modelleyebilirsiniz. Benzer bi&ccedil;imde, g&ouml;r&uuml;n&uuml;rl&uuml;k yayılımının sınırlanması g&uuml;n batımı etkisini d&uuml;zelterek g&uuml;n&uuml;n saati &uuml;zerinde bir miktar kontrol sahibi olmanıza olanak sağlar.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Maksimum görüş mesafesi</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Minimum görüntüleme mesafesi</h2></div>
+        <hr/>
+        <div>
+            <p>G&ouml;r&uuml;n&uuml;r alan hesaplamasının başlatılacağı bir mesafe girin. Y&uuml;zey &uuml;zerinde bu mesafeden daha yakındaki h&uuml;creler &ccedil;ıktıda g&ouml;r&uuml;nmez, ancak yine de minimum ve maksimum g&ouml;r&uuml;nt&uuml;leme mesafesi arasındaki h&uuml;crelerin g&ouml;r&uuml;n&uuml;rl&uuml;ğ&uuml;n&uuml; engelleyebilir.
+            </p>
+            <p>Doğrusal bir mesafeyi g&ouml;stermek i&ccedil;in sayısal bir değer girebilir veya girdi g&ouml;zlemci detaylarından sayısal bir alan se&ccedil;ebilirsiniz. Bir alan sağlanırsa, alanda bulunan değerlerin girdi y&uuml;kselti y&uuml;zeyinin xy birimiyle aynı birimde olması gerekir.
+            </p>
+            <p>Bu parametre, g&ouml;zlemciden belirli bir mesafe uzaklıktaki g&ouml;r&uuml;ş alanı analizi alanını kontrol etmek i&ccedil;in kullanışlıdır. &Ouml;rneğin, bir binanın &uuml;st&uuml;nden uzaktaki bir parkın g&ouml;r&uuml;n&uuml;rl&uuml;ğ&uuml;n&uuml; değerlendirirken, yakındaki ilgisi olmayan alanları dışarıda tutmak i&ccedil;in bir minimum g&ouml;r&uuml;nt&uuml;leme mesafesi ayarlayabilir ve daha iyi bir işleme hızı elde edebilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Minimum görüntüleme mesafesi</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>Mesafe 3B'dir</h2></div>
+        <hr/>
+        <div>
+            <p>Minimum ve maksimum g&ouml;r&uuml;nt&uuml;leme mesafesi parametrelerinin &uuml;&ccedil; boyutlu olarak mı yoksa daha basit bi&ccedil;imde iki boyutlu olarak mı &ouml;l&ccedil;&uuml;leceğini belirtin. Se&ccedil;enek işaretlendiğinde, g&ouml;r&uuml;nt&uuml;leme mesafeleri 3B mesafe olarak işlenir. Se&ccedil;enek işaretli değilken, bunlar 2B mesafeler olarak işlenir.
+            </p> 
+            <p>Bir 2B mesafe, deniz d&uuml;zeyindeki izd&uuml;ş&uuml;m konumlarını kullanarak g&ouml;zlemci ile hedef arasında &ouml;l&ccedil;&uuml;len basit doğrusal mesafeyi g&ouml;sterir. Karşılık gelen y&uuml;kseklik değerlerini de hesaba katan bir 3B mesafe ise daha ger&ccedil;ek&ccedil;i bir değer sağlar.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Gözlemci konumları yükseltisi</h2></div>
+        <hr/>
+        <div>
+            <p>G&ouml;zlemci konumlarınızın y&uuml;kseltisini girin.
+            </p>
+            <p>T&uuml;m g&ouml;zlemcilerin y&uuml;kseltisini g&ouml;steren bir sayısal değer belirtebilir veya bunu her g&ouml;zlemcinin y&uuml;kseltisini temsil eden bir alan olarak belirtebilirsiniz. Bir alan sağlanırsa, alanda bulunan değerin girdi y&uuml;kselti y&uuml;zeyinin Z birimiyle aynı birimde olması gerekir.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Gözlemci konumları yükseltisi</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Gözlemcilerin yüksekliği</h2></div>
+        <hr/>
+        <div>
+            <p>G&ouml;zlemci konumlarınızın zeminden y&uuml;ksekliğini girin.
+            </p> 
+            <p>Y&uuml;kseklik i&ccedil;in sayısal bir değer girebilir veya girdi g&ouml;zlemci detaylarından bir alan belirtebilirsiniz. Bir alan sağlanırsa, alanda bulunan değerin girdi y&uuml;kselti y&uuml;zeyinin z birimiyle aynı birimde olması gerekir.
+            </p>
+            <p>Varsayılan değer 6 fittir. G&ouml;zlem kulesi veya y&uuml;ksek bir bina gibi y&uuml;kseltilmiş bir konumdan bakıyorsanız, bunun yerine s&ouml;z konusu y&uuml;ksekliği kullanın. G&ouml;r&uuml;ş alanı hesaplaması sırasında, belirtildiği takdirde bu değer g&ouml;zlemci y&uuml;ksekliğine eklenir; aksi takdirde, ara değeri hesaplanmış y&uuml;zey z değerine eklenir.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Gözlemcilerin yüksekliği</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Hedef yüksekliği</h2></div>
+        <hr/>
+        <div>
+            <p>G&ouml;r&uuml;n&uuml;rl&uuml;ğ&uuml; ayarlamak i&ccedil;in kullanılan yerdeki yapıların veya insanların y&uuml;ksekliğidir.
+            </p>
+            <p>Y&uuml;kseklik i&ccedil;in sayısal bir değer girebilir veya girdi g&ouml;zlemci detaylarından bir alan belirtebilirsiniz. Bir alan sağlanırsa, alanda bulunan değerin girdi y&uuml;kselti y&uuml;zeyinin z birimiyle aynı birimde olması gerekir.
+            </p>
+            <p>Sonu&ccedil; olarak ortaya &ccedil;ıkan g&ouml;r&uuml;ş alanı, yerdeki bu nesneleri g&ouml;rebilen bir g&ouml;zlemci noktasının bulunduğu alanları tanımlar. Bunun tersi de doğrudur, yerdeki nesneler de bir g&ouml;zlemci noktasını g&ouml;rebilir. 
+            </p>
+            <p>Aşağıda hedef y&uuml;kseklik ayarlarından bazı &ouml;rnekler verilmiştir:
+            </p>
+            <ul>
+                <li>Girdi noktalarınız r&uuml;zgar t&uuml;rbinlerini temsil ediyor ve insanların durduğu yerden t&uuml;rbinleri g&ouml;rebilmesini istiyorsanız, ortalama bir insanın boyunu (yaklaşık 1,80 m) girin.
+                    
+
+                </li>
+                <li>Girdi noktalarınız yangın g&ouml;zetleme kulelerini temsil ediyor ve g&ouml;zetleme kulelerinin 7 m veya daha y&uuml;ksek dumanları g&ouml;rebilmesini istediğiniz kuleleri belirlerken, hedef y&uuml;kseklik i&ccedil;in 7 m girin.
+                    
+
+                </li>
+                <li>Girdi noktalarınız bazı yol ve patikalar boyunca manzara izleme noktalarını temsil ediyor ve 122 m veya daha y&uuml;ksek r&uuml;zgar t&uuml;rbinlerinin g&ouml;rebilmesini istiyorsanız, y&uuml;kseklik i&ccedil;in 122 m girin.
+                    
+
+                </li>
+                <li>Girdi noktalarınız manzara izleme noktalarını temsil ediyor ve insanların durduğu yerden manzaranın ne kadarını g&ouml;rebildiğini belirlemek istiyorsanız, hedef y&uuml;kseklik i&ccedil;in sıfır girin. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Gözlemcilerin yüksekliği</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Görünür hale gelecek çıktı yüksekliği</h2></div>
+        <hr/>
+        <div>
+            <p>Sonu&ccedil;ta ortaya &ccedil;ıkan yer seviyesi &uuml;zeri &ccedil;ıktısı (AGL). AGL sonucu, her bir h&uuml;cre değerinin, en azından bir g&ouml;zlemci i&ccedil;in g&ouml;r&uuml;n&uuml;r olmasını sağlamak i&ccedil;in aksi takdirde g&ouml;r&uuml;n&uuml;r olmayacak bir h&uuml;creye minimum y&uuml;ksekliğin eklenmesini gerektiren bir rasterdır. Hali hazırda g&ouml;r&uuml;n&uuml;r olan h&uuml;crelere bu &ccedil;ıktı rasterında 0 değeri atanacaktır.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adı. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>İ&ccedil;eriğim</b>&rsquo;de, <b>Sonu&ccedil;ları Kaydet</b> a&ccedil;ılır kutusunu kullanarak sonucun kaydedileceği klas&ouml;r&uuml;n adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

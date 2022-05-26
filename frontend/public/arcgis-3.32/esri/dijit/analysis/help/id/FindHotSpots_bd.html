@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Temukan Hot Spot</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Temukan Hot Spot"></h2>
+        <hr/>
+    <p>Alat Temukan Hot Spot akan menentukan apakah ada kluster yang signifikan secara statistik pada pola spasial data Anda. 
+        <ul>
+            <li>Apakah titik (kejadian kriminal, pohon, atau kecelakaan lalu lintas) Anda benar-benar terkluster?  Bagaimana Anda bisa yakin?
+            </li>
+            <li>Apakah Anda benar-benar menemukan hot spot yang signifikan secara statistik, atau apakah peta Anda memberikan cerita yang berbeda jika Anda mengubah cara simbolisasinya?
+            </li>
+        </ul>
+        Alat Temukan Hot Spot akan membantu Anda menjawab pertanyaan tersebut dengan yakin.
+    </p>
+    <p>Bahkan pola spasial acak memiliki beberapa derajat kluster.  Sebagai tambahan, mata dan otak kita secara alami mencoba menemukan pola bahkan ketika pola tersebut sebenarnya tidak ada.  Maka dari itu, akan menjadi sulit untuk mengetahui apakah pola pada data Anda merupakan hasil kerja nyata dari proses spasial, atau hanya merupakan hasil kemungkinan acak.  Hal tersebut menjadi alasan mengapa para peneliti dan analis menggunakan metode statistik seperti Temukan Hot Spot (Getis-Ord Gi*) untuk melakukan kuantifikasi pola spasial.  Ketika Anda menemukan pengklasteran secara statistik yang signifikan pada data Anda, Anda memiliki informasi yang berharga.  Dengan mengetahui tempat dan waktu pengklasteran terjadi, akan dapat memberikan petunjuk penting tentang proses yang mengakibatkan pola yang Anda lihat.  Dengan mengetahui bahwa perampokan rumah, sebagai contoh, secara konsisten lebih tinggi pada lingkungan tertentu, merupakan informasi penting jika Anda akan mendesain strategi pencegahan yang efektif, mengalokasikan sumber daya polisi yang sedikit, memulai program sistem keamanan lingkungan, mengotorisasi investigasi kriminal mendalam, atau untuk mengidentifikasi tersangka kriminal.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Pilih layer tempat hot spot yang akan dihitung</h2></div>
+        <hr/>
+        <div>
+            <p>Layer titik tempat menemukan spot panas atau dingin.
+            </p>
+            <p>Analisis ini menggunakan bin dan memerlukan sistem koordinat terproyeksi. Anda dapat menetapkan  <b>Sistem koordinat pemrosesan</b> dalam <b>Lingkungan Analisis</b>. Jika sistem koordinat pemrosesan Anda tidak ditetapkan ke sistem koordinat terproyeksi, Anda akan diminta untuk menetapkannya saat Anda <b>Jalankan Analisis</b> .
+            </p>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk set data atau feature layer berbagi file big data.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Temukan kluster tinggi dan rendah</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Analisis ini menjawab pertanyaan: Dimanakah nilai tinggi dan rendah terkluster secara spasial?
+            </p>
+            <p>Jika data Anda berupa titik dan Anda memilih  <b>Jumlah Titik</b>, alat ini akan mengevaluasi pengaturan spasial fitur-fitur titik untuk menjawab pertanyaan: Di manakah titik-titik tersebut terklaster atau tersebar tidak secara semestinya?
+            </p>
+            <p>Jika Anda memilih kolom, alat ini akan mengevaluasi pengaturan spasial dari nilai-nilai yang terkait dengan masing-masing fitur untuk menjawab pertanyaan: Dimanakah pengklasteran nilai tinggi dan rendah?
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Pilih ukuran bin untuk agregasi</h2></div>
+        <hr/>
+        <div>
+            <p>Jarak yang digunakan untuk membuat square bin yang akan digunakan untuk menganalisis titik input Anda.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Cari hot spot menggunakan langkah waktu (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Jika waktu diaktifkan pada layer titik dan merupakan instan tipe, Anda dapat menganalisis menggunakan langkah waktu.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Interval langkah waktu</h2></div>
+        <hr/>
+        <div>
+            <p>Interval waktu yang digunakan untuk menghasilkan langkah waktu. Waktu dapat diselaraskan pada waktu mulai atau waktu akhir dari data input atau pada waktu rujukan tertentu.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Interval langkah waktu</h2></div>
+        <hr/>
+        <div>
+            <p>Interval waktu yang digunakan untuk menghasilkan langkah waktu. Waktu dapat diselaraskan pada waktu mulai atau waktu akhir dari data input atau pada waktu rujukan tertentu.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Pilih cara menyelaraskan langkah waktu</h2></div>
+        <hr/>
+        <div>
+            <p>Bagaimana langkah waktu diselaraskan. Ada tiga cara untuk menyelaraskan langkah waktu:
+                <ul>
+                    <li> <b>Waktu Mulai</b>&mdash;Langkah waktu diselaraskan dengan fitur pertama secara tepat.
+                    </li>
+                    <li> <b>Waktu Selesai</b>&mdash;Langkah waktu diselaraskan dengan fitur terakhir secara tepat.
+                    </li>
+                    <li> <b>Waktu Referensi</b>&mdash;Langkah waktu diselaraskan dengan waktu yang ditetapkan.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Waktu referensi untuk diselaraskan dengan langkah waktu</h2></div>
+        <hr/>
+        <div>
+            <p>Tanggal dan waktu yang digunakan untuk menyelaraskan langkah waktu.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Pilih ukuran lingkungan untuk perhitungan hot spot</h2></div>
+        <hr/>
+        <div>
+            <p>Jarak yang digunakan untuk menentukan lingkungan akan digunakan untuk perhitungan hot spot. Lingkungan seharusnya lebih besar dari ukuran bin untuk memastikan bahwa setiap bin memiliki setidaknya satu tetangga. Setiap bin akan dianalisis dan dibandingkan dengan bin yang berdampingan.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah parameter sementara untuk pra-rilis untuk menetapkan referensi spasial pemrosesan. Banyak alat big data yang mewajibkan bahwa sistem koordinat proyeksi digunakan sebagai referensi spasial untuk pemrosesan. Secara default, alat akan menggunakan sistem koordinat input, tetapi akan gagal jika ini adalah sistem koordinat geografik. Untuk menetapkan sistem koordinat proyeksi, masukkan WKID. Misalnya,  <b>Web Mercator</b> harus dimasukkan sebagai <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Pilih ArcGIS Data Store untuk penyimpanan hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Hasil GeoAnalytics disimpan pada penyimpanan data dan ditampilkan sebagai feature layer di  Portal for ArcGIS. Secara umum, hasil harus disimpan di penyimpanan data spatiotemporal dan ini adalah pilihan default. Secara umum, menyimpan hasil data store relasional adalah opsi yang bagus. Berikut adalah alasan mengapa Anda mungkin ingin menyimpan hasil di data store relasional: 
+                <ul>
+                    <li>Anda dapat menggunakan hasil di portal-ke-kolaborasi portal.
+                    </li>
+                    <li>Anda dapat mengaktifkan kemampuan sinkronisasi dengan hasil Anda.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Anda tidak boleh menggunakan data store relasional jika Anda berharap hasil GeoAnalytics untuk ditingkatkan dan ingin memanfaatkan kemampuan big data store spatiotemporal untuk menangani jumlah data yang besar.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p> Nama layer yang akan dibuat.  Jika Anda menulis ke sebuah ArcGIS Data Store, hasil Anda akan disimpan di  <b>Konten Saya</b> dan ditambahkan ke dalam peta. Jika Anda menulis ke berbagi file big data, hasil Anda akan disimpan ke berbagi file big data dan ditambahkan ke manifestasinya. Ini tidak akan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer sudah ada, alat tidak akan berfungsi.
+            </p>
+            <p>Layer hasil ini akan memperlihatkan kepada Anda kluster yang signifikan secara statistik dengan nilai tinggi atau rendah atau jumlah titik. Jika nama layer hasil sudah ada, Anda akan diminta untuk memberi nama baru.
+            </p>
+            <p>Saat menulis ke  ArcGIS Data Store (penyimpanan big data relasional atau spasiotemporal) menggunakan  <b>Simpan hasil di</b> kotak drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> tempat hasil akan disimpan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

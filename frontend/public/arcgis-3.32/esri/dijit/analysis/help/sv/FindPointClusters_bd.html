@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Hitta punktkluster</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="Hitta punktkluster"></h2>
+        <hr/>
+    <p>Verktyget  Hitta punktkluster hittar kluster av punktgeoobjekt i bakgrundsbrus baserat p&aring; deras rumsliga f&ouml;rdelning.
+    </p>
+    <p>Vi tar som exempel att en icke-statlig organisation studerar en viss insektsburen sjukdom. Den har ett punktdataset som representerar hush&aring;llen i ett unders&ouml;kningsomr&aring;de, d&auml;r vissa &auml;r angripna och andra inte. Med verktyget  Hitta punktkluster kan en analytiker fastst&auml;lla kluster med smittade hush&aring;ll och hj&auml;lpa dig att lokalisera ett omr&aring;de d&auml;r behandlingen och utrotning av skadedjuren ska inledas.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj det lager som klustren ska hittas från</h2></div>
+        <hr/>
+        <div>
+            <p>Det punktlager som klustren kommer att hittas i.  Lagren m&aring;ste finnas i en projicerad spatial referens eller s&aring; m&aring;ste den spatiala referensen vara inst&auml;lld p&aring; ett projicerat koordinatsystem med  <b>Analysmilj&ouml;</b>.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Välj klustringsmetod att använda</h2></div>
+        <hr/>
+        <div>
+            <p>Klustringsmetoden som anv&auml;nds f&ouml;r att s&auml;rskilja kluster av punktgeoobjekt fr&aring;n bakgrundsbrus. Du kan v&auml;lja att anv&auml;nda ett definierat avst&aring;nd eller en sj&auml;lvjusterande klustringsalgoritm.
+            </p>
+            <p>Definierat avst&aring;nd (DBSCAN) anv&auml;nder ett angivet s&ouml;kintervall f&ouml;r att skilja t&auml;ta kluster fr&aring;n glesare brus. Definierat avst&aring;nd (DBSCAN) &auml;r snabbare men l&auml;mpar sig bara om det g&aring;r att anv&auml;nda ett mycket tydligt s&ouml;kintervall som kan definiera alla kluster som kan finnas. Definierat avst&aring;nd (DBSCAN) hittar kluster som har liknande t&auml;thet.
+            </p>
+            <p>Sj&auml;lvjustering (HDBSCAN) kr&auml;ver inte att ett s&ouml;kintervall anges men det &auml;r en mer tidskr&auml;vande metod. Sj&auml;lvjustering (HDBSCAN) hittar liknande kluster av punkter som definierat avst&aring;nd (DBSCAN) men anv&auml;nder olika s&ouml;kintervall vilket m&ouml;jligg&ouml;r kluster med olika t&auml;thet. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimalt antal punkter för att betraktas som ett kluster</h2></div>
+        <hr/>
+        <div>
+            <p>Den h&auml;r parametern anv&auml;nds p&aring; olika s&auml;tt beroende p&aring; vilken klustringsmetod som v&auml;ljs:
+            </p>
+            <p>
+                <ul>
+                    <li>Definierat avst&aring;nd (DBSCAN) &ndash; anger antalet geoobjekt som m&aring;ste hittas inom ett visst avst&aring;nd fr&aring;n en punkt f&ouml;r att den punkten ska b&ouml;rja forma ett kluster. Avst&aring;ndet definieras genom att anv&auml;nda parametern  <b>Begr&auml;nsa s&ouml;kintervallet till</b>.
+                    </li>
+                    <li>Sj&auml;lvjustering (HDBSCAN) &ndash; anger antalet geoobjekt som &auml;r granne med varje punkt (inklusive punkten sj&auml;lv) som kommer att tas med vid uppskattning av densiteten. Detta antal &auml;r ocks&aring; minsta till&aring;tna klusterstorlek n&auml;r kluster extraheras.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Begränsa sökintervallet till</h2></div>
+        <hr/>
+        <div>
+            <p>N&auml;r definierat avst&aring;nd anv&auml;nds (DBSCAN) &auml;r den h&auml;r parametern avst&aring;ndet inom vilket  <b>Minimalt antal punkter f&ouml;r att betraktas som ett kluster</b> m&aring;ste hittas. Den h&auml;r parametern anv&auml;nds inte n&auml;r sj&auml;lvjustering (HDBSCAN) v&auml;ljs som klustringsmetod.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p> Namnet p&aring; lagret som ska skapas.  Om du skriver till en ArcGIS Data Store, sparas dina resultat i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om du skriver till en big data-fildelning, lagras dina resultat i big data-fildelningen och l&auml;ggs till i dess manifest. Det l&auml;ggs inte till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns misslyckas verktyget.
+            </p>
+            <p>N&auml;r du skriver till   ArcGIS Data Store (relationellt eller rumstempor&auml;rt Big Data-datalager) med listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

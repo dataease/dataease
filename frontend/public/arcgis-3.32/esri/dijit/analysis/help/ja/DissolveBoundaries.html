@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>境界のディゾルブ</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="境界のディゾルブ"></h2>
+        <hr/>
+    <p>重なり合うエリアや共通の境界を共有するエリアはマージされ、1 つのエリアが形成されます。
+    </p>
+    <p>フィールドを指定して、どの境界線をマージするか設定できます。たとえば、郡のレイヤーがあり、各郡に  <i>State_Name</i> 属性がある場合、 <i>State_Name</i> 属性を使用して境界をディゾルブできます。隣接する郡は、 <i>State_Name</i> の値が同じ場合にマージされます。最終結果は、州の境界線のレイヤーです。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>境界線をディゾルブするエリア レイヤーを選択</h2></div>
+        <hr/>
+        <div>
+            <p>ディゾルブするエリア フィーチャを含むレイヤー。
+            </p>
+            <p>マップからレイヤーを選択するだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択することもできます。このオプションを選択すると、解析で使用するためにさまざまなソースのデータセットを参照して選択できるギャラリーが開きます。 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>ディゾルブ方法の選択</h2></div>
+        <hr/>
+        <div>
+            <p>エリア フィーチャをマージする場合、次の 2 つの方法のいずれかを選択できます。
+                <ul>
+                    <li> <b>[重複または隣接するエリア]</b> - 境界が重なり合う複数のエリアが 1 つのエリアにマージされます。また、隣接するエリア (共通の境界を共有するエリア) も 1 つのエリアにマージされます。
+                    </li>
+                    <li> <b>[同じフィールド値を持つエリア]</b> - 重なり合うエリアや共有の境界を共有するエリアは、それらが同じフィールド値を持つ場合に 1 つのエリアにマージされます。
+                        <p>たとえば、郡のレイヤーがあり、各郡に  <i>State_Name</i> フィールドがある場合、 <i>State_Name</i> フィールドを使用して境界線をディゾルブできます。隣接する郡は、 <i>State_Name</i> の値が同じ場合にマージされます。最終結果は、州の境界線のレイヤーです。
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p> <b>[現在のマップ範囲を使用]</b> がオンの場合、現在のマップ範囲に表示される入力レイヤーのフィーチャだけがディゾルブされます。オフにすると、入力レイヤーのすべてのフィーチャが、現在のマップ範囲内になくてもディゾルブされます。
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>マルチパート フィーチャの作成</h2></div>
+        <hr/>
+        <div>
+            <p>ArcGIS では、複数のパーツがあるが、1 つの属性しか参照しないため、1 つのフィーチャとして定義される場所や事物のデジタル表現のこと。たとえば、州のレイヤーの場合、ハワイ州はマルチパート フィーチャとみなされることがあります。これは、個々のジオメトリック パートは 1 つの州として分類されているからです。このブール パラメーターは、次の 2 つのオプションを提供します。
+                <ul>
+                    <li>True (オン): 出力サービスにマルチパート フィーチャを含めることができます。
+                    </li>
+                    <li>False (オフ): 出力サービスにシングルパート フィーチャのみが含まれます。個々のフィーチャはパートごとに作成されます。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>統計情報の追加</h2></div>
+        <hr/>
+        <div>
+            <p>エリアをマージするときに、それらの属性をサマリー処理できます。たとえば、郡の境界線を  <i>State_Name</i> に基づいてディゾルブしていて、各郡に <i>Population</i> フィールドがある場合、州の <i>Population</i> の合計を計算できます。
+            </p>
+            <p>使用可能な統計情報のタイプは以下のとおりです。
+            </p>
+            <ul>
+                <li> <b>[合計]</b> - 指定されたフィールドの値の合計を追加します。
+                    
+
+                </li>
+                <li> <b>[平均]</b> - 指定されたフィールドの平均を計算します。
+                    
+
+                </li>
+                <li> <b>[最小値]</b> - 指定されたフィールドのすべてのレコードの中で最も小さい値を検出します。
+                    
+
+                </li>
+                <li> <b>[最大値]</b> - 指定されたフィールドのすべてのレコードの中で最も大きい値を検出します。
+                    
+
+                </li>
+                <li> <b>[標準 偏差]</b> - 指定されたフィールド内の値の標準偏差を検出します。
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p>これは、 <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前です。デフォルト名は、ツール名と入力レイヤー名に基づいて設定されます。レイヤー名がすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存先]</b> ドロップダウン メニューを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Finn eksisterende plasseringer</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Finn eksisterende plasseringer"></h2>
+        <hr/>
+    <p>Med dette verkt&oslash;yet velges eksisterende geoobjekter i studieomr&aring;det som oppfyller en rekke med kriterier som du har angitt. Kriteriene kan baseres p&aring; attributtsp&oslash;rringer (for eksempel ledige tomter) og romlige sp&oslash;rringer (for eksempel innenfor 1,6 kilometer fra en elv). 
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, er det bare geoobjektene i inndatalaget som er synlige innenfor gjeldende kartutstrekning, som analyseres. Hvis det ikke er merket av for dette alternativet, blir alle geoobjektene analysert, selv om de ligger utenfor den gjeldende kartutstrekningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Velg laget som inneholder geoobjektene du vil finne ved hjelp av attributter og romlige spørringer</h2></div>
+        <hr/>
+        <div>
+            <p>Punkt-, linje- og omr&aring;delaget som du vil finne geoobjekter i basert p&aring; en kombinasjon av attributter og romlige sp&oslash;rringer, som angitt nedenfor.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Lag en spørring for å finne geoobjekter</h2></div>
+        <hr/>
+        <div>
+            <p>Klikk p&aring; knappen  <b>Legg til uttrykk</b> for &aring; definere et uttrykk. Du kan legge til flere uttrykk. N&aring;r du har angitt uttrykkene og klikket p&aring; <b>Kj&oslash;r analyse</b>, filtreres geoobjektene i inndatalaget basert p&aring; hvert enkelt uttrykk. De geoobjektene som oppfyller alle uttrykkene, skrives til resultatlaget.
+            </p>
+            <p>Du kan opprette to grunnleggende typer uttrykk: attributt og romlig. Attributtuttrykk er sp&oslash;rringer i feltverdier, for eksempel  <code>der navnet er San Francisco</code>. Det finnes fire typer romlige uttrykk:
+                <ul>
+                    <li> <b>within a distance of</b>: geoobjektet m&aring; v&aelig;re innenfor en gitt avstand fra et geoobjekt i et annet lag. Du kan for eksempel finne tomter som er innenfor 500 meter fra Los Angeles-eleven.
+                    </li>
+                    <li> <b>omfatter hele</b>: geoobjektet m&aring; inneholde alt av et geoobjekt i et annet lag. Du kan for eksempel finne nedb&oslash;rsfelt som inneholder tomter regulert for industribruk. Ingen del av tomten kan v&aelig;re utenfor nedb&oslash;rsfeltet.
+                    </li>
+                    <li> <b>helt innenfor</b>: geoobjektet m&aring; v&aelig;re fullstendig omsluttet av et geoobjekt i et annet lag. Du kan for eksempel finne skolekretser som ligger innenfor bygrensen. Ingen del av skolekretsen kan v&aelig;re utenfor bygrensen.
+                    </li>
+                    <li> <b>intersects</b>: geoobjektet inneholder en del av et geoobjekt i et annet lag. Du kan for eksempel finne tomter som krysser elver. Eventuelle deler av elven som g&aring;r over tomten, eller inntil tomtegrensen, krysser tomten.
+                    </li>
+                    <li> <b>n&aelig;rmest</b>: geoobjektet m&aring; v&aelig;re n&aelig;rmest et geoobjekt i et annet lag. For eksempel: Finn restauranten som ligger n&aelig;rmest hvert hotell.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Hvert romlige uttrykk har en tilsvarende negasjon, med unntak av  <b>n&aelig;rmest</b>; <b>ikke innenfor en avstand p&aring;</b>, <b>inneholder ikke hele</b>, <b>ikke helt innenfor</b>, og <b>krysser ikke</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis lagnavnet finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

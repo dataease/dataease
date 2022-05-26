@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tìm Điểm Nóng</h2><p/>
+        <h2><img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" alt="T&igrave;m Điểm N&oacute;ng"></h2>
+        <hr/>
+    <p> C&ocirc;ng cụ T&igrave;m Điểm N&oacute;ng sẽ x&aacute;c định xem c&oacute; những cụm điểm n&agrave;o c&oacute; &yacute; nghĩa thống k&ecirc; trong m&ocirc; h&igrave;nh kh&ocirc;ng gian dữ liệu của bạn.
+        <ul>
+            <li>C&aacute;c điểm của bạn (tỷ lệ tội phạm, c&acirc;y xanh, tai nạn giao th&ocirc;ng) c&oacute; thực sự được gom th&agrave;nh nh&oacute;m kh&ocirc;ng? L&agrave;m thế n&agrave;o bạn c&oacute; thể chắc chắn?
+            </li>
+            <li>Bạn đ&atilde; thực sự ph&aacute;t hiện ra một điểm n&oacute;ng c&oacute; &yacute; nghĩa thống k&ecirc; (đối với việc chi ti&ecirc;u, tỷ lệ tử vong ở trẻ sơ sinh, điểm kiểm tra cao li&ecirc;n tục) hoặc bản đồ của bạn sẽ kể một c&acirc;u chuyện kh&aacute;c nếu bạn thay đổi c&aacute;ch m&agrave; n&oacute; được k&iacute; hiệu h&oacute;a?
+            </li>
+        </ul>
+        C&ocirc;ng cụ T&igrave;m Điểm N&oacute;ng sẽ gi&uacute;p bạn tự tin trả lời c&aacute;c c&acirc;u hỏi n&agrave;y.
+    </p>
+    <p>Ngay cả c&aacute;c m&ocirc; h&igrave;nh kh&ocirc;ng gian cũng tr&igrave;nh b&agrave;y một số mức độ gom cụm. Hơn nữa, theo tự nhi&ecirc;n, mắt v&agrave; n&atilde;o ch&uacute;ng ta thường cố gắng t&igrave;m m&ocirc; h&igrave;nh ngay cả khi n&oacute; kh&ocirc;ng c&oacute; thực. Kết quả l&agrave;, sẽ kh&oacute; c&oacute; thể t&igrave;m hiểu xem c&aacute;c m&ocirc; h&igrave;nh trong dữ liệu của bạn c&oacute; phải l&agrave; kết quả xử l&yacute; kh&ocirc;ng gian đ&atilde; được thực hiện hay chỉ l&agrave; ngẫu nhi&ecirc;n tạo ra. Đ&acirc;y l&agrave; l&yacute; do c&aacute;c nh&agrave; nghi&ecirc;n cứu v&agrave; ph&acirc;n t&iacute;ch sử dụng c&aacute;c phương ph&aacute;p thống k&ecirc; T&igrave;m Điểm N&oacute;ng (Getis-Ord Gi*) để định lượng c&aacute;c m&ocirc; h&igrave;nh đặc biệt. Khi t&igrave;m thấy c&aacute;c cụm quan trọng về mặt thống k&ecirc; trong dữ liệu của m&igrave;nh, nghĩa l&agrave; bạn đ&atilde; c&oacute; được th&ocirc;ng tin c&oacute; gi&aacute; trị. Biết được thời gian v&agrave; địa điểm c&oacute; c&aacute;c cụm để c&oacute; thể cung cấp c&aacute;c đầu mối quan trọng về c&aacute;c quy tr&igrave;nh bổ trợ cho m&ocirc; h&igrave;nh m&agrave; bạn đang thấy. V&iacute; dụ, biết được c&aacute;c vụ trộm cắp thường xuy&ecirc;n tăng cao trong một khu vực nh&agrave; ở l&agrave; th&ocirc;ng tin quan trọng nếu bạn cần đưa ra c&aacute;c biện ph&aacute;p ph&ograve;ng chống hiệu quả, x&aacute;c định v&ugrave;ng c&oacute; lượng cảnh s&aacute;t hạn chế, đề xuất c&aacute;c chương tr&igrave;nh canh ph&ograve;ng khu phố, ủy quyền điều tra tội phạm chuy&ecirc;n s&acirc;u, hoặc x&aacute;c định c&aacute;c đối tượng t&igrave;nh nghi tiềm năng.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Chọn lớp mà điểm nóng sẽ được tính toán</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp điểm hoặc khu vực m&agrave; c&aacute;c điểm lạnh v&agrave; n&oacute;ng sẽ được t&igrave;m thấy từ đ&oacute;. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Tìm các cụm có mật độ điểm cao và thấp</h2></div>
+        <hr/>
+        <div>
+            <p>Ph&acirc;n t&iacute;ch n&agrave;y trả lời c&acirc;u hỏi sau: Nơi n&agrave;o c&oacute; gi&aacute; trị cao v&agrave; thấp được gom cụm theo kh&ocirc;ng gian?
+            </p>
+            <p>Nếu dữ liệu l&agrave; điểm v&agrave; bạn chọn  <b>T&iacute;nh Điểm</b>, c&ocirc;ng cụ n&agrave;y sẽ đ&aacute;nh gi&aacute; c&aacute;ch bố tr&iacute; kh&ocirc;ng gian của c&aacute;c đối tượng điểm để trả lời c&acirc;u hỏi: Nơi n&agrave;o c&oacute; c&aacute;c điểm được gom cụm hay trải rộng ra kh&ocirc;ng mong muốn?
+            </p>
+            <p>Nếu bạn chọn trường, c&ocirc;ng cụ n&agrave;y sẽ đ&aacute;nh gi&aacute; c&aacute;ch bố tr&iacute; kh&ocirc;ng gian của c&aacute;c gi&aacute; trị li&ecirc;n quan để trả lời c&acirc;u hỏi: Nơi n&agrave;o c&oacute; gi&aacute; trị cao v&agrave; thấp được gom cụm?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Tính điểm trong phạm vi</h2></div>
+        <hr/>
+        <div>
+            <p>Thiết lập mặc định l&agrave; đếm điểm trong lưới tọa độ được c&ocirc;ng cụ tạo dựa tr&ecirc;n dữ liệu điểm của bạn. Ngo&agrave;i ra, bạn c&oacute; thể chọn đếm c&aacute;c điểm trong lưới lục gi&aacute;c hoặc cung cấp một lớp v&ugrave;ng (thường phản &aacute;nh b&aacute;o c&aacute;o của c&aacute;c quận huyện về vấn đề h&agrave;nh ch&iacute;nh như v&ugrave;ng điều tra d&acirc;n số, ranh giới quận v&agrave; th&agrave;nh phố) để trả lời c&aacute;c c&acirc;u hỏi: Giả sử đang c&oacute; một số điểm trong phạm vi mỗi đối tượng v&ugrave;ng, th&igrave; c&aacute;c vị tr&iacute; được gom cụm kh&ocirc;ng gian c&oacute; &yacute; nghĩa thống k&ecirc; với số điểm cao hay thấp?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Xác định nơi có thể xuất hiện điểm</h2></div>
+        <hr/>
+        <div>
+            <p>Vẽ hoặc cung cấp một lớp x&aacute;c định nơi c&oacute; thể xảy ra tai nạn để trả lời c&acirc;u hỏi: Trong c&aacute;c khu vực n&agrave;y, vị tr&iacute; n&agrave;o c&oacute; mật độ điểm cao hay thấp kh&ocirc;ng mong đợi?   
+            </p>
+            <p>C&aacute;c đối tượng khu vực bạn vẽ hoặc c&aacute;c đối tượng tại lớp khu vực bạn chỉ định cần x&aacute;c định nơi c&aacute;c điểm c&oacute; khả năng xuất hiện. Để vẽ c&aacute;c khu vực n&agrave;y, bấm v&agrave;o n&uacute;t  <b>Vẽ</b>, rồi bấm v&agrave;o vị tr&iacute; tr&ecirc;n bản đồ để tạo h&igrave;nh dạng khu vực. Để vẽ c&aacute;c khu vực kh&aacute;c, bấm lại v&agrave;o n&uacute;t vẽ lần nữa, rồi bấm v&agrave;o vị tr&iacute; tr&ecirc;n bản đồ v&agrave; tiếp tục vẽ.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Chia theo</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&ocirc;i khi bạn muốn ph&acirc;n t&iacute;ch c&aacute;c m&ocirc; h&igrave;nh c&oacute; t&iacute;nh đến nhà cung cấp b&ecirc;n dưới. V&iacute; dụ nếu c&aacute;c điểm của bạn đại diện cho số lượng c&aacute;c tội phạm, chia cho tổng d&acirc;n số sẽ c&oacute; được kết quả ph&acirc;n t&iacute;ch theo đầu người chứ kh&ocirc;ng phải l&agrave; số lượng tội phạm thực tế. Chọn một thuộc t&iacute;nh để chia theo v&agrave; thường được xem l&agrave; một sự chuẩn h&oacute;a dữ liệu.
+            </p>
+            <p>Chọn  <i>th&ocirc;ng tin D&acirc;n số cung cấp bởi Esri</i> để bổ sung th&ecirc;m gi&aacute; trị d&acirc;n số cho từng đối tượng v&ugrave;ng, đồng thời th&ocirc;ng tin n&agrave;y sẽ được sử dụng l&agrave;m thuộc t&iacute;nh để ph&acirc;n chia sau n&agrave;y.  T&ugrave;y chọn n&agrave;y sẽ sử dụng credit.
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Tùy chọn Ghi đè</h2></div>
+        <hr/>
+        <div>
+            <p> C&ocirc;ng cụ sẽ t&igrave;m kiếm c&aacute;c c&agrave;i đặt t&ugrave;y chọn về gi&aacute; trị mặc định của <b>K&iacute;ch thước &Ocirc;</b> v&agrave; <b>Dải Khoảng c&aacute;ch</b> dựa tr&ecirc;n c&aacute;c đặc điểm của dữ liệu. Tuy nhi&ecirc;n, nếu bạn c&oacute; một <b>K&iacute;ch cỡ &Ocirc;</b> hoặc <b>Dải Khoảng c&aacute;ch</b> cụ thể ph&ugrave; hợp cho ph&acirc;n t&iacute;ch của m&igrave;nh, c&oacute; thể sử dụng <b>Ghi đ&egrave; T&ugrave;y chọn</b> để c&agrave;i đặt c&aacute;c gi&aacute; trị n&agrave;y.
+            </p>
+            <p> <b>Ghi đ&egrave; T&ugrave;y chọn</b> cũng được sử dụng khi chạy ph&acirc;n t&iacute;ch tr&ecirc;n c&aacute;c tập dữ liệu kh&aacute;c, cho ph&eacute;p bạn giữ <b>Dải Khoảng c&aacute;ch</b> v&agrave; <b>K&iacute;ch cỡ &Ocirc;</b> thống nhất tr&ecirc;n nhiều tập dữ liệu. Sau đ&oacute; bạn c&oacute; thể so s&aacute;nh c&aacute;c kết quả, như tỷ lệ b&eacute;o ph&igrave; v&agrave; tiểu đường, hoặc thậm ch&iacute; l&agrave; tỷ lệ tội phạm của hai năm kh&aacute;c nhau.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Kích cỡ Ô</h2></div>
+        <hr/>
+        <div>
+            <p>K&iacute;ch cỡ của &ocirc; lưới được sử dụng để đếm c&aacute;c điểm b&ecirc;n trong.  
+            </p>
+            <p>Khi sử dụng lưới lục gi&aacute;c để đếm c&aacute;c điểm b&ecirc;n trong, khoảng c&aacute;ch n&agrave;y sẽ được sử dụng l&agrave;m chiều cao của lục gi&aacute;c.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Dải Khoảng cách</h2></div>
+        <hr/>
+        <div>
+            <p>Mỗi đối tượng được ph&acirc;n t&iacute;ch trong bối cảnh c&aacute;c đối tượng gần nhau được đặt trong phạm vi khoảng c&aacute;ch m&agrave; bạn x&aacute;c định. C&ocirc;ng cụ sẽ t&iacute;nh khoảng c&aacute;ch mặc định hoặc bạn c&oacute; thể sử dụng t&ugrave;y chọn n&agrave;y để c&agrave;i đặt một khoảng c&aacute;ch cụ thể ph&ugrave; hợp với ph&acirc;n t&iacute;ch của bạn. 
+            </p>
+            <p>V&iacute; dụ, nếu bạn đang nghi&ecirc;n cứu c&aacute;c m&ocirc; h&igrave;nh đi lại v&agrave; biết rằng h&agrave;nh tr&igrave;nh đi l&agrave;m trung b&igrave;nh l&agrave; 15 dặm, bạn c&oacute; thể sử dụng dải khoảng c&aacute;ch 15 dặm cho ph&acirc;n t&iacute;ch của m&igrave;nh.
+            </p>
+        </div>
+    </div>
+    <div id="hotSpotsResultLayer">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Cung cấp t&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. Lớp kết quả n&agrave;y sẽ cho bạn thấy c&aacute;c cụm điểm c&oacute; &yacute; nghĩa thống k&ecirc; về những gi&aacute; trị cao v&agrave; thấp. Nếu đ&atilde; c&oacute; t&ecirc;n lớp kết quả, bạn sẽ được y&ecirc;u cầu đặt lại t&ecirc;n lớp.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> hộp xổ xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong mục <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

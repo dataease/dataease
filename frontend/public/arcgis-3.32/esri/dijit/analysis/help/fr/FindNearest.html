@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Trouver le plus proche</h2><p/>
+        <h2><img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="Trouver le plus proche"></h2>
+        <hr/>
+    <p>Cet outil recherche les entit&eacute;s les plus proches. Il signale et classe &eacute;galement la distance par rapport aux entit&eacute;s &agrave; proximit&eacute;. Pour conna&icirc;tre les entit&eacute;s les plus proches, l'outil peut mesurer soit la distance en ligne droite soit un mode de d&eacute;placement s&eacute;lectionn&eacute;. Des options permettent de limiter le nombre d'entit&eacute;s les plus proches &agrave; rechercher ou la plage de recherche dans laquelle les trouver. Les r&eacute;sultats de cet outil peuvent vous aider &agrave; r&eacute;pondre &agrave; des questions du type :
+        <ul>
+            <li>Quel est le parc le plus proche&nbsp;?
+            </li>
+            <li>Quel est l&rsquo;h&ocirc;pital le plus proche en voiture&nbsp;? Combien de temps le trajet prendrait-il un mardi &agrave; 17h30 pendant les heures de pointe&nbsp;?
+            </li>
+            <li>Quelles sont les distances par la route entre ces grandes villes&nbsp;?
+            </li>
+            <li>Parmi ces patients, lesquels r&eacute;sident &agrave; moins de deux miles de ces usines chimiques ?
+            </li>
+        </ul>
+        
+    </p>
+    <p>L'outil Trouver le plus proche renvoie une couche contenant les entit&eacute;s les plus proches et une couche de lignes qui relie les emplacements de d&eacute;part &agrave; leurs emplacements les plus proches. La couche de lignes contient des informations sur les emplacements de d&eacute;part et les plus proches et sur les distances qui les s&eacute;parent.
+    </p>
+    <p>Si l'option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s qui sont visibles au sein de l'&eacute;tendue courante de la carte seront prises en compte comme entit&eacute;s de d&eacute;part et entit&eacute;s potentiellement les plus proches.  Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent dans la couche en entr&eacute;e seront prises en compte, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Spécifier les emplacements de départ</h2></div>
+        <hr/>
+        <div>
+            <p>L'outil Trouver le plus proche mesure la distance entre les entit&eacute;s de la couche sp&eacute;cifi&eacute;es ici (emplacements de d&eacute;part) et les emplacements sp&eacute;cifi&eacute;s dans le param&egrave;tre suivant.  L&rsquo;outil prend en charge jusqu&rsquo;&agrave;  5 000&nbsp;entit&eacute;s dans chaque couche. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>Rechercher les emplacements les plus proches dans</h2></div>
+        <hr/>
+        <div>
+            <p>L'outil Trouver le plus proche mesure la distance entre chacune des entit&eacute;s de la premi&egrave;re couche et les emplacements de cette couche. L&rsquo;outil prend en charge jusqu&rsquo;&agrave;  5 000&nbsp;emplacements dans chaque couche. </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Mesurer</h2></div>
+        <hr/>
+        <div>
+            <p>Indiquez si vous souhaitez rechercher les emplacements les plus proches en fonction de la distance en ligne droite ou d'un mode de d&eacute;placement s&eacute;lectionn&eacute;. Les modes de d&eacute;placement sont activ&eacute;s uniquement si votre couche en entr&eacute;e contient des points. Les modes de d&eacute;placement &agrave; votre disposition sont d&eacute;termin&eacute;s par l'administrateur de votre organisation.  Lorsque vous utilisez l'un des modes de d&eacute;placement, les mesures sont prises le long des routes ou des voies, elles respectent les r&egrave;gles en vigueur, par exemple les rues en sens unique, l'interdiction de faire demi-tour, etc.
+            </p>
+            <p>Si vous effectuez des mesures entre des lignes ou des surfaces, la distance &agrave; partir du point le plus proche ou vers le point le plus proche le long de la ligne ou de la limite de la surface est trouv&eacute;e. 
+            </p> 
+            <p>Lorsque vous choisissez l&rsquo;option  <b>Driving Time (Temps de trajet)</b>, <b>Rural Driving Time (Temps de trajet en zone rurale)</b> ou <b>Trucking Time (Temps de trajet pour camions)</b>, vous disposez d&rsquo;options concernant la mani&egrave;re de mesurer le temps de trajet.
+                <ul>
+                    <li>
+                        <p>D&eacute;cochez  <b>Utiliser le trafic</b> pour trouver les entit&eacute;s les plus proches en fonction de vitesses de d&eacute;placement statiques, par exemple les limitations de vitesse, au lieu de vitesses fluctuantes provoqu&eacute;es par les conditions de trafic changeantes.
+                        </p>
+                        <p>Choisissez cette option si vous souhaitez conna&icirc;tre les entit&eacute;s les plus proches en g&eacute;n&eacute;ral, mais pas n&eacute;cessairement les plus proches selon les conditions de trafic d'une heure et d'un jour pr&eacute;cis.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Cochez  <b>Utiliser le trafic</b> pour trouver les entit&eacute;s les plus proches en fonction d'une heure de d&eacute;part pr&eacute;cise et de conditions de trafic changeantes. Si vous choisissez l'option <b>Trafic r&eacute;el</b>, l'heure de d&eacute;part &agrave; partir des emplacements de d&eacute;part est d&eacute;finie sur l'heure actuelle, et les vitesses de trafic actuelles et pr&eacute;vues sont issues de capteurs et de flux afin d'identifier les entit&eacute;s les plus proches. Les vitesses de trafic pr&eacute;vues sont calcul&eacute;es en faisant r&eacute;f&eacute;rence aux vitesses du trafic r&eacute;el, aux vitesses historiques et aux &eacute;v&eacute;nements actuels (la m&eacute;t&eacute;o par exemple). Les vitesses de trafic &eacute;tant pr&eacute;vues sur 12 heures, vous pouvez d&eacute;placer le curseur pour d&eacute;finir l'heure de d&eacute;part jusqu'&agrave; 12 heures &agrave; l'avance.
+                        </p>
+                        <p>Utilisez ces param&egrave;tres de trafic r&eacute;el pour identifier les entit&eacute;s accessibles le plus rapidement possible en partant maintenant, en partant dans une heure, et ainsi de suite.
+                        </p>
+                    </li>
+                    <li>
+                        <p>En cochant  <b>Utiliser le trafic</b> et en choisissant <b>Trafic bas&eacute; sur des conditions typiques pour</b> un jour et une heure, l'outil trouve les entit&eacute;s les plus proches en se basant sur les vitesses historiques moyennes pour chaque intervalle de cinq minutes sur une semaine classique. Les r&eacute;sultats incluent le trafic mais ne tiennent pas compte des conditions de trafic actuelles et des &eacute;v&eacute;nements en cours, qui peuvent varier de mani&egrave;re significative par rapport &agrave; la normale.
+                        </p>
+                        <p>Vous pouvez utiliser ces param&egrave;tres de trafic historique pour demander, par exemple, &quot;Quelles sont les entit&eacute;s accessibles le plus rapidement si je quitte les entit&eacute;s de d&eacute;part &agrave; 11h30 un mercredi ?&quot; 
+                        </p>
+                        <p>L'heure que vous indiquez se rapporte au fuseau horaire dans lequel vos entit&eacute;s de d&eacute;part se situent. Par cons&eacute;quent, si vous d&eacute;finissez l'heure sur 8h00 et que vous avez deux entit&eacute;s de d&eacute;part, un dans la ville de New York et l'autre &agrave; Los Angeles, les emplacements les plus proches seront d&eacute;tect&eacute;s en supposant une heure de d&eacute;part de 8h00 Heure de la c&ocirc;te est et 8h00 Heure du Pacifique, respectivement.
+                        </p>
+                    </li>
+                </ul>
+                Notez qu'au fur et &agrave; mesure qu'un v&eacute;hicule s'&eacute;loigne d'un point, le temps s'&eacute;coule et les conditions de trafic &eacute;voluent. Cet outil tient compte de ces variations lorsque vous cochez <b>Utiliser le trafic</b>. Cependant, toutes les r&eacute;gions ne prennent pas en charge le trafic. Cliquez sur le lien <b>Voir la disponibilit&eacute;</b> sur l'outil pour savoir si le trafic est disponible dans votre zone d'&eacute;tude. 
+            </p>
+            <p>L&rsquo;option  <b>Trucking Time (Temps de trajet pour camions)</b> peut utiliser les vitesses de d&eacute;placement en fonction du trafic mais sans d&eacute;passer la limite de vitesse l&eacute;gale des camions. Par exemple, si la vitesse pour une rue en fonction du trafic en temps r&eacute;el est de 65&nbsp;miles par heure mais que la limite de vitesse des camions pour cette rue est de 55&nbsp;miles par heure, le calcul utilise 55&nbsp;miles par heure pour cette rue.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Sélectionner les couches d’interruptions</h2></div>
+        <hr/>
+        <div>
+            <p> Une ou plusieurs entit&eacute;s qui agissent comme restrictions temporaires (en d&rsquo;autres termes, les interruptions) lors du d&eacute;placement dans les rues sous-jacentes. Vous pouvez pr&eacute;ciser les interruptions &agrave; l&rsquo;aide d&rsquo;entit&eacute;s ponctuelles, lin&eacute;aires ou surfaciques.
+            </p>
+            <p>Une interruption ponctuelle peut mod&eacute;liser un arbre au sol, un accident, une ligne &eacute;lectrique &agrave; terre, ou tout &eacute;l&eacute;ment qui bloque le trafic &agrave; un emplacement donn&eacute; dans la rue. Le d&eacute;placement est autoris&eacute; sur la rue, hormis franchir l&rsquo;interruption. Vous pouvez pr&eacute;ciser jusqu&rsquo;&agrave; 250&nbsp;&eacute;l&eacute;ments comme interruptions ponctuelles.
+            </p>
+            <p>Une interruption lin&eacute;aire interdit le d&eacute;placement l&agrave; o&ugrave; l&rsquo;interruption intersecte les rues. Par exemple, un d&eacute;fil&eacute; ou une manifestation qui bloque la circulation sur plusieurs segments de rue peut &ecirc;tre mod&eacute;lis&eacute; avec une interruption lin&eacute;aire. Si le nombre d&rsquo;entit&eacute;s de rue intersect&eacute;es par toutes les interruptions lin&eacute;aires d&eacute;passe&nbsp;500, l&rsquo;outil renvoie une erreur.
+            </p>
+            <p>Une interruption polygonale interdit le d&eacute;placement l&agrave; o&ugrave; le polygone intersecte les rues. Une utilisation de ce type d&rsquo;interruption consiste &agrave; mod&eacute;liser les inondations couvrant les zones du r&eacute;seau routier et &agrave; identifier la circulation sur la route comme impossible &agrave; ces emplacements pr&eacute;cis. Si le nombre d&rsquo;entit&eacute;s de rue intersect&eacute;es par toutes les interruptions polygonales est sup&eacute;rieur &agrave; 2&nbsp;000, l&rsquo;outil renvoie une erreur.
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>Pour chaque emplacement de la couche en entrée</h2></div>
+        <hr/>
+        <div>
+            <p>Deux options permettent de limiter la recherche pour les emplacements les plus proches. Vous pouvez limiter le nombre maximal d'emplacements les plus proches &agrave; rechercher par emplacement de d&eacute;part. Vous pouvez trouver le parc le plus proche, les deux parcs les plus proches et ainsi de suite. Vous pouvez &eacute;galement d&eacute;finir une distance de recherche maximale ou un temps de conduite maximal.
+            </p>
+            <p>En d&eacute;cochant les options, le nombre maximal d'emplacements les plus proches &agrave; rechercher est de 100 (la limite de l'outil) et la plage de recherche maximale est illimit&eacute;e.
+            </p>
+            <p>Le temps de traitement d&eacute;pend du nombre d'emplacements de d&eacute;part, du nombre d'emplacements &agrave; proximit&eacute; et de la plage de recherche maximale. Plus le nombre d'emplacements est &eacute;lev&eacute; ou plus les plages de recherche sont importantes et plus le traitement est long.
+            </p>
+            <p>Notez que lorsque vous limitez la plage de recherche, il est possible que l'outil ne trouve aucun emplacement le plus proche au sein de cette plage ou que le nombre d'emplacements trouv&eacute;s soit inf&eacute;rieur au nombre maximum d'emplacements &agrave; proximit&eacute; que vous avez sp&eacute;cifi&eacute;s.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche d'entit&eacute;s qui sera cr&eacute;&eacute;e dans  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Si la couche d'entit&eacute;s existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom. La couche d'entit&eacute;s contiendra deux couches&nbsp;: l'une repr&eacute;sentant les emplacements les plus proches et l'autre repr&eacute;sentant les lignes reliant les emplacements en entr&eacute;e aux emplacements les plus proches.
+            </p>
+            <p>Si vous s&eacute;lectionnez  <b>Inclure les couches d'itin&eacute;raires</b>, chaque itin&eacute;raire du r&eacute;sultat est &eacute;galement enregistr&eacute; en tant que couche d'itin&eacute;raires. Une couche d&rsquo;itin&eacute;raire comprend toutes les informations associ&eacute;es &agrave; un itin&eacute;raire en particulier, telles que les arr&ecirc;ts attribu&eacute;s &agrave; l&rsquo;itin&eacute;raire et les feuilles de route. La cr&eacute;ation de couches d&rsquo;itin&eacute;raire est utile si vous voulez partager les itin&eacute;raires individuels avec d&rsquo;autres membres de votre organisation ou si vous souhaitez poursuivre la modification des itin&eacute;raires &agrave; l&rsquo;aide du bouton <b>Directions (Feuille de route)</b> dans la visionneuse de carte. Les couches d&rsquo;itin&eacute;raire utilisent le nom fourni pour la couche d&rsquo;entit&eacute;s comme pr&eacute;fixe, et le nom de l&rsquo;itin&eacute;raire g&eacute;n&eacute;r&eacute; dans le cadre de l&rsquo;analyse qui est ajout&eacute; pour conf&eacute;rer un nom unique &agrave; chaque couche d&rsquo;itin&eacute;raire.
+            </p>
+            <p>Le nombre maximum de couches d'itin&eacute;raires pouvant &ecirc;tre cr&eacute;&eacute;es est de  1 000. Si le r&eacute;sultat contient plus de  1 000 itin&eacute;raires et que l'option  <b>Inclure les couches d'itin&eacute;raires</b> est s&eacute;lectionn&eacute;e, l'outil cr&eacute;e uniquement le service d'entit&eacute;s en sortie.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel la couche d&rsquo;entit&eacute;s et les couches d&rsquo;itin&eacute;raire, si elles sont cr&eacute;&eacute;es, seront enregistr&eacute;es.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

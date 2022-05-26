@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Extrahera raster</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Verktyget Extrahera raster f&ouml;r Portal"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget kan klippa ett raster till en gr&auml;ns, antingen till ett rektangul&auml;rt omr&aring;de eller till en form som du definierar interaktivt p&aring; sk&auml;rmen. Du kan klippa till utbredningen av det omr&aring;de du f&ouml;r n&auml;rvarande visar p&aring; kartan eller av unders&ouml;kningsomr&aring;det som definieras av en polygon.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj indata att extrahera</h2></div>
+        <hr/>
+        <div>
+            <p>Indatalagret som ska klippas.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Ange geometriklipp</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;lj utbredningstyp som ska anv&auml;ndas n&auml;r du klipper lagrets geometri:
+
+                <ul>
+                    <li>Anv&auml;nd aktuell utbredning &ndash; Den aktuella kartutbredningen anv&auml;nds f&ouml;r att klippa ut det resulterande lagret. Det h&auml;r &auml;r standardinst&auml;llningen.
+                        
+
+                    </li>
+                    <li>V&auml;lj unders&ouml;kningsomr&aring;de &ndash; Du kan v&auml;lja om resultatet ska visa omr&aring;det inom geometriutbredningen eller omr&aring;det utanf&ouml;r geometriutbredningen. Om du v&auml;ljer alternativet  <b>Data inne i geometrin</b> tas bilden utanf&ouml;r utbredningen bort. Om du v&auml;ljer alternativet <b>Data utanf&ouml;r geometrin</b> tas bilden inne i utbredningen bort. Du kan ocks&aring; definiera en klippningsgeometri med ritverktyget.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Du kan ange namnet p&aring; en mapp i  <b>Mitt inneh&aring;ll</b> d&auml;r resultatet sparas med listrutan <b>Spara resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

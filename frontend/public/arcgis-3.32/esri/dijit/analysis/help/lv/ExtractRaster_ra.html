@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Izvilkt rastru</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Portāla rīks Izvilkt rastru"></h2>
+        <hr/>
+    <p>&Scaron;is rīks var izgriezt rastru gar robežu&nbsp;&mdash; gan taisnstūra veida platību, gan formu, ko interaktīvi definējat ekrānā. Varat izgriezt pa&scaron;reiz redzamo kartes skatu vai laukuma definētu pētījumu platību.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlēties, kurus ievades datus izvilkt</h2></div>
+        <hr/>
+        <div>
+            <p>Izgriežamais ievades slānis.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Norādīt izgriezuma ģeometriju</h2></div>
+        <hr/>
+        <div>
+            <p>Izvēlieties pārklājuma tipu, kas tiks izmantots, izgriežot slāņa ģeometriju:
+
+                <ul>
+                    <li>Izmantot pa&scaron;reizējo pārklājumu. Pa&scaron;reizējais kartes pārklājumu tiks izmantots rezultāta slāņa izgrie&scaron;anai. Tā ir noklusējuma vērtība.
+                        
+
+                    </li>
+                    <li>Izvēlēties pētījumu platību. Ļauj izvēlēties, vai rezultātā tiks parādīta platība, kas ietilpst ģeometrijas pārklājumā, vai platība ārpus ģeometrijas pārklājuma. Izvēloties opciju  <b>Dati ģeometrijā</b>, tiks noņemts attēls ārpus pārklājuma. Izvēloties opciju <b>Dati ārpus ģeometrijas</b>, tiks noņemts attēls pārklājuma robežās. Izgrie&scaron;anas ģeometriju varat arī definēt, izmantojot zīmē&scaron;anas rīku.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slānis jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Mapes nosaukumu var norādīt mapē  <b>Mans saturs,</b> kur rezultāts tiks saglabāts, izmantojot nolaižamo lodziņu <b>Saglabāt rezultātu</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

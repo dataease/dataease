@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Aggiungi dati</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Diagramma del flusso di lavoro Aggiungi dati"></h2>
+        <hr/>
+    <p>Questo strumento aggiunge dati ad un feature layer hosted esistente. Aggiungi dati modifica il layer di input originale e non genera un nuovo layer di output. &Egrave; possibile abbinare i campi in base al nome del campo e al tipo del campo o &egrave; possibile applicare metodi di corrispondenza pi&ugrave; avanzati.
+    </p>
+    <p>Di seguito sono riportati degli esempi: 
+        <ul>
+            <li>L&rsquo;utente &egrave; un dipendente di una grande compagnia di assicurazioni che genera mensilmente record di vendita. Per il report annuale, i dati mensili devono essere compilati per l'analisi. Per avviare un'analisi delle vendite, &egrave; possibile utilizzare Aggiungi dati per aggiornare il layer AnnualReport_2018 una volta disponibili i numeri mensili. Poich&eacute; si sa che l&rsquo;organizzazione mantiene uno schema coerente ogni mese, &egrave; possibile utilizzare il metodo di mappatura dei campi predefinito per aggiungere in modo efficiente le feature in base al nome e al tipo del campo.
+            </li>
+            <li>Dieci gruppi ambientali raccolgono centinaia di migliaia di misurazioni climatiche nell'ambito della loro giurisdizione. Queste organizzazioni desiderano compilare i loro dati per comprendere meglio i modelli regionali e globali. Ogni organizzazione determina lo schema per il proprio dataset. Ciascuno ha specificato nomi di campo diversi per i dati relativi alla temperatura e alla velocit&agrave; del vento. Date le differenze nel nome del campo tra i dataset, &egrave; possibile sfruttare la mappatura dei campi per specificare come aggiungere le misurazioni di temperatura e velocit&agrave; del vento nei rispettivi campi.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegli layer da aggiungere a</h2></div>
+        <hr/>
+        <div>
+            <p>Feature tabella, puntuale, lineare o poligonale a cui vengono aggiunti i dati.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Il layer a cui si aggiunge viene modificato durante l'esecuzione dello strumento. Prima di procedere, assicurati di voler modificare questo layer.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare i contenuti di un feature layer hosted.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Scegli layer da aggiungere</h2></div>
+        <hr/>
+        <div>
+            <p>Feature tabella, puntuale, lineare o poligonale da aggiungere al layer di input.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Aggiungi tutte le feature definisci un sottoinsieme (opzionale)</h2></div>
+        <hr/>
+        <div>
+            <p>Identifica le feature da aggiungere. Questo parametro &egrave; opzionale.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Scegli come aggiungere campi (opzionale)</h2></div>
+        <hr/>
+        <div>
+            <p>Specifica il modo in cui i campi del layer aggiunti vengono aggiunti al layer di input. Per impostazione predefinita, verranno aggiunti tutti i campi di input e di aggiunta corrispondenti. I campi sono una corrispondenza se hanno lo stesso nome del campo e lo stesso tipo del campo. Facoltativamente, &egrave; possibile scegliere la modalit&agrave; di corrispondenza dei campi o calcolare le espressioni Arcade per compilare i valori dei campi.
+            </p>
+            <p>Ad esempio, si dispone di un layer input con campi  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i> e un layer di aggiunta con campi <i>field_string</i>, <i>field_number</i> e <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>Per impostazione predefinita, lo strumento fa corrispondere  <i>field_number</i> nel layer di input a <i>field_number</i> nel layer di aggiunta e <i>field_string</i> nel layer di input a <i>field_string</i> nel layer di aggiunta.
+                    </li>
+                    <li>Per impostazione predefinita, il layer di input  <i>date_field</i> e i campi <i>unused_field</i> vengono compilati con i valori di <i>null</i> in quanto non dispongono di campi corrispondenti nel layer di aggiunta.
+                    </li>
+                    <li>Facoltativamente, &egrave; possibile aggiungere valori ai campi non automaticamente corrispondenti per impostazione predefinita. Ad esempio,  <i>date_field</i> nel layer di input pu&ograve; essere abbinato al campo di aggiunta <i>MY_DATE_FIELD</i>. A tal fine, utilizzare il menu a discesa accanto a <i>date_field</i> nella prima colonna e selezionare <i>MY_DATE_FIELD</i> dal menu a discesa nella seconda colonna.
+                    </li>
+                </ul>
+                 In un altro esempio, un layer di input dispone di campi numerici <i>value_1</i>, <i>value_2</i>, <i>value_3</i> e <i>my_Average</i> e un layer di aggiunta dispone di campi numerici <i>value_1</i>, <i>value_2</i> e <i>value_3</i>.
+                <ul>
+                    <li>Per impostazione predefinita,  <i>value_1</i>, <i>value_2</i> e <i>value_3</i> vengono abbinati e aggiunti.
+                    </li>
+                    <li>Oltre al comportamento predefinito, i valori possono essere calcolati per il campo  <i>my_Average</i>. Effettuare questa operazione utilizzando vari campi e operazioni matematiche selezionando l&rsquo;opzione a discesa <b>Espressione</b> nella colonna accanto a <i>my_Average</i> e creando un&rsquo;espressione Arcade personalizzata, quale <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

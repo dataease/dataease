@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>計算距離</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="計算距離"></h2>
+        <hr/>
+    <p>此工具可從單一來源或一組來源計算歐幾里德距離、方向和分配。
+    </p>
+    <p>應用程式範例包含回答以下類似的問題：
+
+        <ul>
+            <li>與最近的城鎮距離為何？
+                
+
+            </li>
+            <li>與最近的道路距離為何？
+                
+
+            </li>
+            <li>與最近的水源距離為何？
+            </li>
+        </ul>
+        
+    </p>
+    <p>如果勾選 <b>使用目前地圖範圍</b>，則僅分析目前地圖範圍中可見的輸入圖層中的圖徵。如果未勾選，則分析輸入圖層中的所有圖徵，包括超出目前地圖顯示範圍的圖徵。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>選擇圖徵位置圖層的點陣以計算距離</h2></div>
+        <hr/>
+        <div>
+            <p>定義了將計算與來源之距離的圖層。圖層可為圖片服務或圖徵服務。
+            </p>
+            <p>對於圖片服務，輸入類型可為整數或浮點數。
+            </p>
+            <p>對於圖徵服務，輸入可為點、線或多邊形。
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>要計算的最長距離</h2></div>
+        <hr/>
+        <div>
+            <p>要計算的最長距離。例如，如果您提供 10,000 公尺的值，則將根據該值（距離），從來源位置計算歐幾里德距離。
+            </p>
+            <p>若未提供任何值，則將按照定義的範圍計算距離。
+            </p>
+            <p>可用的單位是公里、公尺、英哩和英呎。
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>輸出儲存格大小</h2></div>
+        <hr/>
+        <div>
+            <p>輸出點陣的儲存格大小和單位。
+            </p>
+            <p>單位可為公里、公尺、英哩或英呎。
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>結果距離圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果已存在該名稱的圖層，系統將提示您提供其他名稱。
+            </p>
+            <p>您可以使用 <b>將結果儲存到</b>下拉式方塊，在 <b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>結果距離圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>將在 <b>我的內容</b>中建立圖層的名稱。您必須提供 <b>我的內容</b>中目前不存在的名稱。
+            </p>
+            <p>您可以使用 <b>將結果儲存到</b>下拉式方塊，在 <b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>結果分配圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>將在 <b>我的內容</b>中建立圖層的名稱。您必須提供 <b>我的內容</b>中目前不存在的名稱。
+            </p>
+            <p>您可以使用 <b>將結果儲存到</b>下拉式方塊，在 <b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>選擇分配欄位</h2></div>
+        <hr/>
+        <div>
+            <p>輸入來源圖層上的欄位，用來保留定義了每個來源的值。它可以是來源資料集的整數或字串欄位。
+            </p>
+            <p>預設是  <i>Value</i>。如果使用圖徵服務且無可用的 <i>Value</i> 欄位，則將使用第一個可用的整數或字串欄位。如果不存在有效欄位，將使用 ObjectID 欄位（例如，OID 或 FID，取決於圖徵輸入的類型）。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

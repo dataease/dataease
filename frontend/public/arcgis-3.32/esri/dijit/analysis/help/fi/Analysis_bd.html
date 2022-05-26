@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="bdToolbox">
+        <p> GeoAnalytics hajauttaa analyysiteht&auml;v&auml;t ArcGIS GeoAnalytics Server -palvelimelle. N&auml;in voit analysoida aiempaa enemm&auml;n aineistoa entist&auml; nopeammin  usealla koneella. Saatavissa ovat seuraavat ty&ouml;kalut: <ul>
+                <li> Kokoa pisteet
+                </li>
+                <li> Luo useita muuttujia sis&auml;lt&auml;v&auml; ruudukko
+                </li>
+                <li> Kuvaile aineistoryhm&auml;&auml;
+                </li>
+                <li> Liit&auml; kohteet
+                </li>
+                <li> Muodosta reitit uudelleen
+                </li>
+                <li> Laadi yhteenveto ominaisuustiedoista
+                </li>
+                <li> Yhteenveto alueella
+                </li>
+                <li> Geokoodaa sijainnit taulukosta
+                </li>
+                <li> Rikasta useita muuttujia sis&auml;lt&auml;v&auml;st&auml; ruudukosta
+                </li>
+                <li> Havaitse tapahtumat
+                </li>
+                <li> Etsi samankaltaisia sijainteja
+                </li>
+                <li> Laske tiheys
+                </li>
+                <li> Etsi pisteklustereita
+                </li>
+                <li> Etsi HotSpot-pisteit&auml;
+                </li>
+                <li> Mets&auml;perusteinen luokittelu ja regressio
+                </li>
+                <li> Yleistetty lineaarinen regressio
+                </li>
+                <li> Luo puskurit
+                </li>
+                <li> Liit&auml; aineisto
+                </li>
+                <li> Laske kentt&auml;
+                </li>
+                <li> Kopioi aineistos&auml;il&ouml;&ouml;n
+                </li>
+                <li> Kerrostasot
+                </li>
+                <li> Sulauta rajat
+                </li>
+                <li> Yhdist&auml; karttatasot
+                </li>
+                <li> Leikkaa karttataso 
+                </li>
+            </ul>
+            
+        </p>
+        <p>GeoAnalytics analysoi suuren m&auml;&auml;r&auml;n tietoja painottaen sek&auml; paikka- ett&auml; aikatietoja. 
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Summarize Data</h2>
+        <hr/>
+        <p> The Summarize Data toolset contains tools that calculate total counts, lengths, areas, and basic descriptive statistics of features and their attributes within areas or near other features.
+            <ul>
+                <li> <b>Aggregate Points</b> calculates statistics about points that fall within specified areas or bins.
+                </li>
+                <li> <b>Build Multi-Variable Grid</b> generates a grid of square or hexagonal bins and calculates values for each bin based on the proximity of each input layer.
+                </li>
+                <li> <b>Describe Dataset</b> calculates a summary of your input, and can optionally generate a sample of your input layer.
+                </li>
+                <li> <b>Join Features</b> calculates statistics about features that share a spatial, temporal, or attribute relationship with other features.
+                </li>
+                <li> <b>Reconstruct Tracks</b> calculates statistics about points or polygons that belong to the same track and reconstructs inputs into tracks.
+                </li>
+                <li> <b>Summarize Attributes</b> calculates statistics about feature or tabular data that share attributes.
+                </li>
+                <li> <b>Summarize Within</b> calculates statistics for area features and attributes that overlap each other.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Kokoa pisteet</h2></td>
+                    <td>
+                    <img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" class="titleImage" alt="Kokoa pisteet">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>T&auml;m&auml; ty&ouml;kalu m&auml;&auml;ritt&auml;&auml;, mitk&auml; pisteet ovat alueen tai lohkon sis&auml;ll&auml;, ja laskee alueella tai lohkossa olevien pisteiden tilastotiedot k&auml;ytt&auml;m&auml;ll&auml; pistekohteiden karttatasoa ja m&auml;&auml;ritetyn et&auml;isyyden m&auml;&auml;ritt&auml;mien aluekohteiden tai aluelohkojen karttatasoa. Voit vaihtoehtoisesti k&auml;ytt&auml;&auml; aikaleikkeit&auml; t&auml;m&auml;n ty&ouml;kalun kanssa. 
+            </p>
+            <p>Seuraavat ovat esimerkkej&auml;:
+                <ul>
+                    <li>Jos karttatasoon on merkitty rikosten tapahtumasijainnit, ty&ouml;kalu laskee, kuinka monta rikosta kussakin piirikunnassa tai muulla hallinnollisella alueella on tapahtunut.
+                    </li>
+                    <li>Voit etsi&auml; my&ouml;s yrityksen korkeimman ja alhaisimman kuukausituoton toimipisteet k&auml;ytt&auml;m&auml;ll&auml; 100-kilometrin lohkoja.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="BuildMultiVariableGridTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Luo useita muuttujia sisältävä ruudukko</h2></td>
+                    <td>
+                    <img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" class="titleImage" alt="Liit&auml; aineisto -ty&ouml;nkulkukaavio ">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Luo useita muuttujia sis&auml;lt&auml;v&auml; ruudukko -ty&ouml;kalu luo neli&ouml;- tai kuusiolohkoristikon ja laskee arvot jokaiselle lohkolle yhden tai useamman l&auml;ht&ouml;karttatason l&auml;heisyyden perusteella.
+            </p>
+            <p>Seuraavat ovat esimerkkej&auml;:
+                <ul>
+                    <li>Kun julkisen liikenteen infrastruktuurin eri tasot otetaan huomioon, mihin osaan kaupunkia julkisilla kulkuv&auml;lineill&auml; p&auml;&auml;see huonoiten?
+                    </li>
+                    <li>Kun huomioidaan vesist&ouml;tasot, kuten j&auml;rvet ja joet, mik&auml; on nimelt&auml;&auml;n se vesist&ouml;, joka on l&auml;hinn&auml; jokaista sijaintipaikkaa USA:ssa?
+                    </li>
+                    <li>Kun tulotaso kotitaloutta kohti otetaan huomioon, miss&auml; kohdin USA:ta tulojen vaihtelu on suurimmillaan ymp&auml;r&ouml;iv&auml;n 80 kilometrin s&auml;teell&auml;?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DescribeDatasetTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Kuvaile aineistoryhmää</h2></td>
+                    <td>
+                    <img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" class="titleImage" alt="Kuvaile aineistoryhm&auml; -ty&ouml;nkulkukaavio">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Tee tilastotietoja, mallikarttatasoja ja visualisointeja sis&auml;lt&auml;v&auml; yhteenveto l&auml;ht&ouml;aineiston kohteista. Voit tulostaa mallikarttatason tai laajuuskarttatason.
+            </p>
+            <p>Seuraavat ovat esimerkkej&auml;:
+                <ul>
+                    <li>Tutustu laskettuihin yhteenvetotilastoihin, jotta ymm&auml;rr&auml;t, mit&auml; arvoja aineistoryhm&auml;si sis&auml;lt&auml;&auml;.
+                    </li>
+                    <li>Koko aineistoryhm&auml;n piirt&auml;misen sijasta voit luoda osajoukon karttatason kohteiden ja niiden ominaisuustietojen visualisointia varten, kun ne lis&auml;t&auml;&auml;n karttaan.
+                    </li>
+                    <li>S&auml;&auml;st&auml; aikaa ja resursseja suorittamalla analyysi mallikarttatasolle ennen koko aineistoryhm&auml;n analysointia.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Liitä kohteet</h2></td>
+                    <td>
+                    <img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" class="titleImage" alt="Liit&auml; kohteet">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Kohdekarttatasojen tai taulukkoaineiston avulla voit liitt&auml;&auml; kohteita ja tietueita l&auml;ht&ouml;aineiston karttatasojen tai taulukoiden tiettyjen suhteiden perusteella.  Liitokset m&auml;&auml;r&auml;ytyv&auml;t tila-, aika- ja ominaisuustietosuhteiden mukaan, ja yhteenvetotilastotiedot lasketaan valinnaisesti.  
+            </p>
+            <p>Seuraavat ovat esimerkkej&auml;:
+                <ul>
+                    <li>Jos rikosten tapahtumasijainnit ja -ajat on annettu, voit m&auml;&auml;ritt&auml;&auml;, tapahtuuko rikoksia sijainnillisesti ja ajallisesti l&auml;hekk&auml;in, liitt&auml;m&auml;ll&auml; rikosten tiedot toisiinsa siten, ett&auml; m&auml;&auml;rit&auml;t niiden rikosten sijaintisuhteen, jotka ovat tapahtuneet tunnin v&auml;lein yhden kilometrin et&auml;isyydell&auml; toisistaan.
+                    </li>
+                    <li>Jos postinumerotaulukko, demografiatiedot ja asuinrakennuksia esitt&auml;v&auml;t aluekohteet on annettu, voit liitt&auml;&auml; demografiatiedot asuinpaikkoihin, jotta jokaisella asuinpaikalla on tiedot.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ReconstructTracksTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Muodosta reitit uudelleen</h2></td>
+                    <td>
+                    <img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" class="titleImage" alt="Muodosta reitit uudelleen">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>T&auml;m&auml; ty&ouml;kalu m&auml;&auml;ritt&auml;&auml;, mitk&auml; l&auml;ht&ouml;aineiston kohteet kuuluvat reitille ja j&auml;rjest&auml;&auml; l&auml;ht&ouml;aineiston aikaj&auml;rjestykseen k&auml;ytt&auml;m&auml;ll&auml; ajan huomioivaa karttatasoa, jossa on  <code>ajanhetke&auml;</code> kuvaavia piste- tai aluekohteita. Tilastotiedot lasketaan valinnaisesti l&auml;ht&ouml;aineiston kohteille kullakin reitill&auml;.
+            </p>
+            <p>Seuraavat ovat esimerkkej&auml;:
+                <ul>
+                    <li>Jos hurrikaanimittausten pistesijainnit ja aika on annettu, voit laskea hurrikaanin tuulen keskinopeuden ja enimm&auml;ispaineen.
+                    </li>
+                    <li>K&auml;yt&auml; laivojen GPS-mittauksia laivareittien uudelleen muodostamiseksi viivoina. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeAttributesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Laadi yhteenveto ominaisuustiedoista</h2></td>
+                    <td>
+                    <img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" class="titleImage" alt="Laadi yhteenveto ominaisuustiedoista -kaavio">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>T&auml;m&auml; ty&ouml;kalu laatii yhteenvedon m&auml;&auml;ritettyjen kenttien tilastotiedoista kohde- tai taulukkoaineiston avulla. 
+            </p>
+            <p>Seuraavat ovat esimerkkej&auml;:
+                <ul>
+                    <li>Jos myym&auml;l&ouml;iden sijainnit ja  <i>COMPANY_NAME</i> -kent&auml;n tiedot on annettu, voit m&auml;&auml;ritt&auml;&auml; kunkin yrityksen tilastotiedot laatimalla yhteenvedon myym&auml;l&ouml;ist&auml; yrityksen nimen mukaan.
+                    </li>
+                    <li>Jos myym&auml;l&auml;taulukko sek&auml;  <i>COMPANY_NAME</i> ja <i>COUNTY</i> -kenttien tiedot on annettu, voit m&auml;&auml;ritt&auml;&auml; jokaisen maakunnan kunkin yrityksen tilastotiedot laatimalla yhteenvedon myym&auml;l&ouml;ist&auml; yrityksen nimen ja maakunnan mukaan.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Yhteenveto alueella</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Yhteenveto alueella">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Etsii alueet (tai niiden osat), jotka ovat p&auml;&auml;llekk&auml;in kahdessa karttatasossa, ja laskee p&auml;&auml;llekk&auml;isten alueiden tilastotiedot. 
+            </p>
+            <p>Seuraavat ovat esimerkkej&auml;:
+                <ul>
+                    <li>Jos k&auml;yt&ouml;ss&auml; ovat vesijakoalueiden karttataso ja maank&auml;ytt&ouml;tyypin mukaisten maank&auml;ytt&ouml;alueiden karttataso, ty&ouml;kalu laskee tietyn maank&auml;ytt&ouml;aluetyypin kokonaispinta-alan eekkerein&auml; kullekin vesijakoalueelle. 
+                    </li>
+                    <li>Jos k&auml;yt&ouml;ss&auml; ovat piirikunnan kiinteist&ouml;jen karttataso ja kaupunkien rajojen karttataso, ty&ouml;kalu tekee yhteenvedon siit&auml;, mik&auml; on kunkin kaupungin sis&auml;ll&auml; olevien vapaiden kiinteist&ouml;jen keskim&auml;&auml;r&auml;inen arvo.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="regularsize">
+        <h2>Hae sijainnit</h2>
+        <hr/>
+        <p>N&auml;iden ty&ouml;kalujen avulla voidaan tunnistaa alueet, jotka vastaavat useita erilaisia m&auml;&auml;ritt&auml;mi&auml;si kriteerej&auml;.   
+            <ul>
+                <li> <b>Havaitse tapahtumat</b> toimii ajan huomioivissa karttatasoissa sen selvitt&auml;miseksi, mitk&auml; kohteet t&auml;ytt&auml;v&auml;t m&auml;&auml;ritetyn ehdon.
+                </li>
+                <li> <b>Geokoodaa sijainnit taulukosta</b> muuntaa osoitteet koordinaateiksi.
+                </li>
+                <li> <b>Etsi samankaltaisia sijainteja</b> hakee sijainteja, jotka ovat mahdollisimman samanlaisia kuin viitesijainnit ja m&auml;&auml;ritt&auml;m&auml;si vastaavuusehdot.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DetectIncidentsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Havaitse tapahtumat</h2></td>
+                    <td>
+                    <img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" class="titleImage" alt="Havaitse tapahtumat">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>T&auml;m&auml; ty&ouml;kalu toimii sellaisen karttatason kanssa, jossa on otettu aika k&auml;ytt&ouml;&ouml;n ja joka sis&auml;lt&auml;&auml; hetke&auml; ajassa kuvaavia pisteit&auml;, viivoja, alueita tai taulukoita. K&auml;ytt&auml;m&auml;ll&auml; per&auml;kk&auml;isess&auml; j&auml;rjestyksess&auml; olevia kohteita, joita kutsutaan reiteiksi, t&auml;m&auml; ty&ouml;kalu m&auml;&auml;ritt&auml;&auml;, mitk&auml; kohteet ovat kiinnostavia tapahtumia. Tapahtumat m&auml;&auml;ritet&auml;&auml;n m&auml;&auml;ritt&auml;miesi ehtojen perusteella. 
+            </p>
+            <p>Seuraavat ovat esimerkkej&auml;:
+                <ul>
+                    <li>Havaitse hurrikaanimittauksia, jotka ovat 4. kategorian hurrikaaneja tuulen nopeuteen liittyv&auml;n ominaisuustiedon perusteella.
+                    </li>
+                    <li>K&auml;ytt&auml;m&auml;ll&auml; laivojen liikkeit&auml; kuvaavia GPS-mittauksia, joissa kentt&auml; edustaa laivan nopeutta, voi l&ouml;yt&auml;&auml; mittauksia, jotka ovat suurempia kuin 1,5 kertaa edellisen viiden mittauksen keskiarvo.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Geokoodaa sijainnit taulukosta</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="Geokoodaa sijainnit taulukosta">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Muuntaa osoitteet koordinaateiksi. K&auml;yt&auml; t&auml;t&auml; ty&ouml;kalua Big Data -tiedostojaon taulukoissa.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Etsi samankaltaisia sijainteja</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="Etsi samankaltaisia sijainteja">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>M&auml;&auml;ritt&auml;miesi ehtojen perusteella voit etsi&auml; samankaltaisia sijainteja mittaamalla ehdokashakukarttatason sijaintien samankaltaisuutta v&auml;hint&auml;&auml;n yhteen viitesijaintiin. 
+            </p>
+            <p>Seuraavat ovat esimerkkej&auml;: 
+                <ul>
+                    <li>Etsi kymmenen samankaltaisinta myym&auml;l&auml;&auml; tutkimalla ty&ouml;ntekij&ouml;iden m&auml;&auml;r&auml;&auml; ja vuosimyynti&auml;.
+                    </li>
+                    <li>Etsi 100 samankaltaisinta kaupunkia tutkimalla v&auml;est&ouml;n, vuosikasvun ja verotulojen suhdetta.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="largesize">
+        <h2>Analysoi kaavat</h2>
+        <hr/>
+        <p>  N&auml;iden ty&ouml;kalujen avulla voit tunnistaa, m&auml;&auml;ritt&auml;&auml; ja visualisoida tiedoistasi tila-avaruuden malleja.
+            <ul>
+                <li> <b>Laske tiheys</b> analysoi tietyn ilmi&ouml;n tunnetut m&auml;&auml;r&auml;t ja jakaa ne kartan alueelle.
+                </li>
+                <li> <b>Etsi kuumat alueet</b> tunnistaa tilastollisesti merkitt&auml;v&auml;t ryp&auml;&auml;t tietojesi tila-avaruuden mallista.
+                </li>
+                <li> <b>Etsi pisteklustereita</b> etsii pistekohdeklustereita ymp&auml;r&ouml;iv&auml;st&auml; kohinasta sijainnin jakauman perusteella.
+                </li>
+                <li> <b>Mets&auml;perusteinen luokittelu ja regressio</b> luo malleja ja ennusteita k&auml;ytt&auml;m&auml;ll&auml; Leo Breimanin satunnaisen mets&auml;n algoritmia, joka on valvotun koneoppimismenetelm&auml;n muunnelma.
+                </li>
+                <li> <b>Yleistetty lineaarinen regressio</b> luo ennusteita tai mallintaa riippuvan muuttujan. Mallinnus kuvaa riippuvan muuttujan suhdetta selitt&auml;vien muuttujien joukkoon.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Laske tiheys</h2></td>
+                    <td>
+                    <img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" class="titleImage" alt="Laske tiheys">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Laske tiheys -ty&ouml;kalu luo tiheyskartan pistekohteista jakamalla tietyn ilmi&ouml;n tunnetut m&auml;&auml;r&auml;t (esitet&auml;&auml;n pisteiden ominaisuustietoina) kartan alueelle. Tuloksena on tiheytt&auml; esitt&auml;vien alueiden karttataso.
+            </p>
+            <p>Seuraavat ovat esimerkkej&auml;:
+                <ul>
+                    <li>Maan sairaaloiden tiheyksien laskeminen. Tulostaso n&auml;ytt&auml;&auml; alueet, joilta sairaalaan p&auml;&auml;sy on helppoa tai vaikeaa. N&auml;it&auml; tietoja voidaan k&auml;ytt&auml;&auml; apuna p&auml;&auml;tett&auml;ess&auml; uusien sairaaloiden sijainneista.
+                    </li>
+                    <li>Mets&auml;paloille alttiiden alueiden tunnistaminen mets&auml;palojen historiallisten sijaintien perusteella.
+                    </li>
+                    <li>Kaukana valtateist&auml; sijaitsevien asutusten paikantaminen suunniteltaessa uusien teiden rakentamista.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Etsi pisteklustereita</h2></td>
+                    <td>
+                    <img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" class="titleImage" alt="Etsi pisteklustereita">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Etsi pisteklustereita  -ty&ouml;kalu etsii pistekohdeklustereita  ymp&auml;r&ouml;iv&auml;st&auml; kohinasta sijainnin jakauman perusteella.
+            </p>
+            <p>Seuraavat ovat esimerkkej&auml;:
+                <ul>
+                    <li>Etsi tuhoel&auml;inten valtaamia kotitalousklustereita h&auml;vitysty&ouml;n kohdentamisen helpottamiseksi.  
+                    </li>
+                    <li>Tiedota pelastus- ja evakuointitarpeista ja toimi niiden mukaan klusterien koon ja sijainnin perusteella. K&auml;yt&auml; geopaikannettuja twiittej&auml; luonnonkatastrofeista tai terrori-iskuista.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Etsi HotSpot-pisteitä</h2></td>
+                    <td>
+                    <img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" class="titleImage" alt="Etsi HotSpot-pisteit&auml;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Etsi kuumat pisteet -toiminto m&auml;&auml;ritt&auml;&auml;, onko tietojen koordinaattikuviossa tilastollisesti merkitsev&auml;&auml; ryp&auml;st&auml;. 
+                <ul>
+                    <li>Muodostavatko pisteet klusterin? Miten t&auml;st&auml; voi varmistua?
+                    </li>
+                    <li>Oletko l&ouml;yt&auml;nyt tilastollisesti merkitsev&auml;n kuuman pisteen vai kertooko kartta muuta, jos muuttaisit sen symbolien esitystapaa?
+                    </li>
+                </ul>
+                Etsi kuumat pisteet -toiminto auttaa vastaamaan n&auml;ihin kysymyksiin luotettavasti.
+            </p>
+            <br/>
+        </div>
+        <div id="ForestBasedClassificationAndRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Metsäperusteinen luokittelu ja regressio</h2></td>
+                    <td>
+                    <img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" class="titleImage" alt="Mets&auml;perusteinen luokittelu ja regressio -ty&ouml;nkulkukaavio">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Mets&auml;perusteinen luokittelu ja regressio -ty&ouml;kalu mallintaa ja luo ennusteita k&auml;ytt&auml;m&auml;ll&auml; Leo Breimanin satunnaisen mets&auml;n algoritmia, joka on valvotun koneoppimismenetelm&auml;n muunnelma
+            </p>
+            <p>Alla on esimerkkej&auml;:
+                <ul>
+                    <li>Oletetaan, ett&auml; aineisto sis&auml;lt&auml;&auml; tietoa meriajokasesiintymist&auml; sek&auml; useita ymp&auml;rist&ouml;&ouml;n liittyvi&auml; selitt&auml;vi&auml; muuttujia, jotka on esitetty kahtena sellaisena ominaisuustietona, jotka on rikastettu k&auml;ytt&auml;m&auml;ll&auml; useita muuttujia sis&auml;lt&auml;v&auml;&auml; ruudukkoa. Sen avulla on laskettu meriajokasesiintymien et&auml;isyydet yl&auml;virtaan tehtaisiin ja l&auml;himpiin satamiin. Tulevat meriajokasesiintym&auml;t voidaan ennustaa tulevien, samoja ymp&auml;rist&ouml;&ouml;n liittyvi&auml; selitt&auml;vi&auml; muuttujia k&auml;ytt&auml;vien projektioiden perusteella.
+                          
+                    </li>
+                    <li>Oletetaan, ett&auml; k&auml;yt&ouml;ss&auml;si on viljelykasvien satoaineistoa sadoilta maatiloilta sek&auml; muita ominaisuustietoja kustakin maatilasta, kuten ty&ouml;ntekij&ouml;iden m&auml;&auml;r&auml;, pinta-ala eekkerein&auml; jne. N&auml;iden tietojen avulla voit m&auml;&auml;ritt&auml;&auml; joukon kohteita, jotka edustavat maatiloja, joista et ole viel&auml; saanut satotietoja (mutta joista sinulla on kaikki muut muuttujat), ja laatia ennusteen sadosta.
+                    </li>
+                    <li>Asumiseen liittyv&auml;t arvot voidaan ennustaa kuluvan vuoden aikana myytyjen asuntojen hintojen perusteella. Myytyjen asuntojen myyntihintaa sek&auml; tietoja, kuten makuuhuoneiden m&auml;&auml;r&auml;, et&auml;isyys kouluihin, p&auml;&auml;valtateiden l&auml;heisyys, keskitulo ja rikosten m&auml;&auml;r&auml;, voidaan k&auml;ytt&auml;&auml; samankaltaisten asuntojen myyntihintojen ennustamiseen.
+                         
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeneralizedLinearRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Yleistetty lineaarinen regressio</h2></td>
+                    <td>
+                    <img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" class="titleImage" alt="GeneralizedLinearRegression-ty&ouml;nkulkukaavio">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Yleistetty lineaarinen regression -ty&ouml;kalu  luo ennusteita tai mallintaa riippuvan muuttujan. Mallinnus kuvaa riippuvan muuttujan suhdetta selitt&auml;vien muuttujien joukkoon. T&auml;m&auml;n ty&ouml;kalun avulla voi sovittaa jatkuvia (OLS), binaarisia (logistisia) ja m&auml;&auml;r&auml;&auml;n perustuvia (Poisson) malleja.
+            </p>
+            <p>Alla on esimerkkej&auml;:
+                <ul>
+                    <li>Mitk&auml; demografiset ominaisuudet ovat julkisen liikenteen korkean k&auml;ytt&ouml;asteen taustalla?
+                    </li>
+                    <li>Onko vandalismin ja murtojen v&auml;lill&auml; positiivinen suhde?
+                    </li>
+                    <li>Mitk&auml; muuttujat ennustavat tehokkaasti h&auml;t&auml;numeropuhelujen m&auml;&auml;r&auml;&auml;?  Jos k&auml;yt&ouml;ss&auml;si on tulevia projektioita, mik&auml; on h&auml;t&auml;keskusresurssien odotettu tarve?
+                    </li>
+                    <li>Mitk&auml; muuttujat vaikuttavat alhaiseen syntyvyyteen?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="smallsize">
+        <h2>Käytä läheisyyttä</h2>
+        <hr/>
+        <p>N&auml;iden ty&ouml;kalujen avulla saat vastauksen yhteen paikkatietojen analysoinnin peruskysymyksist&auml;: mik&auml; on mink&auml;kin l&auml;hell&auml;?
+            <ul>
+                <li> <b>Luo puskureita</b> luo alueita, jotka ovat tietyll&auml; et&auml;isyydell&auml; kohteista.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CreateBuffersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Luo puskurit</h2></td>
+                    <td>
+                    <img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" class="titleImage" alt="Luo puskurit">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Puskuri on alue, joka muodostuu annetun et&auml;isyyden p&auml;&auml;h&auml;n piste-, viiva- tai aluekohteesta.
+            </p>
+            <p>Seuraavat ovat esimerkkej&auml;:
+                <ul>
+                    <li>M&auml;&auml;rit&auml; rantarajaehdotus puskuroimalla jokainen joki lineaaristen jokikohteiden avulla joen 50-kertaisella leveydell&auml;.
+                    </li>
+                    <li>Jos maita edustavat alueet on annettu, m&auml;&auml;rit&auml; meriraja puskuroimalla jokainen maa 200 merimaililla.  
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Manage Data</h2>
+        <hr/>
+        <p>These tools are used for the day-to-day management of geographic and tabular data. 
+            <ul>
+                <li> <b>Append Data</b> appends features to an existing hosted feature layer.
+                </li>
+                <li> <b>Calculate Field</b> creates a new field or modifies an existing field and creates a new layer in your contents.
+                </li>
+                <li> <b>Clip Layer</b> copies features that intersect a defined area of interest. 
+                </li>
+                <li> <b>Copy to Data Store</b> copies data to your ArcGIS Data Store and creates a layer in your contents. 
+                </li>
+                <li> <b>Dissolve Boundaries</b> merges areas that share a common boundary or attribute value.
+                </li>
+                <li> <b>Merge Layers</b> copies all features from two layers into a single result layer.
+                </li>
+                <li> <b>Overlay Layers</b> combines two or more layers into a single layer.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CopyToDataStoreTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Kopioi aineistosäilöön</h2></td>
+                    <td>
+                    <img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" class="titleImage" alt="Kopioi aineistos&auml;il&ouml;&ouml;n">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Kopioi l&auml;ht&ouml;aineiston kohdekarttatason tai taulukon  ArcGIS Data Store -aineistos&auml;il&ouml;&ouml;n ja luo karttatason sis&auml;lt&ouml;&ouml;si kohteessa  ArcGIS Enterprise. </p>
+            <p>Seuraavat ovat esimerkkej&auml;:
+                <ul>
+                    <li>Voit kopioida Big Data -tiedostoresurssin  <code>.csv</code> tiedostokokoelman tila-aikamuotoiseen aineistos&auml;il&ouml;&ouml;n visualisointia varten.
+                    </li>
+                    <li>Voit kopioida tila-aikamuotoiseen aineistos&auml;il&ouml;&ouml;n tallennetut nykyisen karttalaajuuden kohteet relaatioaineistos&auml;il&ouml;&ouml;n.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="CalculateFieldTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Laske kenttä</h2></td>
+                    <td>
+                    <img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" class="titleImage" alt="Laske kentt&auml;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Laskee uuden tai aiemmin luodun kent&auml;n arvot ja luo karttatason sis&auml;lt&ouml;&ouml;si kohteessa  ArcGIS Enterprise. </p>
+            <p>Seuraavat ovat esimerkkej&auml;:
+                <ul>
+                    <li>Muokkaa aiemmin luotua kentt&auml;&auml; nimelt&auml;  <i>total</i> siten, ett&auml; se esitt&auml;&auml; kenttien <i>total_2016</i>, <i>total_2017</i>, ja <i>total_2018</i> tuottojen summaa.
+                    </li>
+                    <li>Luo uusi kentt&auml;, jolla voit luokitella vahinkojen tasot kenttien arvojen, kuten  <i>windspeed</i> ja <i>pollutant</i> perusteella.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ClipLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Leikkaa karttataso</h2></td>
+                    <td>
+                    <img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" class="titleImage" alt="Leikkaa karttataso">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Leikkaa l&auml;ht&ouml;aineiston kohteet m&auml;&auml;ritetyist&auml; kiinnostuskohteista. Tulosaineiston tulos on l&auml;ht&ouml;aineiston kohteiden osajoukko. 
+            </p>
+            <p>Seuraavat ovat esimerkkej&auml;: 
+                <ul>
+                    <li>Luo niiden riskialueella sijaitsevien rakennusten osajoukko, jotka osuvat tulva-alueille.
+                    </li>
+                    <li>M&auml;&auml;rit&auml;, mitk&auml; p&auml;&auml;tiet kulkevat potentiaalisten rakennusalueittesi l&auml;pi.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sulauta rajat</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Sulauta rajaukset">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Yhdist&auml;&auml; aluekohteet, jotka leikkaavat toisensa tai joilla on yhteinen kentt&auml;arvo, jatkuvien tai moniosaisten kohteiden luontia varten.
+            </p>
+            <p>Seuraavat ovat esimerkkej&auml;:
+                <ul>
+                    <li>Luo yksi kohde, joka edustaa Havaijin osavaltiota, sulauttamalla Havaijin saarten v&auml;liset rajat.
+                    </li>
+                    <li>Yhdist&auml; samankaltaisia tutkimusalueita maaper&auml;n tyypin perusteella jatkuvan maaper&auml;tyyppiaineistoryhm&auml;n luontia varten.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Kerrostasot</h2></td>
+                    <td>
+                    <img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" class="titleImage" alt="Kerrostasot">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Yhdist&auml;&auml; v&auml;hint&auml;&auml;n kaksi karttatasoa yhdeksi karttatasoksi.  P&auml;&auml;llekk&auml;isyysanalyysin avulla voit saada vastauksen yhteen maantieteen peruskysymyksist&auml;:Mik&auml; on mink&auml;kin p&auml;&auml;ll&auml;? 
+            </p>
+            <p>Alla onesimerkkej&auml;:
+                <ul>
+                    <li>Mitk&auml; kiinteist&ouml;t ovat edellisten 100 vuoden aikana tulvineen alueen sis&auml;ll&auml;? (Sis&auml;ll&auml; on vain toinen tapa ilmaista p&auml;&auml;llekk&auml;isyytt&auml;)?
+                          
+                    </li>
+                    <li>Mihin tarkoitukseen tietyn maaper&auml;tyypin maa-alueita k&auml;ytet&auml;&auml;n?
+                         
+                    </li>
+                    <li>Mit&auml; kaivoja on hyl&auml;ttyjen armeijan tukikohtien alueilla?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="AppendDataTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Liitä aineisto</h2></td>
+                    <td>
+                    <img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" class="titleImage" alt="Liit&auml; aineisto -ty&ouml;nkulkukaavio ">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Liitt&auml;&auml; kohteet sis&auml;lt&ouml;si aiempaan is&auml;nn&ouml;ityyn karttatasoon kohdassa  ArcGIS Enterprise. </p>
+            <p>Seuraavat ovat esimerkkej&auml;:
+                <ul>
+                    <li>P&auml;ivit&auml; 2018_Myynti -kohdekarttataso kuukausittain, kun olet saanut raportit.
+                    </li>
+                    <li>Liit&auml; hurrikaanin j&auml;ljityksen aineistoryhm&auml;t vuosilta 2016 ja 2017 hurrikaanien masteriaineistoryhm&auml;&auml;n.
+                    </li>
+                    <li>Ker&auml;&auml; ja liit&auml; eri l&auml;ht&ouml;paikkojen ja rakenteiden aineistoryhm&auml;t t&auml;h&auml;n tarkoitukseen tehdyn kent&auml;n yhdist&auml;mistoiminnon avulla.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Yhdistä karttatasot</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="Yhdist&auml; karttatasot">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Yhdist&auml;&auml; kaksi karttataso yhden tulostason luontia varten. Kaikki yhdistett&auml;v&auml;n karttatason kent&auml;t sis&auml;llytet&auml;&auml;n oletusarvoisesti tai voit m&auml;&auml;ritt&auml;&auml; mukautettuja yhdist&auml;miss&auml;&auml;nt&ouml;j&auml; tuloksena syntyv&auml;n rakenteen m&auml;&auml;ritt&auml;miseksi.  
+            </p>
+            <p>Alla on esimerkkej&auml;:
+                <ul>
+                    <li>Yhdist&auml; kolme karttatasoa, jotka sis&auml;lt&auml;v&auml;t v&auml;est&ouml;tietoja Englannista, Walesista ja Skotlannista, luodaksesi yhden karttatason Yhdistyneen kuningaskunnan v&auml;est&ouml;tiedoista.
+                    </li>
+                    <li>Yhdist&auml; kaksi kaupunkien katkeamattomia kiinteist&ouml;tietoja sis&auml;lt&auml;v&auml;&auml; karttatasoa ja s&auml;ilyt&auml; vain sellaiset kent&auml;t, joilla on sama nimi ja tyyppi molemmissa karttatasoissa.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>Aineiston rikastaminen</h2>
+        <hr/>
+        <p>N&auml;iden ty&ouml;kalujen avulla voit tutkia alueiden luonnetta.
+            <ul>
+                <li> <b>Rikasta useita muuttujia sis&auml;lt&auml;v&auml;st&auml; ruudukosta</b> yhdist&auml;&auml; useita muuttujia sis&auml;lt&auml;v&auml;n ruudukon ominaisuustiedot pistekarttatasoon.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichFromMultiVariableGridTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rikasta useita muuttujia sisältävästä ruudukosta</h2></td>
+                    <td>
+                    <img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" class="titleImage" alt="Rikasta useita muuttujia sis&auml;lt&auml;v&auml;st&auml; ruudukosta">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Yhdist&auml;&auml; tehokkaasti useita muuttujia sis&auml;lt&auml;v&auml;n ruudukon ominaisuustiedot pistekarttatasoon, jolloin voit lis&auml;t&auml; nopeasti suuria ja vaihtelevia tietokokoelmia pisteaineistoon tarkempien paikkatietoanalyysien k&auml;ytt&ouml;&auml; varten. 
+            </p>
+            <p>Seuraavat ovat esimerkkej&auml;:
+                <ul>
+                    <li>Jos k&auml;yt&ouml;ss&auml;si on karttataso, joka sis&auml;lt&auml;&auml; miljoonia s&auml;hk&ouml;katkotapahtumia, rikasta tapahtumakohteet tiedoilla, jotka liittyv&auml;t tyypilliseen k&auml;ytt&ouml;tapaan, ymp&auml;rist&ouml;riskeihin ja infrastruktuurin tilaan, jotta voit tutkia n&auml;iden tekij&ouml;iden v&auml;lisi&auml; suhteita ja s&auml;hk&ouml;katkojen tiheytt&auml;. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

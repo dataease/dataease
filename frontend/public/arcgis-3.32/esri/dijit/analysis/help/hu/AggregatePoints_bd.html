@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Pontok összevonása</h2><p/>
+        <h2><img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" alt="Pontok &ouml;sszevon&aacute;sa"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z egy pont-t&iacute;pus&uacute; vektoros elemeket tartalmaz&oacute; r&eacute;teggel &eacute;s egy ter&uuml;let vektoros elemeket tartalmaz&oacute; r&eacute;teggel műk&ouml;dik.  A bemeneti ter&uuml;let vektoros elemek sz&aacute;rmazhatnak polygonr&eacute;tegből, de sz&aacute;rmazhatnak n&eacute;gysz&ouml;g vagy hatsz&ouml;g alak&uacute; gyűjtőkből is az eszk&ouml;z futtat&aacute;sakor. Az eszk&ouml;z elősz&ouml;r meghat&aacute;rozza, hogy mely pontok esnek az egyes megadott ter&uuml;leteken bel&uuml;l. A pont-ter&uuml;let t&eacute;rbeli kapcsolat meghat&aacute;roz&aacute;sa ut&aacute;n kisz&aacute;m&iacute;tja a ter&uuml;leten tal&aacute;lhat&oacute; &ouml;sszes ponttal kapcsolatos statisztikai adatokat, &eacute;s hozz&aacute;rendeli őket a ter&uuml;lethez. A legalapvetőbb statisztikai adat a ter&uuml;leten bel&uuml;li pontok sz&aacute;ma, de m&aacute;s statisztikai adatok kinyer&eacute;s&eacute;re is lehetős&eacute;g van. 
+
+    </p>
+    <p>Tegy&uuml;k fel p&eacute;ld&aacute;ul, hogy rendelkez&eacute;sre &aacute;llnak k&aacute;v&eacute;z&oacute;k hely&eacute;nek pontszerű vektoros elemei &eacute;s megy&eacute;k ter&uuml;let vektoros elemei, &eacute;s szeretn&eacute; megy&eacute;nk&eacute;nt &ouml;sszes&iacute;teni a k&aacute;v&eacute;&eacute;rt&eacute;kes&iacute;t&eacute;st.  Felt&eacute;telezve azt, hogy a k&aacute;v&eacute;z&oacute;k rendelkeznek  <i>TOTAL_SALES</i> attrib&uacute;tummal, kinyerheti a megy&eacute;nk&eacute;nti <i>TOTAL_SALES</i> &ouml;sszeg&eacute;t vagy a megy&eacute;nk&eacute;nti minim&aacute;lis vagy maxim&aacute;lis <i>TOTAL_SALES</i>
+ &eacute;rt&eacute;k&eacute;t, vagy m&aacute;s statisztik&aacute;kat, p&eacute;ld&aacute;ul a darabsz&aacute;mot, a terjedelmet, a sz&oacute;r&aacute;st &eacute;s a varianci&aacute;t.
+    </p>
+    <p>Ez az eszk&ouml;z időb&eacute;lyeggel ell&aacute;tott adatokkal is k&eacute;pes műk&ouml;dni. Ha az idő enged&eacute;lyezve van a bemeneti pontokon, akkor rendelkez&eacute;sre &aacute;ll az időszeletek k&eacute;pz&eacute;se lehetős&eacute;g. Időszeletek k&eacute;pz&eacute;s&eacute;vel lehetős&eacute;ge van a pont-ter&uuml;let kapcsolat kisz&aacute;m&iacute;t&aacute;s&aacute;ra egy meghat&aacute;rozott időszeletet figyelve. N&eacute;zhet p&eacute;ld&aacute;ul &oacute;r&aacute;s időintervallumot, amikor is minden &oacute;r&aacute;ban kapna egy kimenetet eredm&eacute;nyk&eacute;ppen. 
+    </p>
+    <p>Az idő haszn&aacute;lat&aacute;ra p&eacute;ldak&eacute;nt tegy&uuml;k fel, hogy a k&uuml;l&ouml;nb&ouml;ző k&aacute;v&eacute;z&oacute;kban v&eacute;gbement tranzakci&oacute;k mindegyik&eacute;ről rendelkez&eacute;sre &aacute;llnak pontszerű vektoros elemek, &eacute;s nincs ter&uuml;letr&eacute;teg. Az adatokat egy &eacute;ve gyűjtik, &eacute;s mindegyik tranzakci&oacute;hoz hely- &eacute;s időb&eacute;lyeg tartozik. Felt&eacute;telezve, hogy mindegyik tranzakci&oacute; rendelkezik  <i>TOTAL_SALES</i> attrib&uacute;tummal, kisz&aacute;m&iacute;thatja az &ouml;sszes <i>TOTAL_SALES</i> &ouml;sszeg&eacute;t az &Ouml;nt &eacute;rdeklő helyen &eacute;s időben. Ha ezek a tranzakci&oacute;k mind egy v&aacute;rosb&oacute;l val&oacute;k, l&eacute;trehozhatunk 1 kilom&eacute;teres r&aacute;csh&aacute;l&oacute;knak megfelelő ter&uuml;leteket, &eacute;s heti időszeletekben n&eacute;zhetj&uuml;k az adatokat a tranzakci&oacute;k időbeli &eacute;s t&eacute;rbeli &ouml;sszegz&eacute;s&eacute;hez.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>A területekké összesíteni kívánt pontokat tartalmazó réteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>A pontr&eacute;teg, amelyet a program ter&uuml;letekk&eacute; &ouml;sszes&iacute;t.  A  <b>N&eacute;gysz&ouml;g</b> vagy <b>Hatsz&ouml;g</b> gyűjtőkk&eacute; &ouml;sszes&iacute;tett pontr&eacute;tegekn&eacute;l alkalmazott t&eacute;rbeli referenci&aacute;t vet&uuml;leti koordin&aacute;ta-rendszerre kell &aacute;ll&iacute;tani az <b>Elemz&eacute;si k&ouml;rnyezetek</b> seg&iacute;ts&eacute;g&eacute;vel.
+            </p>
+            <p>Ahelyett, hogy egy r&eacute;teget v&aacute;laszt a t&eacute;rk&eacute;p&eacute;ről, v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n l&eacute;vő  <b>Eredm&eacute;nyr&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is, ha a saj&aacute;t tartalomban szeretne big data-f&aacute;jlmegoszt&oacute; adathalmazt vagy vektoros r&eacute;teget keresni.
+            </p>
+        </div>
+    </div>
+    <div id="inputAggregation">
+        <div><h2>Válassza ki a területréteget, amelybe az összevonás történik</h2></div>
+        <hr/>
+        <div>
+            <p>A ter&uuml;let, amelybe a pontr&eacute;teg &ouml;sszes&iacute;tve lesz. V&aacute;laszthat a megadott ter&uuml;let r&eacute;teg vagy az eszk&ouml;z fut&aacute;sakor l&eacute;trehozott t&aacute;rol&oacute;k k&ouml;z&ouml;tt.  <b>N&eacute;gysz&ouml;g</b> t&aacute;rol&oacute;k l&eacute;trehoz&aacute;sakor a megadott sz&aacute;m &eacute;s egys&eacute;gek a n&eacute;gysz&ouml;g magass&aacute;g&aacute;t &eacute;s hossz&uacute;s&aacute;g&aacute;t hat&aacute;rozz&aacute;k meg. <b>Hatsz&ouml;g</b> eset&eacute;n a megadott sz&aacute;m &eacute;s a m&eacute;rt&eacute;kegys&eacute;gek a p&aacute;rhuzamos oldalak k&ouml;z&ouml;tti t&aacute;vols&aacute;got hat&aacute;rozz&aacute;k meg.
+            </p>
+            <p>A  <b>N&eacute;gysz&ouml;g</b> vagy <b>Hatsz&ouml;g</b> alak&uacute; gyűjtőkkel v&eacute;gzett elemz&eacute;shez vet&uuml;leti koordin&aacute;ta-rendszer sz&uuml;ks&eacute;ges. A <b>Feldolgoz&aacute;si koordin&aacute;ta-rendszert</b> az <b>Elemz&eacute;si k&ouml;rnyezetekben</b> &aacute;ll&iacute;thatja be. Ha a feldolgoz&aacute;si koordin&aacute;ta-rendszer nem vet&uuml;leti koordin&aacute;ta-rendszerre van &aacute;ll&iacute;tva, az eszk&ouml;z ennek be&aacute;ll&iacute;t&aacute;s&aacute;t k&eacute;ri az <b>elemz&eacute;s futtat&aacute;sakor</b> .
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Válassza ki azt a területréteget, amelybe az összevonás történik</h2></div>
+        <hr/>
+        <div>
+            <p>A ter&uuml;letr&eacute;teg, amelybe a program &ouml;sszes&iacute;ti a pontokat. A program az ezen a r&eacute;tegen tal&aacute;lhat&oacute; ter&uuml;letek hat&aacute;rvonalain bel&uuml;l eső b&aacute;rmely pontot sz&aacute;mba veszi, &eacute;s opcion&aacute;lisan &ouml;sszes&iacute;ti a felhaszn&aacute;l&oacute; &aacute;ltal kiv&aacute;lasztott statisztika haszn&aacute;lat&aacute;val. 
+            </p>
+            <p>Be kell &aacute;ll&iacute;tani a  <b>Gyűjtő m&eacute;ret&eacute;t</b> gyűjtő eset&eacute;n, vagy a <b>Ter&uuml;let r&eacute;teget</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Válassza ki a távolságot a gyűjtők létrehozásához és az összevonáshoz</h2></div>
+        <hr/>
+        <div>
+            <p>Azoknak a gyűjtőknek a l&eacute;trehoz&aacute;s&aacute;hoz haszn&aacute;lt t&aacute;vols&aacute;g, amelybe a bemenő pontokat &ouml;sszes&iacute;ti. N&eacute;gysz&ouml;g alak&uacute; gyűjtő eset&eacute;n a m&eacute;ret a n&eacute;gysz&ouml;g magass&aacute;g&aacute;t jel&ouml;li. Hatsz&ouml;g alak&uacute; gyűjtő eset&eacute;n a m&eacute;ret a hatsz&ouml;g (p&aacute;rhuzamos oldalakt&oacute;l m&eacute;rt) magass&aacute;g&aacute;t jel&ouml;li.  
+            </p>
+            <p>Be kell &aacute;ll&iacute;tani a  <b>Gyűjtő m&eacute;ret&eacute;t</b> gyűjtő eset&eacute;n, vagy a <b>Ter&uuml;let r&eacute;teget</b>.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Összevonás időbeli lépések használatával (opcionális)</h2></div>
+        <hr/>
+        <div>
+            <p>Ha az idő enged&eacute;lyezve van a bemeneti pontr&eacute;tegen, &eacute;s azonnali t&iacute;pus&uacute;, akkor időbeli l&eacute;ptet&eacute;st haszn&aacute;lva is elemezhet.  Idő haszn&aacute;latakor h&aacute;rom param&eacute;ter &aacute;ll&iacute;that&oacute; be:
+                <ul>
+                    <li> <b>Időbeli l&eacute;p&eacute;s intervalluma</b>
+                    </li>
+                    <li> <b>Az időbeli l&eacute;p&eacute;s ism&eacute;tl&eacute;s&eacute;nek gyakoris&aacute;ga</b>
+                    </li>
+                    <li> <b>Az időbeli l&eacute;p&eacute;sek igaz&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt idő</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ha p&eacute;ld&aacute;ul időben egy &eacute;vet le&iacute;r&oacute; adatok &aacute;llnak rendelkez&eacute;sre, &eacute;s ezt heti l&eacute;p&eacute;seket haszn&aacute;lva szeretn&eacute; elemezni, &aacute;ll&iacute;tsa az  <b>Időbeli l&eacute;p&eacute;s intervalluma</b> param&eacute;tert <code>1 h&eacute;tre</code>. 
+            </p>
+            <p>Ha p&eacute;ld&aacute;ul időben egy &eacute;vet le&iacute;r&oacute; adatok &aacute;llnak rendelkez&eacute;sre, &eacute;s ezt a h&oacute;nap első het&eacute;t haszn&aacute;lva szeretn&eacute; elemezni, &aacute;ll&iacute;tsa az  <b>Időbeli l&eacute;p&eacute;s intervalluma</b> param&eacute;tert <code>1 h&eacute;tre</code>, <b>Az időbeli l&eacute;p&eacute;s ism&eacute;tl&eacute;s&eacute;nek gyakoris&aacute;ga</b> param&eacute;tert <code>1 h&oacute;napra</code>, &eacute;s <b>Az időbeli l&eacute;p&eacute;sek igaz&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt idő</b> param&eacute;tert <code>Janu&aacute;r 1., 12:00 &oacute;r&aacute;ra</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Időbeli lépés intervalluma</h2></div>
+        <hr/>
+        <div>
+            <p>Az időbeli l&eacute;p&eacute;sek l&eacute;trehoz&aacute;s&aacute;hoz haszn&aacute;lt időintervallum. Az  <b>Időbeli l&eacute;p&eacute;s intervalluma</b> param&eacute;ter haszn&aacute;lhat&oacute; &ouml;nmag&aacute;ban, illetve <b>Az időbeli l&eacute;p&eacute;s ism&eacute;tl&eacute;s&eacute;nek gyakoris&aacute;ga</b> vagy <b>Az időbeli l&eacute;p&eacute;sek igaz&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt idő</b> param&eacute;terrel egy&uuml;tt.
+            </p>
+            <p>Ha p&eacute;ld&aacute;ul olyan időbeli l&eacute;p&eacute;seket szeretne l&eacute;trehozni, amelyek minden h&eacute;tfő 9:00 &oacute;r&aacute;t&oacute;l 10:00 &oacute;r&aacute;ig tartanak, &aacute;ll&iacute;tsa az  <b>Időbeli l&eacute;p&eacute;s intervalluma</b> param&eacute;tert <code>1 &oacute;r&aacute;ra</code>, <b>Az időbeli l&eacute;p&eacute;s ism&eacute;tl&eacute;s&eacute;nek gyakoris&aacute;ga</b> param&eacute;tert <code>1 h&eacute;tre</code>, &eacute;s <b>Az időbeli l&eacute;p&eacute;sek igaz&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt idő</b> param&eacute;tert <code>9:00:00 &oacute;r&aacute;ra egy h&eacute;tfői napon</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Az időbeli lépés ismétlésének gyakorisága</h2></div>
+        <hr/>
+        <div>
+            <p> Egy időbeli l&eacute;p&eacute;s kisz&aacute;m&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt l&eacute;p&eacute;s. <b>Az időbeli l&eacute;p&eacute;s ism&eacute;tl&eacute;s&eacute;nek gyakoris&aacute;ga</b> param&eacute;ter haszn&aacute;lhat&oacute; &ouml;nmag&aacute;ban, az <b>Időbeli l&eacute;p&eacute;s intervalluma</b>, a <b>Referenciaidő</b> param&eacute;terrel, illetve az <b>Időbeli l&eacute;p&eacute;s intervalluma</b> &eacute;s <b>Az időbeli l&eacute;p&eacute;sek igaz&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt idő</b> param&eacute;terek egy&uuml;ttes&eacute;vel.
+            </p>
+            <p> Ha p&eacute;ld&aacute;ul olyan időbeli l&eacute;p&eacute;seket szeretne l&eacute;trehozni, amelyek minden h&eacute;tfő 9:00 &oacute;r&aacute;t&oacute;l 10:00 &oacute;r&aacute;ig tartanak, &aacute;ll&iacute;tsa az <b>Időbeli l&eacute;p&eacute;s intervalluma</b> param&eacute;tert <code>1 &oacute;r&aacute;ra</code>, <b>Az időbeli l&eacute;p&eacute;s ism&eacute;tl&eacute;s&eacute;nek gyakoris&aacute;ga</b> param&eacute;tert <code>1 h&eacute;tre</code>, &eacute;s <b>Az időbeli l&eacute;p&eacute;sek igaz&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt idő</b> param&eacute;tert <code>9:00:00 &oacute;r&aacute;ra egy h&eacute;tfői napon</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Az időbeli lépések igazításához használt idő</h2></div>
+        <hr/>
+        <div>
+            <p>Az időszeletek igaz&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt d&aacute;tum &eacute;s időpont. Az időbeli l&eacute;ptet&eacute;s enn&eacute;l az időpontn&aacute;l kezdődik, &eacute;s visszafel&eacute; folytat&oacute;dik. Ha nincs kiv&aacute;lasztva referenciaidő, az időbeli l&eacute;ptet&eacute;s 1970. janu&aacute;r 1-hez illeszkedik. 
+            </p>
+            <p> Ha p&eacute;ld&aacute;ul olyan időbeli l&eacute;p&eacute;seket szeretne l&eacute;trehozni, amelyek minden h&eacute;tfő 9:00 &oacute;r&aacute;t&oacute;l 10:00 &oacute;r&aacute;ig tartanak, &aacute;ll&iacute;tsa az <b>Időbeli l&eacute;p&eacute;s intervalluma</b> param&eacute;tert <code>1 &oacute;r&aacute;ra</code>, <b>Az időbeli l&eacute;p&eacute;s ism&eacute;tl&eacute;s&eacute;nek gyakoris&aacute;ga</b> param&eacute;tert <code>1 h&eacute;tre</code>, &eacute;s <b>Az időbeli l&eacute;p&eacute;sek igaz&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt idő</b> param&eacute;tert <code>9:00:00 &oacute;r&aacute;ra egy h&eacute;tfői napon</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Statisztika hozzáadása (opcionális)</h2></div>
+        <hr/>
+        <div>
+            <p> Statisztik&aacute;kat sz&aacute;m&iacute;that &ouml;sszes&iacute;tett vektoros elemeken. Numerikus mezők&ouml;n a k&ouml;vetkező statisztik&aacute;k sz&aacute;m&iacute;that&oacute;k:
+                <ul>
+                    <li>Sz&aacute;m &ndash; a nem null &eacute;rt&eacute;kek darabsz&aacute;m&aacute;t sz&aacute;m&iacute;tja ki. Numerikus mezők&ouml;n vagy karakterl&aacute;ncokon haszn&aacute;lhat&oacute;. A [null, 0, 2] darabsz&aacute;ma 2.
+                    </li>
+                    <li>&Ouml;sszeg &ndash; egy mezőben l&eacute;vő numerikus &eacute;rt&eacute;kek &ouml;sszege. A [null, null, 3] &ouml;sszege 3.
+                    </li>
+                    <li>&Aacute;tlag &ndash; a numerikus &eacute;rt&eacute;kek &aacute;tlaga. A [0, 2, null] &aacute;tlaga 1.
+                    </li>
+                    <li>Min &ndash; egy numerikus mező legkisebb &eacute;rt&eacute;ke. A [0, 2, null] minimuma 0. 
+                    </li>
+                    <li>Max &ndash; egy numerikus mező legnagyobb &eacute;rt&eacute;ke. A [0, 2, null] maximuma 2.
+                    </li>
+                    <li>Terjedelem &ndash; egy numerikus mező terjedelme. Ennek kisz&aacute;m&iacute;t&aacute;s&aacute;hoz az eszk&ouml;z a legkisebb &eacute;rt&eacute;keket vonja ki a legnagyobb &eacute;rt&eacute;kből. A [0, null, 1] terjedelme 1. A [null, 4] terjedelme 0.
+                    </li>
+                    <li>Variancia &ndash; egy numerikus mező varianci&aacute;ja egy k&ouml;vet&eacute;sben. Az [1] varianci&aacute;ja null &eacute;rt&eacute;kű. A [null, 1, 0, 1, 1] varianci&aacute;ja 0,25.
+                    </li>
+                    <li>Sz&oacute;r&aacute;s &ndash; egy numerikus mező sz&oacute;r&aacute;sa. Az [1] sz&oacute;r&aacute;sa null &eacute;rt&eacute;kű. A [null, 1, 0, 1, 1] sz&oacute;r&aacute;sa 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Karakterl&aacute;nc t&iacute;pus&uacute; mezők&ouml;n a k&ouml;vetkező statisztik&aacute;k sz&aacute;m&iacute;that&oacute;k:
+                <ul>
+                    <li>Sz&aacute;m &ndash; a nem null karakterl&aacute;ncok darabsz&aacute;ma.
+                    </li>
+                    <li>B&aacute;rmelyik &ndash; ez a statisztika a megadott mezőben l&eacute;vő karakterl&aacute;nc egy v&eacute;letlenszerű mint&aacute;ja.
+                    </li>
+                </ul>
+                Mindegyik statisztika sz&aacute;m&iacute;t&aacute;sa nem null &eacute;rt&eacute;keken t&ouml;rt&eacute;nik. Az eredm&eacute;ny&uuml;l kapott r&eacute;teg kisz&aacute;m&iacute;tott statisztikai adatonk&eacute;nt egy-egy &uacute;j mezőt fog tartalmazni. Attrib&uacute;tum &eacute;s statisztika kiv&aacute;laszt&aacute;s&aacute;val tetszőleges sz&aacute;m&uacute; statisztika hozz&aacute;adhat&oacute;. 
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (WKID)</h2></div>
+        <hr/>
+        <div>
+            <p>Ez az előzetes kiad&aacute;s egy ideiglenes param&eacute;tere az alkalmazott t&eacute;rbeli referencia be&aacute;ll&iacute;t&aacute;s&aacute;hoz. Sz&aacute;mos big data eszk&ouml;z vet&uuml;leti koordin&aacute;ta-rendszer alkalmaz&aacute;s&aacute;t k&iacute;v&aacute;nja meg t&eacute;rbeli referenciak&eacute;nt a feldolgoz&aacute;shoz. Az eszk&ouml;z alap&eacute;rtelmez&eacute;s szerint a bemeneti koordin&aacute;ta-rendszert haszn&aacute;lja, de eredm&eacute;nytelen lesz, ha az f&ouml;ldrajzi koordin&aacute;ta-rendszer. Vet&uuml;leti koordin&aacute;ta-rendszer be&aacute;ll&iacute;t&aacute;s&aacute;hoz adja meg a WKID-t. A  <b>Web Mercator</b> eset&eacute;n p&eacute;ld&aacute;ul <code>3857</code>-et kell be&iacute;rni.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>ArcGIS Data Store adattár kiválasztása az eredmények mentéséhez</h2></div>
+        <hr/>
+        <div>
+            <p>A geoanalitikai eredm&eacute;nyek ment&eacute;se egy adatt&aacute;rban t&ouml;rt&eacute;nik, &eacute;s a(z)  Portal for ArcGIS vektoros r&eacute;tegeik&eacute;nt szerepelnek. Az eredm&eacute;nyeket t&ouml;bbnyire a t&eacute;rbeli-időbeli adatt&aacute;rban aj&aacute;nlott t&aacute;rolni, &eacute;s az alap&eacute;rtelmezett be&aacute;ll&iacute;t&aacute;s is ez. Egyes esetekben j&oacute; v&aacute;laszt&aacute;s lehet az eredm&eacute;nyek ment&eacute;se a rel&aacute;ci&oacute;s adatt&aacute;rban. Az al&aacute;bbi &eacute;rvek sz&oacute;lnak az eredm&eacute;nyek rel&aacute;ci&oacute;s adatt&aacute;rban t&ouml;rt&eacute;nő t&aacute;rol&aacute;sa mellett: 
+                <ul>
+                    <li>Az eredm&eacute;nyek port&aacute;lok k&ouml;z&ouml;tti egy&uuml;ttműk&ouml;d&eacute;sben haszn&aacute;lhat&oacute;k.
+                    </li>
+                    <li>Enged&eacute;lyezheti az eredm&eacute;nyekkel val&oacute; szinkroniz&aacute;l&aacute;si lehetős&eacute;geket
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nem aj&aacute;nlott a rel&aacute;ci&oacute;s adatt&aacute;r haszn&aacute;lata, ha a geoanalitikai eredm&eacute;nyek mennyis&eacute;g&eacute;nek n&ouml;veked&eacute;se v&aacute;rhat&oacute;, &eacute;s ki kell haszn&aacute;lni a t&eacute;rbeli-időbeli big data-adatt&aacute;r k&eacute;pess&eacute;geit a nagy adatmennyis&eacute;g kezel&eacute;s&eacute;re.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p> A l&eacute;trehozand&oacute; r&eacute;teg neve.  Ha egy ArcGIS Data Store helyre &iacute;r, akkor  eredm&eacute;nyei a  <b>Saj&aacute;t tartalom</b> alatt lesznek elmentve, &eacute;s hozz&aacute; lesznek adva a t&eacute;rk&eacute;phez. Ha egy big data f&aacute;jlmegoszt&oacute;ba &iacute;r, akkor eredm&eacute;nyei a big data f&aacute;jlmegoszt&oacute;ba lesznek elmentve, &eacute;s hozz&aacute; lesznek adva annak jegyz&eacute;kf&aacute;jlj&aacute;hoz. Nem lesznek hozz&aacute;adva a t&eacute;rk&eacute;phez. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a művelet sikertelen lesz.
+            </p>
+            <p>Ha   ArcGIS Data Store (rel&aacute;ci&oacute;s vagy t&eacute;rbeli-időbeli big data adatt&aacute;rba) &iacute;r az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő mező haszn&aacute;lat&aacute;val, akkor megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

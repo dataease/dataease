@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Beräkna avstånd</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Ber&auml;kna avst&aring;nd"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget ber&auml;knar det euklidiska avst&aring;ndet, riktning och tilldelning fr&aring;n en enda k&auml;lla eller flera k&auml;llor.
+    </p>
+    <p>Exempel p&aring; till&auml;mpningar &auml;r att besvara fr&aring;gor som de h&auml;r:
+
+        <ul>
+            <li>Vad &auml;r avst&aring;ndet till n&auml;rmaste stad?
+                
+
+            </li>
+            <li>Vad &auml;r avst&aring;ndet till n&auml;rmaste v&auml;g?
+                
+
+            </li>
+            <li>Vad &auml;r avst&aring;ndet till n&auml;rmaste vattenk&auml;lla?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> markeras, analyseras bara de geoobjekt i indatalagret som visas i den aktuella kartutbredningen. Om alternativet inte markeras analyseras alla geoobjekt i indatalagret, &auml;ven om de ligger utanf&ouml;r den visade kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Välj raster i geoobjektplatslagret för att beräkna avståndet till</h2></div>
+        <hr/>
+        <div>
+            <p>Det lager som definierar de k&auml;llor till vilka avst&aring;ndet ska ber&auml;knas. Lagret kan vara en bildtj&auml;nst eller en geoobjekttj&auml;nst.
+            </p>
+            <p>F&ouml;r en bildtj&auml;nst kan indatatypen vara heltal eller flyttal.
+            </p>
+            <p>F&ouml;r en geoobjekttj&auml;nst kan indata vara punkt, linje eller polygon.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maximalt avstånd att beräkna</h2></div>
+        <hr/>
+        <div>
+            <p>Det maximala avst&aring;ndet som ska ber&auml;knas. Om du till exempel anger v&auml;rdet 10&nbsp;000 meter, ber&auml;knas det euklidiska avst&aring;ndet fr&aring;n k&auml;llplatserna ut till det v&auml;rdet (avst&aring;ndet).
+            </p>
+            <p>Om inget v&auml;rde anges ber&auml;knas avst&aring;ndet ut till den definierade utbredningen.
+            </p>
+            <p>De tillg&auml;ngliga enheterna &auml;r kilometer, meter, engelska mil och fot.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Utdatacellstorlek</h2></div>
+        <hr/>
+        <div>
+            <p>Cellstorleken och enheten f&ouml;r utdatarastren.
+            </p>
+            <p>Enheterna kan vara kilometer, meter, engelska mil och fot.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Resultatavståndslagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Du kan ange namnet p&aring; en mapp i  <b>Mitt inneh&aring;ll</b> d&auml;r resultatet sparas med listrutan <b>Spara resultat i</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Resultatriktningslagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Namnet p&aring; lagret som ska skapas i  <b>Mitt inneh&aring;ll</b>. Du m&aring;ste ange ett namn som inte redan finns i <b>Mitt inneh&aring;ll</b>.
+            </p>
+            <p>Du kan ange namnet p&aring; en mapp i  <b>Mitt inneh&aring;ll</b> d&auml;r resultatet sparas med listrutan <b>Spara resultat i</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Resultattilldelningslagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Namnet p&aring; lagret som ska skapas i  <b>Mitt inneh&aring;ll</b>. Du m&aring;ste ange ett namn som inte redan finns i <b>Mitt inneh&aring;ll</b>.
+            </p>
+            <p>Du kan ange namnet p&aring; en mapp i  <b>Mitt inneh&aring;ll</b> d&auml;r resultatet sparas med listrutan <b>Spara resultat i</b>.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Välj tilldelningsfält</h2></div>
+        <hr/>
+        <div>
+            <p>Ett f&auml;lt i k&auml;llagret som inneh&aring;ller de v&auml;rden som definierar varje k&auml;lla. Det kan vara ett heltalsf&auml;lt eller str&auml;ngf&auml;lt i k&auml;lldatasetet.
+            </p>
+            <p>Standardv&auml;rdet &auml;r  <i>Value</i>. Om du anv&auml;nder en geoobjekttj&auml;nst och inga <i>Value</i>-f&auml;lt &auml;r tillg&auml;ngliga, anv&auml;nds det f&ouml;rsta tillg&auml;ngliga heltalsf&auml;ltet eller str&auml;ngf&auml;ltet. Om det inte finns n&aring;gra giltiga f&auml;lt anv&auml;nds f&auml;ltet ObjectID (t.ex. OID eller FID), beroende p&aring; typen av geoobjektindata.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

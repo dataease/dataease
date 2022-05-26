@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Teisenda raster objektiks</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Teisenda rastrist vektoriks t&ouml;&ouml;riist"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist teisendab rastri vektorobjektideks punktidena, joontena v&otilde;i pol&uuml;goonidena.
+    </p>
+    <p>Vali  <b>v&auml;lja parameeter</b> v&otilde;imaldab m&auml;&auml;rata, millisest sisendrastri atribuudiv&auml;ljast saab v&auml;ljundobjekti klassi atribuut. See parameeter on saadaval ainult t&auml;isarvudega rastrite jaoks, millel on seotud tabelis t&auml;iendavad atribuudid.
+    </p>
+    <p>Sisendrastril v&otilde;ib olla mistahes piksli suurus.
+    </p>
+    <p>T&auml;isarvulised rastrid saab teisendada punkt-, joon- v&otilde;i pindobjektideks; ujuva piksliv&auml;&auml;rtusega rastrid saab teisendada ainult punktobjektideks.
+    </p>
+    <p>Kui tingimus  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, teisendatakse ainult need rasterkihi pikslid, mis on kaardil praegu n&auml;htavad. Kui tingimus on v&auml;lja l&uuml;litatud, teisendatakse k&otilde;ik rasterkihis olevad pikslid, sh need, mis pole praegu kaardil n&auml;htavad. Arvestage seda juhul, kui rasterkiht on suur v&otilde;i v&auml;ga suure resolutsiooniga.
+    </p>
+    <p>Seda t&ouml;&ouml;riista saab kasutada ka j&auml;rgmistel juhtudel:
+ 
+        <ul>
+            <li>Pindobjektide loomine maakasutuse klassifikatsiooni rastrist.
+                
+ 
+            </li>
+            <li>Digitaalsest k&otilde;rgusmudelist (DEM) tuvastatud vooluveekogud saab teisendada joonobjektideks.
+                
+
+            </li>
+            <li>DEM-i saab teisendada punktobjektideks, mida saab kasutada ka muudes t&ouml;&ouml;etappides.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valige teisendatav rasterkiht</h2></div>
+        <hr/>
+        <div>
+            <p>Sisendi rasterkiht, mis teisendatakse vektorkujule.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Valige väli</h2></div>
+        <hr/>
+        <div>
+            <p>Sisestage v&auml;li, mis m&auml;&auml;rab teisendamiseks kasutatava v&auml;&auml;rtuse.
+            </p>
+            <p>See v&otilde;ib olla mis tahes t&auml;isarv v&otilde;i tekstiline v&auml;&auml;rtus.
+            </p>
+            <p>Ujuva v&auml;&auml;rtusega sisaldavat v&auml;lja saab kasutada ainult siis, kui v&auml;ljund on punktandmestik.
+            </p>
+            <p>Vaikimisi on valitud v&auml;li nimega  <i>Value</i>, mis sisaldab iga rasterpiksli v&auml;&auml;rtust.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Valige väljundi tüüp</h2></div>
+        <hr/>
+        <div>
+            <p>Valige v&auml;ljundi t&uuml;&uuml;p: punkt, joon v&otilde;i pol&uuml;goon.
+            </p>
+            <ul>
+                <li>Punkt &ndash; Raster teisendatakse punktandmestikuks.
+                    
+ 
+                </li>
+                <li>Joon &ndash; Raster teisendatakse joonobjektide andmestikuks.
+                    
+ 
+                </li>
+                <li>Pol&uuml;goon &ndash; Raster teisendatakse pindobjektide andmestikuks.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Lihtsusta jooned või polügoonid</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rake, kas objektid tuleb lihtsustada.
+            </p>
+            <p>Kui tingimuse lahter on &auml;ra m&auml;rgitud (vaikimisi seatud), tasandatakse joon- v&otilde;i pindobjektid, et saada &uuml;htlasem tulemus. Kui tingimuse lahter on t&uuml;hi, j&auml;rgivad lineaarsed objektid rasterandmestiku pikslite piire.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

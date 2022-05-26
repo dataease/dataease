@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Opiši sklop podatkov</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Opi&scaron;i diagram delovnega procesa sklopa podatkov"></h2>
+        <hr/>
+    <p>Orodje Opi&scaron;i sklop podatkov ponuja podrobnej&scaron;i vpogled v va&scaron; sklop podatkov. Pred izvajanjem analize velikih količin podatkov uporabite to orodje, da določite, kak&scaron;ni so va&scaron;i vhodni podatki in kje se nahajajo. Privzeto bo rezultat niz JSON, ki opisuje ključne deskriptorje va&scaron;ega vhodnega sloja, in tabela, ki vsebuje statistike povzetkov za vsako polje. 
+    </p>
+    <p>Če želite dodatno opisati svoje podatke, lahko poljubno ustvarite dodatne izhodne geoobjektne sloje. Na voljo je vzorčni sloj ali sloj obsega. Izberete lahko, ali boste izpisali enega ali oba.
+    </p>
+    <p>Recimo, da vam je na voljo delitev datotek velikih podatkov, ki vsebuje 15 sklopov podatkov. Vsak sklop podatkov vsebuje 10 milijonov poligonskih geoobjektov, ki predstavljajo zgradbe in hi&scaron;e v različnih regijah va&scaron;e države. Dobili ste nalogo, da analizirate regijo C, vendar ne veste kateri sklop podatkov vsebuje te geoobjekte. Da preverite, kateri sklop podatkov morate uporabiti, zaženite Opi&scaron;i sklop podatkov in izberite, ali želite ustvariti sloj obsega, s katerim boste lahko raziskali, kateri sklop podatkov je v va&scaron;i &scaron;tudijski regiji.
+    </p>
+    <p>Kot drugi primer: predstavljajte si, da ste dobili nalogo, da dokončate delovni proces analize z velikim obsegom podatkov. Želite preizkusiti delovni proces, toda to lahko z va&scaron;im polnim sklopom podatkov traja ure ali dneve. Namesto zapravljanja časa in virov z izvajanjem celotne analize ustvarite vzorčni sloj, na katerem boste lahko učinkovito testirali celovit delovni proces.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberite sklop podatkov za opis</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj, ki vsebuje točkovne, linijske, poligonske ali tablične geoobjekte, ki bodo opisani, povzeti in vzorčeni.
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Skušajte razumeti svoj sklop podatkov z ustvarjanjem (po želji)</h2></div>
+        <hr/>
+        <div>
+            <p>Izpi&scaron;ite dodatne opisne sloje zaradi bolj&scaron;ega razumevanja svojih velikih podatkov. Izberete lahko, ali boste izpisali enega ali oba od naslednjih slojev ali nobenega:
+            </p>
+            <ul>
+                <li> <b>Sloj obsega</b> &ndash; ustvarja poligonski geoobjekt, ki predstavlja obseg va&scaron;ih vhodnih geoobjektov ali interesno območje.
+                </li>
+                <li> <b>Vzorčni sloj</b> &ndash; ustvarja sloj podizbora, ki vsebuje določeno &scaron;tevilo vhodnih geoobjektov iz va&scaron;ega sklopa podatkov ali interesnega območja.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Vzorčni sloj</h2></div>
+        <hr/>
+        <div>
+            <p>Izpi&scaron;e sloj, ki vsebuje podizbor geoobjektov iz va&scaron;ega vhodnega sloja. Če je izbran  <b>Vzorčni sloj</b>, boste lahko določili &scaron;tevilo geoobjektov, za katere želite, da se vrnejo v vzorčnem sloju. Privzeto bo v izhodnem sloju vrnjenih 100 vzorčnih geoobjektov.
+            </p>
+            <p>Vrednost mora biti večja od nič. Če določite &scaron;tevilo, ki je večje od skupnega &scaron;tevila geoobjektov, bodo vrnjeni vsi geoobjekti.
+            </p>
+            <p>Če je izbrano  <b>Uporabi trenutni obseg karte</b>, bo vzorčni sloj vseboval geoobjekte iz obsega karte.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Sloj obsega</h2></div>
+        <hr/>
+        <div>
+            <p>Izpi&scaron;ite geoobjektni sloj, ki vsebuje en geoobjekt, ki predstavlja obseg vhodnih geoobjektov, tako da izberete gumb  <b>Sloj obsega</b>. To je privzeto izbrano.
+            </p>
+            <p>Če je izbrano  <b>Uporabi trenutni obseg karte</b>, bo sloj obsega prikazoval vidljiv obseg karte.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen. Če zapisujete v ArcGIS Data Store, bodo va&scaron;i rezultati shranjeni v  <b>Moji vsebini</b> in dodani na karto. Če zapisujete v delitev datotek velikih podatkov, bodo va&scaron;i rezultati shranjeni v delitev datotek velikih podatkov in dodani v njen manifest. Ne bodo dodani v skupino. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, orodje ne bo uspe&scaron;no.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

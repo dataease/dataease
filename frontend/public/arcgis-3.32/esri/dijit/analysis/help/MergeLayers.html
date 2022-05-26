@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Merge Layers</h2><p/>
+        <h2><img src="./images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Merge Layers"></h2>
+        <hr/>
+    <p>This tool copies features from two   layers into a new layer.    The layers to be merged must all contain the same feature types (points, lines, or areas).  You can control how the fields from the input layers are joined and copied.  For example:
+        <ul>
+            <li>I have three layers for England, Wales, and Scotland and I want a single layer of Great Britain. 
+            </li>
+            <li>I have 12 layers and each contains parcel information for contiguous townships.  I want to join them together into a single layer, keeping only the fields that have the same name and type on the 12 input layers.
+            </li>
+        </ul>
+        
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the features visible within the current map extent will be merged.  If unchecked, all features in both layers will be merged, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose layer</h2></div>
+        <hr/>
+        <div>
+            <p>The point, line, or area features to merge with the layer specified below.
+
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Choose Layer to merge</h2></div>
+        <hr/>
+        <div>
+            <p>Choose the layer to merge with the first layer.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Modify merging fields</h2></div>
+        <hr/>
+        <div>
+            <p>By default, all fields from both inputs will be carried across to the output.  You can change how fields are carried over to the output as follows:
+                <ul>
+                    <li> <b>Rename</b>&mdash;The field will be renamed on the output.
+                    </li>
+                    <li> <b>Remove</b>&mdash;The field will be removed from the output.
+                    </li>
+                    <li> <b>Match</b>&mdash;The field names are made equivalent.  Values of the field from the layer to merge will be copied to the matched output field.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>If both layers contain a field with an identical name and data type, the content of both fields will be merged into one field of that name. This does not apply  to fields where  <b>Match</b> is used in the <b>Modify merging fields</b> parameter.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Result layer
+name</h2></div>
+        <hr/>
+        <div>
+            <p>This is the name of the layer that will be created in  <b>My Content</b>  and added to the map.  The default  name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down menu, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

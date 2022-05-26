@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Muodosta reitit uudelleen</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="Muodosta reitit uudelleen"></h2>
+        <hr/>
+    <p> T&auml;m&auml; ty&ouml;kalu toimii sellaisen ajan huomioivan karttatason kanssa, jossa on <code>hetke&auml;</code>  ajassa kuvaavia piste- tai aluekohteita. Se m&auml;&auml;ritt&auml;&auml; ensin tunnuksen avulla, mitk&auml; kohteet kuuluvat reittiin. K&auml;ytt&auml;m&auml;ll&auml; jokaisen sijainnin aikaa reitit j&auml;rjestet&auml;&auml;n per&auml;kk&auml;in ja muunnetaan viivaksi tai aluekohteeksi, joka kuvaa liikett&auml; ajan my&ouml;t&auml;. Vaihtoehtoisesti l&auml;ht&ouml;aineisto voidaan puskuroida kent&auml;n mukaan, jolloin aluekohde luodaan jokaiseen sijaintiin. N&auml;m&auml; puskuroidut pisteet tai l&auml;ht&ouml;alueet liitet&auml;&auml;n per&auml;kk&auml;in, ja reitti luodaan  aluekohteena, jossa leveys edustaa kiinnostuksen kohteena olevaa ominaisuustietoa. Tuloksena olevilla reiteill&auml; on aloitus- ja lopetusaika, joka kuvaa ajallisesti ensimm&auml;ist&auml; ja viimeist&auml; kohdetta annetulla reitill&auml;. Reittien luonnin aikana l&auml;ht&ouml;aineiston kohteista lasketaan tilastotiedot, ja tilastotiedot m&auml;&auml;ritet&auml;&auml;n tulosaineiston reitille. Perustilastotietoja ovat alueella olevien pisteiden m&auml;&auml;r&auml;, mutta my&ouml;s muita tilastotietoja voidaan laskea.
+    </p>
+    <p>Kohteet ajan huomioivissa karttatasoissa voidaan kuvata jommallakummalla seuraavista tavoista:
+        <ul>
+            <li>hetki: yksitt&auml;inen hetki ajassa
+            </li>
+            <li>aikav&auml;li: aloitus- ja lopetusaika.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Oletetaan esimerkiksi, ett&auml; sinulla on GPS-mittauksia hurrikaaneista aina kymmenen minuutin v&auml;lein. Jokainen GPS-mittaus tallentaa hurrikaanin nimen, sijainnin, tallennusajan ja tuulen nopeuden. N&auml;iden tietojen avulla voit luoda jokaisen hurrikaanin reitin k&auml;ytt&auml;m&auml;ll&auml; reittitunnuksen nime&auml;, ja jokaiselle hurrikaanille luodaan reitti. Lis&auml;ksi voit laskea tilastotiedot, kuten jokaisen hurrikaanin tuulen keski-, enimm&auml;is- ja v&auml;himm&auml;isnopeuden, sek&auml; mittausten m&auml;&auml;r&auml;n kullakin reitill&auml;.
+    </p>
+    <p>Voit my&ouml;s puskuroida reitit tuulen nopeuden mukaan. T&auml;m&auml; puskuroi jokaisen mittauksen sijainnin tuulen nopeuden kent&auml;n mukaan ja liitt&auml;&auml; puskuroidut alueet toisiinsa luoden aluekohteen, joka kuvaa hurrikaanin reitti&auml; ja tuulen nopeuden muutoksia hurrikaanin edetess&auml;.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse kohteet, joista reitit muodostetaan uudelleen</h2></div>
+        <hr/>
+        <div>
+            <p>Piste- tai aluekohdekarttataso, joka muodostetaan uudelleen reiteiksi. L&auml;ht&ouml;aineiston karttatasossa on oltava otettuna aika huomioon kohteissa, jotka edustavat hetke&auml; ajassa. Karttatason on oltava projisoidussa koordinaattij&auml;rjestelm&auml;ss&auml;, tai k&auml;sittelev&auml; koordinaatisto on m&auml;&auml;ritett&auml;v&auml; projisoituun koordinaattij&auml;rjestelm&auml;&auml;n k&auml;ytt&auml;m&auml;ll&auml;  <b>analyysiymp&auml;rist&ouml;j&auml;</b>, jos puskuri on k&auml;yt&ouml;ss&auml;.
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Valitse vähintään yksi kenttä reittien tunnistamista varten</h2></div>
+        <hr/>
+        <div>
+            <p>Kent&auml;t, jotka edustavat reittitunnusta. 
+            </p>
+            <p>Jos olet esimerkiksi muodostamassa uudelleen hurrikaanin reitti&auml;, voit k&auml;ytt&auml;&auml; hurrikaanin nime&auml; reittikentt&auml;n&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Valitse reittien uudelleen muodostamisen menetelmä</h2></div>
+        <hr/>
+        <div>
+            <p>Menetelm&auml;, jonka avulla reitit liitet&auml;&auml;n ja puskuri otetaan k&auml;ytt&ouml;&ouml;n (jos mahdollista).  <b>Planaarinen</b>-menetelm&auml; voi laskea tulokset nopeasti, mutta se ei rivit&auml; reittej&auml; kansainv&auml;lisen p&auml;iv&auml;m&auml;&auml;r&auml;rajan ymp&auml;rille tai ota huomioon maapallon todellista muotoa puskuroitaessa. <b>Geodeettinen</b>-menetelm&auml; rivitt&auml;&auml; reitit p&auml;iv&auml;m&auml;&auml;r&auml;rajan ymp&auml;rille tarvittaessa ja ottaa maapallon muodon huomioon geodeettisen puskurin avulla.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Luo lauseke, jonka perusteella lähtöaineiston kohteet puskuroidaan (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>Yht&auml;l&ouml;, jolla lasketaan puskuriet&auml;isyys l&auml;ht&ouml;aineiston kohteiden ymp&auml;rill&auml;. T&auml;m&auml;n yht&auml;l&ouml;n voi luoda k&auml;ytt&auml;m&auml;ll&auml; puskurilaskinta ja perusoperaattoreita, kuten summa-, v&auml;hennys-, kerto- ja jako-operaattoreita. Arvot lasketaan k&auml;ytt&auml;m&auml;ll&auml; analyysikoordinaattij&auml;rjestelm&auml;&auml;. Karttatason on oltava projisoidussa koordinaattij&auml;rjestelm&auml;ss&auml;, tai k&auml;sittelev&auml; koordinaatisto on m&auml;&auml;ritett&auml;v&auml; projisoituun koordinaattij&auml;rjestelm&auml;&auml;n k&auml;ytt&auml;m&auml;ll&auml;  <b>analyysiymp&auml;rist&ouml;j&auml;</b>, jos puskuri on k&auml;yt&ouml;ss&auml;.
+            </p>
+            <p>Yht&auml;l&ouml;, kuten  <code>$feature.windspeed * 1000</code> k&auml;ytt&auml;&auml; esimerkiksi puskuria tuhat kerrottuna kent&auml;ll&auml; <i>windspeed</i>. Puskurilaskimessa voi k&auml;ytt&auml;&auml; useita kentti&auml;.
+            </p>
+            <p> Voit m&auml;&auml;ritt&auml;&auml; my&ouml;s reittitietoisen lausekkeen. Jos esimerkiksi haluat laskea summan kentt&auml;arvosta <i>windspeed</i> nykyiselle kohteelle ja kaksi aiempaa kohdetta esim. yht&auml;l&ouml;ll&auml; <code>$track.field(windspeed).history(-3)</code>. Jokaisessa kohteessa nykyisen <i>windspeed</i> -kent&auml;n summa sek&auml; kaksi aiempaa mittausta laskettaisiin ja puskuroitaisiin.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Valitse aika, jonka jälkeen reitti jaetaan (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>Aika, jonka j&auml;lkeen reitti jaetaan useaksi reitiksi. Jos l&auml;ht&ouml;aineiston pisteiden tai alueiden v&auml;linen kesto on pitempi kuin aikajako, ne jaetaan eri reitteihin.
+            </p>
+            <p>Jos m&auml;&auml;rit&auml;t aikajaon ja et&auml;isyyden jaon, reitit jaetaan, kun jompikumpi ehdoista tai molemmat ehdot t&auml;yttyv&auml;t. 
+            </p>
+            <p>Kuvittele, ett&auml; sinulla on lentoja kuvaavia pistekohteita, joissa reittikentt&auml;n&auml; on lentokoneen tunnus. Kyseinen lentokone saattaa tehd&auml; useita lentoja, jotka esitet&auml;&auml;n yhten&auml; reittin&auml;. Jos tied&auml;t, ett&auml; lentojen v&auml;lill&auml; on tunnin tauko, voit k&auml;ytt&auml;&auml;  <code>yht&auml; tuntia</code> reittijakona, ja jokainen lento jaetaan omaksi reitiksi.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Jaa reitit (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>Voit jakaa reitit k&auml;ytt&auml;m&auml;ll&auml; kolmea eri menetelm&auml;&auml;. Voit k&auml;ytt&auml;&auml; niit&auml; kaikkia, niiden yhdistelmi&auml; tai olla k&auml;ytt&auml;m&auml;tt&auml; mit&auml;&auml;n jakamismenetelm&auml;&auml;. 
+            </p>
+            <p>Jaon voi tehd&auml; seuraavilla tavoilla:
+                <ul>
+                    <li> <b>Perustuu l&auml;ht&ouml;aineistojen v&auml;liseen et&auml;isyyteen</b> &ndash; jos l&auml;ht&ouml;aineiston pisteiden tai alueiden v&auml;linen et&auml;isyys on pitempi kuin m&auml;&auml;ritetty et&auml;isyys, ne jaetaan eri reitteihin. Jos m&auml;&auml;rit&auml;t et&auml;isyydeksi esimerkiksi 10 kilometri&auml;, yli 10 kilometrin et&auml;isyydell&auml; olevat per&auml;kk&auml;iset pisteet ovat eri reiteill&auml;.
+                    </li>
+                    <li> <b>Perustuu l&auml;ht&ouml;aineistojen v&auml;liseen aikaan</b> &ndash; jos l&auml;ht&ouml;aineiston pisteiden tai alueiden v&auml;linen ajallinen kesto on pitempi kuin aikajako, ne jaetaan eri reitteihin. Kuvitellaan, ett&auml; sinulla on esimerkiksi lentoja kuvaavia pistekohteita, joissa reittikentt&auml;n&auml; on lentokoneen tunnus. Kyseinen lentokone saattaa tehd&auml; useita lentoja, jotka esitet&auml;&auml;n yhten&auml; reittin&auml;. Jos tied&auml;t, ett&auml; lentojen v&auml;lill&auml; on tunnin tauko, voit k&auml;ytt&auml;&auml; <code>yht&auml; tuntia</code> reittijakona, ja jokainen lento jaetaan omaksi reitiksi.
+                    </li>
+                    <li> <b>M&auml;&auml;ritetyin v&auml;liajoin</b> &ndash; jaa k&auml;ytt&auml;m&auml;ll&auml; s&auml;&auml;nn&ouml;llisi&auml; aikav&auml;lej&auml;, jotka m&auml;&auml;ritet&auml;&auml;n aikav&auml;lin ja viiteajan perusteella. Jos et m&auml;&auml;rit&auml; viiteaikaa, j&auml;rjestelm&auml; k&auml;ytt&auml;&auml; p&auml;iv&auml;m&auml;&auml;r&auml;&auml; 1.1.1970. Jos m&auml;&auml;rit&auml;t esimerkiksi yhden (1) vuoden aikav&auml;lin viiteajalla 2.2.1990 klo 10.00, jaat reitit 2.2.1990 klo 10.00, 2.2.1991 klo 10.00 ja niin edelleen yhden vuoden v&auml;lein.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jos m&auml;&auml;rit&auml;t useita jakovaihtoehtoja, reitit jaetaan, kun v&auml;hint&auml;&auml;n yksi ehdoista t&auml;yttyy. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Valitse etäisyys, jonka jälkeen reitti jaetaan (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>Et&auml;isyys, jota k&auml;ytet&auml;&auml;n reittien jakamisessa useaksi reitiksi. Jos l&auml;ht&ouml;aineiston pisteiden tai alueiden v&auml;linen et&auml;isyys on pitempi kuin et&auml;isyyden jakoarvo, ne jaetaan eri reitteihin.
+            </p>
+            <p>Jos m&auml;&auml;rit&auml;t aikajaon ja et&auml;isyyden jaon, reitit jaetaan, kun jompikumpi ehdoista tai molemmat ehdot t&auml;yttyv&auml;t. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Lisää tilastotiedot (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p> Voit laskea tilastotiedot kohteista, joista on laadittu yhteenveto.Voit laskea seuraavat numerokentist&auml;:
+                <ul>
+                    <li>M&auml;&auml;r&auml;: laskee muiden kuin nolla-arvojen m&auml;&auml;r&auml;n.Voidaan k&auml;ytt&auml;&auml; numerokentiss&auml; tai merkkijonoissa. Arvojen [nolla, 0, 2] nolla-arvojen m&auml;&auml;r&auml; on 2.
+                    </li>
+                    <li>Summa: kunkin kent&auml;n numeroarvojen summa. Numeroarvojen [nolla, nolla, 3] summa on 3.
+                    </li>
+                    <li>Keskiarvo: numeroarvojen keskiarvo. Arvojen [0, 2, nolla] keskiarvo on 1.
+                    </li>
+                    <li>Minimi: numerokent&auml;n minimiarvo. Arvojen [0, 2, nolla] minimiarvo on 0. 
+                    </li>
+                    <li>Maksimiarvo: numerokent&auml;n maksimiarvo. Arvojen [0, 2, nolla] maksimiarvo on 2.
+                    </li>
+                    <li>Alue: numerokent&auml;n alue. T&auml;m&auml; lasketaan minimiarvoina, jotka on v&auml;hennetty maksimiarvosta. Arvojen [0, nolla, 1] alue on 1. Arvojen [nolla, 4] alue on 0.
+                    </li>
+                    <li>Varianssi: numerokent&auml;n varianssi reitill&auml;. Arvon [1] varianssi on nolla. Arvojen [nolla, 1,0, 1,1] varianssi on 0,25.
+                    </li>
+                    <li>Vakio keskihajonta: numerokent&auml;n keskihajonta. Arvon [1] varianssi on nolla. Arvojen [nolla, 1,0, 1,1] vakio keskihajonta on 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Voit laskea seuraavat merkkijonokentist&auml;:
+                <ul>
+                    <li>M&auml;&auml;r&auml;: muiden kuin nolla-merkkijonojen m&auml;&auml;r&auml;.
+                    </li>
+                    <li>Mik&auml; tahansa: T&auml;m&auml; tilastotieto on satunnainen otos m&auml;&auml;ritetyn kent&auml;n merkkijonoarvosta.
+                    </li>
+                </ul>
+                Kaikki tilastotiedot lasketaan muina kuin nolla-arvoina. Tuloskarttataso sis&auml;lt&auml;&auml; uuden kent&auml;n jokaiselle lasketulle tilastotiedolle. Voit lis&auml;t&auml; niin paljon tilastotietoja kuin haluat valitsemalla ominaisuustiedon ja tilastotiedon. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Valitse ArcGIS Data Store -tietokanta, johon tulokset tallennetaan</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-tulokset tallennetaan aineistos&auml;il&ouml;&ouml;n ja julkaistaan karttatasona   Portal for ArcGIS -portaalissa. Useimmissa tapauksissa tulokset pit&auml;&auml; tallentaa spatiotemporaaliseen tietokantaan (t&auml;m&auml; on oletusarvo). Joissakin tapauksissa, tulosten tallentaminen relaatiotietokantaan on hyv&auml; vaihtoehto. Tiedot kannattaa tallentaa relaatiotietokantaan seuraavista syist&auml;: 
+                <ul>
+                    <li>Voitk&auml;ytt&auml;&auml; portaalissa olevia tuloksiaportaaliyhteisty&ouml;h&ouml;n.
+                    </li>
+                    <li>Voit ottaa k&auml;ytt&ouml;&ouml;n tulosten synkronointitoiminnot.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relaatiotietokantaa ei tule k&auml;ytt&auml;&auml;, jos GeoAnalytics-tulosten m&auml;&auml;r&auml; kasvaa ja sinun t&auml;ytyy hy&ouml;dynt&auml;&auml; spatiotemporaalisen big data -tietokannan toimintoja suurten tietom&auml;&auml;rien k&auml;sittelyyn.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+            <p>Kun kirjoitat kohteeseen  ArcGIS Data Store  (relaatiotietokantaan perustuvaan tai spatiotemporaaliseen Big Data -s&auml;il&ouml;&ouml;n) k&auml;ytt&auml;m&auml;ll&auml; avattavaa  <b>Tallenna tulos kohteeseen</b> -luetteloa, voit m&auml;&auml;ritt&auml;&auml; kansion nimen <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

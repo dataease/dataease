@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>اشتقاق المظهر</h2><p/>
+        <h2><img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" alt="أداة اشتقاق الواجهة للبوابة الإلكترونية"></h2>
+        <hr/>
+    <p>تعمل هذه الأداة على إنشاء خريطة الواجهة من مصدر بيانات الارتفاع. تُحدد الواجهة اتجاه انحدار الحد الأقصى لمعدل تغيير القيمة من كل خلية إلى الخلايا المجاورة لها. يمكن اعتبار الواجهة في صورة اتجاه انحدار. ستكون قيم البيانات النقطية الناتجة اتجاه البوصلة للواجهة.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>البيانات المدخلة</h2></div>
+        <hr/>
+        <div>
+            <p>طبقة الارتفاع لواجهة كل موقع خلية التي يتم احتسابها.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم إنشاء اسم الطبقة في  <b>المحتوى</b> وسيتم إضافته إلى الخريطة. يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجدت الطبقة بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>يمكنك تحديد اسم مجلد في  <b>محتواي</b> حيث سيتم حفظ النتيجة باستخدام المربع المنسدل <b>حفظ النتيجة في</b>
+            </p>
+        </div>
+    </div>
+</div>
+</html>

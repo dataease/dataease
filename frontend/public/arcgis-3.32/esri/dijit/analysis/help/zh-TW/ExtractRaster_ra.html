@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>擷取點陣</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="入口網站的擷取點陣工具"></h2>
+        <hr/>
+    <p>此工具可將點陣裁剪至邊界，至矩形區域或您在畫面上以互動方式定義的形狀。您可以裁剪至地圖上目前已顯示的區域範圍，或多邊形定義的研究區域範圍。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇要擷取的輸入資料</h2></div>
+        <hr/>
+        <div>
+            <p>要裁剪的輸入圖層。
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>指定裁剪的幾何</h2></div>
+        <hr/>
+        <div>
+            <p>選擇裁剪圖層的幾何時所使用的範圍類型：
+
+                <ul>
+                    <li>使用目前範圍 - 目前的地圖範圍將用來裁掉結果圖層。這是預設情況。
+                        
+
+                    </li>
+                    <li>選擇研究區域 - 可讓您選擇結果將顯示幾何範圍內部或外部的區域。如果選擇 <b>幾何內部的資料</b>選項，將移除範圍外部的影像。如果選擇 <b>幾何外部的資料</b>選項，將移除範圍內部的影像。您也可以使用繪製工具來定義裁剪幾何。
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果已存在該名稱的圖層，系統將提示您提供其他名稱。
+            </p>
+            <p>您可以使用 <b>將結果儲存到</b>下拉式方塊，在 <b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Generați teselări</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Generați teselări"></h2>
+        <hr/>
+    <p>Acest instrument generează teselări pe o zonă studiată pe baza formei și mărimii specificate.
+    </p>
+    <p>Caseta de selectare  <b>Utilizare extindere curentă a hărții</b> este dezactivată pentru acest instrument deoarece extinderea utilizată pentru a genera teselări este controlată de parametrul <b>Definire extindere</b>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Alegerea formei</h2></div>
+        <hr/>
+        <div>
+            <p>Forma sau geometria teselării pe care doriți să o creați. Formele disponibile sunt  <code>Pătrat</code>, <code>Hexagon</code>, <code>Hexagon transversal</code>, <code>Triunghi</code>, sau <code>Diamant</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Definirea zonei de studiu</h2></div>
+        <hr/>
+        <div>
+            <p>Extinderea sau suprafața pe care o vor acoperi teselările. Extinderea poate fi determinată utiliz&acirc;nd extinderea curentă a hărții, extinderea unui strat tematic existent sau prin desenarea interactivă a unei suprafațe care va fi utilizată ca extindere.
+            </p>
+            <p>Dacă a fost selectat un strat tematic de obiecte spațiale pentru a determina extinderea, va fi activată opțiunea de a păstra doar teselările intersectate. Dacă se bifează, doar acele teselări care acoperă sau se intersectează cu obiectele spațiale din stratul tematic de extindere specificată vor fi generate &icirc;n stratul tematic de teselare rezultat. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Nebifat
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Acoperire de extindere completă">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Bifat
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Acoperire obiecte spaţiale">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Definiți dimensiunea containerului specificând</h2></div>
+        <hr/>
+        <div>
+            <p>Dimensiunea fiecărei celule. Dimensiunea celulei poate fi determinată prin specificarea unităților pătrate sau prin specificarea unei distanțe care se calculează utiliz&acirc;nd următoarele măsurători, unde d = Distanța: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Pătrat
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Teselare prin pătrate">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Hexagon
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Teselare prin hexagoane">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Hexagon transversal
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Teselare prin hexagoane transversale">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Triunghi
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Teselare prin triunghiuri">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Diamant
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Teselare prin forme de diamant">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic care va fi creat &icirc;n  <b>Resursele mele</b> și adăugat &icirc;n hartă.  Dacă stratul tematic rezultat există deja, vi se va solicita să furnizați un alt nume.
+            </p>
+            <p>Utiliz&acirc;nd meniul derul&acirc;nd  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

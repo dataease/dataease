@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/id/ClassifyPixelsUsingDeepLearning",{toolDefine:"Klasifikasikan Piksel Menggunakan Deep Learning",outputLayerName:"${layername}_classified",modelLabel:"Pilih model deep learning yang digunakan untuk mengklasifikasikan piksel",modelArgsLabel:"Tentukan argumen model deep learning",nameLabel:"Nama",valueLabel:"Nilai",queryModelArgsMsg:"Argumen model pembuatan kueri...",analysisLayerLabel:"Pilih gambar yang digunakan untuk mengklasifikasikan piksel",itemDescription:"Layanan Gambar Analisis dibuat dari Klasifikasikan Piksel Menggunakan Deep Learning",
+itemTags:"Hasil Analisis Raster, Klasifikasikan Piksel Menggunakan Deep Learning, ${layername}",itemSnippet:"Layanan Gambar Analisis dibuat dari Klasifikasikan Piksel Menggunakan Deep Learning"});

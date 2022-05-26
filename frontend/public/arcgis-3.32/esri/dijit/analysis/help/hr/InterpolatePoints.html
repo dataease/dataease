@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolacija točaka</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Interpolacija točaka"></h2>
+        <hr/>
+    <p>   Alat Interpolacija točaka omogućuje vam predviđanje vrijednosti na novim lokacijama na temelju mjera iz skupa točaka. Alat uzima podatke o točkama s vrijednostima na svakoj točki i vraća poligone klasificirane prema predviđenim vrijednostima. Na primjer
+        <ul>
+            <li>Okrug u kojem se upravlja kvalitetom zraka ima senzore koji mjere razine zagađenja.    Opcija Interpolacija točaka može se upotrijebiti za predviđanje razina zagađenja na lokacijama koje nemaju senzore, kao &scaron;to su lokacije s ugroženim populacijama &ndash; primjerice &scaron;kole ili bolnice.
+            </li>
+            <li>Predvidite koncentracije te&scaron;kih metala u usjevima koje se temelje na uzorcima prikupljenim s pojedinih biljaka.
+            </li>
+            <li>Predvidite razine hranjivih tvari u tlu (du&scaron;ik, fosfor, kalij itd.) i ostale pokazatelje (poput električne provodljivosti) kako biste ispitali njihovu povezanost s prinosom usjeva i propisali precizne količine gnojiva za svaku lokaciju na terenu. 
+            </li>
+            <li>Meteorolo&scaron;ke primjene uključuju predviđanje temperatura, oborina i povezanih varijabli (kao &scaron;to je kisela ki&scaron;a). 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izaberite točkasti sloj koji sadrži lokacije s poznatim vrijednostima</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti sloj koji će se upotrijebiti kao temelj za interpolaciju.  
+
+            </p>
+            <p>Osim odabira sloja iz karte, možete odabrati opciju  <b>Izaberi sloj za analizu</b> koja se nalazi na dnu popisa padajućeg izbornika. Ova opcija otvara galeriju u kojoj možete pretraživati i odabrati skupove podataka iz raznih izvora te ih koristiti u svojoj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Odaberite polje za interpolaciju</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite polje koje sadrži vrijednosti koje želite interpolirati.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Optimiziraj za</h2></div>
+        <hr/>
+        <div>
+            <p>Izaberite osobne postavke za brzinu u odnosu na točnost. Točnija predviđanja duže se računaju.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Pogreške izvoza predviđanja</h2></div>
+        <hr/>
+        <div>
+            <p> Ako je označeno, stvorit će se sloj standardnih pogre&scaron;aka za predviđanje interpolacijom.  Naziv izlaznog sloja bit će naziv rezultirajućeg sloja s pridodanim &bdquo;Pogre&scaron;ke&rdquo;.
+            </p>
+            <p>Standardne su pogre&scaron;ke korisne jer pružaju informacije o pouzdanosti predviđenih vrijednosti.  Jednostavno pravilo glasi da će se prava vrijednost nalaziti između dvije standardne pogre&scaron;ke predviđene vrijednosti 95 % vremena.  Primjerice, pretpostavite da nova lokacija ima predviđenu vrijednost 50 sa standardnom pogre&scaron;kom 5.  To znači da će procjena alata biti da je prava vrijednost na toj lokaciji 50, no može biti bilo koja vrijednost između 40 i 60.  Da biste izračunali ovaj raspon razumnih vrijednosti, pomnožite standardnu pogre&scaron;ku s 2, dodajte ovu vrijednost predviđenoj vrijednosti kako biste dobili gornju granicu raspona i oduzmite je od predviđene vrijednosti da biste dobili donju granicu raspona.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Klasificiraj prema</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite kako će se predviđene vrijednosti razvrstati po poligonima.
+                <ul>
+                    <li>Geometrijski interval &ndash; poligoni se temelje na intervalima razreda koji imaju geometrijske nizove. Ovim se načinom osigurava da svaki raspon razreda ima otprilike isti broj vrijednosti unutar svakog razreda i da je promjena među intervalima dosljedna.
+                    </li>
+                    <li>Jednaki interval &mdash; poligoni se stvaraju tako da je raspon predviđenih vrijednosti jednak za svako područje.
+                    </li>
+                    <li>Jednaki poligoni &mdash; poligoni se stvaraju tako da je broj vrijednosti podataka u svakom području jednak. Na primjer, ako podaci imaju vi&scaron;e visokih vrijednosti nego niskih vrijednosti, stvorit će se vi&scaron;e poligona za visoke vrijednosti.
+                    </li>
+                    <li>Ručno &mdash; ova vam opcija omogućuje definiranje vlastitog raspona vrijednosti za poligone. Ove će se vrijednosti unijeti u parametar  <b>Granične vrijednosti razreda</b> u nastavku.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Broj razreda</h2></div>
+        <hr/>
+        <div>
+            <p>Određuje broj razreda (raspon predviđenih vrijednosti) u sloju rezultata.  Svaki razred definira granice poligona. Vrijednosti tih razreda odredit će se prema parametru 
+ <b>Razvrstaj prema</b> iznad.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Granične vrijednosti razreda</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite granične vrijednosti razreda odvojene razmacima.  Primjerice, ako želite graničnu vrijednost razreda na vrijednostima 1,5, 3 i 7, unesite  <code>1,5 3 7</code>.  Tim će se vrijednostima definirati gornja granica svakog razreda tako da će broj razreda biti jednak broju unesenih vrijednosti. Povr&scaron;ine se neće stvoriti za lokacije s predviđenim vrijednostima iznad najveće unesene granične vrijednosti.  Morate unijeti barem dvije vrijednosti i ne vi&scaron;e od 32.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Izreži izvoz do</h2></div>
+        <hr/>
+        <div>
+            <p>Nacrtajte ili omogućite sloj koji određuje područje gdje želite da se nacrtaju rezultati. Na primjer, ako interpolirate mjerenja zagađenja jezera, možete upotrijebiti granicu jezera u ovom parametru i rezultat će se nacrtati samo unutar granica jezera.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Predvidi na ovim lokacijama</h2></div>
+        <hr/>
+        <div>
+            <p>Nacrtajte ili omogućite sloj koji određuje lokacije točaka za izračunavanje predviđenih vrijednosti. To vam omogućuje da radite predviđanja na određenim lokacijama od interesa. Primjerice, ako sloj unosa predstavlja mjerenja razina zagađenja, možete upotrijebiti ovaj parametar da biste predvidjeli razine zagađenja lokacija s velikim ugroženim populacijama, kao &scaron;to su &scaron;kole ili bolnice.  Tada možete upotrijebiti ove podatke kako biste savjetovali zdravstvene djelatnike na tim lokacijama.
+            </p>
+            <p>Ako ima sve podatke, ovaj će alat napraviti točkasti sloj predviđanja na određenim lokacijama.  Naziv izlaznog sloja bit će naziv sloja rezultata s pridodanim &bdquo;Točke&rdquo;.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će se stvoriti u dijelu  <b>Moj sadržaj</b> i dodati karti.  Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako naziv sloja već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

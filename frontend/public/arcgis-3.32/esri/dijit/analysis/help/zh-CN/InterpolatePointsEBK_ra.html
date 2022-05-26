@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>插值点</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="插值点工具"></h2>
+        <hr/>
+    <p>该工具用于根据一组点的测量结果来预测新位置上的值。该工具对具有数值的点数据进行处理，并返回预测值的栅格。
+    </p>
+    <p>此工具的其他用例如下：
+
+        <ul>
+            <li>一处空气质量管理区安装有用于测量污染水平的传感器。&ldquo;插值点&rdquo;可用于预测未安装传感器位置的污染水平，如学校或医院等高危人群聚集的地区。
+                
+
+            </li>
+            <li>根据采集到的诸多单株植物样本来预测农作物区域的重金属浓度。
+                
+
+            </li>
+            <li>预测土壤养分水平（氮、磷、钾等）和其他指标（如导电性），以便研究这些指标与作物产量的关系并规定田间各处的精确化肥用量。
+                
+
+            </li>
+            <li>气象应用包括温度、降雨和相关变量（例如酸雨）的预测。
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>选择包含具有已知值的位置的点图层</h2></div>
+        <hr/>
+        <div>
+            <p>包含具有已测量值的点的点图层。
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>选择要插值的字段</h2></div>
+        <hr/>
+        <div>
+            <p>选择包含要用于插值的值的字段。该字段必须为数值型。
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>优化</h2></div>
+        <hr/>
+        <div>
+            <p>根据您的偏好选择&ldquo;快速&rdquo;或&ldquo;精确&rdquo;。
+            </p>
+            <p>预测结果越精确，所花费的计算时间就越长。该参数可更改其他几个插值点参数的默认值，以便优化计算速度、结果精度或对两者进行均衡优化。默认情况下，此工具将进行均衡优化。
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>将数据转换为随机分布</h2></div>
+        <hr/>
+        <div>
+            <p>选择是否将数据转换为正态分布。
+            </p>
+            <p>插值法对于符合正态（钟形）分布的数据来说最为准确。如果您的数据似乎未采用正态分布，则应该执行转换。
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>局部模型的大小</h2></div>
+        <hr/>
+        <div>
+            <p>&ldquo;插值点&rdquo;的工作原理是构建局部插值模型并将其混合在一起，以创建最终的预测图。此参数用于控制每个局部模型中所包含的点的数量。较小的值所生成的结果较为局部，且可呈现小比例的效果，但有可能为计算带来不稳定因素。较大的值更为稳定，但可能造成某些局部效果的缺失。
+            </p>
+            <p>值的范围介于 30 与 500 之间，但典型值介于 50 和 200 之间。
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>相邻要素的数目</h2></div>
+        <hr/>
+        <div>
+            <p>预测值根据相邻点进行计算。此参数用于控制计算中将使用的点的数量。通常，所使用的相邻点数量越大，所生成的结果就越准确；但计算结果花费的时间也越长。
+            </p>
+            <p>该值的范围介于 1 与 64 之间，但典型值介于 5 和 15 之间。
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>输出像元大小</h2></div>
+        <hr/>
+        <div>
+            <p>输出栅格的像元大小和单位。
+            </p>
+            <p>可用单位为：英尺、英里、米、千米。
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>输出预测误差</h2></div>
+        <hr/>
+        <div>
+            <p>选择是否希望创建用于预测值的标准误差栅格。
+            </p>
+            <p>标准误差可提供有关预测值的可信度的信息，因此非常有用。一般来说，有 95% 的真值会落在两个预测值标准误差之间。例如，假设一个新地区的预测值是 50，标准误差是 5。这意味着利用该工具预测出此地区的真值是 50，但不排除真值低至 40 或高至 60 的可能。为计算合理值的范围，可先用标准误差乘以 2，然后将得出的值加上预测值来获得范围上限，再用预测值减去乘以 2 后得出的值来获得范围下限。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>将在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该名称的图层已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>您可以使用 <b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

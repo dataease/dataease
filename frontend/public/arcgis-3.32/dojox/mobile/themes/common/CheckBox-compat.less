@@ -1,0 +1,40 @@
+/* dojox.mobile.CheckBox */
+.mblCheckBox {
+	background-image: url(compat/button-bg.png);
+}
+.mblCheckBoxSelected {
+	background-image: url(compat/button-sel-bg.png);
+}
+.mblCheckBoxChecked,
+.mblCheckBox:checked {
+	background-image: url(compat/button-chk-bg.png);
+	&.mblCheckBoxSelected {
+		background-image: url(compat/button-unsel-bg.png);
+	}
+}
+
+.dj_gecko {
+	.mblCheckBox {
+		background-image: @mbl-button-background-image-gecko;
+		-moz-appearance: none;
+	}
+	.mblCheckBoxSelected {
+		background-image: @mbl-button-selected-background-image-gecko;
+	}
+	.mblCheckBoxChecked,
+	.mblCheckBox:checked {
+		background-image: @mbl-button-checked-background-image-gecko;
+		&::after {
+			-moz-transform: rotate(45deg);
+			-moz-transform-origin: 50% 50%;
+		}
+		&.mblCheckBoxSelected {
+			background-image: @mbl-blue-button-selected-background-image-gecko;
+		}
+	}
+}
+.dj_ff3 {
+	.mblCheckBox {
+		-moz-border-radius: @default-button-border-radius;
+	}
+}

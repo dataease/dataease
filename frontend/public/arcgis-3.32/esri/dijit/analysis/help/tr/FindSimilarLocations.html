@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Benzer Konumlar Bul</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Benzer Konumları Bul"></h2>
+        <hr/>
+    <p>Benzer Konumlar Bul aracı, belirttiğiniz kriterlere g&ouml;re aday arama katmanınızdaki konumların bir veya birka&ccedil; referans konuma benzerliğini &ouml;l&ccedil;er.  Bu ara&ccedil; şu t&uuml;r sorulara cevap verebilir:
+        <ul>
+            <li>Mağazalarınızdan hangileri m&uuml;şteri profilleri a&ccedil;ısından en başarılı performansı g&ouml;steriyor?
+            </li>
+            <li>Hastalıktan en &ccedil;ok etkilenen k&ouml;ylerin niteliklerine g&ouml;re başka hangi k&ouml;yler en y&uuml;ksek risk altında?
+            </li>
+        </ul>
+        Bu t&uuml;r soruları cevaplamak i&ccedil;in referans konumları, aday arama konumlarını ve eşlenmesini istediğiniz kriterleri temsil eden alanları girersiniz. İlk girdi katmanı referans veya test &ouml;l&ccedil;&uuml;m konumlarınızı i&ccedil;ermelidir.  Bu, &ouml;rneğin en y&uuml;ksek performansı g&ouml;steren mağazalarınızı veya hastalıktan en &ccedil;ok etkilenen k&ouml;yleri i&ccedil;eren bir katman olabilir. Daha sonra aday arama konumlarınızı i&ccedil;eren katmanı belirtirsiniz. Bu, t&uuml;m mağazalarınız veya diğer t&uuml;m k&ouml;yler olabilir. Son olarak, benzerliği &ouml;l&ccedil;mek i&ccedil;in bir veya birka&ccedil; alan belirlersiniz. Benzer Konumlar Bul aracı daha sonra t&uuml;m aday arama konumlarını se&ccedil;tiğiniz t&uuml;m alanlar genelinde referans konumlarınızla ne kadar yakın olarak eşleştiklerine g&ouml;re sıralar.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Başvuru konumlarını içeren katmanı seç</h2></div>
+        <hr/>
+        <div>
+            <p>Eşleştirilecek başvuru konumlarını i&ccedil;eren nokta, &ccedil;izgi veya alan katmanıdır. 
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Tüm konumları kullanabilir veya bir seçim yapabilirsiniz</h2></div>
+        <hr/>
+        <div>
+            <p>Gerekirse referans konumları belirlemek i&ccedil;in se&ccedil;im d&uuml;ğmelerini kullanın. &Ouml;rneğin, girdi katmanı t&uuml;m konumları; yani aday arama konumlarının yanı sıra referans konumları i&ccedil;eriyorsa, referans konumları tanımlamak i&ccedil;in se&ccedil;im ara&ccedil;larından birini kullanmanız gerekir. Referans konumların olduğu bir katman ve t&uuml;m aday arama konumlarının olduğu başka bir katman şeklinde iki ayrı katman oluşturursanız, se&ccedil;im yapmanız gerekmez. 
+            </p>
+            <p>Birden fazla referans konum varsa, benzerliği analiz etmek i&ccedil;in kullanılan alanların değerlerinin ortalaması alınarak tek bir konum oluşturulur.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Şuradaki benzer konumları ara</h2></div>
+        <hr/>
+        <div>
+            <p>Bu katmandaki aday arama konumları en benzer olandan en az benzer olana sıralanır. Benzerlik, her konumun belirttiğiniz alanlar genelinde referans konumla ne kadar yakın olarak eşleştiğini bulmaya dayanır. 
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Benzerlikte şunu temel al</h2></div>
+        <hr/>
+        <div>
+            <p>Se&ccedil;tiğiniz alanlar, benzerliği değerlendirmek i&ccedil;in kullanılacak kriterlerdir. &Ouml;rneğin, bir n&uuml;fus ve gelir alanı se&ccedil;erseniz, sıralamada en d&uuml;ş&uuml;k (en iyi) olan aday arama konumları, referans konumlarınıza benzer n&uuml;fus ve gelir değerlerine sahip olan konumlar olacaktır. 
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Bana göster</h2></div>
+        <hr/>
+        <div>
+            <p>T&uuml;m aday arama konumlarını en benzer olandan en az benzer olana sıralanmış olarak g&ouml;rebilir veya g&ouml;rmek istediğiniz sonu&ccedil; sayısını belirtebilirsiniz. 
+                <ul>
+                    <li> <b>En benzer olandan en az benzer olana t&uuml;m konumlar</b>&mdash;Aday arama katmanındaki t&uuml;m detaylar, sonu&ccedil; katmanındaki sıralamaya dahil edilir
+                    </li>
+                    <li> <b>D&ouml;nd&uuml;r&uuml;len konum sayısı</b>&mdash;En benzer ka&ccedil; adayın sonu&ccedil; katmanına dahil edileceğini siz belirlersiniz. Varsayılan girdi 1&rsquo;dir.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b> alanında oluşturulacak ve haritaya eklenecek katman i&ccedil;in bir ad girin.  Bu sonu&ccedil; katmanı referans konumları ve belirttiğiniz sayıda sıralanmış aday arama konumunu i&ccedil;erir. Sonu&ccedil; katmanı adı mevcutsa bunu yeniden adlandırmanız istenecektir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>  
+        </div>
+    </div>
+</div>
+</html>

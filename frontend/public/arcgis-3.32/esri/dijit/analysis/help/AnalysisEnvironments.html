@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Portal Analysis Environment settings</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>  Environment settings for analysis in Portal for ArcGIS and  ArcGIS Online. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Overwrite result layer</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Specifies whether to overwrite existing layers.    When checked, if a layer with the same name already exists within your contents, it will be overwritten.
+            </p>
+            <p>
+                <ul>
+                    <li>Checked&mdash;If a layer with the same name already exists within your contents, it will be overwritten. The output will have the same coordinate system as the
+input.
+                    </li>
+                    <li>Unchecked&mdash;If the result layer name provided already exists, an error will occur and the result layer must be renamed before the tool can be executed. This is the default.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Close analysis widget after running analysis</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies whether to keep the analysis dialog box open and enabled while the tool is processing.     This setting allows you to make modifications to your analysis parameters while the previous analysis job continues to run.  Analysis is an iterative process and by keeping the tool dialog box open, it allows you to make parameter changes and rerun your analysis.
+            </p>
+            <p>
+                <ul>
+                    <li>Checked&mdash;The analysis tool dialog box will close, and focus will be returned to the table of contents. This is the default
+                    </li>
+                    <li>Unchecked&mdash;The analysis tool dialog box will remain open and enabled.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Store analysis results as hosted feature layers</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Specifies whether the result layer created from your analysis will be a feature collection or a hosted feature layer. 
+            </p>
+            <p>
+                <ul>
+                    <li>Checked&mdash;The results of your analysis will create a hosted feature layer, and an item will be created in your contents. This is the default.
+                    </li>
+                    <li>Unchecked&mdash;The results of your analysis will create a feature collection.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Output coordinate system</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies   the  coordinate system of the result layer for raster analysis.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Same as Input</b>&mdash;The  result of your analysis will be in the same coordinate system  as the
+input. This is the default.
+                    </li>
+                    <li> <b>As specified</b>&mdash;The result of your analysis will be in the coordinate system you choose.   When this option is selected, click the globe button and choose from a list of known coordinate systems, or add the spatial reference WKID in the box provided.
+                    </li>
+                    <li> <b>Layer
+&lt;name&gt;</b>&mdash;The result of your analysis will be in the same coordinate system as an existing layer you choose in your web map.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Processing coordinate system</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the coordinate system your analysis will use during  execution of the GeoAnalytics analysis.   
+            </p>
+            <p>For GeoAnalytics, some analysis requires
+that  processing be executed in a projected coordinate system.   Any tool that has implemented binning of data or linear units requires a projected coordinate system. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Same as input</b>&mdash;Your analysis will be processed in the same coordinate system  as the
+input. This is the default.
+                    </li>
+                    <li> <b>As specified</b>&mdash;Your analysis will be in the coordinate system you choose.   When this option is selected, click the globe button and choose from a list of known projected coordinate systems, or add the spatial reference WKID in the box provided.
+                    </li>
+                    <li> <b>Layer
+&lt;name&gt;</b>&mdash; Your analysis will be in the same coordinate system as an existing layer you choose in your web map.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Extent</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the extent or boundary that will be used during execution of the analysis.  All input features that are completely within or that intersect the specified extent will be used in the analysis.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Default</b>&mdash;The extent provided by the tool.
+                    </li>
+                    <li> <b>As specified</b>&mdash;The extent is defined by the coordinates you provide.
+                    </li>
+                    <li> <b>Layer
+&lt;name&gt;</b>&mdash;The extent used to process your analysis will be the same as the spatial extent of an existing layer you choose in your web map. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Snap Raster</h2></div>
+        <hr/>
+        <div>
+            <p>Adjusts the extent of the output raster layer  so it  matches the
+cell alignment of the specified  <b>Snap Raster</b> layer in raster analysis.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Cell Size</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the cell size or resolution
+that will be used to create the output raster layer in raster analysis. The default output resolution is determined by the
+largest cell size of the input raster layer.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Minimum of Inputs</b>&mdash;Use the smallest cell size of all input
+layers.
+                    </li>
+                    <li> <b>Maximum of Inputs</b>&mdash;Use the largest cell size of all input
+layers. This is the default.
+                    </li>
+                    <li> <b>As specified</b>&mdash;Specify a numeric value to set the cell size. If this is selected, the default
+value is 1.
+                    </li>
+                    <li> <b>Layer &lt;name&gt;</b>&mdash;Set
+the cell size to the raster layer chosen.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Mask</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies a layer that will be used to define your area of interest in raster analysis.   Only those cells that fall within the analysis mask will be considered  in the
+analysis operation.
+            </p>
+            <ul>
+                <li>The mask can be either a raster
+or a feature layer.
+                </li>
+                <li>If the analysis mask is a raster, all cells
+that have a value will be considered to define the mask. Cells in a
+mask raster that are  NoData will be considered to be outside the mask and
+will be NoData in the analysis result layer.
+
+                </li>
+                <li>If the analysis mask is
+a feature layer, it will be internally converted to a raster on
+execution. For this reason, ensure that
+ <b>Cell Size</b> and <b>Snap Raster</b> are set appropriately for
+your analysis.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Data store</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics results can be stored in either an  ArcGIS Data Store and exposed as a feature layer in  Portal for ArcGIS or a configured big data file share. 
+            </p>
+            <p>When you store a result in  ArcGIS Data Store, in most cases, results should be stored in the spatiotemporal data store. This is the default. The following are reasons why you may want to store results in a relational data store: 
+                <ul>
+                    <li>To use your results in portal-to-portal collaboration
+                    </li>
+                    <li>To enable sync capabilities with your results
+                    </li>
+                </ul>
+                
+            </p>
+            <p>You should not use a relational data store if you expect your GeoAnalytics results to increase and want to take advantage of the spatiotemporal big data store's capabilities to handle large amounts of data. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Parallel processing factor</h2></div>
+        <hr/>
+        <div>
+            <p>Distributes analysis across multiple Raster Processing service instances. 
+            </p>
+            <p>Tools that honor the  <b>Parallel processing factor</b> environment allow you to control the number of raster processing service instances that can be used for processing your data.
+            </p>
+            <p>If the tool doesn't honor  the  <b>Processor type</b>, or if  the <b>Processor type</b> environment is set to <b>CPU</b>,   the <b>Parallel processing factor</b> environment controls raster processing (CPU) service instances. If  the <b>Processor type</b> is set to <b>GPU</b>, the <b>Parallel processing factor</b> environment controls the number of raster processing GPU instances.
+            </p> 
+            <p>By setting the  <b>Parallel processing factor</b>, you can request the number of parallel workers that the raster analytics image server uses to process one raster analysis task. However, if the total number of parallel processes exceeds the maximum number of raster processing (CPU or GPU) service instances, the additional parallel processes will be queued.
+            </p>
+            <p>If the  <b>Parallel processing factor</b> is not specified, which is the default, the tool will use 80 percent of the maximum number of raster processing service instances. Either an integer number or a percentage can be specified as the parallel processing factor.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>Processor type</h2></div>
+        <hr/>
+        <div>
+            <p>Tools that honor the  <b>Processor type</b> environment allow you to choose where and how you want to process your data.
+You can process your data using the server computer CPU or GPU.  If the <b>Processor type</b> environment is empty, the tool uses CPU to process the data. This is the default.
+            </p> 
+            <p>CPU processing can be parallelized across multiple cores and instances, as handled by the  <b>Parallel processing factor</b>.
+            </p>
+            <p>GPUs are effective at graphics and image processing, where their highly parallel structure makes them efficient in processing large blocks of data in a repetitive manner. The Raster Analysis tools that honor this environment can distribute its job  across GPU instances at multiple raster analysis server machines, as handled by the  <b>Parallel processing factor</b>.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b>&mdash;Data will processed using the graphics processing unit.
+                    </li>
+                    <li> <b>CPU</b>&mdash;Data will be processed using the computer's central processing unit.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

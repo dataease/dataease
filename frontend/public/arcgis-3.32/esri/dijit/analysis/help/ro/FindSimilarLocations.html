@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Găsire locaţii similare</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Găsire locaţii similare"></h2>
+        <hr/>
+    <p>Pe baza criteriilor specificate de dvs., instrumentul Găsire locaţii similare măsoară gradul de similaritate al locaţiilor din stratul tematic de căutare a candidaţilor cu una sau mai multe locaţii de referinţă. Acest instrument poate oferi răspunsuri la &icirc;ntrebări precum:
+        <ul>
+            <li>Care dintre magazinele dvs. sunt cele mai similare cu magazinele cu performanţe de v&acirc;rf &icirc;n ceea ce priveşte profilurile clienţilor?
+            </li>
+            <li>&Icirc;n funcţie de caracteristicile satelor cele mai afectate de boală, ce alte sate prezintă un risc ridicat?
+            </li>
+        </ul>
+        Pentru a răspunde la &icirc;ntrebări precum cele de mai sus, dvs. introduceţi locaţiile de referinţă, locaţiile &icirc;n care se vor căuta candidate, precum şi c&acirc;mpurile care reprezintă criteriile pe care doriţi ca locaţiile respective să le &icirc;ntrunească. Primul strat tematic de intrare trebuie să includă locaţiile de referinţă sau etalon.  De exemplu, acesta poate fi un strat tematic care conţine magazinele cu cele mai bune performanţe sau satele afectate cel mai mult de boală. Apoi, specificaţi stratul tematic care conţine locaţiile candidate rezultate &icirc;n urma căutării. Stratul tematic poate include toate magazinele sau toate satele. &Icirc;n cele din urmă, identificaţi unul sau mai multe c&acirc;mpuri pe care doriţi să le utilizaţi pentru a măsura similitudinile. Instrumentul Găsire locaţii similare va clasifica toate locaţiile candidate rezultate &icirc;n urma căutării &icirc;n funcţie de c&acirc;t de mult se aseamănă cu locaţiile de referinţă &icirc;n ceea ce priveşte criteriile pe care le-aţi selectat.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Alegeţi stratul tematic care conţine locaţiile de referinţă</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic de puncte, linii sau suprafeţe care conţine locaţiile de referinţă care trebuie să se potrivească. 
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Puteţi utiliza toate locaţiile sau puteţi face o selecţie</h2></div>
+        <hr/>
+        <div>
+            <p>Dacă este necesar, folosiţi butoanele de selectare pentru a identifica locaţiile de referinţă. De exemplu, dacă stratul tematic conţine toate locaţiile (locaţiile de referinţă şi locaţiile candidate rezultate &icirc;n urma căutării), va trebui să utilizaţi unul din instrumentele de selectare pentru a identifica locaţiile de referinţă. Dacă creaţi două straturi tematice separate, unul care să conţină locaţiile de referinţă şi altul care să conţină locaţiile candidate rezultate &icirc;n urma căutării, nu va trebui să efectuaţi nicio altă selecţie. 
+            </p>
+            <p>Dacă există mai multe locaţii de referinţă, se va crea o singură locaţie prin calcularea mediei pentru fiecare din c&acirc;mpurile utilizate pentru măsurarea similitudinii.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Căutaţi locaţii similare în</h2></div>
+        <hr/>
+        <div>
+            <p>Locaţiile candidate rezultate &icirc;n urma căutării din acest strat tematic vor fi clasificate descrescător &icirc;n funcţie de nivelul de similitudine. Similitudinea se bazează pe măsura &icirc;n care fiecare locaţie corespunde locaţiei de referinţă &icirc;n ceea ce priveşte criteriile pe care le specificaţi &icirc;n c&acirc;mpuri. 
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Similaritate de bază în</h2></div>
+        <hr/>
+        <div>
+            <p>C&acirc;mpurile pe care le selectaţi vor reprezenta criteriile utilizate pentru evaluarea similitudinii. De exemplu, dacă selectaţi un c&acirc;mp pentru populaţie şi venit, locaţiile candidate rezultate &icirc;n urma căutării care au cele mai mici (cele mai bune) valori &icirc;n clasament vor fi cele care se aseamănă cel mai mult cu locaţiile de referinţă din punct de vedere al populaţiei şi veniturilor. 
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Arată</h2></div>
+        <hr/>
+        <div>
+            <p>Puteţi să vedeţi toate locaţiile candidate rezultate &icirc;n urma căutării, clasificate descrescător &icirc;n funcţie de nivelul de similitudine, sau puteţi să specificaţi numărul de rezultate pe care doriţi să le afişaţi. 
+                <ul>
+                    <li> <b>Toate locațiile, de la cea mai similară la cea mai puțin similară</b>&mdash;Toate obiectele spațiale din stratul tematic cu locațiile candidate rezultate &icirc;n urma căutării vor fi incluse, ordonate conform clasamentului, &icirc;n stratul tematic cu rezultate.
+                    </li>
+                    <li> <b>Numărul de locații returnate</b>&mdash;dvs. stabiliți c&acirc;t de multe locații candidate dintre cele care se aseamănă cel mai mult cu locațiile de referință vor fi incluse &icirc;n stratul tematic cu rezultate. Intrarea implicită este 1.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Furnizaţi un nume pentru stratul tematic care va fi creat &icirc;n  <b>Resursele mele</b> şi adăugat &icirc;n hartă.  Acest strat tematic cu rezultate va conţine locaţiile de referinţă şi numărul de locaţii candidate rezultate &icirc;n urma căutării pe care l-aţi specificat. Dacă stratul tematic rezultat există deja, vi se va solicita să &icirc;l redenumiţi.
+            </p>
+            <p>Utiliz&acirc;nd caseta derulantă  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>  
+        </div>
+    </div>
+</div>
+</html>

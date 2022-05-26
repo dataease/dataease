@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="bdToolbox">
+        <p> GeoAnalytics מפזר את העבודה הניתוחית על פני ArcGIS GeoAnalytics Server. הדבר מאפשר לך לנתח יותר נתונים מהר יותר עם מספר מחשבים. הכלים הבאים זמינים: <ul>
+                <li> קיבוץ נקודות
+                </li>
+                <li> בנה גריד מרובה משתנים
+                </li>
+                <li> תיאור סט נתונים
+                </li>
+                <li> צרף ישויות
+                </li>
+                <li> בניית מסלולים מחדש
+                </li>
+                <li> סכם מאפיינים
+                </li>
+                <li> סיכום בתוך
+                </li>
+                <li> עיגון כתובות מיקומים מטבלה
+                </li>
+                <li> העשר מגריד מרובה-משתנים
+                </li>
+                <li> זיהוי תקריות
+                </li>
+                <li> איתור מיקומים דומים
+                </li>
+                <li> חשב צפיפות
+                </li>
+                <li> מצא אשכולות של נקודות
+                </li>
+                <li> מציאת נקודות חמות
+                </li>
+                <li> סיווג ורגרסיה על בסיס יער
+                </li>
+                <li> רגרסיה ליניארית מוכללת
+                </li>
+                <li> יצירת אזורי חיץ
+                </li>
+                <li> הוסף נתונים
+                </li>
+                <li> חשב שדה
+                </li>
+                <li> העתק למאגר נתונים
+                </li>
+                <li> כיסוי שכבות
+                </li>
+                <li> מיזוג גבולות
+                </li>
+                <li> מיזוג שכבות
+                </li>
+                <li> חתוך שכבה 
+                </li>
+            </ul>
+            
+        </p>
+        <p>GeoAnalytics מתמקד בניתוח כמויות נתונים גדולות עם דגש הן על דפוסי מרחב והן על דפוסי זמן. 
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Summarize Data</h2>
+        <hr/>
+        <p> The Summarize Data toolset contains tools that calculate total counts, lengths, areas, and basic descriptive statistics of features and their attributes within areas or near other features.
+            <ul>
+                <li> <b>Aggregate Points</b> calculates statistics about points that fall within specified areas or bins.
+                </li>
+                <li> <b>Build Multi-Variable Grid</b> generates a grid of square or hexagonal bins and calculates values for each bin based on the proximity of each input layer.
+                </li>
+                <li> <b>Describe Dataset</b> calculates a summary of your input, and can optionally generate a sample of your input layer.
+                </li>
+                <li> <b>Join Features</b> calculates statistics about features that share a spatial, temporal, or attribute relationship with other features.
+                </li>
+                <li> <b>Reconstruct Tracks</b> calculates statistics about points or polygons that belong to the same track and reconstructs inputs into tracks.
+                </li>
+                <li> <b>Summarize Attributes</b> calculates statistics about feature or tabular data that share attributes.
+                </li>
+                <li> <b>Summarize Within</b> calculates statistics for area features and attributes that overlap each other.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>קיבוץ נקודות</h2></td>
+                    <td>
+                    <img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" class="titleImage" alt="קיבוץ נקודות">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>כלי זה משתמש בשכבה של ישויות נקודה ובשכבה של ישויות אזור או בתאים שמוגדרים על ידי מרחק שצוין, כדי לקבוע אילו נקודות נמצאות בתוך כל אזור או תא ומחשב נתונים סטטיסטיים אודות כל הנקודות בתוך כל אזור או תא. ניתן לבחור להשתמש בקיטוע זמן ביחד עם כלי זה. 
+            </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>בהינתן מיקומי נקודה של אירועי פשיעה, ספור את מספר הפשעים בכל מחוז או יחידה מנהלית אחרת.
+                    </li>
+                    <li>מצא את הרווחים החודשיים הגבוהים ביותר והנמוכים ביותר עבור מיקומי חנויות תוך שימוש ב תאים של 100-קילומטר.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="BuildMultiVariableGridTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>בנה גריד מרובה משתנים</h2></td>
+                    <td>
+                    <img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" class="titleImage" alt="תרשים תהליך עבודה של הוספת נתונים">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>הכלי 'בנה גריד מרובה משתנים' מפיק גריד של תאים מרובעים או משושים ומחשב משתנים עבור כל תא על בסיס הקרבה של שכבת קלט אחת או יותר.
+            </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>בהינתן שכבות מרובות של תשתית תחבורה ציבורית, איזה חלק של העיר הוא הכי פחות נגיד בתחבורה ציבורית?
+                    </li>
+                    <li>בהינתן שכבות של נתיבי מים, כגון אגמים ונהרות, מהו שם מקור המים הקרוב ביותר לכל מיקום בארה&quot;ב?
+                    </li>
+                    <li>בהינתן שכבה של הכנסות לבית אב, היכן בארה&quot;ב שונות ההכנסה ברדיוס של 80 ק&quot;מ היא הגדולה ביותר?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DescribeDatasetTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>תיאור סט הנתונים</h2></td>
+                    <td>
+                    <img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" class="titleImage" alt="תרשים תהליך עבודה של תיאור סט נתונים">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>סכם ישויות קלט עם נתונים סטטיסטיים, שכבות לדוגמה והצגה חזותית. באפשרותך לבחור לקבל פלט של שכבת דגימה או של שכבת תיחום.
+            </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>עיין בנתונים הסטטיסטיים המסוכמים כדי להבין אילו ערכים סט הנתונים שלך מכיל.
+                    </li>
+                    <li>במקום לשרטט את סט הנתונים כולו, צור שכבת סט משנה כדי להציג חזותית ישויות ואת המאפיינים שלהן בעת הוספת מפה.
+                    </li>
+                    <li>חסוך זמן ומשאבים והרץ ניתוח על שכבת דגימה לפני הרצת ניתוח על סט הנתונים כולו.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>צרף ישויות</h2></td>
+                    <td>
+                    <img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" class="titleImage" alt="צרף ישויות">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>תוך שימוש בשכבות אזור או בנתונים טבלאיים, באפשרותך לצרף ישויות ורשומות על בסיס קשר ספציפי בין שכבות הקלט או הטבלאות.  הצירוף ייקבע על ידי קשרים מרחביים, זמניים ושל מאפיינים, וניתן לחשב סיכומים סטטיסטיים לפי בחירה.  
+            </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>בהינתן מיקומי נקודות של אירועי פשיעה עם שעה, צרף את נתוני הפשיעה לעצמם תוך ציון קשר מרחבי של פשעים בטווח של ק&quot;מ 1 זה מזה, ואשר התרחשו בטווח של שעה 1 זה מזה, כדי לקבוע אם יש רצף של פשעים קרובים זה לזה במרחב ובזמן.
+                    </li>
+                    <li>בהינתן טבלה של קודי מיקוד עם מידע דמוגרפי ומאפייני אזור שמייצגים בנייני מגורים, צרף את המידע הדמוגרפי לבנייני המגורים, כך שלכל בניין יש כעת את המידע.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ReconstructTracksTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>בניית מסלולים מחדש</h2></td>
+                    <td>
+                    <img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" class="titleImage" alt="בניית מסלולים מחדש">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>תוך שימוש בישויות שכבת נקודה או פוליגון עם רכיב זמן מופעל שמייצג  <code>רגע</code> בזמן, כלי זה קובע אילו ישויות קלט שייכות למסלול ויסדר את הקלטים ברצף בזמן. כאופציה, מחושבים נתונים סטטיסטיים עבור ישויות הקלט בתוך כל מסלול.
+            </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>בהינתן מיקומי נקודה ושעה של מדידות הוריקן, חישוב מהירות הרוח הממוצעת ולחץ הרוח המקסימלי של ההוריקן.
+                    </li>
+                    <li>מדידות ה-GPS של ספינות כדי לבנות מחדש נתיבי ספינות כקווים. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeAttributesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>סכם מאפיינים</h2></td>
+                    <td>
+                    <img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" class="titleImage" alt="תרשים 'סכם מאפיינים">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>תוך שימוש בישות או בנתונים טבלאיים, כלי זה מסכם נתונים סטטיסטיים עבור שדות שצוינו. 
+            </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>בהינתן מיקומים של מרכולים עם שדה  <i>COMPANY_NAME</i>, סכם את המרכולים לפי שם חברה כדי לקבוע נתונים סטטיסטיים עבור כל חברה.
+                    </li>
+                    <li>בהינתן טבלה של מרכולים עם שדות  <i>COMPANY_NAME</i> ו- <i>COUNTY</i>, סכם את המרכולים לפי שם חברה ומחוז, כדי לקבוע נתונים סטטיסטיים עבור כל חברה בכל מחוז.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>סיכום בתוך</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="סיכום בתוך">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>מציאת אזורים (וחלקי אזורים) שחופפים בין שתי שכבות וחישוב נתונים סטטיסטיים אודות החפיפה. 
+            </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>בהינתן שכבה של אזורי שטח קו פרשת מים ושכבה של גבולות שימוש בקרקע לפי סוג שימוש בקרקע, חשב את השטח הכולל של סוג שימוש בקרקע עבור כל שטח קו פרשת מים. 
+                    </li>
+                    <li>בהינתן שכבה של חלקות במחוז ושכבה של גבולות עיר, סכם את הערך הממוצע של חלקות פנויות בתוך כל עיר.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="smallsize">
+        <h2>איתור מיקומים</h2>
+        <hr/>
+        <p>כלים אלה משמשים לזיהוי אזורים שמקיימים מספר קריטריונים שונים שציינת.   
+            <ul>
+                <li> <b>זיהוי תקריות</b> עובד עם שכבות שבהן רכיב זמן פעיל כדי לקבוע אילו ישויות מקיימות תנאי שצוין.
+                </li>
+                <li> <b>עיגון כתובות מיקומים מטבלה</b> ממיר כתובות לקואורדינטות.
+                </li>
+                <li> <b>איתור מיקומים דומים</b> מוצא את המיקומים הדומים ביותר לאחד או יותר ממיקומי הייחוס בהתבסס על קריטריונים שציינת.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DetectIncidentsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>זיהוי תקריות</h2></td>
+                    <td>
+                    <img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" class="titleImage" alt="זיהוי תקריות">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>כלי זה עובד עם שכבת נקודות, קווים, אזורים או טבלאות עם רכיב זמן מופעל אשר מייצגות רגע בזמן.   תוך שימוש בישויות המסודרות ברצף, שנקראות מסלולים, כלי זה קובע אילו ישויות הן תקריות שיש בהן עניין. תקריות נקבעות על ידי תנאים שאתה מציין. 
+            </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>זהה מדידות הוריקן שהן הוריקני בקטגוריה 4, על בסיס מאפיין מהירות הרוח.
+                    </li>
+                    <li>בעזרת מדידות GPS של תנועת ספינה עם שדה שמייצג את מהירות הספינה, מצא מדידות שהן גדולות יותר מפי 1.5 הממוצע של חמש המדידות הקודמות.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>עיגון כתובות מיקומים מטבלה</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="עיגון כתובות מיקומים מטבלה">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>ממיר כתובות לקואורדינטות. השתמש בכל זה על טבלאות שיתוף קובץ Big Data.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>איתור מיקומים דומים</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="איתור מיקומים דומים">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>על בסיס קריטריונים שאתה מציין, מצא מיקומים דומים על ידי מדידת הדמיון של מיקומים בשכבת חיפוש המועמדים שלך למיקום ייחוס אחד או יותר. 
+            </p>
+            <p>להלן מספר דוגמאות: 
+                <ul>
+                    <li>מצא את עשר החנויות הדומות ביותר על ידי בדיקת מספר העובדים והמכירות השנתיות.
+                    </li>
+                    <li>מצא את 100 הערים הדומות ביותר על ידי בדיקת היחסים בין אוכלוסייה, צמיחה שנתית והכנסות ממסים.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>ניתוח דפוסים</h2>
+        <hr/>
+        <p>  כלים אלה עוזרים לזהות, לכמת ולהציג דפוסים מרחביים בנתונים.
+            <ul>
+                <li> <b>חישוב צפיפות</b> לוקח כמויות ידועות של תופעה מסוימת ומפזר כמויות אלה על פני המפה.
+                </li>
+                <li> <b>מציאת נקודות חמות</b> מזהה קיבוץ באשכולות מובהק סטטיסטית בדפוס המרחבי של הנתונים.
+                </li>
+                <li> <b>מצא אשכולות של נקודות</b> מוצא אשכולות של ישויות נקודה בתוך רעש סובב בהתבסס על הפיזור המרחבי שלהן.
+                </li>
+                <li> <b>סיווג ורגרסיה על בסיס יער</b> יוצר מודלים ומפיק תחזיות תוך שימוש בהתאמה של אלגוריתם היער האקראי של Leo Breiman, שזו שיטת למידת מכונה מפוקחת.
+                </li>
+                <li> <b>רגרסיה לינארית מוכללת</b> מפיק חיזויים או ממדל משתנה תלוי מבחינת היחסים שלו לערכה של משתנים מסבירים.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>חשב צפיפות</h2></td>
+                    <td>
+                    <img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" class="titleImage" alt="חשב צפיפות">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>הכלי 'חשב צפיפות' יוצר מפת צפיפות מישויות נקודה, על ידי פיזור כמויות ידועות של תופעה מסוימת (שמיוצגת כמאפיינים של הנקודות) על פני המפה. התוצאה היא שכבה של אזורים שמייצגים את הצפיפות.
+            </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>חישוב צפיפויות של בתי חולים בתוך ארץ מסוימת.  שכבת התוצאה תציג אזורים עם נגישות גבוהה ונמוכה לבתי חולים, וניתן להשתמש במידע זה כדי להחלט היכן יש לבנות בתי חולים חדשים.
+                    </li>
+                    <li>זיהוי אזורים שבהם יש סיכון גבוה לשרפות יער, על סמך מיקומים היסטוריים של שרפות יער.
+                    </li>
+                    <li>איתור קהילות שהן רחוקות מכבישים ראשיים, כדי לתכנן היכן יש לסלול כבישים חדשים.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>מצא אשכולות של נקודות</h2></td>
+                    <td>
+                    <img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" class="titleImage" alt="מצא אשכולות של נקודות">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>הכלי 'מצא אשכולות של נקודות' מוצא אשכולות של ישויות נקודה בתוך רעש סובב בהתבסס על הפיזור המרחבי שלהן.
+            </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>מצא אשכולות של בתי אב מזוהמים במזיקים כדי לעזור במאמצי ההדברה.  
+                    </li>
+                    <li>קבל מידע ופעל למתן מענה לצורכי הצלה ופינוי על בסיס הגודל והמיקום של האשכולות בעזרת ציוצים לפי מיקום בעקבות סכנות טבע או מתקפות טרור.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>מציאת נקודות חמות</h2></td>
+                    <td>
+                    <img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" class="titleImage" alt="מציאת נקודות חמות">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>הכלי 'מציאת נקודות חמות' יקבע אם קיימים אשכולות בעלי מובהקות סטטיסטית בדפוס המרחבי של הנתונים. 
+                <ul>
+                    <li>האם הנקודות שלך (אירועי פשיעה, עצים, תאונות דרכים) באמת מקובצים באשכולות? איך תוכל לדעת בוודאות?
+                    </li>
+                    <li>האם באמת מצאת נקודה חמה מובהקת סטטיסטית (להוצאות, תמותת תינוקות, תוצאות בדיקות גבוהות בעקביות) או שהמפה שלך תספר סיפור אחר אם תשנה את הדרך שבה היא מסומלת?
+                    </li>
+                </ul>
+                הכלי 'מציאת נקודות חמות' יעזור לך לענות תשובות ודאיות לשאלות אלה.
+            </p>
+            <br/>
+        </div>
+        <div id="ForestBasedClassificationAndRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>סיווג ורגרסיה על בסיס יער</h2></td>
+                    <td>
+                    <img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" class="titleImage" alt="איור תהליך עבודה של סיווג ורגרסיה על בסיס יער">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>הכלי 'סיווג ורגרסיה על בסיס יער' יוצר מודלים ומפיק תחזיות תוך שימוש בהתאמה של אלגוריתם היער האקראי של Leo Breiman, שזו שיטת למידת מכונה מפוקחת
+            </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>בהינתן נתונים על הופעות של עשב ים, וכן מספר משתנים סביבתיים מסבירים שמיוצגים כשני המאפיינים שהועשרו באמצעות גריד מרובה-משתנים לחישוב מרחקים למפעלים במעלה הזרם ונמלים גדולם, ניתן לחזות הופעות עתידיות של עשב ים על בסיס הטלות לעתיד עבור אותם משתנים מסבירים סביבתיים.
+                          
+                    </li>
+                    <li>נניח שברשותך נתוני תפוקת יבול במאות משקים ברחבי המדינה, ביחד עם מאפיינים אחרים בכל אחד מהמשקים הללו (מספר עובדים, שטח וכד'). תוך שימוש בפריטי נתונים אלה, באפשרותך לספק מערך ישויות שמייצגות משקים שבהם אין לך תפוקת יבול (אבל בידיך כל המשתנים האחרים), ולבצע חיזוי אודות תפוקת היבול.
+                    </li>
+                    <li>ניתן לחזות ערכי דיור על בסיס המחירים של בתים שנמכרו בשנה הנוכחית. ניתן להשתמש במחירי המכירה של בתים שנמכרו ביחד עם מידע אודות מספר החדרים, מרחק מבתי ספר, קרבה לכבישים ראשיים, הכנסה ממוצעת ומספר מקרי פשע כדי לחזות את מחירי המכירה של בתים דומים.
+                         
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeneralizedLinearRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>רגרסיה ליניארית מוכללת</h2></td>
+                    <td>
+                    <img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" class="titleImage" alt="תרשים תהליך עבודה של רגרסיה לינארית מוכללת">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>הכלי 'רגרסיה לינארית מוכללת' מפיק חיזויים או ממדל משתנה תלוי מבחינת היחסים שלו לערכה של משתנים מסבירים.  ניתן להשתמש בכלי זה כדי להתאים מודלים רציפים (OLS), בינאריים (לוגיסטיים) ושל ספירה (Poisson).
+            </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>אילו מאפיינים דמוגרפיים תורמים לשיעורים גבוהים של שימוש בתחבורה ציבורית?
+                    </li>
+                    <li>הם יש קשר חיובי בין ונדליזם לפריצות?
+                    </li>
+                    <li>אילו משתנים חוזים ביעילות נפח התקשרות למספרי חירום? בהינתן חיזויים עתידיים, מהו הביקוש הצפוי למשאבי מענה במקרה חירום?
+                    </li>
+                    <li>אילו משתנים משפיעים על שיעורי לידות נמוכים?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="smallsize">
+        <h2>שימוש בסמיכות</h2>
+        <hr/>
+        <p>כלים אלה עוזרים לענות על אחת מהשאלות הנפוצות ביותר בניתוח מרחבי: &quot;מה נמצא ליד מה?&quot;
+            <ul>
+                <li> <b>יצירת אזורי חיץ</b> יוצרת אזורים במרחק שצוין מישויות.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CreateBuffersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>יצירת אזורי חיץ</h2></td>
+                    <td>
+                    <img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" class="titleImage" alt="יצירת אזורי חיץ">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>חיץ הוא אזור שמכסה מרחק נתון מישות נקודה, קו או פוליגון.
+            </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>תוך שימוש במאפייני נהר לינארים, צור חיץ לכל נהר לפי 50 פעמים הרוחב של הנהר, כדי לקבוע גבול מוצע לגדות נהר.
+                    </li>
+                    <li>בהינתן אזורים שמייצגים ארצות, צור חיץ לכל ארץ לפי 200 מייל ימי כדי לקבוע את הגבול הימי.  
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Manage Data</h2>
+        <hr/>
+        <p>These tools are used for the day-to-day management of geographic and tabular data. 
+            <ul>
+                <li> <b>Append Data</b> appends features to an existing hosted feature layer.
+                </li>
+                <li> <b>Calculate Field</b> creates a new field or modifies an existing field and creates a new layer in your contents.
+                </li>
+                <li> <b>Clip Layer</b> copies features that intersect a defined area of interest. 
+                </li>
+                <li> <b>Copy to Data Store</b> copies data to your ArcGIS Data Store and creates a layer in your contents. 
+                </li>
+                <li> <b>Dissolve Boundaries</b> merges areas that share a common boundary or attribute value.
+                </li>
+                <li> <b>Merge Layers</b> copies all features from two layers into a single result layer.
+                </li>
+                <li> <b>Overlay Layers</b> combines two or more layers into a single layer.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CopyToDataStoreTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>העתק למאגר נתונים</h2></td>
+                    <td>
+                    <img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" class="titleImage" alt="העתק למאגר נתונים">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>מעתיק טבלה או שכבת ישויות של קלט ל- ArcGIS Data Store ויוצר שכבה בתכנים שלך ב-ArcGIS Enterprise. </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>העתק אוסף של קובצי  <code>.csv</code> בקובץ שיתוף Big Data למאגר הנתונים המרחבי-זמני לצורך הצגה חזותית.
+                    </li>
+                    <li>העתק את המשויות בתיחום המפה הנוכחי אשר מאוחסנות במאגר הנתונים המרחבי-זמני למאגר הנתונים היחסים.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="CalculateFieldTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>חשב שדה</h2></td>
+                    <td>
+                    <img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" class="titleImage" alt="חשב שדה">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>מחשב ערכים עבור שדה חדש או קיים ויוצר שכבה בתכנים שלך ב- ArcGIS Enterprise. </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>שנה שדה קיים בשם  <i>total</i> כך שיהיה סכום הרווח מהשדות <i>total_2016</i>, <i>total_2017</i> ו- <i>total_2018</i>.
+                    </li>
+                    <li>צור שדה חדש כדי לסווג רמות סכנה על בסיס ערכי שדה כגון  <i>windspeed</i> ו- <i>pollutant</i>.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ClipLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>חתוך שכבה</h2></td>
+                    <td>
+                    <img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" class="titleImage" alt="חתוך שכבה">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>חתוך ישויות קלט מאזורי עניין מוגדרים. תוצאת הפלט תהיה ערכת משנה של ישויות קלט. 
+            </p>
+            <p>להלן מספר דוגמאות: 
+                <ul>
+                    <li>יצור ערכת משנה של בניינים בסכנה שנמצאים בתוך אזורי הצפה.
+                    </li>
+                    <li>קבע אילו כבישים ראשיים עוברים באזורי הפיתוח הפוטנציאליים שלך.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>מיזוג גבולות</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="מיזוג גבולות">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>מזג ישויות אזור שמצטלבות או בעלות ערך שדה משותף כדי ליצור ישויות רציפות או מרובותחלקים.
+            </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>צור ישות אחת שמייצגת את מדינת הוואי על ידי מיזוג הגבולות של איי הוואי.
+                    </li>
+                    <li>שלב אזורי מחקר דומים על בסיס סוג האדמה כדי לקבל פלט של סט נתוני סוג קרקע רציפים.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>כיסוי שכבות</h2></td>
+                    <td>
+                    <img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" class="titleImage" alt="כיסוי שכבות">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>משלב שתי שכבות או יותר ליצירת שכבה יחידה אחת.  כיסוי משמש לצורך מענה על אחת מהשאלות הבסיסיות ביותר של גאוגרפיה, &quot;מה נמצא מעל מה?&quot;.
+            </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>אילו חלקות נמצאות בתוך מישור ההצפה 100-שנה? (&quot;בתוך&quot; זו פשוט דרך אחרת לומר &quot;מעל&quot;.)
+                          
+                    </li>
+                    <li>איזה שימוש בקרקע נמצא מעל איזה סוג קרקע?
+                         
+                    </li>
+                    <li>אילו בארות נמצאות בתוך בסיסים צבאיים נטושים?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="AppendDataTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>הוסף נתונים</h2></td>
+                    <td>
+                    <img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" class="titleImage" alt="תרשים תהליך עבודה של הוספת נתונים">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>מוסיף ישויות לשכבה מתארחת קיימת בתכנים שלך ב- ArcGIS Enterprise. </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>עדכן את שכבת הישויות 2018_Sales בכל חודש כאשר הדוחות מגיעים.
+                    </li>
+                    <li>הוסף סטים של נתוני מסלול הוריקן מהשנים 2016 ו-2017 לסט נתוני הוריקן ראשי.
+                    </li>
+                    <li>אסוף והוסף סטים של נתונים ממקורות שונים עם סכמות שונות באמצעות מיפוי שדה מותאם אישית.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>מיזוג שכבות</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="מיזוג שכבות">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>משלב שתי שכבות ישויות ליצירת שכבת תוצאה אחת. כל השדות משכבת המיזוג ייכללו כברירת מחדל, לחלופין באפשרותך לציין כללי מיזוג מותאמים אישית כדי להגדיר את סכמת התוצאה.  
+            </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>מזג שלוש שכבות שמכילות מידע דמוגרפי מאנגליה, ווילס וסקוטלנד ליצירת שכבה אחת של בריטניה.
+                    </li>
+                    <li>צרף שתי שכבות שמכילות פרטי חלקות עבור אזורים מוניציפליים רציפים, תוך שמירה רק של השדות שיש להם אותו שם ואותו סוג בשתי השכבות.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>העשרת מידע</h2>
+        <hr/>
+        <p>כלים אלה עוזרים לגלות את האופי של אזורים.
+            <ul>
+                <li> <b>העשר מגריד מרובה-ערכים</b> מצרף מאפיינים משכבת גריד מרובה-משתנים לשכבת נקודה.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichFromMultiVariableGridTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>העשר מגריד מרובה-משתנים</h2></td>
+                    <td>
+                    <img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" class="titleImage" alt="העשר מגריד מרובה-משתנים">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>מצרף ביעילות מאפיינים מגריד מרובה-משתנים לשכבת נקודות כדי לאפשר לך להוסיף במהירות אוסף מידע גדול ומקוון לנתוני נקודה לשימוש בניתוח מרחבי נוסף. 
+            </p>
+            <p>להלן מספר דוגמאות:
+                <ul>
+                    <li>בהינתן שכבה שמכילה מיליוני תקריות הפסקת חשמל, העשר את ישויות התקריות במידע אודות שימוש טיפוסי, סיכונים סביבתיים ותנאי תשתית, כדי לחקור את הקשר בין גורמים אלה לבין התדירות של הפסקות חשמל. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

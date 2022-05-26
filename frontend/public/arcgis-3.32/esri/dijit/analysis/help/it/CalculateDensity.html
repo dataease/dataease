@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calcolo densità</h2><p/>
+        <h2><img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" alt="Calcolo densit&agrave;"></h2>
+        <hr/>
+    <p>Lo strumento Calcolo densit&agrave; consente di creare una mappa di densit&agrave; a partire da feature puntuali o lineari diffondendo nella mappa quantit&agrave; note di alcuni fenomeni (rappresentati come attributi di punti o linee). Il risultato &egrave; un layer di aree classificate a partire da quella meno densa a quella pi&ugrave; densa.   
+
+    </p>
+    <p>Per l'input di punti, ogni punto deve rappresentare la localit&agrave; di un evento o di un incidente, mentre il layer dei risultati rappresenta il conteggio degli incidenti per area unitaria. Un valore di densit&agrave; maggiore in una nuova localit&agrave; indica che sono presenti pi&ugrave; punti nelle prossimit&agrave; di tale localit&agrave;. In molti casi il layer dei risultati pu&ograve; essere interpretato come una superficie di rischio per eventi futuri. Se ad esempio i punti di input rappresentano le localit&agrave; in cui si sono verificati fulmini, il layer dei risultati pu&ograve; essere interpretato come una superficie a rischio fulmini in futuro.
+    </p>
+    <p>Per l'input lineare la superficie di densit&agrave; lineare rappresenta il numero totale di linee in prossimit&agrave; di ciascuna localit&agrave;. Le unit&agrave; dei valori di densit&agrave; calcolati costituiscono la lunghezza della linea per area unitaria. Se ad esempio le linee rappresentano fiumi, il layer dei risultati rappresenter&agrave; la lunghezza totale dei fiumi compresi nel raggio di ricerca. &Egrave; quindi possibile utilizzare questo risultato per identificare le aree idonee ad ospitare animali da pascolo.
+    </p>
+    <p> &Egrave; inoltre possibile utilizzare questo strumento nei seguenti casi:
+        <ul>
+            <li>Per creare mappe della densit&agrave; dei reati e consentire alle stazioni di polizia di allocare correttamente le risorse per le aree ad elevato rischio di criminalit&agrave;
+            </li>
+            <li>Per calcolare le densit&agrave; relative agli ospedali presenti in una determinata area. Nel layer dei risultati verranno indicate le aree con maggiore o minore accessibilit&agrave; agli ospedali e tali informazioni saranno utili per stabilire dove costruire nuove strutture.
+            </li>
+            <li>Per identificare aree ad alto rischio di incendio sulla base delle localit&agrave; in cui nel tempo si sono verificati incendi di aree boschive.
+            </li>
+            <li>Per individuare le comunit&agrave; pi&ugrave; lontane dalle principali autostrade e pianificare le aree in cui costruire nuove strade.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegli il layer di punti o di linea in base al quale calcolare la densità</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer di punti o di linea in base al quale verr&agrave; calcolata la densit&agrave;.
+
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Usa un campo conteggio</h2></div>
+        <hr/>
+        <div>
+            <p>Consente di visualizzare un campo in cui specificare il numero di incidenti in ogni localit&agrave;. Se ad esempio sono presenti punti che rappresentano citt&agrave;, &egrave; possibile utilizzare un campo per rappresentare la popolazione della citt&agrave; come campo conteggio, in modo che nel layer della densit&agrave; di popolazione risultante vengano calcolate le densit&agrave; di popolazione maggiori in prossimit&agrave; di citt&agrave; con popolazioni pi&ugrave; numerose.
+            </p>
+            <p> Se si utilizza il valore predefinito Nessuno, ogni localit&agrave; verr&agrave; considerata come un conteggio singolo.
+            </p>
+        </div>
+    </div>
+    <div id="radius">
+        <div><h2>Distanza di Ricerca</h2></div>
+        <hr/>
+        <div>
+            <p>Immettere un valore che specifica la distanza di ricerca di feature puntuali o lineari durante il calcolo di valori di densit&agrave;. Se ad esempio si specifica una distanza di ricerca pari a 10.000 metri, la densit&agrave; di qualsiasi localit&agrave; nel layer di output verr&agrave; calcolata sulla base delle feature che si trovano a una distanza massima di 10.000 metri dalla localit&agrave;. Il valore di densit&agrave; di qualsiasi localit&agrave; per la quale non sono presenti incidenti a una distanza massima di 10.000 metri sar&agrave; zero.     
+
+            </p>
+            <p>Se non viene specificata nessuna distanza, verr&agrave; calcolato un valore predefinito basato sulle localit&agrave; delle feature di input e dei valori nel campo conteggio, se fornito.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Ritaglia output in</h2></div>
+        <hr/>
+        <div>
+            <p>Tracciare o specificare un layer per specificare l'area in cui si desidera calcolare le densit&agrave;. Ad esempio, se si intende calcolare le densit&agrave; di pesci in un lago, &egrave; possibile utilizzare il limite del lago in questo parametro in modo che il layer tracciato si riferisca solo alla parte interna al limite del lago.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Classifica per</h2></div>
+        <hr/>
+        <div>
+            <p>Consente di scegliere in che modo i valori di densit&agrave; verranno classificati in aree.
+                <ul>
+                    <li>Stesso intervallo: le aree vengono create in modo tale che l'intervallo dei valori di densit&agrave; risulti uguale per ciascuna area.
+                    </li>
+                    <li>Intervallo geometrico: le aree vengono basate su intervalli di classe per i quali &egrave; disponibile una serie geometrica. Con questo metodo ogni intervallo di classi dispone all'incirca dello stesso numero di valori e la variazione tra gli intervalli &egrave; congruente.
+                    </li>
+                    <li>Interruzioni naturali: gli intervalli di classi per le aree sono basati su raggruppamenti naturali dei dati. I valori delle interruzioni delle classi vengono identificati in modo da raggruppare nel migliore dei modi valori simili e massimizzare le differenza fra classi.
+
+                    </li>
+                    <li>Stessa area: le aree vengono create in modo tale che la dimensione sia uguale in ciascuna area. Se ad esempio il layer dei risultati include pi&ugrave; valori di densit&agrave; maggiori che minori, verranno create pi&ugrave; aree per le densit&agrave; maggiori.
+                    </li>
+                    <li>Deviazione standard: le aree vengono create sulla base della deviazione standard dei valori di densit&agrave; previsti. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Numero di classi</h2></div>
+        <hr/>
+        <div>
+            <p>Consente di specificare il numero di classi (intervallo di valori previsti) nel layer dei risultati. Ogni classe definisce il confine delle aree. I valori di tali classi saranno determinati dal parametro 
+ <b>Classifica per</b> descritto in precedenza.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Unità area di output</h2></div>
+        <hr/>
+        <div>
+            <p>Consente di specificare l'unit&agrave; dell'area di output. La densit&agrave; &egrave; data dalla divisione del conteggio per l'area; questo parametro consente di specificare l'unit&agrave; dell'area nel calcolo della densit&agrave;.  
+
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome layer risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

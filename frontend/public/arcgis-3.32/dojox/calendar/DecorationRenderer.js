@@ -1,0 +1,3 @@
+//>>built
+define("dojox/calendar/DecorationRenderer",["dojo/_base/declare","dojo/dom-class","dijit/_WidgetBase","dijit/_TemplatedMixin"],function(c,b,d,e,f){return c("dojox.calendar.DecorationRenderer",[d,e],{templateString:'\x3cdiv class\x3d"dojoxCalendarDecoration"\x3e\x3c/div\x3e',_setItemAttr:function(a){null==a?(this.item&&this.item.cssClass&&b.remove(this.domNode,this.item.cssClass),this.item=null):(null!=this.item?(this.item.cssClass!=a.cssClass&&this.item.cssClass&&b.remove(this.domNode,this.item.cssClass),
+this.item=lang.mixin(this.item,a)):this.item=a,a.cssClass&&b.add(this.domNode,a.cssClass))},postCreate:function(){this.inherited(arguments);this._applyAttributes()}})});

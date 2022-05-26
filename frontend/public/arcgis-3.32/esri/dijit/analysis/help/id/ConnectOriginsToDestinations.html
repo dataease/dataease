@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Hubungkan Asal ke Tujuan</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="Hubungkan Asal ke Tujuan"></h2>
+        <hr/>
+    <p>Hubungkan Asal ke Tujuan mengukur waktu atau jarak perjalanan antara pasangan titik. Alat dapat melaporkan jarak garis lurus; jarak berdasarkan mode perjalanan, seperti berjalan atau berkendara; atau durasi perjalanan berdasarkan mode perjalanan. Dengan menggunakan alat ini, Anda dapat melakukan hal berikut:
+    </p>
+    <p>
+        <ul>
+            <li>Hitung total jarak atau waktu perjalanan komuter pada perjalanan rumah ke tempat kerjanya.
+            </li>
+            <li>Ukur seberapa jauh pelanggan melakukan perjalanan untuk berbelanja di toko Anda. Gunakan informasi ini untuk menentukan jangkauan pasar Anda, terutama ketika menargetkan sasaran kampanye iklan atau memilih lokasi toko yang baru.
+            </li>
+            <li>Hitung jarak tempuh perjalanan yang diharapkan untuk kendaraan Anda. Setelah itu, jalankan alat Ringkas di Dalam untuk melaporkan jarak tempuh menurut negara bagian atau wilayah lain.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Anda menyediakan titik awal dan titik akhir, dan alat ini memunculkan layer yang memuat garis rute, termasuk pengukuran, antara asal dan tujuan tersebut. 
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya fitur yang saat ini terlihat dalam jangkauan peta saja yang akan dipertimbangkan dalam analisis ini. Jika tidak dicentang, semua fitur dalam layer input akan diperhitungkan, meskipun fitur tersebut berada di luar jangkauan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Pilih layer titik yang mewakili lokasi asal</h2></div>
+        <hr/>
+        <div>
+            <p>Pilih layer titik yang mewakili asal atau beberapa asal  Alat tersebut mendukung hingga 5.000 asal dan 5.000 tujuan.
+            </p>
+            <p>Jika Anda memilih layer yang tepat memiliki satu asal, maka ini akan terhubung ke semua tujuan.
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Pilih layer tujuan</h2></div>
+        <hr/>
+        <div>
+            <p>Pilih layer mewakili tujuan atau tujuan yang mana seharusnya terhubung dengan asal. Alat tersebut mendukung hingga 5.000 asal dan 5.000 tujuan.
+            </p>
+            <p>Jika Anda memilih layer yang tepat memiliki satu asal, semua asal akan terhubung ke tujuan itu. 
+            </p>
+            <p>Jika hanya ada satu asal dan banyak tujuan, alat menghubungkan asal dengan setiap tujuan.
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p>
+            <p> Jika ada banyak asal dan banyak tujuan, Anda akan perlu memiliki dua kolom yang menjelaskan pasangan asal-tujuan: <b>kolom ID dalam asal</b> dan <b>kolom ID yang Cocok di tujuan</b>. Alat menghubungkan pasangan asal-tujuan selama analisis. Misalnya, bayangkan jika Anda memiliki dua asal dengan nilai kolom ID dari <code>Rosie</code> dan <code>Harold</code> serta dua tujuan dengan nilai ID yang sama. Asal <code>Rosie</code> akan terhubung ke tujuan <code>Rosie</code>, dan <code>Harold</code> akan terhubung ke <code>Harold</code>. Tidak ada koneksi atau pengukuran lain yang dilakukan.
+            </p>
+            <p>Jika jumlah asal dan tujuan sama, nilai ID harus bersifat unik dalam setiap layer; misalnya, layer tujuan tidak boleh memiliki dua nilai  <code>Rosie</code>. Nilai pada layer asal dan tujuan harus benar-benar cocok untuk membuat pasangan; <code>Harold</code> tidak akan terhubung ke nilai yang salah dieja, <code>Harodl</code>. 
+            </p>
+            <p>Alat tersebut juga mendukung dalam menghubungkan setiap asal ke lebih dari satu tujuan atau setiap tujuan ke lebih dari satu asal. Dalam kasus demikian, Anda masih perlu untuk memiliki dua kolom yang menjelaskan pasangan asal-tujuan. Namun, hanya salah satu dari layer (entah layer asal atau tujuan) perlu memiliki nilai ID yang unik.
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Ukur</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Pilih apakah menghubungkan asal ke tujuan menggunakan mode jarak atau perjalanan garis lurus. Rute output akan mengikuti jalan raya atau jalan pejalan kaki dan menaati aturan yang berlaku, seperti jalan satu arah dan larangan berputar untuk berkendara atau mengemudi truk. Mode perjalanan yang tersedia ditentukan oleh administrator organisasi Anda.  
+            </p>
+            <p>Ketika Anda memilih  <b>Waktu Mengemudi</b>, <b>Waktu Mengemudi Pedesaan</b>, atau <b>Waktu Mengemudi Truk</b>, Anda memiliki opsi tentang cara mengukur waktu mengemudi.
+                <ul>
+                    <li>
+                        <p>Hapus centang  <b>Gunakan Lalu Lintas</b> untuk menemukan rute tercepat berdasarkan kecepatan tetap.
+                        </p>
+                        <p>Ini adalah opsi untuk dipilih jika Anda menginginkan pengukuran waktu mengemudi secara umum, bukan yang dihitung menggunakan kondisi lalu lintas yang berubah untuk waktu keberangkatan spesifik.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Centang  <b>Gunakan Lalu Lintas</b> untuk menemukan rute tercepat berdasarkan waktu mulai dan kondisi lalu lintas berubah yang diberikan. Dengan juga memilih opsi <b>Lalu lintas langsung</b>, waktu keberangkatan dari asal ditetapkan ke waktu saat ini, dan kecepatan lalu lintas saat ini serta yang diprediksikan direferensikan dari sensor dan umpan untuk membuat rute. Kecepatan lalu lintas yang diprediksikan dihitung dengan mereferensikan kecepatan lalu lintas langsung, riwayat kecepatan, dan peristiwa saat ini seperti misalnya cuaca. Kecepatan lalu lintas diprediksi dalam jangka waktu 12 jam ke depan, sehingga Anda dapat menggerakkan panel geser untuk menentukan waktu keberangkatan terlebih dahulu hingga  12 jam. </p>
+                        <p>Gunakan pengaturan lalu lintas langsung ini untuk menemukan waktu mengemudi untuk keberangkatan sekarang, berangkat dalam satu jam dari sekarang, dan seterusnya.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Dengan mencentang  <b>Gunakan Lalu Lintas</b> dan memilih <b>Lalu Lintas berdasarkan kondisi khusus</b> hari dan waktu, alat tersebut menemukan rute tercepat berdasarkan kecepatan rata-rata historis untuk setiap interval lima menit lintas minggu secara rutin. Hasil menyertakan lalu lintas tapi menghapus pengaruh kondisi dan peristiwa lalu lintas saat ini, yang mungkin beragam secara signifikan dari norma.
+                        </p>
+                        <p>Anda dapat menggunakan pengaturan lalu lintas historis untuk menanyakan, misalnya, &quot;Berapa lama secara umum waktu yang diperlukan untuk mencapai tujuan ini ketika berangkat pukul 11:30 siang pada hari Rabu?&quot;
+                        </p>
+                        <p>Waktu yang Anda tetapkan merujuk pada zona waktu tempat asal Anda berada. Jadi jika Anda menetapkan waktu ke pukul 8:00 pagi dan memiliki dua asal, satu di Kota New York dan lainnya di Los Angeles, rute akan dibuat untuk waktu keberangkatan pukul 8:00 pagi. Waktu Timur dan 8:00 pagi Waktu Pasifik, masing-masing.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Perhatikan bahwa ketika kendaraan bergerak menjauh dari asal, waktu berlalu dan kondisi lalu lintas berubah. Alat Hubungkan Asal ke Tujuan memperhitungkan variasi ini ketika Anda mencentang  <b>Gunakan lalu lintas</b>; namun, tidak semua wilayah mendukung lalu lintas. Klik tautan <b>Lihat ketersediaan</b> pada alat untuk mengetahui apakah opsi ini ditawarkan di area studi Anda.
+            </p>
+            <p> <b>Waktu Mengemudi Truk</b> dapat menggunakan kecepatan perjalanan dinamis pada lalu lintas tetapi hanya hingga batas kecepatan truk legal. Contoh, jika kecepatan dinamis suatu jalan berdasarkan lalu lintas langsung adalah 65 mil per jam tetapi batas kecepatan truk untuk jalan tersebut adalah 55 mil per jam, penghitungan akan menggunakan 55 mil per jam untuk jalan tersebut.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Pilih layer penghalang</h2></div>
+        <hr/>
+        <div>
+            <p> Satu atau lebih fitur yang bertindak sebagai pembatas sementara (penghalang) saat melakukan perjalanan di jalan mendasar. Anda dapat menentukan penghalang menggunakan fitur titik, garis, atau poligon.
+            </p>
+            <p>Penghalang titik dapat merepresentasikan pohon tumbang, kecelakaan, tiang listrik tumbang, atau apa pun yang memblokir lalu lintas secara menyeluruh pada posisi tertentu di sepanjang jalan. Perjalanan diperbolehkan di jalan tetapi tidak melewati penghalang. Anda dapat menemukan hingga 250 fitur untuk bertindak sebagai penghalang titik.
+            </p>
+            <p>Penghalang garis melarang perjalanan ke mana pun penghalang berpotongan dengan jalan. Misalnya, parade atau demonstrasi yang memblokir lalu lintas di beberapa segmen jalan dapat direpresentasikan dengan penghalang garis. Jika jumlah fitur jalan yang berpotongan dengan semua penghalang garis melebihi 500, alat mengembalikan suatu kesalahan.
+            </p>
+            <p>Penghalang poligon melarang perjalanan ke mana pun poligon berpotongan dengan jalan. Salah satu kegunaan penghalang tipe ini adalah untuk merepresentasikan area dari jaringan jalan yang tertutup banjir dan menyebabkan perjalanan ke sana tidak memungkinkan. Jika jumlah fitur jalan yang berpotongan dengan semua penghalang poligon melebihi 2000, alat mengembalikan suatu kesalahan.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Bentuk rute</h2></div>
+        <hr/>
+        <div>
+            <p>Pilih bentuk rute yang menghubungkan setiap asal ke tujuannya saat menggunakan mode perjalanan:
+            </p>
+            <ul>
+                <li> <b>Ikuti jalan</b> - Bentuk ini didasarkan pada jaringan jalan yang mendasarinya. Opsi ini adalah yang terbaik saat Anda ingin mendapatkan rute antara asal dan tujuan.
+                </li>
+                <li> <b>Garis lurus</b> - Bentuk ini adalah garis lurus yang menghubungkan pasangan asal-tujuan. Opsi ini adalah yang terbaik saat Anda ingin mendapatkan diagram laba-laba atau menghendaki garis (misalnya, untuk menunjukkan toko mana yang dikunjungi pelanggan).
+                </li>
+            </ul>
+            
+            <p>Rute terbaik antara asal dan tujuannya yang cocok selalu dihitung berdasarkan pada mode perjalanan, terlepas dari bentuk rute mana yang dipilih.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Nama feature layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta. Jika feature layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain. Feature layer akan berisi layer untuk masing-masing berikut: rute, asal yang belum ditentukan, dan tujuan yang belum ditentukan ketika beberapa asal tidak dapat dihubungkan dengan tujuannya.
+            </p>
+            <p>Jika Anda pilih  <b>Sertakan layer rute</b>, masing-masing rute dari hasil juga disimpan sebagai layer rute. Layer rute menyertakan seluruh informasi untuk rute tertentu seperti perhentian yang ditetapkan ke rute juga arah perjalanan. Membuat layer rute bermanfaat jika Anda ingin membagikan rute individu dengan anggota lain di organisasi Anda atau untuk memodifikasi rute lebih lanjut dengan menggunakan tombol <b>Arah</b> pada penampil peta. Layer rute menggunakan nama yang diberikan untuk feature layer sebagai awalan dan nama rute yang dihasilkan sebagai bagian dari analisis, yang ditambahkan untuk membuat nama unik untuk masing-masing layer rute.
+            </p>
+            <p>Jumlah maksimum layer rute yang dapat dibuat adalah 1.000. Jika hasil berisi lebih dari 1.000 rute dan  <b>Sertakan layer rute</b> dicentang, maka alat hanya akan membuat feature service output.
+            </p>
+            <p> <b>Simpan hasil</b> dengan menggunakan menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil. Jika feature layer dan layer rute dibuat, juga akan disimpan disini.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

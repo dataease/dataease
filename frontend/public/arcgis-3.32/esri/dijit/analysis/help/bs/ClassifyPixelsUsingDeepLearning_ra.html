@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Klasificiranje piksela pomoću dubokog učenja</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Klasificiranje piksela pomoću dubokog učenja"></h2>
+        <hr/>
+    <p>Ovaj alat pokreće obučeni model dubokog učenja na ulaznom rasteru kako bi proizveo klasificirani raster, a svaki važeći piksel ima dodijeljenu oznaku razreda.
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, analizirat će se samo poligon rastera koji je vidljiv u trenutačnom obuhvatu karte. Ako nije označena, analizirat će se cijeli raster, čak i ako se nalazi izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Odaberite sliku za klasificiranje piksela</h2></div>
+        <hr/>
+        <div>
+            <p>Ulazna slika za klasifikaciju.
+            </p>
+            <p>To može biti URL usluge slike, sloj rastera ili sloj usluge slike.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Odaberite model dubokog učenja za klasificiranje piksela</h2></div>
+        <hr/>
+        <div>
+            <p>Stavka ulaznog paketa za duboko učenje ( <code>.dlpk</code>).
+            </p>
+            <p>Paket za duboko učenje sastoji se od JSON datoteke definicije Esrijevog modela ( <code>.emd</code>), datoteke binarnog modela dubokog učenja i opcionalno, rasterske funkcije Python.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Odredi argumente modela dubokog učenja</h2></div>
+        <hr/>
+        <div>
+            <p>Argumenti funkcija definirani su u razredu rasterske funkcije Python referenciranom u ulaznom modelu. Ovdje navodite dodatne parametre dubokog učenja i argumente za eksperimente i usavr&scaron;avanje, kao &scaron;to je prag pouzdanosti za pode&scaron;avanje osjetljivosti.
+            </p>
+            <p>Nazivi argumenata popunjavaju se alatom iz čitanja modula Python na poslužitelju za analize rastera.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će se stvoriti u stavci  <b>Moj sadržaj</b> i dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Možete odrediti naziv mape u  <b>Mojem sadržaju</b> gdje će se rezultat spremiti pomoću padajućeg izbornika <b>Spremi rezultat u</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

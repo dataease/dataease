@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Enriqueix des de la quadrícula de diverses variables</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Enriqueix des de la quadr&iacute;cula de diverses variables"></h2>
+        <hr/>
+    <p>L'eina  Enriqueix des de la quadr&iacute;cula de diverses variables uneix atributs d'una quadr&iacute;cula de diverses variables a una capa de punts de manera eficient.
+    </p>
+    <p>Una quadr&iacute;cula de diverses variables &eacute;s una capa qualsevol creada amb l'eina Crea una quadr&iacute;cula de diverses variables, que compila atributs de diverses capes en una sola quadr&iacute;cula de pol&iacute;gons.  L'&uacute;s d'una quadr&iacute;cula de diverses variables per a l'enriquiment us permet afegir r&agrave;pidament col&middot;leccions grans i diverses d'informaci&oacute; per assenyalar dades per al seu &uacute;s en an&agrave;lisis espacials posteriors.
+    </p>
+    <p>Per exemple, suposem que heu obtingut una capa de nous casos de delinq&uuml;&egrave;ncia que s'han produ&iuml;t el darrer any en una ciutat. Voleu definir les relacions entre la freq&uuml;&egrave;ncia dels delictes i una varietat de factors demogr&agrave;fics, econ&ograve;mics i geogr&agrave;fics. Teniu acc&eacute;s a les dades que descriuen aquests factors, per&ograve; s'emmagatzemen en cinc capes diferents amb tipus de geometria diferents. A m&eacute;s, algunes capes s'emmagatzemen en un recurs compartit de fitxers de dades massives mentre que d'altres s'emmagatzemen com a serveis d'entitats. La creaci&oacute; d'una quadr&iacute;cula de diverses variables per emmagatzemar aquesta informaci&oacute; i la uni&oacute; posterior de la quadr&iacute;cula als vostres casos de delinq&uuml;&egrave;ncia amb l'eina  Enriqueix des de la quadr&iacute;cula de diverses variables, podeu unir de manera eficient una gran varietat d'atributs a la vostra capa de punts nom&eacute;s amb dues execucions d'eina. Posteriorment, podeu utilitzar els atributs units com a variables explicatives i comen&ccedil;ar a compilar un model de freq&uuml;&egrave;ncia de delictes amb la capa de resultats.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Trieu les entitats de punts que voleu enriquir</h2></div>
+        <hr/>
+        <div>
+            <p>Entitats de punts que s'enriquiran amb la quadr&iacute;cula de diverses variables.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Trieu la quadrícula de diverses variables des de la qual voleu realitzar l'enriquiment</h2></div>
+        <hr/>
+        <div>
+            <p>Capa de la quadr&iacute;cula de diverses variables que cont&eacute; els atributs que s'uniran a les entitats de punts d'entrada. La capa s'ha d'haver crear amb l'eina Crea una quadr&iacute;cula de diverses variables i ha de ser una capa d'entitats allotjades. Les capes de la quadr&iacute;cula de diverses variables emmagatzemades en un recurs compartit de fitxers de dades massives no s'admeten com a entrada per a aquesta eina.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Trieu les variables que voleu afegir</h2></div>
+        <hr/>
+        <div>
+            <p>Atributs de la capa de la quadr&iacute;cula de diverses variables que s'uniran a les entitats de punts d'entrada sempre que les entitats de punts s'intersequin amb la quadr&iacute;cula.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la capa que es crear&agrave;.  Si esteu escrivint en un ArcGIS Data Store, els resultats es desaran a  <b>El meu contingut</b> i s'afegiran al mapa. Si esteu escrivint en un recurs compartit de fitxers de dades massives, els resultats s'emmagatzemaran en aquest recurs i s'afegiran al seu manifest. No s'afegiran al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, l'eina no funcionar&agrave;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

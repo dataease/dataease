@@ -1,0 +1,2 @@
+//>>built
+define("dojox/editor/plugins/nls/es/SafePaste",{instructions:"El pegado directo est\u00e1 inhabilitado. Pegue el contenido en este di\u00e1logo utilizando los controles de pegado del men\u00fa o del teclado de navegador est\u00e1ndar. Cuando est\u00e9 satisfecho con el contenido que se debe insertar, pulse el bot\u00f3n Pegar. Para abortar la inserci\u00f3n de contenido, pulse el bot\u00f3n Cancelar."});

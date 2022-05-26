@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Gegeneraliseerde lineaire regressie</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="GeneralizedLinearRegression-workflowdiagram"></h2>
+        <hr/>
+    <p>Gegeneraliseerde lineaire regressie uitvoeren 
+genereert voorspellingen of modellen een afhankelijke variabele in termen van de relatie met een reeks verklarende variabelen. Deze tool kan worden gebruikt voor continue (Gauss), binaire (logistische) en telmodellen (Poisson).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analysetype</h2></div>
+        <hr/>
+        <div>
+            <p>Specificeert de bedieningsmodus van de tool. De tool kan worden gebruikt om een ​​model te trainen om alleen de prestaties te beoordelen, of om een ​​model te trainen en objecten te voorspellen. Voorspellingstypes zijn als volgt:
+                <ul>
+                    <li> <b>Een model aanpassen om modelprestaties te beoordelen</b>&mdash;Er wordt een model aangepast aan en toegepast op de invoergegevens. Gebruik deze optie om de nauwkeurigheid van uw model te beoordelen voordat u voorspellingen op een nieuwe dataset genereert of om de relaties en drijfveren van uw voorspelde variabele te begrijpen. De uitvoer van deze optie zal een featureservice van uw aangepaste data en modeldiagnostiek zijn.
+                    </li>
+                    <li> <b>Een model aanpassen en waarden voorspellen</b>&mdash;Voorspellingen of classificaties worden gegenereerd voor invoerobjecten en voorspellingsobjecten. Er moeten verklarende variabelen beschikbaar zijn voor zowel de voorspellingsobjecten als de objecten die moeten worden voorspeld. De uitvoer van deze optie is een featureservice van uw model die is afgestemd op uw invoergegevens, een featureservice met voorspelde waarden en modeldiagnostiek.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Een model passen om de prestaties van het model te beoordelen</h2></div>
+        <hr/>
+        <div>
+            <p>Gebruik deze modus als u een model wilt passen en de pasvorm wilt onderzoeken.
+            </p>
+            <p>Met deze keuze wordt het model getraind met behulp van een invoerlaag. Gebruik deze optie om de nauwkeurigheid van uw model te beoordelen voordat u voorspellingen op een nieuwe dataset genereert. Deze optie voert modeldiagnostiek uit en past het model toe op uw trainingsgegevens.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Een model passen en waarden voorspellen</h2></div>
+        <hr/>
+        <div>
+            <p>Gebruik deze modus als u een model wilt passen en pas het model toe op de dataset om voorspellingen te genereren.
+            </p>
+            <p>Voorspellingen of classificaties worden gegenereerd voor objecten. De uitvoer van deze optie is een featureservice, modeldiagnostiek en een optionele tabel van variabel belang.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Kies een laag om een model van te genereren</h2></div>
+        <hr/>
+        <div>
+            <p>De laag met punt-, lijn-, gebieds- of tabelobjecten die de afhankelijke en verklarende variabelen bevatten.
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Het veld kiezen om te modelleren</h2></div>
+        <hr/>
+        <div>
+            <p>Het numerieke veld met de te meten geobserveerde waarden en het type waarde dat u aan het modelleren bent. Er zijn drie soorten waarden die u kunt modelleren
+                <ul>
+                    <li>Continu&mdash;vertegenwoordigt continue waarden. Het gebruikte model is Gaussiaans en de tool voert de gewone kleinste kwadratenregressie uit.
+                    </li>
+                    <li>Binair&mdash;staat voor aan- of afwezigheidswaarden. Deze moeten 1-en of 0-en zijn. Het gebruikte model is Logistische regressie.
+                    </li>
+                    <li>Tellen&mdash;Vertegenwoordigt discreet en vertegenwoordigt gebeurtenissen, bijvoorbeeld aantal misdaden, ziekte-incidenten of verkeersongevallen. Het gebruikte model is Poisson-regressie. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Kies een laag om waarden voor te voorspellen</h2></div>
+        <hr/>
+        <div>
+            <p>Een laag met objecten die locaties vertegenwoordigen waar schattingen moeten worden berekend. Elke object in deze dataset moet waarden bevatten voor alle vermelde verklarende variabelen. De afhankelijke variabele voor deze objecten wordt geschat met behulp van het model dat is gekalibreerd voor de invoerlaag.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Kies de verklarende velden</h2></div>
+        <hr/>
+        <div>
+            <p>Een of meer velden die de verklarende variabelen (velden) vertegenwoordigen die helpen de waarde te voorspellen. Alleen numerieke velden zijn zichtbaar.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Kies hoe verklarende velden worden vergeleken</h2></div>
+        <hr/>
+        <div>
+            <p>Hoe de corresponderende variabelen in de invoerlaag overeenkomen met de variabelen in de voorspellingslaag. Alleen de variabelen die bij het genereren van het model zijn gebruikt, worden in de tabel opgenomen. Alleen numerieke waarden kunnen worden gebruikt. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p> De naam van de laag die wordt gemaakt. Als u naar een ArcGIS Data Store,  schrijft, worden uw resultaten opgeslagen in  <b>Mijn Content</b> en toegevoegd aan de kaart. Als u naar een big data file share schrijft, worden uw resultaten opgeslagen in de big data file share en toegevoegd aan het bijhorende manifest. Ze zullen niet worden toegevoegd aan de kaart. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, zal de tool falen.
+            </p>
+            <p>De geretourneerde resultaten zijn afhankelijk van het type analyse. Als u past om de pasvorm van het model te beoordelen, bevatten de resultaten een laag invoergegevens die bij het model passen en resultaatinformatie die de pasvorm van het model beoordeelt. Als u past en voorspelt, bevatten de resultaten een laag van de invoergegevens die bij het model passen, een laag met voorspelde resultaten en resultaatinformatie die de pasvorm van het model beoordeelt.
+            </p>
+            <p>Wanneer u schrijft naar  ArcGIS Data Store (relationele of spatiotemporele big datastore) met behulp van de vervolgkeuzelijst  <b>Resultaat opslaan in</b>, kunt u de naam van een map opgeven in <b>Mijn Content</b>, waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

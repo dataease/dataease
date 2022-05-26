@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>レイヤーへの情報付加</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="レイヤーへの情報付加"></h2>
+        <hr/>
+    <p>このツールは、データの場所の周囲にある人々、場所、およびビジネスに関する情報を取得して、そのデータをレイヤーに付加します。これにより、マップだけでは答えを見つけることができないような場所に関する新しい質問に回答できるようになります。次に例を示します。ここには、どのような人が住んでいるか、 このエリアで人気のあることは何か。どのような習慣やライフスタイルを持っているか。このエリアには、どのようなビジネスがあるか。
+    </p>
+    <p>結果は、指定したデータ コレクションから取得したすべての人口統計および地理情報を含む新しいレイヤーです。この新しい情報は、フィールドとしてテーブルに追加されます。
+    </p>
+    <p> <b>[現在のマップ範囲を使用]</b> をオンにすると、現在のマップ範囲内に表示されている入力レイヤーのフィーチャにのみ情報が付加されます。オフにすると、現在のマップ範囲内になくても、入力レイヤーのすべてのフィーチャに情報が付加されます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>新しいデータを付加するレイヤーの選択</h2></div>
+        <hr/>
+        <div>
+            <p>新しい属性データが付加されるポイント フィーチャ、ライン フィーチャ、またはエリア フィーチャ。
+            </p>
+            <p>マップからレイヤーを選択するだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択することもできます。このオプションを選択すると、解析で使用するためにさまざまなソースのデータセットを参照して選択できるギャラリーが開きます。 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>情報付加変数</h2></div>
+        <hr/>
+        <div>
+            
+            <p> <b>[変数の選択]</b> をクリックして、 <b>[データ ブラウザー]</b> 開きます。 <b>[データ ブラウザー]</b> では、情報付加変数を個別にまたはまとめて選択できます。
+            </p>
+            <p>データに基づいて、地域が自動的に選択されます。データの対象が複数の国になっている場合は、別の地域を選択することもできます。
+            </p>
+            <p>情報付加変数は、簡単にアクセスできるようデータ コレクションに分類されます。データ コレクションを選択すると、ブラウザーにそのコレクションで最もよく利用される情報付加変数がいくつか表示されます。 <b>[閲覧を継続]</b> には、コレクション内のカテゴリも表示されます。各カテゴリ内では、サブカテゴリ全体を選択するか、1 つのサブカテゴリを開いて個々の情報付加変数を選択できます。また、検索ボックスを使用して、カテゴリ内の特定の変数を探すこともできます。
+            </p>
+            <p>情報を付加するために含めたい変数を選択すると、 <b>[データ ブラウザー]</b> の隅にあるショッピング カートに追加されます。このショッピング カートを使用して、選択した変数の数を追跡管理します。
+            </p>
+            <p>選択した各変数は、結果レイヤーのフィールドとして追加されます。
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>情報を付加する対象エリアを定義</h2></div>
+        <hr/>
+        <div>
+            <p>直線距離または選択した移動モードのいずれかを使用して、情報を付加する入力ポイントまたはラインの周囲のエリアを定義します。直線距離の場合は、1000 マイル (1609 キロメートル) までの値を入力します。移動モードを使用できるのは、入力レイヤーにポイントが含まれている場合に限ります。利用可能な移動モードは、組織の管理者によって決定されます。移動モードのいずれかを使用する場合、計測は道路または歩道に沿って実行され、一方通行や転回禁止などの適用可能なルールに従います。モードと計測値を選択したら、最大 5 時間 (300 分) または 300 マイル (482.8 キロメートル) の時間または距離を入力します。
+            </p>
+            <p> <b>[結果を境界エリアとして返す]</b> をオンにした場合、返される結果は、上記の時間または距離の値で定義されたエリア フィーチャになります。オフにした場合、返される結果はポイント フィーチャになります。
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>結果レイヤーの名前</h2></div>
+        <hr/>
+        <div>
+            <p>これは、 <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前です。デフォルト名は、ツール名と入力レイヤー名に基づいて設定されます。レイヤー名がすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存先]</b> ドロップダウン メニューを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

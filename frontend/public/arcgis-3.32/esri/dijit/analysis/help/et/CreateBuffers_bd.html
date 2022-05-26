@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Loo puhvrid</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="Loo puhvrid"></h2>
+        <hr/>
+    <p>Puhver on ala, mis katab lausaliselt etteantud vahemaa punktist, joonest v&otilde;i pindobjektist. 
+    </p>
+    <p>Puhvreid kasutatakse tavaliselt alade loomiseks, mida edasi anal&uuml;&uuml;sitakse teiste t&ouml;&ouml;riistadega. Kui k&uuml;simus on n&auml;iteks: &quot;Millised hooned asuvad koolist 1 km raadiuses?&quot;, siis vastuse leiab kooli &uuml;mber 1 km puhvri loomisel ning seej&auml;rel puhvri ja hoonete kontuure sisaldava kihi omavahelise &uuml;lekatte anal&uuml;&uuml;simisel. L&otilde;pptulemuseks on kiht nende hoonetega, mis j&auml;&auml;vad 1 km raadiusesse koolist.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valige kiht, millele puhver rakendada</h2></div>
+        <hr/>
+        <div>
+            <p>Punkt-, joon- v&otilde;i pindobjektid, mida puhvri loomiseks kasutatakse. Sisendkihid peavad olema tasapinnalises ristkoordinaatide s&uuml;steemis v&otilde;i peab tasapinnaliseks ristkoordinaatide s&uuml;steemiks olema funktsiooni  <b>Anal&uuml;&uuml;sikeskkonnad</b> abil m&auml;&auml;ratud t&ouml;&ouml;tlev koordinaats&uuml;steem.
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>Valige, millist tüüpi puhver rakendada</h2></div>
+        <hr/>
+        <div>
+            <p>Sisendobjektide jaoks saab m&auml;&auml;rata puhvri suuruse kolmel viisil. 
+                <ul>
+                    <li>M&auml;&auml;rake kaugus, mida rakendatakse k&otilde;ikidele objektidele.
+                    </li>
+                    <li>M&auml;&auml;rake sisendkihi v&auml;li, mis sisaldab kauguse v&auml;&auml;rtust. V&otilde;ite kasutada tekstiv&auml;lja v&otilde;i numbriv&auml;lja. Kui lineaarset &uuml;hikut pole m&auml;&auml;ratud, kasutatakse kihi koordinaats&uuml;steemi pikkus&uuml;hikuid (nt meeter). Kui kasutate geograafilist koordinaats&uuml;steemi, siis eeldatakse, et &uuml;hikuteta v&auml;ljal on meetrid. 
+                    </li>
+                    <li>Looge avaldis mitme v&auml;ljaga ja matemaatiliste operaatoritega. N&auml;iteks selleks, et puhverdada k&uuml;mme korda v&auml;lja  <i>kaugus_rannajoonest</i> v&auml;&auml;rtust, lisage avaldis <i>$feature[&quot;kaugus_rannajoonest&quot;] x 10</i>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Valige puhverdamise meetod</h2></div>
+        <hr/>
+        <div>
+            <p>V&otilde;ite kasutada meetodit  <b>Planaarne</b> v&otilde;i <b>Geodeetiline</b>. Meetod <b>Planaarne</b> v&otilde;ib olla kiirem ja sobib tasapinnaliste ristkoordinaatide alusel kirjeldatud andmete anal&uuml;&uuml;simiseks. Meetod <b>Geodeetiline</b> sobib geograafiliste koordinaatide alusel kirjeldatud andmete puhul ja suuremal alal paiknevate n&auml;htuste juures.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>Valige sulandamismeetodi tüüp</h2></div>
+        <hr/>
+        <div>
+            <p>Sulandamismeetodi m&auml;&auml;ramise valikud. Kui sulandamismeetod on valitud, on teil v&otilde;imalik luua mitmeosalised v&otilde;i &uuml;heosalised alad ja arvutada antud v&auml;ljade p&otilde;hjal statistika.
+                <ul>
+                    <li> <b>K&otilde;ik</b>&ndash; Sulandatakse k&otilde;ik objektid. Kui mitmeosalised objektid on lubatud, sulandatakse k&otilde;ik objektid &uuml;heks objektiks. Kui mitmeosalised objektid ei ole lubatud, sulandatakse k&otilde;rvuti olevad v&otilde;i kattuvad objektid.
+                    </li>
+                    <li> <b>V&auml;ljad</b>&ndash; Sulandatakse objektid, millel on sama m&auml;&auml;ratletud v&auml;li v&otilde;i m&auml;&auml;ratletud v&auml;lja kombinatsioon. Kui mitmeosalised objektid on lubatud, sulandatakse k&otilde;ik sama v&auml;ljaga objektid &uuml;heks objektiks. Kui mitmeosalised objektid ei ole lubatud, sulandatakse k&otilde;rvuti olevad v&otilde;i kattuvad sama v&auml;ljav&auml;&auml;rtusega objektid.
+                    </li>
+                    <li> <b>Mitte &uuml;kski</b>&ndash; Mitte &uuml;htegi objekti ei sulandata. See on vaikimisi valik.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Luba mitmeosalised objektid</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab, kas tulemus koosneb &uuml;he- v&otilde;i mitmeosalistest objektidest. 
+
+            </p>
+            <p>
+                <ul>
+                    <li>M&auml;rgitud &ndash; Anal&uuml;&uuml;si tulemused sisaldavad mitmeosalisi objekte.   
+                    </li>
+                    <li>M&auml;rkimata &ndash; Anal&uuml;&uuml;si tulemused sisaldavad &uuml;heosalisi objekte. See on vaikimisi valitud.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Lisa statistika (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p> Saate arvutada summeeritud objektide statistika. Saateallj&auml;rgnevad v&auml;&auml;rtused numbriv&auml;ljadel:
+                <ul>
+                    <li>Koguarv &ndash; arvutatakse v&auml;&auml;rtuste, mis pole nullv&auml;&auml;rtused, hulk. See funktsioon on kasutatav numbriv&auml;ljade v&otilde;i stringide korral. V&auml;&auml;rtuste [null, 0 ja 2] koguarv on 2.
+                    </li>
+                    <li>Summa &ndash; v&auml;ljal olevate arvv&auml;&auml;rtuste summa. V&auml;&auml;rtuste [null, null ja 3] summa on 3.
+                    </li>
+                    <li>Keskmine &ndash; arvv&auml;&auml;rtuste keskmine. V&auml;&auml;rtuste [0; 2 ja null] keskmine on 1.
+                    </li>
+                    <li>Miinimum &ndash; numbriv&auml;lja miinimumv&auml;&auml;rtus. V&auml;&auml;rtuste [0; 2 ja null] miinimum on 0. 
+                    </li>
+                    <li>Maksimum &ndash; numbriv&auml;lja maksimumv&auml;&auml;rtus. V&auml;&auml;rtuste [0; 2 ja null] maksimum on 2.
+                    </li>
+                    <li>Vahemik &ndash; numbriv&auml;lja vahemik. Selle arvutamiseks lahutatakse maksimumv&auml;&auml;rtusest miinimumv&auml;&auml;rtus. V&auml;&auml;rtuste [0, null ja 1] vahemik on 1. V&auml;&auml;rtuste [null ja 4] vahemik on 0.
+                    </li>
+                    <li>Dispersioon &ndash; raja numbriv&auml;lja dispersioon. V&auml;&auml;rtuse [1] dispersiooni on null. V&auml;&auml;rtuste [null, 1,0,1,1] dispersioon on 0,25.
+                    </li>
+                    <li>Standardh&auml;lve &ndash; numbriv&auml;lja standardh&auml;lve. V&auml;&auml;rtuse [1] standardh&auml;lve on null. V&auml;&auml;rtuste [null, 1,0,1,1] standardh&auml;lve on 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Saate arvutadaallj&auml;rgnevad v&auml;&auml;rtused tekstiv&auml;ljadel:
+                <ul>
+                    <li>Koguarv &ndash; stringide, mis pole nullv&auml;&auml;rtused, hulk.
+                    </li>
+                    <li>M&otilde;ni &ndash; see statistik on juhuslik valim tekstistringi v&auml;&auml;rtusest vastaval v&auml;ljal.
+                    </li>
+                </ul>
+                K&otilde;ik statistikud arvutatakse v&auml;&auml;rtustega, mis ei ole nullv&auml;&auml;rtus. Tulemkiht sisaldab uut v&auml;lja iga arvutatud statistiku kohta. Soovitud statistika lisamiseks valige uus atribuut ja statistik. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Valige tulemite salvestamiseks mõni ArcGIS-i andmeladu</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalyticsi tulemeid k&auml;sitletakse  andmelaos salvedena ning need kuvatakse portaalis   Portal for ArcGIS objektikihtidena. &Uuml;ldjuhul salvestatakse tulemid ajalisruumilisse andmelattu &ndash; see on vaikimisi valitud. M&otilde;nel juhul on , tulemid m&otilde;istlik salvestada relatsioonilisse andmelattu. Allpool on toodud m&otilde;ned p&otilde;hjused, miks oleks soovitatav tulemid   salvestada relatsioonilisse andmelattu: 
+                <ul>
+                    <li>Tulemeid saateportaaliskasutadaportaali koost&ouml;&ouml;ks.
+                    </li>
+                    <li>Saate lubada tulemitega s&uuml;nkroniseerimise funktsiooni.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relatsioonilist andmeladu pole otstarbekas kasutada, kui GeoAnalyticsi tulemite arv suureneb. Sel juhul peaksite kasutama suurt ajalisruumilist andmeladu, mis v&otilde;imaldab hallata suurt andmemahtu.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Loodavakihi nimi.  Kui kirjutate andmelattu ArcGIS Data Store, salvestatakse teie tulemused  <b>Minu sisus</b> ja lisatakse kaardile. Kui kirjutate suurandmete failikettale, salvestatakse teie andmed suurandmete failikettale  ja lisatakse  selle manifestifailile. Seda  ei lisata kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui see kiht on juba olemas, siis t&ouml;&ouml;tlemine nurjub.
+            </p>
+            <p>Kui salvestate admelattu   ArcGIS Data Store (relatsioonilisse v&otilde;i ajalisruumilisse andmelattu), kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemused salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

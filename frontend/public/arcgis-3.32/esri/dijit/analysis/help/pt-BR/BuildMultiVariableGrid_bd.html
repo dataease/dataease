@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Construir Grade de Múltiplas Variáveis</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Diagrama do Fluxo de Trabalho Anexar Dados"></h2>
+        <hr/>
+    <p>A ferramenta Construir Grade de M&uacute;ltiplas Vari&aacute;veis trabalha com uma ou mais camadas de fei&ccedil;&otilde;es de ponto, linha ou pol&iacute;gono. A ferramenta gera uma grade de caixas quadradas ou hexagonais e calcula os valores de cada caixa com base na proximidade de cada camada de entrada. Estes valores podem incluir as seguintes vari&aacute;veis: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Dist&acirc;ncia at&eacute; Mais Pr&oacute;ximo</b>&mdash;A dist&acirc;ncia de cada caixa at&eacute; a fei&ccedil;&atilde;o mais pr&oacute;xima
+            </li>
+            <li> <b>Atributo do Mais Pr&oacute;ximo</b>&mdash;Um valor de campo da fei&ccedil;&atilde;o mais pr&oacute;xima de cada caixa
+            </li>
+            <li> <b>Resumo do Mais Pr&oacute;ximo</b>&mdash;Uma estat&iacute;stica especificada de todas as fei&ccedil;&otilde;es dentro de uma dist&acirc;ncia de cada caixa
+            </li>
+            <li> <b>Resumo da Intersec&ccedil;&atilde;o</b>&mdash;Uma estat&iacute;stica especificada de todas as fei&ccedil;&otilde;es que interseccionam cada caixa
+            </li>
+        </ul>
+        
+    </p>
+    <p>Somente vari&aacute;veis especificadas ser&atilde;o inclu&iacute;das na camada resultante. Estas vari&aacute;veis podem ajud&aacute;-lo a entender a proximidade e a distribui&ccedil;&atilde;o dos seus dados. Os resultados podem ajud&aacute;-lo a come&ccedil;ar a responder perguntas como as seguintes:
+        <ul>
+            <li>Com m&uacute;ltiplas camadas da infraestrutura de transporte p&uacute;blico fornecidas, qual parte da cidade &eacute; menos acess&iacute;vel por transporte p&uacute;blico?
+            </li>
+            <li>Com camadas dos cursos de &aacute;gua fornecidas, como lagos e rios, qual &eacute; o nome do corpo de &aacute;gua mais pr&oacute;ximo de cada local nos EUA?
+            </li>
+            <li>Com uma camada de renda familiar fornecida, onde nos EUA a varia&ccedil;&atilde;o de renda nas 50 milhas circundantes &eacute; a maior?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Escolha o tipo de caixas que será utilizado para construir a grade de múltiplas variáveis</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Escolha o tipo e tamanho de caixas que ser&aacute; utilizado para construir a grade de m&uacute;ltiplas vari&aacute;veis Para a op&ccedil;&atilde;o  <b>Quadrado</b> , o n&uacute;mero e unidades especificadas determinam a altura e comprimento do quadrado. Para a op&ccedil;&atilde;o <b>Hex&aacute;gono</b> , o n&uacute;mero e unidades especificadas determinam a dist&acirc;ncia entre os lados paralelos.
+            </p>
+            <p>Esta an&aacute;lise utiliza caixas e exige um sistema de coordenadas plana. Voc&ecirc; pode configurar o  <b>Processamento de sistema de coordenadas</b> nos <b>Ambientes de An&aacute;lise</b>. Se seu processamento de sistema de coordenadas n&atilde;o estiver configurado para um sistema de coordenada plana, voc&ecirc; ser&aacute; solicitado para defin&iacute;-lo quando voc&ecirc; <b>Executar An&aacute;lise</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Escolha variáveis e camadas de entrada que você gostaria de incluir na grade</h2></div>
+        <hr/>
+        <div>
+            <p>Clique no bot&atilde;o de adi&ccedil;&atilde;o  ( <b>+</b>) para abrir a janela <b>Adicionar Vari&aacute;veis</b> e adicione uma camada na sua an&aacute;lise. Na janela <b>Adicionar Vari&aacute;veis</b> , escolha uma camada de entrada e configure as vari&aacute;veis que voc&ecirc; deseja calcular para esta camada de entrada.
+            </p>
+            <p>Ap&oacute;s ter escolhido e configurado as vari&aacute;veis que deseja calcular, a camada ser&aacute; listada na janela de ferramentas com quaisquer outras camadas selecionadas. Clique no bot&atilde;o de edi&ccedil;&atilde;o de qualquer camada para abrir a janela  <b>Adicione Vari&aacute;veis</b> e visualize todas as vari&aacute;veis configuradas para esta camada. Clique no bot&atilde;o de excluir em qualquer camada para remover esta camada e todas as vari&aacute;veis relacionadas da an&aacute;lise.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Adicionar Variáveis</h2></div>
+        <hr/>
+        <div>
+            <p>Esta janela permite a voc&ecirc; escolher uma camada de entrada e configurar as vari&aacute;veis que voc&ecirc; deseja calcular para esta camada de entrada. Para come&ccedil;ar, utilize o menu suspenso  <b>Escolha uma camada de entrada</b> para selecionar a camada de ponto, pol&iacute;gono ou linha que voc&ecirc; deseja adicionar na sua an&aacute;lise.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista suspensa para procurar por seu conte&uacute;do para um conjunto de dados de compartilhamento do arquivo de grandes dados ou camada de fei&ccedil;&atilde;o.
+            </p>
+            <p>Ap&oacute;s ter escolhido uma camada de entrada, clique no bot&atilde;o  <b>Adicionar uma vari&aacute;vel</b> para abrir uma nova vari&aacute;vel para edi&ccedil;&atilde;o. Voc&ecirc; deve fornecer um &uacute;nico nome para cada vari&aacute;vel. Este ser&aacute; o nome do campo que &eacute; criado na tabela de atributos da camada resultante.
+            </p>
+            <p>Utilize o menu suspenso para selecionar o tipo de vari&aacute;vel para adicionar. Cada tipo de vari&aacute;vel deve ser configurado com um &uacute;nico conjunto de par&acirc;metros e todos os par&acirc;metros s&atilde;o exigidos.
+            </p>
+            <p>Ap&oacute;s ter adicionado todas as vari&aacute;veis desejadas na camada escolhida, clique no bot&atilde;o  <b>Adicionar</b> para salvar as vari&aacute;veis.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se voc&ecirc; estiver gravando em um ArcGIS Data Store, seus resultados ser&atilde;o salvos em  <b>Meu Conte&uacute;do</b> e adicionados no mapa. Se voc&ecirc; estiver gravando em um compartilhamento do arquivo de grandes dados, seus resultados ser&atilde;o armazenados compartilhamento do arquivo de grandes dados  e adicionados em seu   manifesto. N&atilde;o ser&atilde;o adicionados no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existe, a ferramenta falhar&aacute;.
+            </p>
+            <p>Ao gravar no  ArcGIS Data Store  (armazenamento de grandes dados de espa&ccedil;o-tempo ou relacional) utilizando a caixa suspensa  <b>Salvar resultados em</b> , voc&ecirc; pode especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

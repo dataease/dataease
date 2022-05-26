@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Optimales Reisekosten-Netzwerk ermitteln</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="Abbildung: Werkzeug &quot; Optimales Reisekosten-Netzwerk ermitteln&quot;"></h2>
+        <hr/>
+    <p>Dieses Werkzeug berechnet das optimale Kostennetzwerk von verschiedenen Eingaberegionen.
+    </p>
+    <p>Ein Beispiel f&uuml;r die Anwendung dieses Werkzeugs ist die Ermittlung des besten Netzwerks f&uuml;r Notfallfahrzeuge.
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Positionen im Eingabe-Layer analysiert, die in der aktuellen Kartenausdehnung sichtbar sind. Wenn diese Option deaktiviert ist, werden alle Positionen im Eingabe-Layer analysiert, auch diejenigen, die sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Raster- oder Feature-Position-Layer auswählen, zwischen denen Reisepfade ermittelt werden sollen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Eingabe-Regionen, die durch das kosteng&uuml;nstigste Netzwerk verbunden werden sollen.
+            </p>
+            <p>Regionen k&ouml;nnen durch einen Image-Service oder einen Feature-Service definiert werden.
+            </p>
+            <p>F&uuml;r den Image-Service werden die Regionen nach Gruppen zusammenh&auml;ngender (benachbarter) Zellen mit identischem Wert definiert. Jede Region muss eindeutig nummeriert sein. Die Zellen, die nicht Teil einer Region sind, m&uuml;ssen vom Typ &quot;NoData&quot; sein. Der Rastertyp muss ein Ganzzahlwert sein, und die Werte k&ouml;nnen positiv oder negativ sein.
+            </p>
+            <p>Bei einem Feature-Service kann die Eingabe ein Punkt, eine Linie oder ein Polygon sein.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Reisekosten-Raster-Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Ein Raster, das die Impedanz oder die Kosten f&uuml;r eine planimetrische Bewegung durch jede Zelle definiert.
+            </p>
+            <p>Der Wert an jeder Zellenposition stellt die Kosten pro Einheitenentfernung f&uuml;r die Bewegung durch die Zelle dar. Jeder Zellenpositionswert wird mit der Zellenaufl&ouml;sung multipliziert, und gleichzeitig werden diagonale Bewegungen ausgeglichen, um die Gesamtkosten f&uuml;r die Bewegung durch die Zelle zu erhalten.
+            </p>
+            <p>Die Werte im Kosten-Raster k&ouml;nnen ganzzahlige oder Gleitkommawerte sein, sie d&uuml;rfen jedoch nicht negativ oder 0 sein (negative oder keine Kosten sind nicht zul&auml;ssig).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Name des Polylinien-Ergebnis-Layers mit den optimalen Pfaden</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>Sie k&ouml;nnen den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis &uuml;ber das Dropdown-Feld <b>Ergebnis speichern in</b> gespeichert wird.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Name des Polylinien-Ergebnis-Layers mit benachbarten Pfaden</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>Sie k&ouml;nnen den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis &uuml;ber das Dropdown-Feld <b>Ergebnis speichern in</b> gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

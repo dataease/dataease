@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Nustatyti naujas vietas</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="Nustatyti naujas vietas"></h2>
+        <hr/>
+    <p>Nauji elementai sukuriami ten, kur tenkinamos nurodytos sąlygos. Kriterijai gali remtis atributų užklausomis (pavyzdžiui, neužstatyti sklypai) ir erdvinėmis užklausomis (pavyzdžiui, sklypai užliejamoje teritorijoje).
+
+    </p>
+    <p>Jei  <b>Naudoti esamą žemėlapio aprėptį</b> pažymėtas, bus analizuojami tik aprėptyje matomi elementai. Jei nepažymėtas, analizuojami visi elementai, net jei jie yra už esamos žemėlapio aprėpties ribų.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>Nustatyti naujas vietas, kurios atitinka šią(-as) išraišką(as):</h2></div>
+        <hr/>
+        <div>
+            <p>Paspauskite  <b>Pridėti i&scaron;rai&scaron;ką</b> mygtuką, kad įvestumėte i&scaron;rai&scaron;ką. Galite pridėti kelias i&scaron;rai&scaron;kas. Įvedus i&scaron;rai&scaron;kas ir paspaudus <b>Vykdyti analizę</b> mygtuką, elementai analizės sluoksnyje filtruojami pagal kiekvieną i&scaron;rai&scaron;ką. Elementų dalys, tinkančios pagal visas i&scaron;rai&scaron;kas, įra&scaron;omos į rezultatų sluoksnį.
+            </p>
+            <p>Yra du pagrindiniai i&scaron;rai&scaron;kų, kurias galite sukurti, tipai: atributinės ir erdvinės. Atributinės i&scaron;rai&scaron;kos yra laukų reik&scaron;mių užklausos, tokios, kaip  <code>kur pavadinimas yra 'San Franciskas'</code>. Yra keturi erdvinių i&scaron;rai&scaron;kų tipai:
+                <ul>
+                    <li> <b>nutolęs atstumu</b>: elemento dalys, esančios tam tikru atstumu nuo kito sluoksnio elemento.  Pavyzdžiui, rasti sklypų dalis, esančias 500 metrų nuo Los Andželo upės.
+                    </li>
+                    <li> <b>pilnai talpina</b>: elementas turi pilnai talpinti visą kito sluoksnio elementą.  Pavyzdžiui, rasti baseinus, į kuriuos pilnai patenka pramonės paskirties sklypai. Jokia sklypo dalis negali būti už baseino ribų.
+                    </li>
+                    <li> <b>pilnai viduje</b>: elementas turi būti pilnai supamas kito sluoksnio elemento.  Pavyzdžiui, rasti mokyklų apylinkes, kurios pilnai patenka į miesto ribas. Jokia mokyklos apylinkės dalis negali būti už miesto ribų.
+                    </li>
+                    <li> <b>sukirsti</b>: elementai ar jų dalys, kurie persidengia su kito sluoksnio elementais.  Pavyzdžiui, rasti mi&scaron;ko vietas nuniokotas kelių gaisrų nacionaliniame parke. I&scaron;degusi teritorija už parko ribų nebus įtraukta.
+                    </li>
+                    <li> <b>arčiausiai prie</b>: elementas turi būti arčiausiai prie elemento kitame sluoksnyje. Pavyzdžiui, raskite žaliąją erdvę, kuri yra arčiausiai kiekvienos mokyklos.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Kiekviena erdvinė i&scaron;rai&scaron;ka turi atitinkamą neiginį, i&scaron;skyrus  <b>arčiausiai prie</b>; <b>nėra pasirinktu atstumu</b>, <b>netalpina pilnai</b>, <b>nėra pilnai viduje</b> ir <b>nesikerta</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Tai sluoksnio, kuris bus sukurtas ir patalpintas  <b>Turinyje</b> ir pridėtas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnio pavadinimas jau egzistuoja, jūsų papra&scaron;ys pateikti kitą pavadinimą.
+            </p>
+            <p>I&scaron;plečiamajame meniu pasirinkę  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

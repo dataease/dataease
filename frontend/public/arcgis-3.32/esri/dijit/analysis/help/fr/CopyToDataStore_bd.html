@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Copier dans le stockage des données</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="Copier dans le stockage des donn&eacute;es"></h2>
+        <hr/>
+    <p>Cet outil copie une couche en entr&eacute;e dans un stockage des donn&eacute;es. Vous pouvez copier les r&eacute;sultats sur  ArcGIS Data Store (r&eacute;pertoire de donn&eacute;es Big Data spatio-temporelles ou relationnelles), et une couche sera g&eacute;n&eacute;r&eacute;e dans votre portail ou vous pouvez copier les r&eacute;sultats sur un partage de fichiers Big Data. 
+    </p>
+    <p>Vous pouvez par exemple copier des entit&eacute;s stock&eacute;es dans un  <code>partage de fichiers Big Data</code> dans un <code>stockage des donn&eacute;es relationnelles</code> et sp&eacute;cifier que seules les entit&eacute;s au sein de l'&eacute;tendue actuelle de la carte seront copi&eacute;es. Ceci cr&eacute;e un service d'entit&eacute;s h&eacute;berg&eacute; avec uniquement les entit&eacute;s qui se trouvaient au sein de l'&eacute;tendue de la carte sp&eacute;cifi&eacute;e.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisir la couche à copier</h2></div>
+        <hr/>
+        <div>
+            <p>La couche ou table qui va &ecirc;tre copi&eacute;e. 
+            </p>
+            <p>Outre le fait de choisir une couche de votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante pour parcourir votre contenu et rechercher une couche d&rsquo;entit&eacute;s ou un jeu de donn&eacute;es de partage de fichiers Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>Vous pouvez utiliser toutes les entités ou effectuer une sélection (facultatif)</h2></div>
+        <hr/>
+        <div>
+            <p>Vous avez &eacute;galement la possibilit&eacute; d'utiliser le bouton de s&eacute;lection pour identifier les emplacements &agrave; copier.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Choisissez le répertoire de données de destination de la copie</h2></div>
+        <hr/>
+        <div>
+            <p>Le stockage des donn&eacute;es dans lequel la couche va &ecirc;tre copi&eacute;e. Ce param&egrave;tre remplacera la s&eacute;lection dans les  <b>environnements d&rsquo;analyse (Analysis Environments)</b>. Les options sont les suivantes&nbsp;:
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>Spatio-temporels</b>&nbsp;: il s'agit de la valeur par d&eacute;faut.
+                            </li>
+                            <li> <b>Relationnels</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>Mod&egrave;le en sortie du partage de fichiers de Big Data</b>
+                        <ul>
+                            <li>Liste des mod&egrave;les de partage de fichiers Big Data disponibles au format  <b>bigDataFileShareName-templateName</b>. Les mod&egrave;les de partages de fichiers Big Data doivent &ecirc;tre configur&eacute;s avant l&rsquo;ex&eacute;cution de l&rsquo;outil.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la couche &agrave; cr&eacute;er. Si vous &eacute;crivez sur une instance ArcGIS Data Store, les r&eacute;sultats seront enregistr&eacute;s dans  <b>My Content (Mon contenu)</b> et ajout&eacute;s &agrave; la carte. Si vous &eacute;crivez sur un partage de fichiers Big Data, les r&eacute;sultats seront enregistr&eacute;s dans le partage de fichiers Big Data et ajout&eacute;s &agrave; son manifeste. Il ne sera pas ajout&eacute; &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, l'outil &eacute;choue.
+            </p>
+            <p>Lors de l&rsquo;&eacute;criture sur  ArcGIS Data Store (r&eacute;pertoire de donn&eacute;es relationnelles ou spatio-temporelles) via la zone de liste d&eacute;roulante  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>, vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> o&ugrave; le r&eacute;sultat sera enregistr&eacute;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

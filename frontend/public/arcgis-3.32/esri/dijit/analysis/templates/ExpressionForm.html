@@ -1,0 +1,75 @@
+<div class="esriAnalysis esriExpressionForm">
+  <div class="esriFormError esriRoundedBox" data-dojo-attach-point="_errorMessagePane" style="display:none;"></div>
+  <!--<div class="clear" style="height:1em;"></div>-->
+  <div data-dojo-type="dijit/form/Form" class="esriSimpleForm" data-dojo-attach-point="_expressionForm">
+    <table class="esriFormTable" style="border: 1px solid #929497;background-color: #F7F8F8 !important;"> 
+      <tbody>
+        <tr data-dojo-attach-point="_firstRow" >
+          <td style="width:75%">
+            <select class="" data-dojo-type="dijit/form/Select" style="width:100%;table-layout:fixed;" data-dojo-attach-event="onChange:_handleFirstOperandChange" data-dojo-attach-point="_firstOperandSelect">
+            </select>
+          </td>
+          <td style="width:25%">
+            <select class="" data-dojo-type="dijit/form/Select" data-dojo-attach-event="onChange:_handleOperatorChange" style="width:100%;table-layout:fixed;" data-dojo-attach-point="_operatorSelect">
+              <option value="where">${i18n.where}</option>
+              <option value="intersects">${i18n.intersects}</option>
+              <option value="notIntersects">${i18n.notIntersects}</option>
+              <option value="withinDistance">${i18n.withinDistance}</option>
+              <option value="notWithinDistance">${i18n.notWithinDistance}</option>
+              <option value="contains">${i18n.contains}</option>
+              <option value="notContains">${i18n.notContains}</option>
+              <option value="within">${i18n.within}</option>
+              <option value="notWithin">${i18n.notWithin}</option>
+              <option value="nearest">${i18n.nearest}</option>
+              <!--<option value="contains">${i18n.contains}</option>
+              <option value="notContains">${i18n.notContains}</option>-->
+              <!--<option value="within">${i18n.within}</option>
+              <option value="notWithin">${i18n.notWithin}</option>-->
+              <!--<option value="identical">${i18n.identical}</option>
+              <option value="notIdentical">${i18n.notIdentical}</option>
+              <option value="touches">${i18n.touches}</option>
+              <option value="notTouches">${i18n.notTouches}</option>-->
+              <!--<option value="crossesOutline">${i18n.crossesOutline}</option>
+              <option value="notCrossesOutline">${i18n.notCrossesOutline}</option>-->
+            </select>
+          </td>
+        </tr>
+        <tr data-dojo-attach-point="_secondRow" style="display:none;">
+          <td data-dojo-attach-point="_secondOperandTd" colspan="2">
+            <div data-dojo-attach-point="_secondExpressionDiv" style="display:none; padding-bottom:0.25em;">
+              <input type="text" data-dojo-type="dijit/form/NumberTextBox" data-dojo-attach-event="onChange:_handleDistanceInputChange" data-dojo-props="intermediateChanges:true" data-dojo-attach-point="_distanceInput" style="width:20%;"></input>
+              <select data-dojo-type="dijit/form/Select"  data-dojo-attach-point="_distanceUnitsSelect"  style="width:20%;table-layout:fixed;">
+                <option value="Miles">${i18n.miles}</option>
+                <option value="Yards">${i18n.yards}</option>
+                <option value="Feet">${i18n.feet}</option>
+                <option type="separator"></option>
+                <option value="Kilometers">${i18n.kilometers}</option>
+                <option value="Meters">${i18n.meters}</option>
+                <option value="NauticalMiles">${i18n.nautMiles}</option>
+              </select>
+              <label> ${i18n.from} </label>
+            </div>
+            <select class="" data-dojo-type="dijit/form/Select" style="width:75%;table-layout:fixed;" data-dojo-attach-point="_secondOperandSelect" data-dojo-attach-event="onChange:_handleSecondOperandChange">
+            </select>
+            <div data-dojo-attach-point="_attrFilterDiv" style="display:none;"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="esriFormWarning esriRoundedBox" data-dojo-attach-point="_errorMessagePane" style="display:none;">
+      <a href="#" title="${i18n.close}" class="esriFloatTrailing esriAnalysisInfoPaneCloseIcon" title='${i18n.close}' data-dojo-attach-event="onclick:_handleCloseMsg">
+      </a>
+      <span data-dojo-attach-point="_bodyNode"></span>
+    </div>    
+    <div style="clear:both;"></div>
+    <div  class="esriFloatTrailing" style="padding: 10px 5px;">
+      <div data-dojo-type="dijit/form/Button"  class="${_addBtnClass}" data-dojo-attach-point="_addBtn" data-dojo-attach-event="onClick:_handleAddButtonClick">
+        ${i18n.add}
+      </div>
+       <div data-dojo-type="dijit/form/Button" class="esriLeadingMargin05" data-dojo-attach-point="_closeBtn" data-dojo-attach-event="onClick:_handleCloseButtonClick">
+        ${i18n.close}
+      </div>
+    </div>
+    
+  </div>
+</div>  

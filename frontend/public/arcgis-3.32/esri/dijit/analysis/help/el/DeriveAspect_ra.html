@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Παραγωγή προοπτικής</h2><p/>
+        <h2><img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" alt="&Epsilon;&rho;&gamma;&alpha;&lambda;&epsilon;ί&omicron; &pi;&alpha;&rho;&alpha;&gamma;&omega;&gamma;ή&sigmaf; &pi;&rho;&omicron;&omicron;&pi;&tau;&iota;&kappa;ή&sigmaf; &gamma;&iota;&alpha; &tau;&omicron; Portal"></h2>
+        <hr/>
+    <p>&Tau;&omicron; &epsilon;&rho;&gamma;&alpha;&lambda;&epsilon;ί&omicron; &delta;&eta;&mu;&iota;&omicron;&upsilon;&rho;&gamma;&epsilon;ί έ&nu;&alpha; &chi;ά&rho;&tau;&eta; &pi;&rho;&omicron;&omicron;&pi;&tau;&iota;&kappa;ή&sigmaf; &alpha;&pi;ό &mu;&iota;&alpha; &pi;&rho;&omicron;έ&lambda;&epsilon;&upsilon;&sigma;&eta; &delta;&epsilon;&delta;&omicron;&mu;έ&nu;&omega;&nu; &upsilon;&psi;&omicron;&mu;έ&tau;&rho;&omicron;&upsilon;. &Eta; &pi;&rho;&omicron;&omicron;&pi;&tau;&iota;&kappa;ή &pi;&rho;&omicron;&sigma;&delta;&iota;&omicron;&rho;ί&zeta;&epsilon;&iota; &tau;&eta;&nu; &kappa;&alpha;&theta;&omicron;&delta;&iota;&kappa;ή &kappa;&alpha;&tau;&epsilon;ύ&theta;&upsilon;&nu;&sigma;&eta; &tau;&omicron;&upsilon; &mu;έ&gamma;&iota;&sigma;&tau;&omicron;&upsilon; &rho;&upsilon;&theta;&mu;&omicron;ύ &alpha;&lambda;&lambda;&alpha;&gamma;ή&sigmaf; &tau;&eta;&sigmaf; &tau;&iota;&mu;ή&sigmaf; &alpha;&pi;ό &kappa;ά&theta;&epsilon; &kappa;&epsilon;&lambda;ί &sigma;&tau;&alpha; &gamma;&epsilon;&iota;&tau;&omicron;&nu;&iota;&kappa;ά &tau;&omicron;&upsilon;. &Eta; &pi;&rho;&omicron;&omicron;&pi;&tau;&iota;&kappa;ή &mu;&pi;&omicron;&rho;&epsilon;ί &nu;&alpha; &theta;&epsilon;&omega;&rho;&eta;&theta;&epsilon;ί &omega;&sigmaf; &eta; &kappa;&alpha;&tau;&epsilon;ύ&theta;&upsilon;&nu;&sigma;&eta; &tau;&eta;&sigmaf; &kappa;&lambda;ί&sigma;&eta;&sigmaf;. &Omicron;&iota; &tau;&iota;&mu;έ&sigmaf; &tau;&omicron;&upsilon; raster &epsilon;&xi;ό&delta;&omicron;&upsilon; &theta;&alpha; &epsilon;ί&nu;&alpha;&iota; &eta; &kappa;&alpha;&tau;&epsilon;ύ&theta;&upsilon;&nu;&sigma;&eta; &pi;&upsilon;&xi;ί&delta;&alpha;&sigmaf; &tau;&eta;&sigmaf; &pi;&rho;&omicron;&omicron;&pi;&tau;&iota;&kappa;ή&sigmaf;.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Δεδομένα εισόδου</h2></div>
+        <hr/>
+        <div>
+            <p>&Tau;&omicron; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;ό &epsilon;&pi;ί&pi;&epsilon;&delta;&omicron; &upsilon;&psi;&omicron;&mu;έ&tau;&rho;&omicron;&upsilon; &gamma;&iota;&alpha; &tau;&omicron; &omicron;&pi;&omicron;ί&omicron; &theta;&alpha; &upsilon;&pi;&omicron;&lambda;&omicron;&gamma;&iota;&sigma;&tau;&epsilon;ί &eta; &pi;&rho;&omicron;&omicron;&pi;&tau;&iota;&kappa;ή &tau;&eta;&sigmaf; &theta;έ&sigma;&eta;&sigmaf; &kappa;ά&theta;&epsilon; &kappa;&epsilon;&lambda;&iota;&omicron;ύ.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Όνομα εξαγόμενου θεματικού επιπέδου</h2></div>
+        <hr/>
+        <div>
+            <p>&Tau;&omicron; ό&nu;&omicron;&mu;&alpha; &tau;&omicron;&upsilon; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;&omicron;ύ &epsilon;&pi;&iota;&pi;έ&delta;&omicron;&upsilon; &pi;&omicron;&upsilon; &theta;&alpha; &delta;&eta;&mu;&iota;&omicron;&upsilon;&rho;&gamma;&eta;&theta;&epsilon;ί &sigma;&tau;&eta;&nu; &epsilon;&nu;ό&tau;&eta;&tau;&alpha;  <b>&Tau;&omicron; &pi;&epsilon;&rho;&iota;&epsilon;&chi;ό&mu;&epsilon;&nu;ό &mu;&omicron;&upsilon;</b> &kappa;&alpha;&iota; &theta;&alpha; &pi;&rho;&omicron;&sigma;&tau;&epsilon;&theta;&epsilon;ί &sigma;&tau;&omicron; &chi;ά&rho;&tau;&eta;. &Tau;&omicron; &pi;&rho;&omicron;&epsilon;&pi;&iota;&lambda;&epsilon;&gamma;&mu;έ&nu;&omicron; ό&nu;&omicron;&mu;&alpha; &beta;&alpha;&sigma;ί&zeta;&epsilon;&tau;&alpha;&iota; &sigma;&tau;&omicron; ό&nu;&omicron;&mu;&alpha; &tau;&omicron;&upsilon; &epsilon;&rho;&gamma;&alpha;&lambda;&epsilon;ί&omicron;&upsilon; &kappa;&alpha;&iota; &sigma;&tau;&omicron; ό&nu;&omicron;&mu;&alpha; &tau;&omicron;&upsilon; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;&omicron;ύ &epsilon;&pi;&iota;&pi;έ&delta;&omicron;&upsilon; &epsilon;&iota;&sigma;ό&delta;&omicron;&upsilon;. &Alpha;&nu; &tau;&omicron; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;ό &epsilon;&pi;ί&pi;&epsilon;&delta;&omicron; ή&delta;&eta; &upsilon;&pi;ά&rho;&chi;&epsilon;&iota;, &theta;&alpha; &epsilon;&mu;&phi;&alpha;&nu;&iota;&sigma;&tau;&epsilon;ί &pi;&rho;&omicron;&tau;&rho;&omicron;&pi;ή &gamma;&iota;&alpha; &nu;&alpha; &delta;ώ&sigma;&epsilon;&tau;&epsilon; ά&lambda;&lambda;&omicron; ό&nu;&omicron;&mu;&alpha;.
+            </p>
+            <p>&Mu;&pi;&omicron;&rho;&epsilon;ί&tau;&epsilon; &nu;&alpha; &kappa;&alpha;&theta;&omicron;&rho;ί&sigma;&epsilon;&tau;&epsilon; &mu;έ&sigma;&alpha; &sigma;&tau;&omicron;&nu; &phi;ά&kappa;&epsilon;&lambda;&omicron;  <b>&Tau;&omicron; &pi;&epsilon;&rho;&iota;&epsilon;&chi;ό&mu;&epsilon;&nu;ό &mu;&omicron;&upsilon;</b> &tau;&omicron; ό&nu;&omicron;&mu;&alpha; &epsilon;&nu;ό&sigmaf; ά&lambda;&lambda;&omicron;&upsilon; &phi;&alpha;&kappa;έ&lambda;&omicron;&upsilon; ό&pi;&omicron;&upsilon; &theta;&alpha; &alpha;&pi;&omicron;&theta;&eta;&kappa;&epsilon;&upsilon;&tau;&epsilon;ί &tau;&omicron; &alpha;&pi;&omicron;&tau;έ&lambda;&epsilon;&sigma;&mu;&alpha; &mu;&epsilon; &chi;&rho;ή&sigma;&eta; &tau;&omicron;&upsilon; &pi;&tau;&upsilon;&sigma;&sigma;ό&mu;&epsilon;&nu;&omicron;&upsilon; &pi;&lambda;&alpha;&iota;&sigma;ί&omicron;&upsilon; <b>&Alpha;&pi;&omicron;&theta;ή&kappa;&epsilon;&upsilon;&sigma;&eta; &alpha;&pi;&omicron;&tau;&epsilon;&lambda;έ&sigma;&mu;&alpha;&tau;&omicron;&sigmaf; &sigma;&epsilon;</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

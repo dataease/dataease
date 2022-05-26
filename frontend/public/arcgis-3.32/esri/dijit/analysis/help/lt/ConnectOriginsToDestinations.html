@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Sujungti išvykimo ir atvykimo vietas</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="Sujungti i&scaron;vykimo ir atvykimo vietas"></h2>
+        <hr/>
+    <p>I&scaron;vykimo ir atvykimo vietų sujungimas nustato atstumą ar kelionės laiką tarp ta&scaron;kų porų. Įrankis gali pateikti atstumus tiesia linija; atstumus pagal kelionės režimą, pvz., ėjimo ar važiavimo automobiliu; arba kelionės trukmę pagal kelionės režimą. Naudodami &scaron;į įrankį, galite atlikti &scaron;iuos veiksmus:
+    </p>
+    <p>
+        <ul>
+            <li>Apskaičiuoti, kiek kilometrų važiuoja ar laiko sugai&scaron;ta darbuotojai i&scaron; namų važiuodami į darbo vietą.
+            </li>
+            <li>Apskaičiuoti, i&scaron; kur toliausiai atvyksta klientai į parduotuves. Remiantis &scaron;ia informacija, galima planuoti komercinę veiklą, reklamos kampanijas, naujų parduotuvių įkūrimą.
+            </li>
+            <li>Apskaičiuoti automobilių parko planuojamą kilometražą. Vėliau įrankiu Sumuoti viduje, kilometražą galima apskaičiuoti pagal regionus.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Pagal nurodytus pradžios ir pabaigos ta&scaron;kus, įrankis pateikia sluoksnį, susidedantį i&scaron; mar&scaron;rutų linijų bei jų verčių tarp i&scaron;vykimo ir atvykimo vietų porų. 
+    </p>
+    <p>Jei pažymėta  <b>Naudoti esamą žemėlapio aprėptį</b>, bus analizuojami tik aprėptyje matomi elementai. Jei nepažymėta &ndash; analizuojami visi elementai, net jei jie patenka už matomo žemėlapio ribų.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Pasirinkite taškų sluoksnį, nurodantį išvykimo vietas</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkite ta&scaron;kų sluoksnį, nurodantį i&scaron;vykimo vietą arba vietas.  Įrankis leidžia naudoti iki  5 000 i&scaron;vykimo ir  5 000 atvykimo vietų. </p>
+            <p>Jei pasirinktame sluoksnyje yra tik viena i&scaron;vykimo vieta, ji bus sujungta su visomis atvykimo vietomis.
+            </p>
+            <p>Pasirinkę sluoksnį žemėlapyje, galite pasirinkti  <b>Pasirinkite analizės sluoksnį</b>, kurį rasite i&scaron;plečiamo sąra&scaron;o apačioje. &Scaron;i parinktis atidaro galeriją, kurioje galite ie&scaron;koti duomenų rinkinių i&scaron; įvairių &scaron;altinių ir juos pasirinkti naudoti savo analizėje. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Pasirinkite atvykimo vietų sluoksnį</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkite sluoksnį nurodantį atvykimo vietą ar vietas, kurios turi būti sujungtos su i&scaron;vykimo vietomis. Įrankis leidžia naudoti iki  5 000 i&scaron;vykimo ir  5 000 atvykimo vietų. </p>
+            <p>Jei pasirinktame sluoksnyje yra viena atvykimo vieta, visos i&scaron;vykimo vietos bus sujungtos su &scaron;ia vieta. 
+            </p>
+            <p>Jei yra viena i&scaron;vykimo vieta ir kelios atvykimo vietos, įrankis sujungs i&scaron;vykimo vietą su kiekviena atvykimo vieta.
+            </p>
+            <p>Pasirinkę sluoksnį žemėlapyje, galite pasirinkti  <b>Pasirinkite analizės sluoksnį</b>, kurį rasite i&scaron;plečiamo sąra&scaron;o apačioje. &Scaron;i parinktis atidaro galeriją, kurioje galite ie&scaron;koti duomenų rinkinių i&scaron; įvairių &scaron;altinių ir juos pasirinkti naudoti savo analizėje. 
+            </p>
+            <p> Jei yra daug i&scaron;vykimo ir atvykimo vietų, reikalingi du laukai, kuriuose bus apra&scaron;ytos i&scaron;vykimo-atvykimo vietų poros: <b>i&scaron;vykimo vietos lauko ID</b> ir <b>atitinkamas atvykimo vietos ID laukas</b>. Įrankis analizės metu sujungia i&scaron;vykimo ir atvykimo vietas. Pavyzdžiui, jei yra dvi i&scaron;vykimo vietos su ID reik&scaron;mėmis <code>Rosie</code> ir <code>Harold</code> bei dvi atvykimo vietos su tokiomis pačiomis ID reik&scaron;mėmis. <code>Rosie</code> i&scaron;vykimo vieta bus sujungta su <code>Rosie</code> atvykimo vieta, o <code>Harold</code> sujungtas su <code>Harold</code>. Kiti sujungimai ar matavimai neatliekami.
+            </p>
+            <p>Jei yra vienodų pradžios ta&scaron;kų ir paskirties vietų numerių, ID reik&scaron;mės turi nesikartoti abiejuose sluoksniuose; pavyzdžiui, paskirties vietų sluoksnyje negali būti dviejų reik&scaron;mių  <code>Rosie</code>. Reik&scaron;mės i&scaron;vykimo ir atvykimo sluoksniuose turi sutapti; <code>Harold</code> nebus sujungtas su klaidingai užra&scaron;yta reik&scaron;me <code>Harodl</code>. 
+            </p>
+            <p>Įrankis taip pat palaiko kiekvieno pradžios ta&scaron;ko sujungimą su daugiau nei viena paskirties vieta arba kiekvienos paskirties vietos sujungimą su daugiau nei vienu pradžios ta&scaron;ku. Tokiais atvejais vis tiek turite turėti du laukus, apra&scaron;ančius pradžios ta&scaron;ko-paskirties vietos poras. Tačiau unikalias ID reik&scaron;mes turi turėti tik vienas sluoksnis (pradžios ta&scaron;ko arba paskirties vietos sluoksnis).
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Matavimai</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Pasirinkite, ar i&scaron;vykimo ir atvykimo vietas sujungsite naudodami tiesią liniją ar kelionės režimą. Gaunami mar&scaron;rutai atkartos kelius arba pėsčiųjų takus ir laikysis taikomų taisyklių, pvz., gatvių su vienpusiu eismu bei neleistinų apsisukimų vairuojant ar važiuojant sunkvežimiu. Galimus kelionės režimus nustato jūsų organizacijos administratorius.  
+            </p>
+            <p>Kai pasirenkate  <b>Važiavimo laikas</b>, <b>Važiavimo užmiestyje laikas</b> arba <b>Važiavimo sunkvežimiu laikas</b>, galite nurodyti, kaip matuojama važiavimo trukmė.
+                <ul>
+                    <li>
+                        <p>Atžymėkite  <b>Naudoti eismo būseną</b>, jei ie&scaron;koma mar&scaron;rutų pagal fiksuotą greitį.
+                        </p>
+                        <p>&Scaron;is pasirinkimas tinkamas, jei reikalingas bendras važiavimo laikas, o ne tas, kuris apskaičiuojamas naudojant besikeičiančias eismo sąlygas, priklausomai nuo tam tikro i&scaron;vykimo laiko.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Pažymėkite  <b>Naudoti eismo būseną</b>, jei ie&scaron;kote mar&scaron;rutų pagal kelionės pradžios laiką ir kintančias eismo sąlygas. Pasirinkus <b>Esamos sąlygos</b>, kelionės pradžios laikas bus prilygintas analizės vykdymo laikui, bus įvertintos esamos eismo sąlygos ir prognozuojamas važiavimo greitis pagal sensorių pateiktą informaciją. Prognozuojamas važiavimo greitis bus apskaičiuotas pagal esamas eismo sąlygas, istorinius greičio duomenis bei papildomus įvykius, pavyzdžiui, meteorologines sąlygas. Važiavimo greitis prognozuojamas 12 valandų į priekį, todėl kelionės pradžią galite nurodyti iki  12 val. nuo esamo laiko. </p>
+                        <p>Naudokite esamas eismo sąlygas, jei norite rasti trumpiausius atstumus i&scaron;vykdami &scaron;iuo ar artimu laiku, pavyzdžiui, po valandos.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Pažymėjus  <b>Naudoti eismo būseną</b> ir pasirinkus <b>Tipinės eismo sąlygos</b> tam tikrai datai ir laikui, įrankis ras artimiausius atstumus pagal istorinius greičio duomenis kiekvienam penkių minučių intervalui pasirinktą savaitę. Apskaičiavimas vyks įvertinant eismo sąlygų įtaką, bet ne esamas konkrečias sąlygas; tai gali lemti besiskiriančius rezultatus.
+                        </p>
+                        <p>Galite naudoti istorinius duomenis, jei domina kelionės trukmė, i&scaron;vykus, pavyzdžiui, trečiadienį 11:30.
+                        </p>
+                        <p>Laikas, kurį nurodote, atitinka laiko juostą, kurioje yra i&scaron;vykimo vietos. Taigi, jei laikas bus nurodytas 8:00 ir bus dvi i&scaron;vykimo vietos, viena Niujorke, o kita - Los Andžele, įrankis apskaičiuos mar&scaron;rutą naudodamas i&scaron;vykimą 8:00 Rytų pakrantės laiku ir 8:00 Ramiojo vandenyno pakrantės laiku
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Atkreipkite dėmesį, kad judant automobiliui ir bėgant laikui, keičiasi eismo sąlygos. Įrankis Jungti i&scaron;vykimo vietas su atvykimo vietomis įvertins sąlygas pažymėjus  <b>Naudoti eismo būseną</b>, tačiau tokie duomenys prieinami ne visuose regionuose. Paspauskite <b>Tikrinti prieinamumą</b>, jei norite sužinoti, ar duomenys prieinami jūsų regione.
+            </p>
+            <p> <b>Važiavimo sunkvežimiu laikas</b> gali naudoti dinaminį važiavimo greitį, pagrįstą eismo sąlygomis, bet nevir&scaron;ijančio leistino sunkvežimių greičio. Pavyzdžiui, jeigu dinaminis greitis kelyje, atsižvelgiant į eismą, yra 105 km/h, o leistinas sunkvežimių greitis tame kelyje &ndash; 90 km/h, &scaron;iame kelyje skaičiuojant bus naudojamas 90 km/h greitis.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Pasirinkti kliūčių sluoksnius</h2></div>
+        <hr/>
+        <div>
+            <p> Vienas ar daugiau elementų, kurie veikia kaip laikini apribojimai (kliūtys) keliaujant esamomis gatvėmis. Kliūtis galite nurodyti naudodami ta&scaron;ko, linijos arba ploto elementus.
+            </p>
+            <p>Ta&scaron;kinė kliūtis gali reik&scaron;ti nukritusį medį, avariją, nukritusį elektros laidą ar bet kokį kitą objektą, kuris visi&scaron;kai užblokavęs eismą konkrečioje gatvės vietoje. Galima judėti gatve, tačiau ne per &scaron;ią kliūtį. Galite nurodyti iki 250 elementų, rei&scaron;kiančių ta&scaron;kines kliūtis.
+            </p>
+            <p>Linijinė kliūtis neleidžia keliauti niekur, kur &scaron;i kliūtis kerta gatves. Pavyzdžiui, kaip linijinė kliūtis gali būti pažymėtas paradas ar protestas, blokuojantis eismą keliuose gatvės segmentuose. Jei visų linijinių kliūčių kertamų gatvių elementų skaičius vir&scaron;ija 500, įrankis pateikia klaidą.
+            </p>
+            <p>Plotinė kliūtis neleidžia keliauti niekur, kur &scaron;is plotas kerta gatves. Vienas i&scaron; galimų tokio tipo kliūties panaudojimų yra pažymėti potvynius, apimančius tam tikras gatvių tinklo dalis ir neleidžiančius jomis keliauti. Jei visų poligono kliūčių kertamų gatvių elementų skaičius vir&scaron;ija 2 000, įrankis pateikia klaidą.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Maršruto forma</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkite mar&scaron;ruto formą, sujungiančią kiekvieną pradžios ta&scaron;ką su paskirties vieta, naudodami kelionės režimą:
+            </p>
+            <ul>
+                <li> <b>Pagal gatves</b> &ndash; forma pagrįsta gatvių tinklo pagrindu. &Scaron;i parinktis geriausia, kai norite sugeneruoti mar&scaron;rutus tarp pradžios ta&scaron;kų ir paskirties vietų.
+                </li>
+                <li> <b>Tiesi linija</b> &ndash; forma yra tiesi linija, jungianti pradžios ta&scaron;ko-paskirties vietos porą. &Scaron;i parinktis geriausia, kai norite sugeneruoti voratinklio diagramas arba norimas linijas (pvz., parodyti, kuriose parduotuvėse lankosi klientai).
+                </li>
+            </ul>
+            
+            <p>Geriausias mar&scaron;rutas tarp pradžios ta&scaron;ko ir atitinkamos jo paskirties vietos visada apskaičiuojamas atsižvelgiant į kelionės režimą, neatsižvelgiant į tai, kuri mar&scaron;ruto forma pasirenkama.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Tai elementų sluoksnio, kuris bus sukurtas ir patalpintas  <b>Turinyje</b> bei pridėtas į žemėlapį, pavadinimas. Jei toks elementų sluoksnis jau egzistuoja, jūsų papra&scaron;ys pateikti kitą pavadinimą. Elementų sluoksnyje bus &scaron;ie sluoksniai: mar&scaron;rutai, nepriskirti pradžios ir pabaigos ta&scaron;kai, kai tam tikrų pradžios ta&scaron;kų negalima sujungti su pabaigos ta&scaron;kais.
+            </p>
+            <p>Jei pasirinksite  <b>Įtraukti mar&scaron;ruto sluoksnius</b>, kiekvienas rezultato mar&scaron;rutas taip pat bus įra&scaron;ytas kaip mar&scaron;ruto sluoksnis. Mar&scaron;ruto sluoksnis apima visą konkretaus mar&scaron;ruto informaciją, pvz., stoteles, priskirtas mar&scaron;rutui, taip pat kelionės kryptis. Sukurti mar&scaron;ruto sluoksnius naudinga, jei norite bendrinti individualius mar&scaron;rutus su kitais organizacijos nariais arba toliau modifikuoti mar&scaron;rutus naudodami žemėlapių peržiūros priemonės mygtuką <b>Kryptys</b>. Mar&scaron;ruto sluoksniai naudoja pateiktą elementų sluoksnio pavadinimą kaip prefiksą, o mar&scaron;ruto pavadinimas, sugeneruojamas kaip analizės dalis, pridedamas kuriant unikalų kiekvieno mar&scaron;ruto sluoksnio pavadinimą.
+            </p>
+            <p>Mar&scaron;rutų sluoksnių, kuriuos galima sukurti, maksimalus skaičius yra  1 000. Jei gaunamas rezultatas yra didesnis negu  1 000 mar&scaron;rutų ir yra pažymėta  <b>Įtraukti mar&scaron;rutų sluoksnius</b>, įrankis sukurs tik i&scaron;vesties elementų paslaugą.
+            </p>
+            <p>I&scaron;plečiamajame meniu pasirinkę  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kuriame bus i&scaron;saugotas elementų sluoksnis ir mar&scaron;ruto sluoksnis (jei jie bus sukurti), pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

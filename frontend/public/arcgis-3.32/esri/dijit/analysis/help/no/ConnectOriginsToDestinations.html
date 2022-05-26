@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Koble startpunkter til destinasjoner</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="Koble startpunkter til destinasjoner"></h2>
+        <hr/>
+    <p>Ved &aring; koble startpunkter til destinasjoner m&aring;les reisetiden eller avstanden mellom to punkter. Verkt&oslash;yet kan m&aring;le luftlinjeavstand, avstander basert p&aring; reisem&aring;te, for eksempel til fots eller med bil, og reisetid basert p&aring; en reisem&aring;te. Med dette verkt&oslash;yet kan du gj&oslash;re f&oslash;lgende:
+    </p>
+    <p>
+        <ul>
+            <li>Beregne total avstand eller tiden pendlere bruker p&aring; &aring; reise til og fra jobb.
+            </li>
+            <li>M&aring;le hvor langt kundene reiser for &aring; handle i butikkene dine. Bruk denne informasjonen til &aring; definere markedsrekkevidden, spesielt n&aring;r du skal m&aring;lrette reklamekampanjer eller velge steder for etablering av nye butikker.
+            </li>
+            <li>Beregne forventet kj&oslash;relengde for bilparken din. Deretter kj&oslash;rer du Summer innenfor-verkt&oslash;yet til &aring; rapportere kj&oslash;relengde etter fylke eller andre regioner.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Du oppgir start- og sluttpunkt, og verkt&oslash;yet oppretter et lag som inneholder rutelinjer, inkludert m&aring;linger, mellom de sammenkoblede startpunktene og destinasjonene. 
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, er det kun geoobjektene som vises i gjeldende kartutstrekning, som blir tatt med i analysen. Hvis det ikke er merket av for dette alternativet, vurderes alle geoobjektene i inndatalaget, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Velg punktlaget med startlokasjoner</h2></div>
+        <hr/>
+        <div>
+            <p>Velg punktlaget som inneholder startpunktet eller startpunktene. Verkt&oslash;yet st&oslash;tter opptil  5 000startlokasjoner og  5 000 destinasjoner. </p>
+            <p>Hvis du velger et lag som har ett startpunkt, kobles det til alle destinasjonene.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Velg destinasjonslaget</h2></div>
+        <hr/>
+        <div>
+            <p>Velg laget som viser destinasjonen eller destinasjonene som startpunktene skal kobles til. Verkt&oslash;yet st&oslash;tter opptil  5 000 startpunkt og  5 000 destinasjoner. </p>
+            <p>Hvis du velger et lag som har &eacute;n destinasjon, vil alle startpunktene kobles til denne destinasjonen. 
+            </p>
+            <p>Hvis det er ett startpunkt og flere destinasjoner, kobler verkt&oslash;yet startpunktet til hver av destinasjonene.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p>
+            <p> Hvis det er mange startpunkter og mange destinasjoner, m&aring; du ha to felter som beskriver startpunkt-destinasjon-parene: <b>ID-felt p&aring; startsteder</b> og <b>Matchende ID-felt p&aring; destinasjoner</b>. Verkt&oslash;yet kobler sammen startpunkt og destinasjoner under analysen. Du kan f.eks. tenke deg at du har to startpunkter med ID-feltverdiene <code>Kari</code> og <code>Knut</code> og to destinasjoner med samme ID-verdier. <code>Kari</code>-startpunktet kobles til <code>Kari</code>-destinasjonen og <code>Knut</code> blir koblet til <code>Knut</code>. Det gj&oslash;res ingen andre koblinger eller m&aring;linger.
+            </p>
+            <p>Hvis det er likt antall startpunkter og destinasjoner, m&aring; ID-verdiene v&aelig;re unike innenfor hvert lag. Destinasjonslaget kan for eksempel ikke ha to  <code>Kari</code>-verdier. Verdiene i startpunkt- og destinasjonslagene m&aring; samsvare n&oslash;yaktig for &aring; kunne lage par. <code>Knut</code> blir ikke koblet til en feilstavet verdi som <code>Kunt</code>. 
+            </p>
+            <p>Verkt&oslash;yet st&oslash;tter ogs&aring; at hvert startpunkt knyttes til flere destinasjoner, eller at hver destinasjon knyttes til flere startpunkt. I slike tilfeller m&aring; du likevel ha to felt som beskriver parene med startpunkt og destinasjon. Det er imidlertid kun ett av lagene (startpunkt- eller destinasjonslaget) som m&aring; ha unike ID-verdier.
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Mål</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Velg om startpunktene skal kobles til destinasjonene ved hjelp av avstand i luftlinje eller en reisem&aring;te. Rutene som genereres f&oslash;lger veier og gangstier og tar hensyn til gjeldende regler for bil og lastebil, for eksempel enveiskj&oslash;rte gater og steder der det ikke er lov &aring; snu. Tilgjengelige reisem&aring;ter defineres av administratoren i organisasjonen.  
+            </p>
+            <p>N&aring;r du velger  <b>Kj&oslash;retid</b>, <b>Kj&oslash;retid i rurale omr&aring;der</b> eller <b>Lastebiltid</b>, har du ulike alternativer for m&aring;ling av kj&oslash;retid.
+                <ul>
+                    <li>
+                        <p>Fjern merket for  <b>Bruk trafikk</b> for &aring; finne de raskeste rutene basert p&aring; faste hastigheter.
+                        </p>
+                        <p>Velg dette alternativet hvis du vil opprette en generell kj&oslash;retidsm&aring;ling og ikke en som er beregnet ved hjelp av trafikkforholdene for et bestemt avreisetidspunkt.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Merk av for  <b>Bruk trafikk</b> for &aring; finne de raskeste rutene basert p&aring; et gitt starttidspunkt og trafikkforhold. Hvis du i tillegg velger alternativet <b>Live traffic</b>, settes avreisetidspunktet fra startpunktene til gjeldende klokkeslett og gjeldende og estimerte hastigheter innhentes fra sensorer og feeder for &aring; opprette rutene. De estimerte trafikkhastighetene beregnes basert p&aring; faktiske trafikkhastigheter, historiske hastigheter og gjeldende hendelser, for eksempel v&aelig;rforhold. Trafikkhastighetene beregnes 12 timer frem i tid, slik at du kan dra glidebryteren for &aring; angi avreisetidspunktet opptil  12 timer frem i tid. </p>
+                        <p>Bruk disse live trafikkinnstillingene til &aring; finne kj&oslash;retidene hvis du kj&oslash;rer n&aring;, kj&oslash;rer om &eacute;n time og s&aring; videre.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Hvis du merker av for  <b>Bruk trafikk</b> og velger <b>Trafikk basert p&aring; typiske forhold for</b> en dag eller et klokkeslett, finner verkt&oslash;yet de raskeste rutene basert p&aring; historiske gjennomsnittshastigheter for intervaller p&aring; fem minutter i en vanlig uke. Resultatet omfatter trafikk, men tar ikke hensyn til gjeldende trafikale forhold og hendelser, som kan avvike mye fra normen.
+                        </p>
+                        <p>Du kan bruke disse historiske trafikkinnstillingene til &aring; stille sp&oslash;rsm&aring;l som &quot;Hvor lang tid tar det som regel &aring; n&aring; disse destinasjonene hvis jeg kj&oslash;rer klokken 11.30 p&aring; en onsdag?&quot;.
+                        </p>
+                        <p>Klokkeslettet du angir, refererer til tidssonen som startpunktene befinner seg i. Hvis du for eksempel velger klokkeslettet 8.00 og du har to startpunkter, ett i New York og ett i Los Angeles, genereres rutene for henholdsvis klokken 8.00 EST og kl. 8.00 PST.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Legg merke til at idet et kj&oslash;ret&oslash;y kj&oslash;rer fra startpunktet, s&aring; g&aring;r tiden og trafikkforholdene endres. Koble startpunkter til destinasjoner-verkt&oslash;yet tar hensyn til disse variasjonene n&aring;r du merker av for  <b>Bruk trafikk</b>. Det er imidlertid ikke st&oslash;tte for denne funksjonen i alle omr&aring;der. Klikk p&aring; koblingen <b>Vis tilgjengelighet</b> i verkt&oslash;yet for &aring; finne ut om funksjonen st&oslash;ttes i ditt studieomr&aring;de.
+            </p>
+            <p> <b>Lastebiltid</b> kan bruke dynamiske kj&oslash;rehastigheter basert p&aring; trafikken, men kun opptil den lovlige fartsgrensen for lastebil. Hvis for eksempel den dynamiske hastigheten for en vei basert p&aring; trafikk i sanntid er 100 km/t, men hastighetsgrensen for lastebiler p&aring; denne veien er 90 km/t, bruker beregningen 90 km/t for denne veien.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Velg hindringslag</h2></div>
+        <hr/>
+        <div>
+            <p> Ett eller flere geoobjekter som fungerer som midlertidige begrensninger (hindringer) under transport p&aring; de underliggende gatene. Du kan angi hindringer ved hjelp av punkt-, linje- eller polygongeoobjekter.
+            </p>
+            <p>En punkthindring kan v&aelig;re et veltet tre, en ulykke, en kraftledning som er falt ned, eller andre ting som blokkerer trafikken helt p&aring; et bestemt sted i gaten. Gaten er ikke stengt for trafikk, men det er ikke mulig &aring; passere hindringen. Du kan angi opptil 250 geoobjekter som fungerer som punkthindringer.
+            </p>
+            <p>En linjehindring hindrer trafikk der hindringen krysser gatene. En linjehindring kan for eksempel v&aelig;re en parade eller protestmarsj som blokkerer trafikken over flere gatesegmenter. Hvis antallet gategeoobjekter som krysses av alle linjehindringene overstiger 500, returnerer verkt&oslash;yet en feil.
+            </p>
+            <p>En polygonhindring hindrer trafikk der polygonet krysser gatene. Denne typen hindring kan for eksempel brukes til &aring; modellere oversv&oslash;mte omr&aring;der som dekker deler av gatenettet og gj&oslash;r det umulig &aring; ferdes p&aring; gatene. Hvis antallet gategeoobjekter som krysses av alle polygonhindringene overstiger 2000, returnerer verkt&oslash;yet en feil.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Ruteform</h2></div>
+        <hr/>
+        <div>
+            <p>Velg formen p&aring; ruten som knytter hvert startpunkt til destinasjonen n&aring;r du bruker en reisem&aring;te:
+            </p>
+            <ul>
+                <li> <b>F&oslash;lg veier</b> &ndash; Formen baseres p&aring; det underliggende veinettet. Dette alternativet er best n&aring;r du vil generere ruter mellom startpunkter og destinasjoner.
+                </li>
+                <li> <b>Rett linje</b> &ndash; En rett linje fra startpunktet til destinasjonen. Dette alternativet er best n&aring;r du vil generere spindelvevdiagrammer eller &oslash;nskelinjer (for eksempel for &aring; vise hvilke butikker kundene bes&oslash;ker).
+                </li>
+            </ul>
+            
+            <p>Den beste ruten mellom et startpunkt og tilh&oslash;rende destinasjon beregnes alltid basert p&aring; reisem&aring;te, uavhengig av hvilken ruteform som er valgt.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; geoobjektlaget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Hvis geoobjektlaget allerede finnes, blir du bedt om &aring; oppgi et annet navn. Geoobjektlaget inneholder et lag for hvert av de f&oslash;lgende: ruter, startsteder som ikke er tilordnet og destinasjoner som ikke er tilordnet n&aring;r enkelte startsteder ikke kan kobles til destinasjonene sine.
+            </p>
+            <p>Hvis du velger  <b>Inkluder rutelag</b>, lagres hver rute fra resultatet ogs&aring; som et rutelag. Et rutelag inneholder all informasjon for en bestemt rute, for eksempel tildelte stoppesteder langs ruten og reiseretningene. Det er praktisk &aring; opprette rutelag hvis du &oslash;nsker &aring; dele de enkelte rutene med andre medlemmer i organisasjonen eller hvis du vil modifisere rutene ytterligere ved hjelp av knappen for beskrivelser i kartvisningen. <b></b> Rutelagene bruker navnet som er oppgitt for geoobjektlaget som et prefiks, og rutenavnet som genereres som en del av analysen, blir lagt til for &aring; skape et unikt navn for hvert rutelag.
+            </p>
+            <p>Maksimalt antall rutelag som kan opprettes, er  1 000. Hvis resultatet inneholder mer enn  1 000 ruter og  <b>Inkluder rutelag</b> er valgt, oppretter verkt&oslash;yet bare utdatageoobjekttjenesten.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultatet i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som geoobjektlaget og rutelagene &ndash; hvis de er opprettet &ndash; vil bli lagret.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

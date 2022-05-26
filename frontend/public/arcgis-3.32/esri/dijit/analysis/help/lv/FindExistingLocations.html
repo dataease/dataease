@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Atrast pašreizējo novietojumu</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Atrast pa&scaron;reizējo novietojumu"></h2>
+        <hr/>
+    <p>Rīks izvēlās eksistējo&scaron;us elementus jūsu izpētes teritorijā, kas atbilst jūsu norādītajai kritēriju sērijai. &Scaron;ie kritēriji var pamatoties uz atribūtu vaicājumiem (piem., brīvi zemes gabali) un telpiskajiem vaicājumiem (piem., 1 jūdzes attālumā no upes). 
+    </p>
+    <p>Ja ir atzīmēta iespēja  <b>lietot pa&scaron;reizējo kartes pārklājumu</b>, tad tiks analizēti tikai ievades slāņa elementi pa&scaron;reizējā kartes pārklājumā.  Ja nav atzīmēts, visi analīzes slāņa elementi tiks analizēti, arī pa&scaron;reizējā kartes pārklājuma ārpusē.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Izvēlieties slāni, kas satur elementus, kurus vēlaties atrast, izmantojot atribūtu un telpiskus vaicājumus</h2></div>
+        <hr/>
+        <div>
+            <p>Punkta, līnijas vai laukuma slānis, kuram vēlaties meklēt elementus, ņemot vērā tālāk norādīto atribūtu un telpisko vaicājumu kombināciju.
+            </p>
+            <p>Papildus slāņa izvēlei no kartes varat atlasīt opciju  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta lejasdaļā. &Scaron;ī opcija atver galeriju, kurā varēsiet pārlūkot un atlasīt datu kopas no dažādiem avotiem un izmantot savā analīzē. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Izveidojiet vaicājumu, lai atrastu elementus</h2></div>
+        <hr/>
+        <div>
+            <p>Klik&scaron;ķiniet uz  <b>Pievienot izteiksmi</b> pogas, lai definētu izteiksmi. Jūs varat pievienot vairākas izteiksmes. Pēc izteiksmju ievadī&scaron;anas un noklik&scaron;ķinā&scaron;anas uz pogas <b>Palaist analīzi</b> elementi ievades slānī tiek filtrēti pēc katras izteiksmes nosacījumiem.  Elementi, kas atbilst visām izteiksmēm tiek ierakstīti rezultātu slānī.
+            </p>
+            <p>Divi galvenie veidi, kā Jūs varat izveidot izteiksmes; atribūtu un telpiskās Atribūtu izteiksmes ir vaicājumi par lauku vērtībām, kā piemēram,  <code>kur nosaukums ir 'San Francisco'</code>. Telpiskajām izteiksmēm ir četri veidi:
+                <ul>
+                    <li> <b>attālumā</b>: elementam jāatrodas noteiktā attālumā no elementa citā slānī.  Piemēram, atrast zenes gabalus 500 metru attālumā no Losandželosas upes.
+                    </li>
+                    <li> <b>pilnībā satur</b>: elementam jāietver visi cita slāņa elementi.  Piemēram, atrast ūdenskrātuves, kas pilnībā ietver industriālās izmanto&scaron;anas zemes gabalus. Zemes gabala daļa nevar būt ārpus ūdenskrātuves.
+                    </li>
+                    <li> <b>pilnībā ietver</b>: elements pilnībā ietver cita slāņa elementus.  Piemēram, meklēt skolu rajonus, kas pilnībā atrodas pilsētas robežās. Neviena daļa no skolu rajoniem nevar atrasties ārpus pilsētas robežām.
+                    </li>
+                    <li> <b>&scaron;ķērso</b>: elements ietver elementa daļu no cita slāņa.  Piemēram, atrast zemes gabalus, kas &scaron;ķērso upes. Jebkura upes daļa, kas iet caur zemes gabalu vai pieskaras tā robežai, &scaron;ķērso zemes gabalu.
+                    </li>
+                    <li> <b>tuvākais</b>: elementam jāatrodas vistuvāk kādam elementam citā slānī.  Piemērs: katrai viesnīcai tuvāk eso&scaron;ais restorāns.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Katrai telpiskai izteiksmei ir atbilsto&scaron;a negācija, izņemot  <b>tuvākais</b>; <b>neatrodas attālumā</b>, <b>pilnībā neietver</b>, <b>nav pilnībā ietverts</b> un <b>ne&scaron;ķērso</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slāņa nosaukums jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta izvēlnē, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

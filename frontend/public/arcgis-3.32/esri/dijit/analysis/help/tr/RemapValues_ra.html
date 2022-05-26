@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Değerleri Yeniden Haritalandır</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="Portal i&ccedil;in Değerleri Yeniden Haritalandır aracı"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, raster verilerinin piksel değerlerini değiştirmenize veya yeniden sınıflandırmanıza olanak tanır. &Ccedil;ıktı piksel değeri haritalamak &uuml;zere bir piksel değeri aralığı belirtilerek piksel değerleri yeniden haritalandı. &Ccedil;ıktı piksel değeri; ge&ccedil;erli bir değer veya kendisiyle ilişkilendirilmiş bilinen değeri olmayan pikseller olan NoData değeri olabilir.
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> se&ccedil;eneği işaretliyse, yalnızca ge&ccedil;erli harita yayılımında g&ouml;r&uuml;n&uuml;r olan h&uuml;creler yeniden haritalanır. İşaretli değilse, rasterdaki t&uuml;m h&uuml;creler ge&ccedil;erli harita yayılımının dışında bile olsa işlenir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Girdi Verileri</h2></div>
+        <hr/>
+        <div>
+            <p>Kendi değerlerinin yeniden haritalanacağı girdi verileri.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Yeni değerlerin piksel değerlerini yeniden haritala</h2></div>
+        <hr/>
+        <div>
+            <p>Bir minimum ve maksimum değer belirterek değer aralığı girersiniz, ardından bir &ccedil;ıktı veya NoData değerini belirtilen aralığa atarsınız.
+            </p>
+            <p>Yeni bir değer aralığını yeniden haritalamak i&ccedil;in bir satır ekleyen  <b>Ekle</b> &ouml;ğesine tıklayın. Tabloyu istediğiniz aralıklara ve yeniden haritalanan değere g&ouml;re d&uuml;zenlemek i&ccedil;in her değere tıklayın. Değer aralıklarını belirtirken kullanılan iki &ouml;nemli kural vardır:
+                <ul>
+                    <li>Aralıktaki minimum değer dahil, maksimum değer hari&ccedil;tir.
+                    </li>
+                    <li>Tablodaki satırlar yukarıdan aşağıya doğru işlenir.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Aşağıdaki tablo minimum değerin &ccedil;ıktıya eklendiğini, ancak maksimum değerin &ccedil;ıktıya dahil edilmediğini g&ouml;stermektedir.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Tabloda belirtilen aralıkların sırası da &ouml;nemlidir Tablonun en &uuml;st satırı &ouml;nce işlenir, ardından altındaki satır işlenir. Aşağıdaki iki tabloda, tablo satırlarının sırasına bağlı olarak aynı değer aralıklarının nasıl farklı sonu&ccedil;lar verebileceği g&ouml;sterilmektedir.
+            </p> 
+            <p>Aşağıdaki tablo, ilk s&uuml;tun sayısal olarak sıralandığında &ccedil;ıktı değerini g&ouml;sterir:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Aşağıdaki tablo, satırların farklı şekilde sıralanmasının nasıl farklı &ccedil;ıktı değerleri &uuml;reteceğini g&ouml;sterir:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Her iki kural da değerleri yeniden sıralamak i&ccedil;in kullanılır. Her satır yukarıdan aşağıya doğru işlendiğinden, s&ouml;z konusu değerler aynı aralıklar kullanılsa bile, &ccedil;ıktının belirlenmesinde farklı &ouml;ncelikler uygulanır.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adı. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>İ&ccedil;eriğim</b>&rsquo;de, <b>Sonu&ccedil;ları Kaydet</b> a&ccedil;ılır kutusunu kullanarak sonucun kaydedileceği klas&ouml;r&uuml;n adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

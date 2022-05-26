@@ -1,0 +1,84 @@
+// Dijit widget common icons
+//
+// The 16 x 16px icons in these sprites are action and object type images which can be used in the following widgets: accordionContainer, menu, tab, titlepane, tree, and all button widgets and error validation contexts. */
+//
+.dijitRtl {
+  .dijitIconSave,
+  .dijitIconPrint,
+  .dijitIconCut,
+  .dijitIconCopy,
+  .dijitIconClear,
+  .dijitIconDelete,
+  .dijitIconUndo,
+  .dijitIconEdit,
+  .dijitIconNewTask,
+  .dijitIconEditTask,
+  .dijitIconEditProperty,
+  .dijitIconTask,
+  .dijitIconFilter,
+  .dijitIconConfigure,
+  .dijitIconSearch,
+  .dijitIconApplication,
+  .dijitIconBookmark,
+  .dijitIconChart,
+  .dijitIconConnector,
+  .dijitIconDatabase,
+  .dijitIconDocuments,
+  .dijitIconMail,
+  .dijitLeaf,
+  .dijitIconFile,
+  .dijitIconFunction,
+  .dijitIconKey,
+  .dijitIconPackage,
+  .dijitIconSample,
+  .dijitIconTable,
+  .dijitIconUsers,
+  .dijitFolderClosed,
+  .dijitIconFolderClosed,
+  .dijitFolderOpened,
+  .dijitIconFolderOpen,
+  .dijitIconError {
+    background-image: url($iconUrl + 'commonIconsObjActEnabled_rtl.png'); // Contains both object and action icons in a sprite image for the enabled state.
+    width: 16px;
+    height: 16px;
+  }
+  .dijitDisabled {
+    .dijitIconSave,
+    .dijitIconPrint,
+    .dijitIconCut,
+    .dijitIconCopy,
+    .dijitIconClear,
+    .dijitIconDelete,
+    .dijitIconUndo,
+    .dijitIconEdit,
+    .dijitIconNewTask,
+    .dijitIconEditTask,
+    .dijitIconEditProperty,
+    .dijitIconTask,
+    .dijitIconFilter,
+    .dijitIconConfigure,
+    .dijitIconSearch,
+    .dijitIconApplication,
+    .dijitIconBookmark,
+    .dijitIconChart,
+    .dijitIconConnector,
+    .dijitIconDatabase,
+    .dijitIconDocuments,
+    .dijitIconMail,
+    .dijitLeaf,
+    .dijitIconFile,
+    .dijitIconFunction,
+    .dijitIconKey,
+    .dijitIconPackage,
+    .dijitIconSample,
+    .dijitIconTable,
+    .dijitIconUsers,
+    .dijitFolderClosed,
+    .dijitIconFolderClosed,
+    .dijitFolderOpened,
+    .dijitIconFolderOpen,
+    .dijitIconError {
+      background-image: url('images/commonIconsObjActDisabled_rtl.png'); // Contains both object and action icons as a sprite image for the disabled state. These would be used by buttons and menus.
+    }
+  }
+}

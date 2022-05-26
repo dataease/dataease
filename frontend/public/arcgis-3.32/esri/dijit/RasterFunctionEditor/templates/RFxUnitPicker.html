@@ -1,0 +1,21 @@
+<div class="esriRFxBandCombinationEditor">
+  <table class="esriRFxArgsEditor__table">
+    <tr class="esriRFxArgsEditor__tr--arg-name">
+      <td data-dojo-attach-point="fromUnitLabel">${_fromUnitName}</td>
+    </tr>
+    <tr class="esriRFxArgsEditor__tr--arg-widget" >
+      <td>
+        <div data-dojo-type="dijit/form/Select" data-dojo-attach-point="fromUnitSelect" data-dojo-attach-event="onChange: onFromUnitChange"
+          data-dojo-attach-props="labelAttr: 'label'"></div>
+      </td>
+    </tr>
+    <tr class="esriRFxArgsEditor__tr--arg-name">
+      <td data-dojo-attach-point="toUnitLabel">${_toUnitName}</td>
+    </tr>
+    <tr class="esriRFxArgsEditor__tr--arg-widget">
+      <td>
+        <div data-dojo-type="dijit/form/Select" data-dojo-attach-point="toUnitSelect"
+          data-dojo-attach-props="labelAttr: 'label'" data-dojo-attach-event="onChange: onToUnitChange"></div>
+      </td>
+  </table>
+</div>

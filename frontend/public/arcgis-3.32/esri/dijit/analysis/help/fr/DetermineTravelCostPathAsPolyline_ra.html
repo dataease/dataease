@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Déterminer le chemin de coût de déplacement sous forme d’une polyligne</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Illustration de l&rsquo;outil D&eacute;terminer le chemin de co&ucirc;t de d&eacute;placement sous forme d&rsquo;une polyligne"></h2>
+        <hr/>
+    <p>Cet outil calcule le chemin de moindre co&ucirc;t sous forme d&rsquo;une polyligne entre les sources et les destinations connues.
+    </p>
+    <p>Voici quelques exemples d&rsquo;application&nbsp;:
+        <ul>
+            <li>D&eacute;terminez le meilleur itin&eacute;raire pour implanter une route en termes de co&ucirc;ts de construction.
+                
+
+            </li>
+            <li>Identifiez le trajet &agrave; suivre entre plusieurs banlieues (source) et le centre commercial le plus proche (destination).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si l&rsquo;option  <b>Use current map extent (Utiliser l&rsquo;&eacute;tendue courante de la carte)</b> est s&eacute;lectionn&eacute;e, seuls les emplacements dans les couches en entr&eacute;e qui sont visibles au sein de l&rsquo;&eacute;tendue courante de la carte seront analys&eacute;s. Si l&rsquo;option n&rsquo;est pas s&eacute;lectionn&eacute;e, tous les emplacements qui se trouvent dans les deux couches en entr&eacute;e seront analys&eacute;s, m&ecirc;me s&rsquo;ils se trouvent en dehors de l&rsquo;&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Choisir un raster ou une couche d’entités source pour déterminer les trajets départs</h2></div>
+        <hr/>
+        <div>
+            <p>Service d&rsquo;imagerie ou d&rsquo;entit&eacute;s identifiant les cellules &agrave; partir desquelles le chemin de plus faible co&ucirc;t est d&eacute;termin&eacute; par rapport &agrave; la destination de plus faible co&ucirc;t.
+            </p>
+            <p>Si l&rsquo;entr&eacute;e est un service d&rsquo;imagerie, elle comporte des cellules qui ont des valeurs admises (z&eacute;ro est une valeur autoris&eacute;e) et les cellules restantes doivent avoir la valeur NoData.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Choisir la couche raster de coût de déplacement</h2></div>
+        <hr/>
+        <div>
+            <p>Raster d&eacute;finissant l'imp&eacute;dance ou le co&ucirc;t de d&eacute;placement planim&eacute;trique &agrave; travers chaque cellule.
+            </p>
+            <p>La valeur de chaque emplacement de cellule repr&eacute;sente le co&ucirc;t par unit&eacute; de distance du d&eacute;placement &agrave; travers la cellule. Chaque valeur d'emplacement de cellule est multipli&eacute;e par la r&eacute;solution de cellule (avec &eacute;galement une compensation simultan&eacute;e pour mouvement diagonal) afin d'obtenir le co&ucirc;t total du passage &agrave; travers la cellule.
+            </p>
+            <p>Les valeurs du raster de co&ucirc;t peuvent &ecirc;tre des entiers ou valeurs &agrave; virgule flottante, mais elles ne peuvent pas &ecirc;tre n&eacute;gatives ni nulles (un co&ucirc;t ne peut pas &ecirc;tre n&eacute;gatif ou nul).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Entités ou raster de destination en entrée</h2></div>
+        <hr/>
+        <div>
+            <p>Entr&eacute;e d&eacute;finissant les destinations utilis&eacute;es pour calculer la distance. La couche peut &ecirc;tre un raster ou une entit&eacute;.
+            </p>
+            <p>Si l&rsquo;entr&eacute;e est un service d&rsquo;imagerie, elle comporte des cellules qui ont des valeurs admises (z&eacute;ro est une valeur autoris&eacute;e) et les cellules restantes doivent avoir la valeur NoData.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Nom de la couche de résultat de polyligne</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Choisir le type de chemin à déterminer</h2></div>
+        <hr/>
+        <div>
+            <p>D&eacute;finit la fa&ccedil;on dont les valeurs et les zones des donn&eacute;es de destination en entr&eacute;e sont interpr&eacute;t&eacute;es dans les calculs du chemin de co&ucirc;t.
+            </p>
+            <ul>
+                <li>Le moins co&ucirc;teux&nbsp;: pour tous les emplacements ou cellules de l&rsquo;entr&eacute;e de destination, le chemin de moindre co&ucirc;t est d&eacute;riv&eacute; de l&rsquo;emplacement contenant le chemin minimal des chemins de moindre co&ucirc;t vers l&rsquo;emplacement source. Il s'agit du param&egrave;tre par d&eacute;faut.
+                    
+
+                </li>
+                <li>Vers chaque cellule&nbsp;: pour chaque cellule ou emplacement avec des valeurs valides sur les donn&eacute;es de destination en entr&eacute;e, le syst&egrave;me calcule le chemin de moindre co&ucirc;t et l&rsquo;enregistre dans le service d&rsquo;entit&eacute;s en sortie. Avec cette option, chaque cellule de l'entr&eacute;e est trait&eacute;e s&eacute;par&eacute;ment et un chemin de plus faible co&ucirc;t est d&eacute;termin&eacute; pour chaque cellule de d&eacute;part.
+                    
+
+                </li>
+                <li>Vers chaque zone&nbsp;: pour chaque zone dans les donn&eacute;es de destination, le syst&egrave;me calcule le chemin de moindre co&ucirc;t et l&rsquo;enregistre dans le service d&rsquo;entit&eacute;s en sortie. Avec cette option, pour chaque zone, le chemin de moindre co&ucirc;t commence &agrave; la cellule ou &agrave; l&rsquo;emplacement avec la pond&eacute;ration de distance de plus faible co&ucirc;t dans la zone.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

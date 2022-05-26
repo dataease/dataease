@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/supportClasses/map/layers/locator/DefaultSymbolRenderer",["dojo/_base/Color","esri/symbols/SimpleMarkerSymbol","esri/symbols/SimpleLineSymbol"],function(a,b,c){return{_defaultLocatorSymbol:null,_defaultLocatorSymbolHighlighted:null,getDefaultLocatorSymbol:function(){this._defaultLocatorSymbol||(this._defaultLocatorSymbol=new b(b.STYLE_CIRCLE,10,new c(c.STYLE_SOLID,new a([255,0,0,1]),2),new a([255,0,0,.75])));return this._defaultLocatorSymbol},getDefaultLocatorSymbolHighlighted:function(){this._defaultLocatorSymbolHighlighted||
+(this._defaultLocatorSymbolHighlighted=new b(b.STYLE_CIRCLE,11,new c(c.STYLE_SOLID,new a([255,255,255,1]),2),new a([255,50,50,1])));return this._defaultLocatorSymbolHighlighted}}});

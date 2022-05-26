@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>İçinde Özetle</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="İ&ccedil;inde &Ouml;zetle"></h2>
+        <hr/>
+    <p>Bu ara&ccedil; ilk girdi katmanındaki alanların sınırları dahilinde olan detayları (ve detay kısımlarını) bulur.  &Ouml;rneğin:
+        <ul>
+            <li>Boşaltma havzası sınırları katmanı ve arazi kullanım t&uuml;r&uuml;ne g&ouml;re bir arazi kullanım sınırları katmanı verildiğinde, her boşaltma havzası i&ccedil;in arazi kullanım t&uuml;r&uuml;n&uuml;n toplam y&uuml;z &ouml;l&ccedil;&uuml;m&uuml;n&uuml; hesaplayın. 
+            </li>
+            <li>Bir il&ccedil;edeki parsellerin bir katmanı ve şehir sınırlarının bir katmanı verildiğinde, her bir şehir sınırı dahilindeki boş parsellerin ortalama değerini &ouml;zetleyin.
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> işaretli ise, yalnızca ge&ccedil;erli harita yayılımında g&ouml;r&uuml;n&uuml;r olan girdi katmanındaki ve &ouml;zetlenecek katmandaki ilgili detaylar analiz edilir.  İşaretli değilse, hem girdi katmanı hem de &ouml;zetlenecek katmandaki t&uuml;m detaylar, ge&ccedil;erli harita yayılımının dışında olsa bile analiz edilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Sınırları içindeki diğer detayları özetlemek için alan katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Sınırları i&ccedil;inde kalan detayları &ouml;zetlemek i&ccedil;in kullanılacak alan katmanıdır. 
+            </p>
+            <p>Kendi belirleyeceğiniz bir alan katmanı se&ccedil;ebileceğiniz gibi, ara&ccedil; &ccedil;alıştırıldığında oluşturulan kutulardan da se&ccedil;im yapabilirsiniz.   Kutu oluşturulurken  <b>Kare</b> i&ccedil;in belirtilen sayı ve birim karenin y&uuml;ksekliğini ve uzunluğunu belirler. <b>Altıgen</b> i&ccedil;in ise, belirtilen sayı ve birimler paralel kenarlar arasındaki mesafeyi belirler.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Özetlenecek katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Yukarıdaki girdi katmanındaki detayların sınırları i&ccedil;inde kalan bu katmandaki detaylar &ouml;zetlenecek. 
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Özetlenecek katmandan istatistik ekle</h2></div>
+        <hr/>
+        <div>
+            <p>Detayların sınırları i&ccedil;inde kalan noktaların sayısal &ouml;znitelikleri i&ccedil;in istatistikleri isteğe bağlı olarak hesaplayabilirsiniz. 
+            </p>
+            <p> <b>Nokta sayısı</b> onay kutusu, işaretlendiğinde, her alan sınırı dahilindeki toplam nokta sayısını hesaplayacaktır.  Ek olarak her alan sınırının i&ccedil;indeki noktaların sayısal &ouml;zniteliklerinin istatistiklerini de hesaplayabilirsiniz.
+            </p>
+            <ul>
+                <li> <b>Toplam</b> - Belirtilen alanın toplam değeri.
+                </li>
+                <li> <b>Ortalama</b> - Belirtilen alanın ortalaması veya orta değeri.
+                </li>
+                <li> <b>Minimum</b> - Belirtilen alandaki en k&uuml;&ccedil;&uuml;k değer.
+                </li>
+                <li> <b>Maksimum</b> - Belirtilen alandaki en b&uuml;y&uuml;k değer.
+                </li>
+                <li> <b>Std. Sapma</b>&mdash;Belirtilen alandaki değerlerin standart sapmasıdır.
+                </li>
+            </ul>
+            
+            <p>&Ouml;zetlenecek katmanın sayı alanı yoksa, ek istatistikler kullanılamaz.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>İstatistik ekleme kaynağı</h2></div>
+        <hr/>
+        <div>
+            <p>&Ouml;zetlenecek &ccedil;izgilerin sayısal &ouml;zniteliklerine ait istatistikleri isteğe bağlı olarak hesaplayabilirsiniz. 
+            </p>
+            <p> <b>İ&ccedil;te kalan &ccedil;izgilerin toplam uzunluğu</b> onay kutusu, işaretlendiğinde, her alan sınırı dahilindeki &ccedil;izgilerin toplam uzunluğunu hesaplayacaktır.  Ek olarak her alan sınırının i&ccedil;indeki &ccedil;izgilerin sayısal &ouml;zniteliklerinin istatistiklerini de hesaplayabilirsiniz.
+            </p>
+            <ul>
+                <li> <b>Toplam</b> - Belirtilen alanın toplam değeri.
+                </li>
+                <li> <b>Ortalama</b> - Belirtilen alanın ortalaması veya orta değeri.
+                </li>
+                <li> <b>Minimum</b> - Belirtilen alandaki en k&uuml;&ccedil;&uuml;k değer
+                </li>
+                <li> <b>Maksimum</b> - Belirtilen alandaki en b&uuml;y&uuml;k değer.
+                </li>
+                <li> <b>Std. Sapma</b>&mdash;Belirtilen alandaki değerlerin standart sapmasıdır.
+                </li>
+            </ul>
+            
+            <p>&Ouml;zetlenecek katmanın sayı alanı yoksa, ek istatistikler kullanılamaz.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>İstatistik ekleme kaynağı</h2></div>
+        <hr/>
+        <div>
+            <p>&Ouml;zetlenecek alanların sayısal &ouml;zniteliklerine ait istatistikleri isteğe bağlı olarak hesaplayabilirsiniz. 
+            </p>
+            <p> <b>Toplam alan kullanımı</b> onay kutusu, işaretlendiğinde, ilk girdi katmanının her alan sınırı dahilindeki detayların toplam alanını hesaplar.  Ek olarak her alan sınırının i&ccedil;indeki &ouml;zelliklerin sayısal &ouml;zniteliklerinin istatistiklerini de hesaplayabilirsiniz.
+            </p>
+            <ul>
+                <li> <b>Toplam</b> - Belirtilen alanın toplam değeri.
+                </li>
+                <li> <b>Ortalama</b> - Belirtilen alanın ortalaması veya orta değeri.
+                </li>
+                <li> <b>Minimum</b> - Belirtilen alandaki en k&uuml;&ccedil;&uuml;k değer
+                </li>
+                <li> <b>Maksimum</b> - Belirtilen alandaki en b&uuml;y&uuml;k değer.
+                </li>
+                <li> <b>Std. Sapma</b>&mdash;Belirtilen alandaki değerlerin standart sapmasıdır.
+                </li>
+            </ul>
+            
+            <p>&Ouml;zetlenecek katmanın sayı alanı yoksa, ek istatistikler kullanılamaz.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>İstatistik ekleme kaynağı</h2></div>
+        <hr/>
+        <div>
+            <p>&Ouml;zetlenecek bir katman se&ccedil;tikten sonra, girdi alanı katmanı i&ccedil;inde kalan noktaların, &ccedil;izgileri veya alanların sayısal &ouml;zniteliklerine ait istatistikleri isteğe bağlı olarak hesaplayabilirsiniz. 
+            </p>
+            <ul>
+                <li> <b>Toplam</b> - Belirtilen alanın toplam değeri
+                </li>
+                <li> <b>Ortalama</b> - Belirtilen alanın ortalaması
+                </li>
+                <li> <b>Minimum</b> - Belirtilen alandaki en k&uuml;&ccedil;&uuml;k değer
+                </li>
+                <li> <b>Maksimum</b> - Belirtilen alandaki en b&uuml;y&uuml;k değer
+                </li>
+                <li> <b>Std. Sapma</b>&mdash;Belirtilen alandaki değerlerin standart sapmasıdır
+                </li>
+            </ul>
+            
+            <p>&Ouml;zetlediğiniz detay t&uuml;rlerine bağlı olarak toplam nokta sayısını, toplam &ccedil;izgi uzunluğunu veya toplam alanı hesaplayabilirsiniz.
+            </p>
+            <p>&Ouml;zetlenecek katmanın sayı alanı yoksa, ek istatistikler kullanılamaz.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Gruplanacak alanları seçme kriteri</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>&Ouml;zetle</b> detayının bir &ouml;zniteliğidir ve istatistikleri her bir tek &ouml;znitelik değeri i&ccedil;in ayrı hesaplamak amacıyla kullanılır. &Ouml;rneğin, ilk girdi katmanının şehir sınırlarını i&ccedil;erdiğini ve &ouml;zet detaylarının parseller olduğunu varsayalım.  Parsellerin &ouml;zniteliklerinden biri olan <i>Status</i> iki değer i&ccedil;erir: BOŞ ve DOLU 
+ Şehirlerin sınırları dahilinde kalan boş ve dolu parsellerin toplam alanını hesaplamak i&ccedil;in <i>Status</i> &ouml;ğesini gruplandırma &ouml;zniteliği olarak kullanın. Her alan sınırının i&ccedil;indeki detay sayısının yanı sıra, her grubun istatistikleri de a&ccedil;ılan sonu&ccedil; katmanında g&ouml;r&uuml;nt&uuml;lenir.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Azınlık, çoğunluk ekle</h2></div>
+        <hr/>
+        <div>
+            <p>Gruplandırma &ouml;l&ccedil;&uuml;t&uuml; olarak bir alan belirlediğinizde bu onay kutusu etkinleştirilir. Her grupta, ilk girdi katmanının her sınırı i&ccedil;indeki hangi &ouml;znitelik değerlerinin azınlık (en az baskın) veya &ccedil;oğunluk (en baskın) olduğunu bulmak isterseniz,  <b>Azınlık, &ccedil;oğunluk ekle</b> &ouml;ğesini se&ccedil;in. <b>Azınlık, &ccedil;oğunluk ekle</b> &ouml;ğesini se&ccedil;tiğinizde, sonu&ccedil; katmanınıza iki yeni alan eklenir.   Ayrıca <b>Y&uuml;zde ekle</b> &ouml;ğesini de se&ccedil;erseniz, her gruptaki azınlık ve &ccedil;oğunluk &ouml;znitelik değerlerinin y&uuml;zdelerini bulunduran sonu&ccedil; katmanına iki ilave alan eklenir.
+            </p>
+            <ul>
+                <li>Noktaları &ouml;zetliyorsanız, azınlık ve &ccedil;oğunluk değerleri girdi alanı katmanındaki her sınır alanı i&ccedil;indeki nokta sayısına g&ouml;re hesaplanır.  
+                </li>
+                <li>&Ccedil;izgileri &ouml;zetliyorsanız, azınlık ve &ccedil;oğunluk değerleri ilk alan katmanındaki her sınır alanı i&ccedil;indeki &ccedil;izgilerin uzunluğuna g&ouml;re hesaplanır.  
+                </li>
+                <li>Alanları &ouml;zetliyorsanız, azınlık ve &ccedil;oğunluk değerleri girdi alan katmanındaki her sınır alanı i&ccedil;indeki alanlara g&ouml;re hesaplanır.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Yüzde ekle</h2></div>
+        <hr/>
+        <div>
+            <p>Gruplandırma &ouml;l&ccedil;&uuml;t&uuml; olarak bir alan belirlediğinizde bu onay kutusu etkinleştirilir. Her grup i&ccedil;inde her &ouml;zniteliğin değerini bulmak istiyorsanız  <b>Y&uuml;zde ekle</b> &ouml;gesini se&ccedil;in. Her gruptaki her &ouml;znitelik değerinin y&uuml;zdesini i&ccedil;eren sonu&ccedil; tablosuna yeni bir alan eklenir. Ayrıca <b>Azınlık, &ccedil;oğunluk ekle</b> &ouml;ğesini de se&ccedil;erseniz, her gruptaki azınlık ve &ccedil;oğunluk &ouml;znitelik değerlerinin y&uuml;zdelerini bulunduran sonu&ccedil; katmanına iki ilave alan eklenir.
+            </p>
+        </div>
+    </div>
+    <div id="ResultLayerName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adıdır.  Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman adı zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Aykırı Değerleri Bul</h2><p/>
+        <h2><img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" alt="Aykırı Değerleri Bul"></h2>
+        <hr/>
+    <p>Aykırı Değerleri Bul aracı, verilerinizin mekansal modelinde istatistiksel olarak anlamlı aykırı değer olup olmadığını belirler. 
+        <ul>
+            <li>Veri modelinizde (su&ccedil; olayları, ağa&ccedil;lar, trafik kazaları) anormal alanlar var mı?  Nasıl emin olabilirsiniz?
+            </li>
+            <li>Ger&ccedil;ekten istatistiksel a&ccedil;ıdan anlamlı bir aykırı değer (harcama, bebek &ouml;l&uuml;m&uuml;, s&uuml;rekli y&uuml;ksek test puanları gibi) buldunuz mu ya da sembolize edilme şeklini değiştirdiğiniz haritanız size farklı bir şey mi anlatıyor?
+            </li>
+        </ul>
+        Aykırı Değerleri Bul Aracı bu sorulara kendinizden emin olarak cevap vermenize yardımcı olur.
+    </p>
+    <p>Bir haritaya her baktığımızda, ortada olmasa bile g&ouml;z&uuml;m&uuml;z&uuml;n ve beynimizin ilk aradığı şeyin bir desen olması doğaldır.  Sonu&ccedil;ta verilerinizdeki yapıların ger&ccedil;ek mekansal s&uuml;re&ccedil;lerin sonu&ccedil;ları olarak mı yoksa yalnızca rastgele mi ortaya &ccedil;ıktığının anlaşılması zordur.  İşte bu nedenle araştırmacılar ve analistler mekansal modelleri sayısallaştırmak i&ccedil;in Aykırı Değerleri Bul (Anselin Local Moran İndeksi) gibi istatistiksel y&ouml;ntemleri kullanır.  Verilerinizde istatistiksel olarak anlamlı aykırı değerler belirlediğinizde elinizde &ouml;nemli bilgiler var demektir.  Aykırı değerlerin nerede ve ne zaman oluştuğunun bilinmesi, g&ouml;rd&uuml;ğ&uuml;n&uuml;z desenleri kullanan s&uuml;re&ccedil;ler hakkında &ouml;nemli ipu&ccedil;ları sağlayabilir.  Bir sonraki adım, bu aykırı değerli alanların neden belirgin bi&ccedil;imde değişkenlik g&ouml;sterdiğinin araştırılmasıdır.  &Ouml;rneğin, konut b&ouml;lgelerindeki hırsızlıkların belirli komşu b&ouml;lgelerde daha d&uuml;ş&uuml;k hırsızlık oranına sahip komşularla &ccedil;evrilmiş olmasına karşın, &ouml;nemli &ouml;l&ccedil;&uuml;de daha y&uuml;ksek olduğunun bilinmesi; etkili &ouml;nlem stratejilerinin tasarlanması, sınırlı g&uuml;venlik g&uuml;c&uuml; kaynaklarının atanması, komşu b&ouml;lgeleri izleme programlarının hayata ge&ccedil;irilmesi, ayrıntılı kriminal araştırmaların y&uuml;r&uuml;t&uuml;lmesi veya potansiyel ş&uuml;phelilerin belirlenmesi gereken durumlarda hayati &ouml;neme sahiptir.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Aykırı değerlerin hesaplanacağı katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Aykırı değerlerin bulunacağı nokta veya alan katmanı. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Aykırı değerleri bul</h2></div>
+        <hr/>
+        <div>
+            <p>Bu analiz şu soruyu yanıtlar: Verilerimdeki mekansal aykırı değerler nerede bulunuyor?  
+            </p>
+            <p>Verileriniz nokta ise ve  <b>Nokta Sayısı</b> se&ccedil;eneğini belirlerseniz, bu ara&ccedil; nokta detaylarının mekansal d&uuml;zenlemesini değerlendirerek şu soruyu yanıtlar: Noktaların beklenmedik şekilde k&uuml;melendiği veya dağıldığı yerler neresidir?
+            </p>
+            <p>Bir alan se&ccedil;erseniz, bu ara&ccedil; her detayla ilişkilendirilen değerlerin mekansal d&uuml;zenlemesini değerlendirerek şu soruları yanıtlar: D&uuml;ş&uuml;k değerlerin y&uuml;ksek değerlerle &ccedil;evrildiği yerler nerede?  Y&uuml;ksek değerlerin d&uuml;ş&uuml;k değerlerle &ccedil;evrildiği yerler nerede?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Şuradaki noktalar sayılsın:</h2></div>
+        <hr/>
+        <div>
+            <p>Varsayılan işlem, nokta verilerinize dayanarak ara&ccedil; tarafından oluşturulan bir balık ağı &ccedil;er&ccedil;evesindeki noktaların sayılmasıdır. Alternatif olarak, şu soruya yanıt vermek i&ccedil;in altıgen bir kılavuz i&ccedil;indeki noktaları saymayı veya bir alan katmanı (genelde bunlar n&uuml;fus sayımı alanları, belediye sınırları ya da il&ccedil;eler gibi resmi y&ouml;netim b&ouml;lgelerini yansıtır) sağlamayı tercih edebilirsiniz: Her alan detayında sayılan nokta sayısı d&uuml;ş&uuml;n&uuml;ld&uuml;ğ&uuml;nde, y&uuml;ksek ya da d&uuml;ş&uuml;k nokta sayısının komşularına kıyasla istatistiksel olarak anlamlı olduğu konumlar var mı?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Noktaların nerede bulunabileceğini tanımla</h2></div>
+        <hr/>
+        <div>
+            <p>Şu soruya yanıt vermek i&ccedil;in bir katman &ccedil;izin ya da noktaların bulunabileceği katmanı sağlayın: Alanlar i&ccedil;inde beklenmedik şekilde y&uuml;ksek ya da d&uuml;ş&uuml;k nokta yoğunluğuna sahip konum var mı?   
+            </p>
+            <p>&Ccedil;izdiğiniz alan detayları ya da belirttiğiniz alan katmanındaki detaylar, noktaların oluşma olasılığı olan yerleri tanımlamalıdır. Bu alanları &ccedil;izmek i&ccedil;in  <b>&Ccedil;iz</b> d&uuml;ğmesine tıklayın ve alan şekli oluşturmak i&ccedil;in harita &uuml;zerindeki bir konuma tıklayın.  Ek alanlar &ccedil;izmek i&ccedil;in &ccedil;iz d&uuml;ğmesine yeniden tıklayın ve daha sonra harita &uuml;zerindeki bir konuma tıklayarak işleme devam edin.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Bölü</h2></div>
+        <hr/>
+        <div>
+            <p>Bazen, g&ouml;r&uuml;nmeyen dağılımları dikkate alan yapıları analiz etmek isteyebilirsiniz. &Ouml;rneğin, su&ccedil; vakalarını temsil eden noktalarınız toplam n&uuml;fus rakamıyla b&ouml;l&uuml;n&uuml;rse, ham su&ccedil; sayısı yerine kişi başına d&uuml;şen su&ccedil; vakası sayısı ile analiz yapma olanağı elde edilir.  Bir &ouml;znitelik ile b&ouml;lme işlemi, sık sık normalleştirme olarak adlandırılır.
+            </p>
+            <p>  <i>Esri Population</i> uygulamasının se&ccedil;ilmesi, her alan detayını n&uuml;fus değerleriyle zenginleştirir, bunlar daha sonra b&ouml;len değeri i&ccedil;in kullanılacak &ouml;znitelik olarak değerlendirilir.  Bu se&ccedil;enek i&ccedil;in kredi kullanılması gerekir.
+            </p>
+        </div>
+    </div>
+    <div id="permutations">
+        <div><h2>Şunun için optimize et:</h2></div>
+        <hr/>
+        <div>
+            <p>Hız veya doğruluk ama&ccedil;lı optimizasyon tercihi yapabilirsiniz.  
+            </p>
+            <p>Bu ara&ccedil;, verilerinizin mekansal deseninin rastgelelikten ne kadar farklı olduğunu belirlemek i&ccedil;in perm&uuml;tasyon kullanır.  Perm&uuml;tasyon sayısının artırılması, doğruluğu artırmakla birlikte işlem s&uuml;resini uzatır.  
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Geçersiz Kılma Seçenekleri</h2></div>
+        <hr/>
+        <div>
+            <p>Ara&ccedil;, verilerinizin &ouml;zelliklerine dayanarak en uygun  <b>H&uuml;cre Boyutu</b> ve <b>Mesafe Bandı</b> varsayılan ayarlarını bulur. Bununla birlikte, analiziniz a&ccedil;ısından anlamlı belirli bir <b>H&uuml;cre Boyutu</b> veya <b>Mesafe Bandı</b> değeri varsa, s&ouml;z konusu değerleri ayarlamak i&ccedil;in <b>Se&ccedil;enekleri Ge&ccedil;ersiz Kıl</b> işlevi kullanılabilir.
+            </p>
+            <p> <b>Se&ccedil;enekleri Ge&ccedil;ersiz Kıl</b>, analizi farklı veri k&uuml;meleri &uuml;zerinde &ccedil;alıştırırken de yararlıdır; birden &ccedil;ok veri k&uuml;mesinde <b>Mesafe Bandı</b> ve <b>H&uuml;cre Boyutu</b> değerlerini tutarlı kullanmanıza olanak tanır.  Bu şekilde, sonu&ccedil;ları uygun bi&ccedil;imde (&ouml;rneğin iki farklı yıl i&ccedil;in obezite ve diyabet ve hatta su&ccedil; oranlarını) karşılaştırabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Hücre Boyutu</h2></div>
+        <hr/>
+        <div>
+            <p>İ&ccedil;indeki noktaların sayılması i&ccedil;in kullanılan kılavuz h&uuml;crelerinin boyutu.  
+            </p>
+            <p>İ&ccedil;indeki noktaları saymak i&ccedil;in bir altıgen kılavuz kullanılırken, bu mesafe değeri altıgenlerin y&uuml;ksekliği olarak kullanılır.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Mesafe Bandı</h2></div>
+        <hr/>
+        <div>
+            <p>Her detay, belirttiğiniz mesafe i&ccedil;indeki s&ouml;z konusu komşu detaylar kapsamında analiz edilir.  Ara&ccedil;, otomatik olarak varsayılan bir mesafe hesaplar veya bu se&ccedil;eneği kullanarak analiziniz a&ccedil;ısından anlamlı olan belirli bir mesafe değeri ayarlayabilirsiniz. 
+            </p>
+            <p>&Ouml;rneğin, işe ulaşım modellerini inceliyor ve işe gidişte kat edilen ortalama mesafenin 15 km olduğunu biliyorsanız, 15 km'lik bir mesafe bandı kullanabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="outlierResultLayer">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b> alanında oluşturulacak ve haritaya eklenecek katman i&ccedil;in bir ad girin.  Bu sonu&ccedil; katmanı size y&uuml;ksek ya da d&uuml;ş&uuml;k değerlerin ya da nokta sayılarının istatistiksel olarak anlamlı aykırı değerlerini g&ouml;sterir. Sonu&ccedil; katmanı adı zaten mevcutsa, bunu yeniden adlandırmanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

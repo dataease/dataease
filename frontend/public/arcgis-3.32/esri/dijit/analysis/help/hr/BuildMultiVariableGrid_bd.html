@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Izradi viševarijabilnu mrežu</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Dijagram radnog tijeka za prilaganje podataka"></h2>
+        <hr/>
+    <p>Alat Izradi vi&scaron;evarijabilnu mrežu radi s jednim ili vi&scaron;e slojeva točkastih, linijskih ili poligonalnih geoobjekata. Alat generira mrežu četverokutnih ili &scaron;esterokutnih ćelija i izračunava vrijednosti za svaku na temelju blizine svakom ulaznom sloju. Te vrijednosti mogu uključivati sljedeće varijable: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Udaljenost do najbližeg</b> &ndash; udaljenost od svake ćelije do najbližeg geoobjekta
+            </li>
+            <li> <b>Atribut najbližeg</b> &ndash; vrijednost polja geoobjekta koji je najbliži ćeliji
+            </li>
+            <li> <b>Sažetak obližnjeg</b> &ndash; specifična statistika svih geoobjekata unutar udaljenosti od svake ćelije
+            </li>
+            <li> <b>Sažetak presijecajućeg</b> &ndash; specifična statistika svih geoobjekata koji sijeku pojedinu ćeliju
+            </li>
+        </ul>
+        
+    </p>
+    <p>U sloju rezultata nalazit će se samo varijable koje odredite. Te vam varijable mogu pomoći da razumijete blizinu i raspodjelu va&scaron;ih podataka. Rezultati vam mogu pomoći odgovoriti na pitanja poput sljedećih:
+        <ul>
+            <li>S vi&scaron;estrukim slojevima infrastrukture javnog prijevoza, koji je dio grada najmanje dostupan javnim prijevozom?
+            </li>
+            <li>S obzirom na slojeve slivova, kao &scaron;to su rijeke i jezera, koji je naziv vodene povr&scaron;ine koja je najbliža određenoj lokaciji u SAD-u?
+            </li>
+            <li>Ako imate sloj prihoda po kućanstvima, gdje su u SAD-u razlike u prihodima u krugu od 50 milja najveće?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Izaberite vrstu ćelija koja će se upotrijebiti za izradu viševarijabilne mreže</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Vrsta i veličina ćelija koja će se upotrijebiti za stvaranje vi&scaron;evarijabilne mreže. Za opciju  <b>Četverokut</b> broj i naznačene jedinice određuju visinu i dužinu kvadrata. Za opciju <b>&Scaron;esterokut</b> broj i naznačene jedinice određuju udaljenost između usporednih strana.
+            </p>
+            <p>U toj se analizi koriste ćelije i potreban je predviđeni koordinatni sustav. Možete postaviti  <b>Koordinatni sustav obrade</b> u <b>Okruženju za analizu</b>. Ako koordinatni sustav obrade nije postavljen na predviđeni koordinatni sustav, od vas će se tražiti da ga postavite kada <b>pokrenete analizu</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Izaberite ulazne slojeve i varijable koje želite uključiti u mrežu</h2></div>
+        <hr/>
+        <div>
+            <p>Kliknite gumb za dodavanje  ( <b>+</b>) za otvaranje prozora <b>Dodavanje varijabli</b> i dodavanje sloja va&scaron;oj analizi. U prozoru <b>Dodavanje varijabli</b> odaberite ulazni sloj i konfigurirajte varijable koje želite izračunati za taj ulazni sloj.
+            </p>
+            <p>Kada odaberete i konfigurirate varijable koje želite izračunati, sloj će se navesti u prozoru alata sa svim ostalim odabranim slojevima. Kliknite na gumb za uređivanje za bilo koji sloj da biste otvorili prozor  <b>Dodavanje varijabli</b> i prikazali sve varijable konfigurirane za taj sloj. Kliknite na gumb za brisanje za bilo koji sloj da biste uklonili taj sloj i sve povezane varijable iz analize.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Dodavanje varijabli</h2></div>
+        <hr/>
+        <div>
+            <p>Prozor vam omogućuje da odaberete ulazni sloj i konfigurirate varijable koje želite izračunati za taj ulazni sloj. Za početak, upotrijebite padajući izbornik  <b>Izaberi ulazni sloj</b> za odabir točkastog, poligonalnog ili linijskog sloja koje želite dodati svojoj analizi.
+            </p>
+            <p>Osim odabira sloja s va&scaron;e karte, možete odabrati  <b>Izaberi sloj za analizu</b> na dnu padajućeg popisa za pretraživanje va&scaron;ih sadržaja za skup podataka za dijeljenje datoteka velikih podataka ili sloj geoobjekta.
+            </p>
+            <p>Kada odaberete ulazni sloj, kliknite na gumb  <b>Dodavanje varijabli</b> da biste otvorili novu varijablu za uređivanje. Morate navesti jedinstveni naziv za svaku varijablu. To će biti naziv polja koje se izrađuje u atributnoj tablici sloja rezultata.
+            </p>
+            <p>Upotrijebite padajući izbornik za odabir vrste varijable koju ćete dodati. Sve vrste varijabli moraju se konfigurirati jedinstvenim skupom parametara te su potrebni svi parametri.
+            </p>
+            <p>Nakon &scaron;to dodate sve željene varijable za odabrani sloj, kliknite na gumb  <b>Dodaj</b> da biste spremili varijable.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p> Naziv sloja koji će se stvoriti. Ako pi&scaron;ete na ArcGIS Data Store, va&scaron;i će se rezultati spremiti u  <b>Mojem sadržaju</b> i dodati karti. Ako pi&scaron;ete na dijeljenje datoteka velikih podataka, va&scaron;i će se rezultati pohraniti u dijeljenje datoteka velikih podataka i dodati u manifest. Neće se dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, alat neće biti uspje&scaron;an.
+            </p>
+            <p>Kada pi&scaron;ete na  ArcGIS Data Store (relacijski ili prostorno-vremenski spremnik velikih podataka), upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

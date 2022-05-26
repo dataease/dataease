@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>データの抽出</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="データの抽出"></h2>
+        <hr/>
+    <p>このツールを使用すると、指定した対象エリアのデータを選択およびダウンロードできます。選択したレイヤーは、ZIP ファイルまたは CSV、または KMZ ファイルに追加されます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>抽出するレイヤー</h2></div>
+        <hr/>
+        <div>
+            <p>これらは、フィーチャを抽出できる [コンテンツ] ウィンドウ内のレイヤーです。選択されたレイヤーが抽出され、結果の ZIP ファイルまたは CSV ファイルに含められます。
+            </p>
+            <p>抽出するレイヤーのリストにレイヤーを表示するには、ユーザーがデータを所有しているか、データの所有者が、データのエクスポートを有効化する必要があります。所有するデータでのデータのエクスポートを有効化するには、次の操作を実行します。 
+                <ul>
+                    <li>データのアイテム説明を開きます。
+                    </li>
+                    <li> <b>[設定]</b> タブをクリックします。
+                    </li>
+                    <li> <b>[データのエクスポート]</b> セクションまでスクロール ダウンします。
+                    </li>
+                    <li> <b>[他のユーザーが別の形式にエクスポートすることを許可します。]</b> をオンにします。終了したら、 <b>[保存]</b> をクリックします。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>解析レイヤーにアタッチメントが含まれている場合、アタッチメントを抽出できるのは、出力データ形式がファイル ジオデータベースで、 <b>[クリップ フィーチャ]</b> がオフの場合のみです。
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>分析範囲</h2></div>
+        <hr/>
+        <div>
+            <p>出力される ZIP ファイルまたは CSV ファイルに格納するフィーチャを定義するエリア。以下の選択項目があります。
+                <ul>
+                    <li>マップの現在の表示範囲 ( <b>[表示領域に一致]</b>)。
+                    </li>
+                    <li>[コンテンツ] ウィンドウ内のレイヤーの 1 つ。選択したレイヤーがポイントまたはライン フィーチャの場合、レイヤーの範囲は分析範囲として使用されます。
+                    </li>
+                    <li>調査エリアを定義するエリアを描画する。
+                    </li>
+                </ul>
+                 マップ範囲内に完全に含まれるフィーチャは、すべて抽出されます。マップ範囲の境界線を横切ったり交差したりしていて、すべてが範囲内にはないフィーチャの場合、2 つの選択肢があります。
+                <ul>
+                    <li> <b>[選択フィーチャ]</b> - 分析範囲を横切るフィーチャ全体が抽出されます。
+                    </li>
+                    <li> <b>[クリップ フィーチャ]</b> - フィーチャの分析範囲内にある部分だけが抽出されます。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>出力データ形式</h2></div>
+        <hr/>
+        <div>
+            <p>抽出されるデータの形式。ラインまたはエリア フィーチャを CSV ファイルにエクスポートすると、非空間属性のみが抽出されます。ポイント フィーチャをエクスポートする場合は、空間および非空間の属性が抽出されます。
+            </p>
+            <p>抽出されたデータは、Web メルカトル 1984 投影法を使用します。CSV ファイルでは、 <i>Lat</i> および <i>Long</i> フィールドが Web メルカトル 1984 の座標のデータに追加されます。
+            </p> 
+            <p>次の出力形式がサポートされています。
+                <ul>
+                    <li>カンマ区切り値 (CSV) - * <code>.csv</code> または * <code>.zip</code>
+                    </li>
+                    <li>ファイル ジオデータベース - * <code>.zip</code>
+                    </li>
+                    <li>KML (Keyhole Markup Language) - * <code>.kmz</code> または * <code>.zip</code>
+                    </li>
+                    <li>シェープファイル - * <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>出力ファイル名</h2></div>
+        <hr/>
+        <div>
+            <p>これは、 <b>[マイ コンテンツ]</b> に追加されるアイテムの名前です。アイテム名は、選択した <b>[出力データ形式]</b> に基づきます。アイテムがすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存先]</b> ドロップダウン ボックスを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

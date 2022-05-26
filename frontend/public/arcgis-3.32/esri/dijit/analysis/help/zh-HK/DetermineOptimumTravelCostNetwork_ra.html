@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>決定最佳的行進成本網路</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="決定最佳的行進成本網路工具圖例"></h2>
+        <hr/>
+    <p>此工具可計算一組輸入地區的最佳成本網路。
+    </p>
+    <p>此工具的一個應用範例是尋找緊急車輛的最佳網路。
+    </p>
+    <p>如果勾選 <b>使用目前地圖範圍</b>，則僅分析目前地圖範圍中可見的輸入圖層中的位置。如果未勾選，則分析輸入圖層中的所有位置，包括超出目前地圖範圍的圖徵。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>選擇點陣或圖徵位置圖層以決定其間的行進路徑</h2></div>
+        <hr/>
+        <div>
+            <p>要以最低成本網路連接的輸入地區。
+            </p>
+            <p>地區可按圖片服務或圖徵服務定義。
+            </p>
+            <p>對於圖片服務，是按相同值的連續（相鄰）儲存格群組來定義地區。每一個地區必須有唯一的編號。不屬於任何地區的儲存格必須是 NoData。點陣類型必須是正整數或負整數。
+            </p>
+            <p>對於圖徵服務，輸入可為點、線或多邊形。
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>選擇行進成本點陣圖層</h2></div>
+        <hr/>
+        <div>
+            <p>用來定義阻抗或成本的點陣，以均勻方式穿過每個儲存格。
+            </p>
+            <p>每個儲存格位置上的值表示穿過該儲存格之每單位距離的成本。每個儲存格位置值乘以儲存格解析度，同時也可以補償對角移動來取得穿過儲存格的總成本。
+            </p>
+            <p>成本點陣的值可為整數或浮點數，但不可是負數或零（您不能有負或零成本）。
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>結果最佳路徑折線圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果已存在該名稱的圖層，系統將提示您提供其他名稱。
+            </p>
+            <p>您可以使用 <b>將結果儲存到</b>下拉式方塊，在 <b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>結果鄰近路徑折線圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果已存在該名稱的圖層，系統將提示您提供其他名稱。
+            </p>
+            <p>您可以使用 <b>將結果儲存到</b>下拉式方塊，在 <b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

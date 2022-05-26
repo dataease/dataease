@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Kopiera till datalager</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="Kopiera till datalager"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget tar ett indatalager och kopierar det till ett datalager. Du kan kopiera resultat till  ArcGIS Data Store (relationell eller rumstemporal big data-k&auml;lla) och ett lager kommer att skapas i din portal. Alternativt kan du kopiera resultat till en big data-filk&auml;lla. 
+    </p>
+    <p>Du kan t.ex. kopiera geoobjekt som finns lagrade i en  <code>big data-fildelning</code> till ett <code>relationellt datalager</code> och ange att endast funktioner inom den aktuella kartutbredningen ska kopieras. Det skapar en driftad geoobjektstj&auml;nst med bara de geoobjekt som fanns inom den angivna kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj lager som ska kopieras</h2></div>
+        <hr/>
+        <div>
+            <p>Lagret eller tabellen som ska kopieras. 
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>Du kan använda alla geoobjekt eller göra ett urval (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan anv&auml;nda valknappen och identifiera vilka platser som ska kopieras.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Välj datakälla att kopiera till</h2></div>
+        <hr/>
+        <div>
+            <p>Det datalager som lagret ska kopieras till. Denna parameter &aring;sidos&auml;tter valet i  <b>Analysmilj&ouml;</b>. F&ouml;ljande alternativ finns:
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>Rumstemporalt</b> &ndash; Det h&auml;r &auml;r standard.
+                            </li>
+                            <li> <b>Relationell</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>Utdatamallar f&ouml;r big data-fildelning</b>
+                        <ul>
+                            <li>En lista med tillg&auml;ngliga mallar f&ouml;r big data-fildelning i formatet  <b>bigDataFileShareName-templateName</b>. Mallar f&ouml;r big data-fildelning m&aring;ste konfigureras innan verktyget k&ouml;rs.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p> Namnet p&aring; lagret som ska skapas.  Om du skriver till en ArcGIS Data Store, sparas dina resultat i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om du skriver till en big data-fildelning, lagras dina resultat i big data-fildelningen och l&auml;ggs till i dess manifest. Det l&auml;ggs inte till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns misslyckas verktyget.
+            </p>
+            <p>N&auml;r du skriver till   ArcGIS Data Store (relationellt eller rumstempor&auml;rt Big Data-datalager) med listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

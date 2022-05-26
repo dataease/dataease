@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Dizolvare graniţe</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Dizolvare graniţe"></h2>
+        <hr/>
+    <p>Suprafeţele care se suprapun sau au o graniţă comună sau o valoare de atribuit comună sunt unificate pentru a forma o singură suprafaţă.
+    </p>
+    <p>Puteţi controla ce graniţe urmează să fie unificate specific&acirc;nd un c&acirc;mp. De exemplu, dacă aveţi un strat tematic de unităţi teritoriale şi fiecare unitate teritorială are un atribut  <pre>State_Name</pre>, puteţi dizolva graniţele utiliz&acirc;nd atributul <pre>State_Name</pre>.  Unităţile teritoriale vor fi unificate dacă au aceeaşi <pre>State_Name</pre> valoare. Rezultatul este un strat tematic cu graniţe statale.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Alegeţi stratul tematic cu suprafeţele ale căror graniţe vor fi dizolvate</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul care conţine obiectele spaţiale de suprafeţe care vor fi dizolvate. 
+            </p>
+            <p>&Icirc;n afară de a alege un strat tematic din harta dvs., puteţi selecta opţiunile  <b>Alegere strat tematic de analiză</b> &icirc;n partea inferioară a listei verticale pentru a răsfoi conţinutul pentru stratul tematic sau setul de date pentru partajarea de fişiere big data.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Alegere metodă de dizolvare</h2></div>
+        <hr/>
+        <div>
+            <p>Se specifică metoda utilizată pentru dizolvarea c&acirc;mpurilor.
+            </p>
+            <p>Puteţi alege una din două metode pentru unificare obiectelor spaţiale de suprafaţă:
+                <ul>
+                    <li> <b>Suprafeţe care se suprapun sau sunt adiacente</b>&mdash;Două sau mai multe suprafeţe ale căror graniţe se suprapun vor fi unificate &icirc;ntr-o singură suprafaţă. &Icirc;n plus, suprafeţele care sunt adiacente (adică au o graniţă comună) vor fi unificate &icirc;ntr-o singură suprafaţă.
+                    </li>
+                    <li> <b>Suprafeţe cu aceeaşi valoare de c&acirc;mp</b>&mdash;Două sau mai multe suprafeţe vor fi unificate &icirc;ntr-o singură suprafaţă dacă au aceeaşi valoare de c&acirc;mp.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Creare obiecte spaţiale cu mai multe părţi</h2></div>
+        <hr/>
+        <div>
+            <p>Obiectul spaţial cu componente multiple este o reprezentare a unui loc sau lucru care are mai mult de o singură parte dar este definită ca un obiect spațial doarece face referire la un set de atribute. &Icirc;ntr-un strat tematic de state, de exemplu, Hawaii poate fi considerat obiect spaţial cu componente multiple deoarece componentele geometrice separate ale acestuia pot fi clasificate drept un singur stat.
+            </p>
+            <p> <b>Creare obiecte spaţiale cu părți multiple</b> oferă două opțiuni:
+                <ul>
+                    <li>Real (verificat)&mdash; Serviciul de ieșire poate include obiecte spațiale cu componente multiple.
+                    </li>
+                    <li>Fals (neverificat)&mdash; Serviciul de ieșire va include doar obiecte spațiale cu o singură componentă, iar pentru fiecare componentă vor fi create obiecte spațiale individuale. Aceasta este setarea implicită.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Adăugare statistici (opțional)</h2></div>
+        <hr/>
+        <div>
+            <p>La unificarea suprafeţelor, puteţi rezuma valorile de atribuit ale acestora cu o statistică semnificativă. De exemplu, dacă dizolvaţi graniţa dintre unităţi teritoriale &icirc;n funcţie de  <pre>State_Name</pre> şi fiecare unitate teritorială are un c&acirc;mp <i>Population</i>, puteţi calcula suma <pre>Population</pre> pentru stat.
+            </p>
+            <p> Puteţi calcula statistici despre obiectele spaţiale rezumate. Puteți calcula următoarele pe c&acirc;mpuri numerice:
+                <ul>
+                    <li>Numărare&mdash;Calculează numărul de valori care nu sunt nule. Poate fi utilizat &icirc;n c&acirc;mpuri numerice sau șiruri. Calculul [nul, 0, 2] este egal cu 2.
+                    </li>
+                    <li>Sumă - Suma valorilor numerice dintr-un c&acirc;mp. Suma [nul, 0, 3] este egală cu 3.
+                    </li>
+                    <li>Media&mdash;Media valorilor numerice. Media dintre [0, 2, nul] este 1.
+                    </li>
+                    <li>Min&mdash;Valoarea minimă a unui c&acirc;mp numeric. Minimul dintre [0, 2, nul] este 0. 
+                    </li>
+                    <li>Max&mdash;Valoarea maximă a unui c&acirc;mp numeric. Valoarea maximă a [0, 2, nul] este 2.
+                    </li>
+                    <li>Interval&mdash;Intervalul unui c&acirc;mp numeric. Acesta este calculat ca valoare minimă scăzută din valoare maximă. Intervalul [nul, 0, 1] este 1. Intervalul [nul, 0, 4] este 0.
+                    </li>
+                    <li>Variaţia&mdash;Variaţia unui c&acirc;mp numeric pe o pistă. Variaţia [1] este nulă. Variația [nul, 1,0,1,1] este de 0,25.
+                    </li>
+                    <li>Deviaţia standard&mdash;Deviaţia standard a unui c&acirc;mp numeric. Deviaţia standard [1] este nulă. Deviaţia standard [nul, 1,0,1,1] este 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Puteți calcula următoarele pe c&acirc;mpuri de șiruri:
+                <ul>
+                    <li>Calcul&mdash;Numărul şirurilor care nu sunt nule.
+                    </li>
+                    <li>Oricare - Această statistică este un exemplu aleatoriu al unei valori de tip şir &icirc;n c&acirc;mpul specificat.
+                    </li>
+                </ul>
+                Toate statisticile sunt calculate pentru valori care nu sunt nule. Stratul tematic rezultat va conţine un c&acirc;mp nou pentru fiecare statistică calculată. Se pot adăuga oric&acirc;te statistici aleg&acirc;nd un atribut şi o statistică. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p> Numele stratului tematic care va fi creat. Dacă scrieți &icirc;ntr-un ArcGIS Data Store, rezultatele dvs. vor fi salvate &icirc;n  <b>Resursele mele</b> și adăugate pe hartă. Dacă scrieți &icirc;ntr-o partajare de fişiere big data, rezultatele dvs. vor fi stocate &icirc;n partajarea de fişiere big data și adăugate la manifestul acesteia. Nu vor fi adăugate pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic există deja, instrumentul va eşua.
+            </p>
+            <p>C&acirc;nd scrieți &icirc;n  ArcGIS Data Store (depozit de date relaționale sau spațio-temporale de volum mare) utiliz&acirc;nd caseta derulantă  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

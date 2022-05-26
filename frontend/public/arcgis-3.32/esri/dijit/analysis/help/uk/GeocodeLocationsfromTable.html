@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Геокодування місць розташування з таблиці</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Геокодування місць розташування з таблиці"></h2>
+        <hr/>
+    <p>Геокодування &mdash; це спосіб перетворення адрес на координати. Цей інструмент перетворює адреси з таблиці, файлу CSV або файлу Excel на векторний шар чи вихідний файл з координатами, представленими у додаткових стовпцях.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Вибрати вхідну таблицю</h2></div>
+        <hr/>
+        <div>
+            <p>Вхідна таблиця з адресами для геокодування. Вхідними даними мають бути таблиця, файл CSV або файл Excel.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Вибрати локатор</h2></div>
+        <hr/>
+        <div>
+            <p>Виберіть сервіс локатора, за яким треба виконати геокодування. Якщо потрібний сервіс геокодування відсутній у розкривному меню, зверніться до вашого адміністратора, щоб він налаштував сервіс локатора для пакетного геокодування.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Країна</h2></div>
+        <hr/>
+        <div>
+            <p>Якщо всі ваші адреси знаходяться в одній країні виберіть країну для отримання максимально точних результатів. Або залиште цей параметр порожнім.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Вибрати поля даних</h2></div>
+        <hr/>
+        <div>
+            <p>Для сервісу локатора потрібні певні поля у даних, такі як адреса місто, штат та поштовий індекс. Зіставте поля даних у вашому вхідному файлі або таблиці з полями, які потрібні локатору, за допомогою розкривних списків. Чим більше полів ви зіставите, тим точнішими будуть результати. Якщо вхідна таблиця має всі свої дані в одному стовпці, виберіть опцію  <b>Одиночне поле</b>, а потім виберіть поле даних з розкривного меню. Або виберіть опцію <b>Декілька полів</b> та зіставте відповідні поля локатора з декількома стовпцями полів у вашій таблиці.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Вибрати формат виводу</h2></div>
+        <hr/>
+        <div>
+            <p>Формат вихідних результатів. Якщо ви виберете створення сервісу об'єктів, адреси з вхідної таблиці буде додано до карти як шар точкових об'єктів. Опції CSV та XLS дозволяють додавати файли з результатами геокодування до  <b>Мого змісту</b> після завершення завдання.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ім'я вихідного результату</h2></div>
+        <hr/>
+        <div>
+            <p>Це назва шару, який буде створено в  <b>Моєму змісті</b> та додано до карти. Назва за замовчуванням базується на назві інструменту та назві вхідного шару. Якщо ім'я шару вже існує, вам буде запропоновано надати іншу назву.
+            </p>
+            <p>За допомогою розкривного меню  <b>Зберегти результат в</b> можна вказати назву папки у <b>Моєму змісті</b>, куди буде збережено результат.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

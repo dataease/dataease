@@ -1,0 +1,17 @@
+<div class="dojoxUploaderFileList">
+	<div data-dojo-attach-point="progressNode" class="dojoxUploaderFileListProgress">
+		<div data-dojo-attach-point="percentBarNode" class="dojoxUploaderFileListProgressBar"></div>
+		<div data-dojo-attach-point="percentTextNode" class="dojoxUploaderFileListPercentText">0%</div>
+	</div>
+	<table class="dojoxUploaderFileListTable">
+		<thead>
+			<tr class="dojoxUploaderFileListHeader">
+				<th class="dojoxUploaderIndex">${headerIndex}</th>
+				<th class="dojoxUploaderIcon">${headerType}</th>
+				<th class="dojoxUploaderFileName">${headerFilename}</th>
+				<th class="dojoxUploaderFileSize" data-dojo-attach-point="sizeHeader">${headerFilesize}</th>
+			</tr>
+		</thead>
+		<tbody class="dojoxUploaderFileListContent" data-dojo-attach-point="listNode"></tbody>
+	</table>
+<div>

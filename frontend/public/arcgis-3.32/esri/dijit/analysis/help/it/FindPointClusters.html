@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Trova cluster punti</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Trova cluster punti"></h2>
+        <hr/>
+    <p>Questo strumento trova i cluster di feature punto entro il disturbo circostante in base alla loro distribuzione spaziale.
+    </p>
+    <p>Se l'estensione  <b>Usa mappa corrente</b> &egrave; selezionata, solo le feature nel layer di punti di input all'interno dell'estensione mappa corrente verranno analizzate. Se questa opzione &egrave; deselezionata, verranno analizzate tutte le feature del layer di punti di input, anche se esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Scegliere il layer per il quale verranno trovati i cluster</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer puntuale in cui si trovano i cluster. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Numero minimo di punti da considerare cluster</h2></div>
+        <hr/>
+        <div>
+            <p>Il numero minimo di feature da considerare cluster. Tutti i cluster con meno feature di quelli forniti verranno considerati disturbo. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Limita l'intervallo di ricerca a (opzionale)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>La distanza minima per considerare le feature come parte dello stesso cluster. Se questo campo viene lasciato in bianco, lo strumento eseguir&agrave; HDBSCAN, che utilizza distanze variabili per separare cluster di varie densit&agrave; da disturbi sparsi. Se viene fornito un valore per questo campo, lo strumento eseguir&agrave; DBSCAN, che utilizza una distanza specifica per separare cluster densi da disturbi sparsi.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

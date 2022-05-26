@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/sl/GenerateTrendRaster",{toolDefine:"Ustvari raster trenda",outputLayerName:"${layername}_trend",dimensionLabel:"Izberite dimnezijo vzdol\u017e katere bo potekala analiza trenda spremenljivke",variablesLabel:"Izberite spremenljivko(-e) za analizo trenda",variablesListLabel:"Spremenljivke [Informacije dimenzije] (opis)",trendLineTypeLabel:"Izberite vrsto linije za prilagoditev vrednosti spremenljivke vzdol\u017e dimenzije",linear:"Linearno",harmonic:"Harmoni\u010dno",
+polynomial:"Polinomno",frequencyLabel:"Dolo\u010dite \u0161tevilko pogostosti za harmoni\u010dno prilagajanje trenda",polynomialOrderLabel:"Dolo\u010dite polinomno \u0161tevilko vrstnega reda za prilagajanje trenda",ignoreNodataLabel:"Prezri manjkajo\u010de vrednosti v izra\u010dunu",ignore:"Prezri",analysisLayerLabel:"Izberite ve\u010ddimenzionalni slikovni sloj za analizo trenda",itemDescription:"Analiza slikovne storitve, ustvarjena iz Ustvari raster trenda",itemTags:"Rezultati rastrske analize, Ustvari raster trenda, ${layername}",
+itemSnippet:"Analiza slikovne storitve, ustvarjena iz Ustvari raster trenda"});

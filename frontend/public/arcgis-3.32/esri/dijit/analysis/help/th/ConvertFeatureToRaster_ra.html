@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>แปลงเวกเตอร์เป็นแรสเตอร์</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="เครื่องมือแปลงเวกเตอร์เป็นแรสเตอร์"></h2>
+        <hr/>
+    <p>เครื่องมือนี้แปลงเวกเตอร์เป็นแรสเตอร์ชุดข้อมูล
+    </p>
+    <p>ฟีเจอร์คลาสประกอบไปด้วยข้อมูล จุด, เส้น หรือรูปแบบของพื้นที่เหล่านี้สามารถแปลงเป็นแรสเตอร์ชุดข้อมูลได้
+    </p>
+    <p>เซลล์ตรงกลางจะใช้เป็นตัวกำหนดค่าของพิกเซลแรสเตอร์เอาต์พุต
+    </p>
+    <p>ประเภทของฟิลด์ที่ใส่จะเป็นตัวกำหนดประเภทของแรสเตอร์เอาต์พุต ถ้าฟิลด์เป็นจำนวนเต็ม, แรสเตอร์เอาต์พุตก็จะเป็นจำนวนเต็ม; ถ้าเป็นจุดทศนิยม, เอาต์พุตก็จะเป็นจุดทศนิยม
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>เลือกชั้นข้อมูลเวกเตอร์ที่ต้องการแปลง</h2></div>
+        <hr/>
+        <div>
+            <p>ใส่ชั้นข้อมูลฟีเจอร์ที่ต้องการแปลงเป็นแรสเตอร์ดาต้าเซ็ต
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>เลือกฟิลด์</h2></div>
+        <hr/>
+        <div>
+            <p>เลือกฟิลด์ที่จะใช้เป็นตัวกำหนดค่า values ของแรสเตอร์เอาต์พุต
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>ขนาดของเซลล์เอาต์พุต</h2></div>
+        <hr/>
+        <div>
+            <p>ขนาดเซลล์และหน่วยของแรสเตอร์เอาต์พุต
+            </p>
+            <p>หน่วยที่ใช้ได้คือ ไมล์ ฟุต กิโลเมตรและเมตร ค่าเริ่มต้นคือฟุต
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>ชื่อของชั้นข้อมูลผลลัพธ์</h2></div>
+        <hr/>
+        <div>
+            <p>ชื่อของชั้นข้อมูลที่จะถูกสร้างขึ้นใน  <b>เนื้อหาของฉัน</b> และเพิ่มไปยังแผนที่ ชื่อเริ่มต้นจะขึ้นอยู่กับชื่อเครื่องมือและชื่อชั้นข้อมูลอินพุต ถ้าชั้นข้อมูลนี้มีอยู่แล้ว คุณจะถูกขอให้ตั้งชื่อใหม่
+            </p>
+            <p>คุณสามารถระบุชื่อโฟลเดอร์ใน  <b>My Content</b> ที่ผลลัพธ์จะบันทึกโดยการใช้ <b>กล่อง drop-down</b> บันทึกผลใน
+            </p>
+        </div>
+    </div>
+</div>
+</html>

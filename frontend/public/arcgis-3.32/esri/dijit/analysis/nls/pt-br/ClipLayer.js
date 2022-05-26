@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/pt-br/ClipLayer",{inputLayerLabel:"Escolher fei\u00e7\u00f5es para recortar",filterSelectLabel:"Recortar todas as fei\u00e7\u00f5es ou definir um subconjunto (opcional)",targetArea:"Escolher \u00e1rea para recortar",outputLayerName:"Recortar ${inputLayerName} para ${clipLayerName}",itemDescription:"Camada de fei\u00e7\u00e3o gerada ao executar as solu\u00e7\u00f5es de Recortar. As fei\u00e7\u00f5es de ${inputLayerName} foram recortadas para ${clipLayerName}.",itemTags:"Resultado de An\u00e1lise, ClipLayer, ${inputLayerName}, ${clipLayerName}, ${outputLayerGeometry}",
+itemSnippet:"Camada de fei\u00e7\u00e3o gerada de Recortar Camada"});

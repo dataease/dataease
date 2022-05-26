@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>建立視域</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="建立視域工具"></h2>
+        <hr/>
+    <p>此工具可識別觀察點能看到的區域，以解讀表面地形圖。輸入點位置可以代表觀察者（例如地面上的人或火警瞭望塔的看守人）或被觀察的物體（例如，風力發電機、水塔、車輛或其他人）。結果定義了能夠從觀察點位置看到的區域。
+    </p>
+    <p>觀察者和被觀察物體都可以距離地面一定高度，這些高度可用於確定能見度。例如，針對 300 英呎高的風力發電機和站在地面上 6 英呎高的人所計算得到的視域，通常大於針對 200 英呎高的發電機和 5 英呎高的人計算所得到的視域。
+    </p>
+    <p>結果圖層可記錄輸入觀察點可看到的輸入表面點陣中的每個儲存格位置的次數。會在不可見的儲存格中提供 NoData 值。
+    </p>
+    <p>如果勾選 <b>使用目前地圖範圍</b>，則僅分析目前地圖範圍中可見的點陣區域和觀察點。如果未勾選，將分析輸入圖層中的所有觀察點，包括超出目前地圖範圍的觀察點。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>高程表面</h2></div>
+        <hr/>
+        <div>
+            <p>用於計算視域的高程表面。
+            </p>
+            <p>如果輸入表面的垂直單位不同於水平單位，例如以英呎代表高程值，卻以公尺代表座標系統時，表面必須具有定義的垂直座標系統。原因是工具會使用垂直 (Z) 和水平 (XY) 單位來計算 Z 因子，以執行視域分析。若欠缺垂直座標系統，因此沒有可用的 Z 單位資訊時，工具會假設 Z 單位與 XY 單位相同。結果是將內部 Z 因子 1.0 使用於分析，從而導出非預期的結果。
+            </p>
+            <p>高程表面可為整數或浮點數。
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>代表觀察者位置的點圖徵</h2></div>
+        <hr/>
+        <div>
+            <p>計算視域時代表觀察者位置的點圖徵。
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>最佳化</h2></div>
+        <hr/>
+        <div>
+            <p>使用於計算視域的最佳化方法。
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+此方法可最佳化處理速度，犧牲結果的部分精確性以獲得較高的效能。這是預設情況。
+
+                </li>
+                <li>Accuracy &mdash; 
+此方法已針對結果的精確性最佳化，代價是有較長的處理時間。
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>最大觀看距離</h2></div>
+        <hr/>
+        <div>
+            <p>輸入可見區域計算將停止的中斷距離。超出此距離，就無法確定觀察點和其他物體是否可以看見彼此。
+            </p>
+            <p>您可以指定代表線性距離的數值，或從輸入觀察點圖徵選擇數值欄位。如果提供欄位，則欄位包含的值單位，必須與輸入高程表面的 xy 單位相同。
+            </p>
+            <p>請注意，大的數值會增加計算時間。除非指定，否則將根據輸入高程表面的解析度和範圍來計算預設的最長距離。
+            </p>
+            <p>此參數對建構特定現象的模型很有用。例如，藉由限制能見度的範圍，您可以建構天氣條件的模型，例如薄霧。同理，限制能見度範圍可讓您針對薄暮效果進行近似計算，從而讓您對每日的時間進行部分計算。
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>最大觀看距離</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>最小檢視距離</h2></div>
+        <hr/>
+        <div>
+            <p>輸入可見區域計算將開始的距離。在輸出中看不到與此距離更接近的表面上儲存格，但仍會阻擋最短與最長檢視距離之間的儲存格能見度。
+            </p>
+            <p>您可以指定代表線性距離的數值，或從輸入觀察點圖徵選擇數值欄位。如果提供欄位，則欄位包含的值單位，必須與輸入高程表面的 xy 單位相同。
+            </p>
+            <p>此參數適合控制與觀察者相距特定距離的視域分析區域。例如，如果您正在評估大樓頂層至遠處公園之間的能見度，您可以設定最短檢視距離來排除不感興趣公園所封閉的區域，並取得更快速的處理速度。
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>最小檢視距離</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>距離為 3D</h2></div>
+        <hr/>
+        <div>
+            <p>指定以三維方式，或以更簡單的二維方式來測量最短和最長檢視距離參數。勾選此選項時，會將檢視距離視為 3D 距離。取消勾選時，會將其視為 2D 距離。
+            </p> 
+            <p>2D 距離是使用觀察者和目標在海平面上的投影位置，在這二者之間測量的簡單線性距離。3D 距離則會考量其相對高度，從而獲得更真實的值。
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>觀察者位置的高程</h2></div>
+        <hr/>
+        <div>
+            <p>輸入觀察者位置的高程。
+            </p>
+            <p>您可以指定數值來代表所有觀察者的高程，或指定欄位來代表每個觀察者的高程。如果提供欄位，則欄位包含的值單位，必須與輸入高程表面的 Z 單位相同。
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>觀察者位置的高程</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>觀察者的高度</h2></div>
+        <hr/>
+        <div>
+            <p>輸入您的觀察者位置在地面上的高度。
+            </p> 
+            <p>您可以針對高度指定數值，或從輸入觀察點圖徵選擇欄位。如果提供欄位，則欄位包含的值單位，必須與輸入高程表面的 z 單位相同。
+            </p>
+            <p>預設為 6 英呎。如果正在從提高的位置觀察，例如瞭望塔或高樓，請改用該高度。在視域計算期間，會將此值新增至觀察者高程（若已指定）；否則會將其新增至插補的表面 z 值。
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>觀察者的高度</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>目標的高度</h2></div>
+        <hr/>
+        <div>
+            <p>輸入地面上建築物或人的高度，用於確立能見度。
+            </p>
+            <p>您可以針對高度指定數值，或從輸入觀察點圖徵選擇欄位。如果提供欄位，則欄位包含的值單位，必須與輸入高程表面的 z 單位相同。
+            </p>
+            <p>結果視域可識別觀察點可在哪些區域看到地面上的這些物體。反之亦然；地面上的物體也可以看到觀察點。
+            </p>
+            <p>以下是目標高度設定的部分範例：
+            </p>
+            <ul>
+                <li>如果您的輸入點代表風力發電機，且您想要確定站在地面上的人能夠看到發電機的區域，請輸入人的平均身高（約為 6 英呎）。
+                    
+
+                </li>
+                <li>如果您的輸入點代表火警瞭望塔，且您想要確定能夠看到高度上升 20 英呎或以上煙流的火警瞭望塔，請輸入目標高度 20 英呎。
+                    
+
+                </li>
+                <li>如果您的輸入點代表沿某些道路或小徑的觀景平台，且您想要確定能夠看到 400 英呎或更高的風力發電機的區域，請輸入高度 400 英呎。
+                    
+
+                </li>
+                <li>如果您的輸入點代表觀景平台，且您想要確定站在該平台的人能夠看到地面上區域的面積，請輸入目標高度 0。
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>觀察者的高度</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>輸出高度以變為可見</h2></div>
+        <hr/>
+        <div>
+            <p>地平面 (AGL) 結果上方的輸出名稱。AGL 結果是一個點陣，其中的每個儲存格值是必須加入的最小高度，否則將沒有任何觀察者能看見該儲存格。將在此輸出點陣中，將已顯示的儲存格指派為 0。
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果已存在該名稱的圖層，系統將提示您提供其他名稱。
+            </p>
+            <p>您可以使用 <b>將結果儲存到</b>下拉式方塊，在 <b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

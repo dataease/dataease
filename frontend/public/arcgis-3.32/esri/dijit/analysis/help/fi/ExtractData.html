@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Pura aineisto</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Pura aineisto"></h2>
+        <hr/>
+    <p>T&auml;ll&auml; toiminnolla voi valita ja ladata haluamiaan tietoja. Toiminto lis&auml;&auml; valitut tasot ZIP-, CSV- tai KMZ-tiedostoon.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Purettavat tasot</h2></div>
+        <hr/>
+        <div>
+            <p>N&auml;m&auml; ovat sis&auml;llysluettelossa olevat tasot, joista voit purkaa kohteita. Toiminto purkaa valitut tasot ja liitt&auml;&auml; ne ZIP- tai CSV-tiedostoon.
+            </p>
+            <p>Jotta taso n&auml;kyy purettavien tasojen luettelossa, aineiston on joko kuuluttava sinulle tai aineiston omistajan on sallittava tietojen vienti. Oman aineiston vienti otetaan k&auml;ytt&ouml;&ouml;n seuraavasti: 
+                <ul>
+                    <li>Avaa aineiston kohdekuvaus.
+                    </li>
+                    <li>Napsauta  <b>Asetukset</b>-v&auml;lilehte&auml;.
+                    </li>
+                    <li>Vierit&auml; alasp&auml;in  <b>Vie aineisto</b> -kohtaan.
+                    </li>
+                    <li>Valitse  <b>Salli muiden vied&auml; eri muotoihin</b> -valintaruutu.  Valitse <b>Tallenna</b>, kun olet valmis.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jos analyysikarttataso sis&auml;lt&auml;&auml; liitteit&auml;, huomaa, ett&auml; liitteet puretaan vain, jos tulosaineiston muoto on File Geodatabase eik&auml;  <b>Leikkaa kohteita</b> -valintaruutua ole valittu.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Tutkimusalue</h2></div>
+        <hr/>
+        <div>
+            <p>Alue, joka m&auml;&auml;ritt&auml;&auml;, mitk&auml; kohteet liitet&auml;&auml;n ZIP- tai CSV-tulostiedostoon. Voit valita seuraavista vaihtoehdoista:
+                <ul>
+                    <li>Kartan nykyinen n&auml;kyv&auml; laajuus ( <b>Sama kuin n&auml;ytt&ouml;</b>).
+                    </li>
+                    <li>Jokin sis&auml;llysluettelon tasoista. Jos valittu karttataso sis&auml;lt&auml;&auml; piste- tai viivakohteita, karttatason laajuutta k&auml;ytet&auml;&auml;n tutkimusalueena.
+                    </li>
+                    <li>Voit m&auml;&auml;ritt&auml;&auml; tarkastelualueen piirt&auml;m&auml;ll&auml; alueen.
+                    </li>
+                </ul>
+                 Kaikki kohteet, jotka ovat kokonaan kartan laajuusalueella, puretaan. Jos kohde ei ole kokonaan kartan laajuusalueella, voit k&auml;ytt&auml;&auml; kahta vaihtoehtoa:
+                <ul>
+                    <li> <b>Valitse kohteet</b> &ndash; Toiminto purkaa kokonaiset kohteet, jotka ylitt&auml;v&auml;t tarkastelualueen rajan.
+                    </li>
+                    <li> <b>Leikkaa kohteita</b> &ndash; Toiminto purkaa vain tarkastelualueella olevat kohteiden osat.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Tulostiedoston muoto</h2></div>
+        <hr/>
+        <div>
+            <p>Purettavan aineiston muoto. Kun viiva- tai aluekohteita puretaan CSV-tiedostoon, ainoastaan ominaisuustiedot puretaan. Kun puretaan pistekohteita, sek&auml; sijaintitiedot ett&auml; muut attribuutit puretaan.  
+            </p>
+            <p>Puretut tiedot k&auml;ytt&auml;v&auml;t Web Mercator 1984 -projektiota.  CSV-tiedostoissa  <i>Lat</i>- ja <i>Long</i>-kent&auml;t lis&auml;t&auml;&auml;n tietoihin yhdess&auml; Web Mercator 1984 -koordinaattien kanssa.
+            </p> 
+            <p>Seuraavia tulosaineistomuotoja tuetaan:
+                <ul>
+                    <li>Pilkuin erotetut arvot (CSV) &ndash;  <code>.csv</code> tai <code>.zip</code>
+                    </li>
+                    <li>File geodatabase &ndash;  <code>.zip</code>
+                    </li>
+                    <li>Keyhole Markup Language (KML) &ndash;  <code>.kmz</code> tai <code>.zip</code>
+                    </li>
+                    <li>Shapefile &ndash;  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Tulostiedoston nimi</h2></div>
+        <hr/>
+        <div>
+            <p> <b>Oma sis&auml;lt&ouml;</b> -kohtaan lis&auml;tt&auml;v&auml;n kohteen nimi. Kohteen nimi perustuu valittuun <b>Tulostiedoston muoto</b> -asetukseen. Jos kohde on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Enrich Layer</h2><p/>
+        <h2><img src="./images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Enrich Layer"></h2>
+        <hr/>
+    <p>This tool  enriches your data by getting facts about the people, places, and businesses that surround your data locations and enables you to answer new questions about locations that you cannot answer with maps alone. For example: What kind of people live here? What do people like to do in this area? What are their habits and lifestyles? What kind of businesses are there in this area?
+    </p>
+    <p>The result will be a new layer containing  all demographic and geographic information from  given data collections.  This new information is added as fields in the table.
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the features in the input layer visible within the current map extent will be enriched.  If unchecked, all features in the input layer will be enriched, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose layer to enrich with new data</h2></div>
+        <hr/>
+        <div>
+            <p>The point, line, or area layer that will be enriched with new attribute data.
+
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Enrichment variables</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Click  <b>Select Variables</b> to open the <b>Data Browser</b>.  The <b>Data Browser</b> helps you find and select  enrichment variables individually or in collections.
+            </p>
+            <p>A  region is automatically selected based on your data. You may choose a different region if your data covers more than one country. 
+            </p>
+            <p>The enrichment variables are organized into data collections for easy access.   When you select a data collection, the browser shows a few of the most popular enrichment variables in that collection.  Under  <b>Keep Browsing</b>, it also shows categories within the collection. Within each category you can select whole sub-categories or drill into a sub-category and select individual enrichment variables. You can also use the search box to find a specific variable within a category.
+            </p>
+            <p>As you select variables to include for enrichment, they are added to the shopping cart located in the corner of the  <b>Data Browser</b>. Use this shopping cart to keep track of the number of variables that you have selected.
+            </p>
+            <p>Each selected variable will be added as a field in your result layer.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Define areas to enrich</h2></div>
+        <hr/>
+        <div>
+            <p>Define the area around your input points or
+lines that will be enriched by using either a straight-line
+distance or a selected travel mode. For a straight-line distance, enter a value up to 1000 miles (1609 kilometers). Travel modes can only be used when your input layer contains points. The available travel modes are determined by the administrator of your organization. When using one of the
+travel modes, the measurements are made along roads or walkways, and they honor applicable rules, such as one-way streets, illegal turns, and so on. After choosing your mode and measure, enter a duration or distance of up to 5 hours (300 minutes) or 300 miles (482.8 kilometers).
+            </p>
+            <p>If  <b>Return result as bounding areas</b> is checked, the result returned will be area features as defined by the time or distance values above.  If unchecked, the result returned will be point features.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Result layer
+name</h2></div>
+        <hr/>
+        <div>
+            <p>This is the name of the layer that will be created in  <b>My Content</b>  and added to the map.  The default  name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down menu, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

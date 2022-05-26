@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Vytvořit mřížku s více proměnnými</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Diagram pracovn&iacute;ho postupu Připojit data"></h2>
+        <hr/>
+    <p>N&aacute;stroj Vytvořit mř&iacute;žku s v&iacute;ce proměnn&yacute;mi pracuje s jednou nebo v&iacute;ce vrstvami bodov&yacute;ch, liniov&yacute;ch či polygonn&iacute;ch prvků. N&aacute;stroj vytvoř&iacute; mř&iacute;žku čtvercov&yacute;ch nebo &scaron;esti&uacute;heln&iacute;kov&yacute;ch přihr&aacute;dek a vypoč&iacute;t&aacute; hodnotu pro každou z nich na z&aacute;kladě vzd&aacute;lenosti každ&eacute; ze vstupn&iacute;ch vrstev. Mezi hodnoty patř&iacute; n&aacute;sleduj&iacute;c&iacute; proměnn&eacute;: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Vzd&aacute;lenost do nejbliž&scaron;&iacute;</b> &ndash; vzd&aacute;lenost z každ&eacute; přihr&aacute;dky k nejbliž&scaron;&iacute;mu prvku
+            </li>
+            <li> <b>Atribut nejbliž&scaron;&iacute;ho</b> &ndash; hodnota pole prvku, kter&yacute; je nejbliž&scaron;&iacute; ke každ&eacute; přihr&aacute;dce
+            </li>
+            <li> <b>Souhrn bl&iacute;zk&yacute;ch</b> &ndash; zadan&aacute; statistika v&scaron;ech prvků v r&aacute;mci vzd&aacute;lenosti každ&eacute; přihr&aacute;dky
+            </li>
+            <li> <b>Souhrn kř&iacute;ž&iacute;c&iacute;ch se</b> &ndash; zadan&aacute; statistika v&scaron;ech prvků, kter&eacute; kř&iacute;ž&iacute; každou přihr&aacute;dku
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ve v&yacute;sledn&eacute; vrstvě budou zahrnuty pouze ty proměnn&eacute;, kter&eacute; zad&aacute;te. Tyto proměnn&eacute; v&aacute;m mohou pomoci porozumět vzd&aacute;lenosti a rozložen&iacute; va&scaron;ich dat. V&yacute;sledky v&aacute;m mohou pomoci z&iacute;skat odpovědi např. na n&aacute;sleduj&iacute;c&iacute; ot&aacute;zky:
+        <ul>
+            <li>Na z&aacute;kladě v&iacute;ce vrstev infrastruktury veřejn&eacute; dopravy, kter&aacute; č&aacute;st města je veřejnou dopravou nejhůře dostupn&aacute;?
+            </li>
+            <li>Na z&aacute;kladě vrstev vodn&iacute;ch cest jako jezera a řeky, jak se jmenuje vodn&iacute; &uacute;tvar nejbl&iacute;že každ&eacute; lokaci v USA?
+            </li>
+            <li>Na z&aacute;kladě vrstvy př&iacute;jmů dom&aacute;cnost&iacute;, kde v USA je největ&scaron;&iacute; variace př&iacute;jmů v okruhu 50 mil?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Zvolte typ přihrádek, které se použijí pro vytvoření mřížky s více proměnnými</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Typ a velikost přihr&aacute;dek, kter&eacute; se použij&iacute; pro vytvořen&iacute; mř&iacute;žky s v&iacute;ce proměnn&yacute;mi Při volbě  <b>čtverec</b> uveden&eacute; č&iacute;slo a jednotky určuj&iacute; v&yacute;&scaron;ku a d&eacute;lku čtverce. Při volbě <b>&Scaron;esti&uacute;heln&iacute;k</b> zadan&yacute; počet a jednotky určuj&iacute; vzd&aacute;lenost mezi rovnoběžn&yacute;mi stranami.
+            </p>
+            <p>Tato anal&yacute;za využ&iacute;v&aacute; přihr&aacute;dky a&nbsp;vyžaduje rovinn&yacute; souřadnicov&yacute; syst&eacute;m. Můžete nastavit  <b>Souřadnicov&yacute; syst&eacute;m pro zpracov&aacute;n&iacute;</b> v <b>Prostřed&iacute; anal&yacute;zy</b>. Pokud v&aacute;&scaron; souřadnicov&yacute; syst&eacute;m pro zpracov&aacute;n&iacute; nen&iacute; nastaven na rovinn&yacute; souřadnicov&yacute; syst&eacute;m, budete vyzv&aacute;ni k&nbsp;jeho nastaven&iacute; při <b>Spu&scaron;těn&iacute; anal&yacute;zy</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Zvolte vstupní vrstvy a proměnné, které si přejete zahrnout do mřížky</h2></div>
+        <hr/>
+        <div>
+            <p>Klikněte na tlač&iacute;tko Přidat ( <b>+</b>) pro otevřen&iacute; okna <b>Přidat proměnn&eacute;</b> a přidejte do sv&eacute; anal&yacute;zy vrstvu. V okně <b>Přidat proměnn&eacute;</b> zvolte vstupn&iacute; vrstvu a nakonfigurujte proměnn&eacute;, kter&eacute; si přejete vypoč&iacute;tat pro danou vstupn&iacute; vrstvu.
+            </p>
+            <p>Jakmile vyberete a nakonfigurujete proměnn&eacute;, kter&eacute; si přejete vypoč&iacute;tat, vrstva se objev&iacute; v seznamu okna n&aacute;stroje spolu s ostatn&iacute;mi vybran&yacute;mi vrstvami. Klikněte na tlač&iacute;tko Upravit pro jakoukoliv vrstvu, otevřete okno   <b>Přidat proměnn&eacute;</b> a uvid&iacute;te v&scaron;echny proměnn&eacute;, kter&eacute; jsou pro danou vrstvu nakonfigurovan&eacute;. Klikněte na tlač&iacute;tko Odstranit pro jakoukoliv vrstvu. T&iacute;m danou vrstvu a ve&scaron;ker&eacute; souvisej&iacute;c&iacute; proměnn&eacute; odstran&iacute;te z anal&yacute;zy.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Přidat proměnné</h2></div>
+        <hr/>
+        <div>
+            <p>Toto okno v&aacute;m umožňuje vybrat vstupn&iacute; vrstvu a nakonfigurujte proměnn&eacute;, kter&eacute; si přejete vypoč&iacute;tat pro danou vstupn&iacute; vrstvu. Začněte t&iacute;m, že použijete rozbalovac&iacute; nab&iacute;dku  <b>Zvolte vstupn&iacute; vrstvu</b> a vyberte bodovou, polygonovou či liniovou vrstvu, kterou si přejete přidat do sv&eacute; anal&yacute;zy.
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+            <p>Jakmile zvol&iacute;te vstupn&iacute; vrstvu, klikněte na tlač&iacute;tko  <b>Přidat proměnnou</b> pro otevřen&iacute; nov&eacute; proměnn&eacute; pro editaci. Mus&iacute;te zadat jedinečn&yacute; n&aacute;zev každ&eacute; proměnn&eacute;. To bude n&aacute;zev pole, kter&eacute; se vytvoř&iacute; v tabulce atributů v&yacute;sledn&eacute; vrstvy.
+            </p>
+            <p>Pro v&yacute;běr typu proměnn&eacute;, kter&aacute; se m&aacute; přidat, použijte rozbalovac&iacute; nab&iacute;dku. Každ&yacute; typ proměnn&eacute; je nutn&eacute; konfigurovat s jedinečnou sadou parametrů a v&scaron;echny parametry jsou povinn&eacute;.
+            </p>
+            <p>Jakmile přid&aacute;te v&scaron;echny požadovan&eacute; parametry pro zvolenou vrstvu, klikněte na tlač&iacute;tko  <b>Přidat </b> pro uložen&iacute; proměnn&yacute;ch.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p> N&aacute;zev vytv&aacute;řen&eacute; vrstvy. Pokud zapisujete ArcGIS Data Store, va&scaron;e v&yacute;sledky budou uloženy v  <b>Můj obsah</b> a přid&aacute;ny na mapu. Pokud zapisujete sd&iacute;len&yacute; soubor velk&yacute;ch dat, va&scaron;e v&yacute;sledky budou uloženy ve sd&iacute;len&eacute;m souboru velk&yacute;ch dat a přid&aacute;ny do jejich manifestu.  Nebudou přid&aacute;ny na mapu. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, n&aacute;stroj selže.
+            </p>
+            <p>Když zapisujete do   ArcGIS Data Store  (datov&eacute; &uacute;loži&scaron;tě relačn&iacute;ch a časoprostorov&yacute;ch velk&yacute;ch dat) pomoc&iacute; rozbalovac&iacute;ho seznamu  <b>Uložit v&yacute;sledek do</b> , můžete zadat n&aacute;zev složky v <b>Můj obsah</b>, kde budou v&yacute;sledky uloženy.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

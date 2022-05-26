@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Geokod lokasjoner fra tabell</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Geokod lokasjoner fra tabell"></h2>
+        <hr/>
+    <p>Geokoding konverterer adresser til koordinater. Dette verkt&oslash;yet konverterer adresser fra en stordata-fildelingstabell til et geoobjektslag med koordinatene som ekstra kolonner.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Velg en inndatatabell</h2></div>
+        <hr/>
+        <div>
+            <p>Inndatatabellen med adressene som skal geokodes. 
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Velg en posisjonsindikator</h2></div>
+        <hr/>
+        <div>
+            <p>Velg en posisjonstjeneste det skal geokodes mot. Hvis &oslash;nsket posisjonstjeneste ikke vises p&aring; rullegardinmenyen, kontakter du administratoren for &aring; f&aring; posisjonstjenesten konfigurert for satsvis geokoding.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Land</h2></div>
+        <hr/>
+        <div>
+            <p>Hvis alle adressene er fra ett land, velger du landet for &aring; sikre mest mulig n&oslash;yaktig resultat. Hvis ikke angir du ikke noe for denne parameteren.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Velg datafelter</h2></div>
+        <hr/>
+        <div>
+            <p>Posisjonstjenesten forventer visse felt i dataene, slik som adresse, by, stat, poststed og postnummer eller kommunenummer. Bruk rullegardinlistene til &aring; samkj&oslash;re datafeltene i inndatafilen eller tabellen med feltene som posisjonstjenesten forventer. Jo flere adressefelter du tilordner, desto mer n&oslash;yaktige blir resultatene. Hvis inndatatabellen har alle dataene i &eacute;n kolonne, velger du  <b>Enkeltfelt</b> og velger et datafelt fra rullegardinmenyen. Hvis ikke velger du <b>Flere felt</b> og tilordner de aktuelle posisjonsfeltene til flerfeltskolonnene i tabellen.
+            </p>
+        </div>
+    </div>
+    <div id="includeAttributes">
+        <div><h2>For hver lokasjon</h2></div>
+        <hr/>
+        <div>
+            <p>Inkluder flere felt returnert av posisjonstjenesten. Hvis det er krysset av for dette valget, vil alle feltene som opprettes av posisjonstjenesten bli returnert. Hvis det ikke er krysset av, vil inndataene bli returnert med de geokodede koordinatene. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på utdataresultat</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; laget som opprettes. Hvis du skriver til en ArcGIS Data Store, blir resultatene dine lagret i  <b>Mitt innhold</b> og lagt til kartet. Hvis du skriver til et fildelingsomr&aring;de for stordata, blir resultatene lagret i fildelingsomr&aring;det for stordata og lagt til dets innholdsoversikt. De blir ikke lagt til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget allerede eksisterer, vil verkt&oslash;yet mislykkes.
+            </p>
+            <p>N&aring;r du skriver til  ArcGIS Data Store (fildelingsomr&aring;de for relasjons- eller geotemporale stordata) via rullegardinlisten  <b>Lagre resultat i</b>, kan du angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatet skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

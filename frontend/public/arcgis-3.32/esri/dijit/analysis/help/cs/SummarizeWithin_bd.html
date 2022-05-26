@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Souhrn hodnot v rozmezí (Summarize Within)</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Souhrn hodnot v rozmez&iacute;"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj vyhled&aacute;v&aacute; prvky (a č&aacute;sti prvků), kter&eacute; se nach&aacute;zej&iacute; v hranic&iacute;ch oblast&iacute; v prvn&iacute; vstupn&iacute; vrstvě.  
+        <ul>
+            <li>Pomoc&iacute; vrstvy oblast&iacute; povod&iacute; a vrstvy hranic využit&iacute; &uacute;zem&iacute; spoč&iacute;tej celkovou rozlohu využ&iacute;van&eacute;ho typu &uacute;zem&iacute; v&nbsp;každ&eacute;m povod&iacute;. 
+            </li>
+            <li>Pomoc&iacute; vrstvy parcel v&nbsp;kraji a vrstvy hranic měst spoč&iacute;tej průměrnou cenu voln&yacute;ch parcel v&nbsp;rozsahu hranic každ&eacute;ho města.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t rozsah aktu&aacute;ln&iacute; mapy</b>, budou analyzov&aacute;ny pouze prvky ve vstupn&iacute; vrstvě a v&nbsp;sumarizovan&eacute; vrstvě, kter&eacute; jsou viditeln&eacute; v&nbsp;rozsahu aktu&aacute;ln&iacute; mapy.  Pokud toto pole za&scaron;krtnuto nen&iacute;, budou analyzov&aacute;ny v&scaron;echny prvky ve vstupn&iacute; a sumarizovan&eacute; vrstvě, včetně těch, kter&eacute; se nach&aacute;z&iacute; mimo aktu&aacute;ln&iacute; rozsah mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Zvolte vrstvu oblastí pro souhrn ostatních prvků v rámci jejich hranic</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva oblast&iacute;, kter&aacute; se použije pro souhrn prvků spadaj&iacute;c&iacute;ch do jej&iacute;ch hranic. Můžete prov&eacute;st shrnut&iacute; v&nbsp;r&aacute;mci polygonov&eacute; vrstvy, kterou zad&aacute;te, nebo v&nbsp;r&aacute;mci čtvercov&yacute;ch či &scaron;esti&uacute;heln&iacute;kov&yacute;ch přihr&aacute;dek, kter&eacute; se vygeneruj&iacute; při spu&scaron;těn&iacute; n&aacute;stroje.  Při generov&aacute;n&iacute; přihr&aacute;dek počet a jednotky uveden&eacute; u položky  <b>Čtverec</b> určuj&iacute; v&yacute;&scaron;ku a d&eacute;lku čtverce. Pro <b>&Scaron;esti&uacute;heln&iacute;k</b> zadan&yacute; počet a jednotky určuj&iacute; vzd&aacute;lenost mezi rovnoběžn&yacute;mi stranami.
+            </p>
+            <p>Anal&yacute;za s&nbsp;použit&iacute;m  <b>čtvercov&yacute;ch</b> nebo <b>&scaron;esti&uacute;heln&iacute;kov&yacute;ch</b> přihr&aacute;dek vyžaduje rovinn&yacute; souřadnicov&yacute; syst&eacute;m. Můžete nastavit <b>Souřadnicov&yacute; syst&eacute;m pro zpracov&aacute;n&iacute;</b> v <b>Prostřed&iacute; anal&yacute;zy</b>. Pokud v&aacute;&scaron; souřadnicov&yacute; syst&eacute;m pro zpracov&aacute;n&iacute; nen&iacute; nastaven na rovinn&yacute; souřadnicov&yacute; syst&eacute;m, budete vyzv&aacute;ni k&nbsp;jeho nastaven&iacute; při <b>Spu&scaron;těn&iacute; anal&yacute;zy</b> .
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="summaryLayer">
+        <div><h2>Vybrat vrstvu pro souhrn</h2></div>
+        <hr/>
+        <div>
+            <p>Prvky v&nbsp;t&eacute;to vrstvě, kter&eacute; se nach&aacute;zej&iacute; uvnitř hranic prvků ve vstupn&iacute; vrstvě nebo ve v&yacute;&scaron;e uveden&yacute;ch přihr&aacute;dk&aacute;ch, budou sumarizov&aacute;ny. 
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Zvolte vzdálenost pro vytvoření přihrádek a seskupení</h2></div>
+        <hr/>
+        <div>
+            <p>Vzd&aacute;lenost použit&aacute; pro vytvořen&iacute; přihr&aacute;dek.  
+            </p>
+            <p>Mus&iacute; b&yacute;t nastavena  <b>Velikost přihr&aacute;dky</b> pro přihr&aacute;dky nebo <b>Vrstva oblasti</b>.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Seskupit pomocí časových dílů (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p>Pokud vstupn&iacute; bodov&aacute; vrstva obsahuje časov&aacute; data, ve form&aacute;tu okamžit&yacute;ch dat, můžete prov&aacute;dět anal&yacute;zu pomoc&iacute; krokov&aacute;n&iacute; času. Při použit&iacute; času můžete nastavit tři parametry:
+                <ul>
+                    <li> <b>Interval časov&eacute;ho kroku</b>
+                    </li>
+                    <li> <b>Jak často se m&aacute; časov&yacute; krok opakovat</b>
+                    </li>
+                    <li> <b>Čas ke srovn&aacute;n&iacute; časov&yacute;ch kroků</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Pokud např&iacute;klad m&aacute;te data, kter&aacute; představuj&iacute; čas jednoho roku a přejete si je analyzovat za použit&iacute; t&yacute;denn&iacute;ch kroků, nastavte  <b>Interval</b> časov&eacute;ho kroku na <code>1 t&yacute;den</code>. 
+            </p>
+            <p>Pokud např&iacute;klad m&aacute;te data, kter&aacute; představuj&iacute; čas jednoho roku a přejete si je analyzovat za použit&iacute; prvn&iacute;ho t&yacute;dne v měs&iacute;ci, nastavte  <b>Interval</b> časov&eacute;ho kroku na <code>1 t&yacute;den</code>, <b>možnost Jak často opakovat časov&yacute; krok</b> na <code>1 měs&iacute;c</code> a <b>Čas ke srovn&aacute;n&iacute; časov&yacute;ch kroků</b> na <code>1. ledna v 00:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Časový interval pro seskupení</h2></div>
+        <hr/>
+        <div>
+            <p>Časov&yacute; interval použit&yacute; ke generov&aacute;n&iacute; časov&yacute;ch kroků.  <b>Interval časov&eacute;ho kroku</b> může b&yacute;t použit samostatně nebo společně s parametry <b>Jak často se m&aacute; časov&yacute; krok opakovat</b> nebo <b>Čas ke srovn&aacute;n&iacute; časov&yacute;ch kroků</b>.
+            </p>
+            <p>Pokud si např&iacute;klad přejete vytvořit časov&eacute; kroky, kter&eacute; se odehraj&iacute; každ&eacute; ponděl&iacute; od 9:00 do 10:00, nastavte  <b>Interval časov&eacute;ho kroku</b> na <code>1 hodina</code>, <b>Jak často opakovat časov&yacute; krok</b> na <code>1 t&yacute;den</code> a <b>Čas ke srovn&aacute;n&iacute; časov&yacute;ch kroků</b> na <code>9:00:00 v ponděl&iacute;</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Časový krok pro seskupení</h2></div>
+        <hr/>
+        <div>
+            <p> Krok použit&yacute; pro v&yacute;počet časov&eacute;ho kroku. Parametr <b>Jak často opakovat časov&yacute; krok</b> lze použ&iacute;t samostatně nebo s parametry <b>Interval časov&eacute;ho kroku</b>, <b>Referenčn&iacute; čas</b> nebo <b>Interval časov&eacute;ho kroku</b> a <b>Čas ke srovn&aacute;n&iacute; časov&yacute;ch kroků</b>.
+            </p>
+            <p> Pokud si např&iacute;klad přejete vytvořit časov&eacute; kroky, kter&eacute; se odehraj&iacute; každ&eacute; ponděl&iacute; od 9:00 do 10:00, nastavte <b>Interval časov&eacute;ho kroku</b> na <code>1 hodina</code>, <b>Jak často opakovat časov&yacute; krok</b> na <code>1 t&yacute;den</code> a <b>Čas ke srovn&aacute;n&iacute; časov&yacute;ch kroků</b> na <code>9:00:00 v ponděl&iacute;</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Referenční čas použitý pro srovnání dělení času</h2></div>
+        <hr/>
+        <div>
+            <p>Datum a čas použit&eacute; pro srovn&aacute;n&iacute; dělen&iacute; času. Časov&eacute; kroky začnou  v tento čas a budou pokračovat do minulosti. Pokud nen&iacute; vybr&aacute;n ž&aacute;dn&yacute; referenčn&iacute; čas, časov&eacute; kroky se srovnaj&iacute; k 1. lednu 1970. 
+            </p>
+            <p> Pokud si např&iacute;klad přejete vytvořit časov&eacute; kroky, kter&eacute; se odehraj&iacute; každ&eacute; ponděl&iacute; od 9:00 do 10:00, nastavte <b>Interval časov&eacute;ho kroku</b> na <code>1 hodina</code>, <b>Jak často opakovat časov&yacute; krok</b> na <code>1 t&yacute;den</code> a <b>Čas ke srovn&aacute;n&iacute; časov&yacute;ch kroků</b> na <code>9:00:00 v ponděl&iacute;</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Přidat statistiku (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p> Můžete vypoč&iacute;tat statistiku sumarizovan&yacute;ch prvků.Můžete vypoč&iacute;tat n&aacute;sleduj&iacute;c&iacute; v č&iacute;seln&yacute;ch pol&iacute;ch:
+                <ul>
+                    <li>Počet &ndash; Spoč&iacute;t&aacute; počet nenulov&yacute;ch hodnot. Lze jej použ&iacute;t na č&iacute;seln&yacute;ch pol&iacute;ch nebo řetězc&iacute;ch. Počet pro [null, 0, 2] je 2.
+                    </li>
+                    <li>Součet &ndash; Součet č&iacute;seln&yacute;ch hodnot v poli. Součet pro [null, null, 3] je 3.
+                    </li>
+                    <li>Průměr &ndash; Průměr č&iacute;seln&yacute;ch hodnot. Průměr pro [0, 2, null] je 1.
+                    </li>
+                    <li>Min &ndash; Minim&aacute;ln&iacute; hodnota č&iacute;seln&eacute;ho pole. Minimum pro [0, 2, null] je 0. 
+                    </li>
+                    <li>Max &ndash; Maxim&aacute;ln&iacute; hodnota č&iacute;seln&eacute;ho pole. Maximum pro [0, 2, null] je 2.
+                    </li>
+                    <li>Rozsah &ndash; Rozsah č&iacute;seln&eacute;ho pole. Vypočtou se jako minim&aacute;ln&iacute; hodnoty odečten&eacute; od maxim&aacute;ln&iacute; hodnoty. Rozsah pro [0, null, 1] je 1. Rozsah pro [null, 4] je 0.
+                    </li>
+                    <li>Odchylka &ndash; Odchylka č&iacute;seln&eacute;ho pole ve stopě. Odchylka pro [1]  je null. Odchylka pro [null, 1,0,1,1] je 0,25.
+                    </li>
+                    <li>Standardn&iacute; odchylka &ndash; Standardn&iacute; odchylka č&iacute;seln&eacute;ho pole. Standardn&iacute; odchylka pro [1] je null. Standardn&iacute; odchylka pro [null, 1,0,1,1] je 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>N&aacute;sleduj&iacute;c&iacute; můžete vypoč&iacute;tat  v pol&iacute;ch řetězců:
+                <ul>
+                    <li>Počet &ndash; Počet nenulov&yacute;ch řetězců.
+                    </li>
+                    <li>Libovoln&eacute; &ndash; Tato statistika je n&aacute;hodn&yacute;m vzorkem hodnoty řetězce v&nbsp;určen&eacute;m poli.
+                    </li>
+                </ul>
+                V&scaron;echny statistiky se poč&iacute;taj&iacute; pro nenulov&eacute; hodnoty. V&yacute;sledn&aacute; vrstva bude obsahovat nov&eacute; pole pro každou vypoč&iacute;tanou statistiku. Lze přidat libovoln&yacute; počet statistik zvolen&iacute;m atributu a statistiky. 
+            </p>
+            <p>Kromě t&eacute;to statistiky bude vypoč&iacute;t&aacute;na i statistika proporc&iacute; u v&scaron;ech č&iacute;seln&yacute;ch pol&iacute;:
+                <ul>
+                    <li>Počet &ndash; Počet každ&eacute;ho pole vyn&aacute;soben&yacute; proporc&iacute; vrstvy souhrnu uvnitř polygonů. 
+                    </li>
+                    <li>Součet &ndash; Součet v&aacute;žen&yacute;ch hodnot v&nbsp;každ&eacute;m poli. Kde použit&aacute; v&aacute;ha je proporc&iacute; vrstvy souhrnu uvnitř polygonů.
+                    </li>
+                    <li>Průměr &ndash; V&aacute;žen&yacute; průměr hodnot v&nbsp;každ&eacute;m poli. Kde použit&aacute; v&aacute;ha je proporc&iacute; vrstvy souhrnu uvnitř polygonů.
+                    </li>
+                    <li>Min. &ndash; Minimum v&aacute;žen&yacute;ch hodnot v&nbsp;každ&eacute;m poli. Kde použit&aacute; v&aacute;ha je proporc&iacute; vrstvy souhrnu uvnitř polygonů.
+                    </li>
+                    <li>Max. &ndash; Maximum v&aacute;žen&yacute;ch hodnot v&nbsp;každ&eacute;m poli. Kde použit&aacute; v&aacute;ha je proporc&iacute; vrstvy souhrnu uvnitř polygonů.
+                    </li>
+                    <li>Rozsah &ndash; Rozd&iacute;l mezi minim&aacute;ln&iacute;mi a maxim&aacute;ln&iacute;mi v&aacute;žen&yacute;mi hodnotami.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>V&nbsp;z&aacute;vislosti na typech sumarizovan&yacute;ch prvků bude vypoč&iacute;t&aacute;n celkov&yacute; počet bl&iacute;zk&yacute;ch bodů, celkov&aacute; d&eacute;lka lini&iacute; nebo celkov&aacute; plocha.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Vybrat pole k seskupení</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je atribut prvků analyzovan&yacute;ch pomoc&iacute;  <b>Souhrnu</b>, kter&yacute; lze použ&iacute;t k v&yacute;počtu statistik - odděleně pro každou jedinečnou hodnotu atributu. Předpokl&aacute;dejme např&iacute;klad, že prvn&iacute; vstupn&iacute; vrstva obsahuje hranice měst a prvky shrnut&iacute; tvoř&iacute; parcely.  Jeden z atributů parcel je <i>Status</i>, kter&yacute; obsahuje dvě hodnoty: VOLN&Eacute; a OBSAZEN&Eacute;. Chcete-li spoč&iacute;tat celkovou oblast voln&yacute;ch a obsazen&yacute;ch parcel v hranic&iacute;ch měst, použijte atribut <i>Status</i> jako atribut k seskupen&iacute;. Statistiky pro každou skupinu se spolu s&nbsp;počtem prvků pro každou oblast zobraz&iacute; ve vyskakovac&iacute;m okně v&yacute;sledn&eacute; vrstvy.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Přidat menšinu, většinu</h2></div>
+        <hr/>
+        <div>
+            <p>Toto za&scaron;krt&aacute;vac&iacute; pol&iacute;čko se aktivuje, pokud zvol&iacute;te pole k seskupen&iacute;. Pokud chcete zjistit, kter&eacute; hodnoty atributů v&nbsp;každ&eacute; skupině uvnitř každ&eacute; ohraničen&eacute; oblasti v&nbsp;prvn&iacute; vstupn&iacute; vrstvě jsou men&scaron;inou (nejm&eacute;ně dominantn&iacute;), resp. vět&scaron;inou (nejv&iacute;ce dominantn&iacute;), vyberte  <b>Přidat men&scaron;inu, vět&scaron;inu</b>.   Když vyberete možnost <b>Přidat men&scaron;inu, vět&scaron;inu</b>, do v&yacute;sledn&eacute; vrstvy budou přid&aacute;na dvě nov&aacute; pole.   Pokud vyberete i možnost <b>Přidat procenta</b>, budou do v&yacute;sledn&eacute; vrstvy přid&aacute;na dvě dodatečn&aacute; pole obsahuj&iacute;c&iacute; procentu&aacute;ln&iacute; pod&iacute;l men&scaron;inov&yacute;ch a vět&scaron;inov&yacute;ch hodnot atributů v&nbsp;r&aacute;mci každ&eacute; skupiny.
+            </p>
+            <ul>
+                <li>Pokud sumarizujete body, hodnoty men&scaron;iny a vět&scaron;iny jsou vypoč&iacute;t&aacute;ny na z&aacute;kladě počtu bodů v&nbsp;každ&eacute; ohraničen&eacute; oblasti ve vstupn&iacute; vrstvě oblast&iacute;.  
+                </li>
+                <li>Pokud sumarizujete linie, hodnoty men&scaron;iny a vět&scaron;iny jsou vypoč&iacute;t&aacute;ny na z&aacute;kladě d&eacute;lky lini&iacute; v&nbsp;každ&eacute; ohraničen&eacute; oblasti ve vstupn&iacute; vrstvě oblast&iacute;.  
+                </li>
+                <li>Pokud sumarizujete plochy, hodnoty men&scaron;iny a vět&scaron;iny jsou vypoč&iacute;t&aacute;ny na z&aacute;kladě ploch v&nbsp;každ&eacute; ohraničen&eacute; oblasti ve vstupn&iacute; vrstvě oblast&iacute;.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Přidat procenta</h2></div>
+        <hr/>
+        <div>
+            <p>Toto za&scaron;krt&aacute;vac&iacute; pol&iacute;čko se aktivuje, když zvol&iacute;te pole k seskupen&iacute;. Zvolte  <b>Přidat procenta</b>, pokud chcete zjistit procentu&aacute;ln&iacute; pod&iacute;l každ&eacute; hodnoty atributu pro každou skupinu. Do v&yacute;sledn&eacute; tabulky bude přid&aacute;no nov&eacute; pole obsahuj&iacute;c&iacute; procentu&aacute;ln&iacute; pod&iacute;l každ&eacute; hodnoty atributu pro každou skupinu. Pokud je za&scaron;krtnuto i pol&iacute;čko <b>Přidat men&scaron;inu, vět&scaron;inu</b>, budou do v&yacute;sledn&eacute; vrstvy přid&aacute;na dvě dodatečn&aacute; pole obsahuj&iacute;c&iacute; procentu&aacute;ln&iacute; pod&iacute;l men&scaron;inov&yacute;ch a vět&scaron;inov&yacute;ch hodnot atributů v r&aacute;mci každ&eacute; skupiny.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Zvolte datové úložiště</h2></div>
+        <hr/>
+        <div>
+            <p>V&yacute;sledky geoanal&yacute;zy jsou ukl&aacute;d&aacute;ny do nějak&eacute;ho datov&eacute;ho &uacute;loži&scaron;tě a jsou zobrazeny jako vrstva prvků v   Portal for ArcGIS. Ve vět&scaron;ině př&iacute;padů by v&yacute;sledky měly b&yacute;t uloženy do časoprostorov&eacute;ho datov&eacute;ho &uacute;loži&scaron;tě a toto je v&yacute;choz&iacute; nastaven&iacute;. V někter&yacute;ch př&iacute;padech je vhodn&eacute; uložit v&yacute;sledky do relačn&iacute;ho datov&eacute;ho &uacute;loži&scaron;tě. Důvody k uložen&iacute; v&yacute;sledků do relačn&iacute;ho datov&eacute;ho &uacute;loži&scaron;tě: 
+                <ul>
+                    <li>Můžete použ&iacute;t v&yacute;sledky ke spolupr&aacute;ci mezi port&aacute;ly.
+                    </li>
+                    <li>Můžete povolit funkce synchronizace s v&yacute;sledky
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relačn&iacute; datov&eacute; &uacute;loži&scaron;tě byste použ&iacute;vat neměli, pokud oček&aacute;v&aacute;te n&aacute;růst množstv&iacute; v&yacute;sledků geoanal&yacute;zy a chcete využ&iacute;t v&yacute;hod časoprostorov&eacute;ho &uacute;loži&scaron;tě Big Data ke zpracov&aacute;n&iacute; velk&yacute;ch objemů dat.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p> N&aacute;zev vytv&aacute;řen&eacute; vrstvy. Pokud zapisujete ArcGIS Data Store, va&scaron;e v&yacute;sledky budou uloženy v  <b>Můj obsah</b> a přid&aacute;ny na mapu. Pokud zapisujete sd&iacute;len&yacute; soubor velk&yacute;ch dat, va&scaron;e v&yacute;sledky budou uloženy ve sd&iacute;len&eacute;m souboru velk&yacute;ch dat a přid&aacute;ny do jejich manifestu.  Nebudou přid&aacute;ny na mapu. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, n&aacute;stroj selže.
+            </p>
+            <p>Když zapisujete do   ArcGIS Data Store  (datov&eacute; &uacute;loži&scaron;tě relačn&iacute;ch a časoprostorov&yacute;ch velk&yacute;ch dat) pomoc&iacute; rozbalovac&iacute;ho seznamu  <b>Uložit v&yacute;sledek do</b> , můžete zadat n&aacute;zev složky v <b>Můj obsah</b>, kde budou v&yacute;sledky uloženy.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

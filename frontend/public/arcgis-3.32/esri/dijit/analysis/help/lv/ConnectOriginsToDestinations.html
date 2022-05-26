@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Savienot sākumpunktus ar galamērķiem</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="Savienot sākumpunktus ar galamērķiem"></h2>
+        <hr/>
+    <p>Savienot koordinātu sākuma punktu ar  galamērķi, lai izmērītu ceļojuma laiku vai attālumu starp diviem punktiem. &Scaron;is rīks var sniegt pārskatus attālumiem, kuru pamatā ir taisna līnija vai pārvieto&scaron;anās veids, piemēram, kājām vai braucot, vai ceļojuma ilgumu, pamatojoties uz pārvieto&scaron;anās veidu. Izmantojot &scaron;o rīku, var veikt &scaron;ādas darbības:
+    </p>
+    <p>
+        <ul>
+            <li>Aprēķinātu kopējo attālumu vai laiku, ko darbinieki pavada ceļā no mājām uz darbu.
+            </li>
+            <li>Novērtēt, cik tālu klienti dodas, lai iepirktos jūsu veikalos. Izmantojiet &scaron;o informāciju, lai noteiktu, cik veiksmīgi sasniegta mērķauditorija, īpa&scaron;i, ja izmantota reklāmas kampaņas vai tiek izvēlēta jaunu veikala atra&scaron;anās vieta.
+            </li>
+            <li>Aprēķināt gaidāmo ceļojuma nobraukumu jūsu transportlīdzekļiem. Pēc tam, palaidiet analīzi Apkopot ietvaros, lai iegūtu nobraukumu valstī vai citā reģionā.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jūs norādat sākuma un beigu punktus, un rīks atgriež slāni, kurā attēlotas mar&scaron;ruta līnijas, tostarp mērījumi starp koordinātu sākuma punktu pāri un galamērķi. 
+    </p>
+    <p>Ja ir atzīmēta iespēja  <b>Izmantot pa&scaron;reizējo kartes pārklājumu</b>, tad, veicot analīzi, tiek ņemti vērā tikai elementi, kas ir redzami pa&scaron;reizējā kartes pārklājumā. Ja nav atzīmēts, visi ievades slāņa elementi tiks uzskaitīti, arī pa&scaron;reizējā kartes pārklājuma ārpusē.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Izvēlieties punktu slāni, kas attēlo koordinātu sākuma punktu novietojumus</h2></div>
+        <hr/>
+        <div>
+            <p>Izvēlieties punktu slāni, kas attēlo koordinātu sākuma punktu vai punktus. Rīks atbalsta līdz  5000 koordinātu sākuma punktiem un  5000 galamērķiem. </p>
+            <p>Ja izvēlaties slāni, kam ir tie&scaron;i viens koordinātu sākuma punkts, tiek izveidots savienojums ar visiem galamērķiem.
+            </p>
+            <p>Papildus slāņa izvēlei no kartes varat atlasīt opciju  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta lejasdaļā. &Scaron;ī opcija atver galeriju, kurā varēsiet pārlūkot un atlasīt datu kopas no dažādiem avotiem un izmantot savā analīzē. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Izvēlieties galamērķa slāni</h2></div>
+        <hr/>
+        <div>
+            <p>Izvēlaties slāni, kas pārstāv galamērķi vai galamērķus, ar kuru koordinātu sākumpunktus ir jāsavieno. Rīks atbalsta līdz  5000 koordinātu sākumpunktiem un  5000 galamērķiem. </p>
+            <p>Ja jūs izvēlaties slāni, kam ir tie&scaron;i viens galamērķis, visi koordinātu sākuma punkti tiks savienoti ar &scaron;o galamērķi. 
+            </p>
+            <p>Ja ir viens koordinātu sākuma punkts un daudz galamērķi, rīks savienos koordinātu sākuma punktus ar katru no vietām.
+            </p>
+            <p>Papildus slāņa izvēlei no kartes varat atlasīt opciju  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta lejasdaļā. &Scaron;ī opcija atver galeriju, kurā varēsiet pārlūkot un atlasīt datu kopas no dažādiem avotiem un izmantot savā analīzē. 
+            </p>
+            <p> Ja ir daudz sākuma punktu un daudz galamērķu, jums ir nepiecie&scaron;ami divi lauki, kas raksturo sākumpunkta &ndash; galamērķa pāri: <b>ID lauks sākuma punktam</b> un <b>atbilsto&scaron;ais ID lauks galamērķim</b>. Rīks savieno sākumpunkta-galamērķa pārus analīzes laikā. Piemēram, iedomājaties, ka jums ir divi sākumpunkti ar ID lauku vērtībām <code>Rosie</code> un <code>Harold</code> un divi galamērķi ar tām pa&scaron;ām ID vērtībām. <code>Rosie</code> sākumpunkts savienosies ar <code>Rosie</code> galamērķi un <code>Harold</code> savienosies ar <code>Harold</code>. Nekādi citi savienojumi vai mērījumi netika veikti.
+            </p>
+            <p>Ja sākumpunktu un galamērķu skaits ir vienāds, ID vērtībām jābūt unikālām katrā slānī, piemēram, galamērķa slānī nevar būt divas  <code>Rosie</code> vērtības. Vērtībām sākumpunkta un galamērķa slāņos jāatbilst precīzi, lai veidotu pāri; vērtība <code>Harold</code> netiks savienota ar neprecīzi uzrakstītu vērtību <code>Harodl</code>. 
+            </p>
+            <p>Rīks atbalsta arī katra sākumpunkta savieno&scaron;anu ar vienu vai vairākiem galamērķiem vai katru galamērķi&nbsp;&mdash; ar vairāk nekā vienu sākumpunktu. &Scaron;ādos gadījumos jums tomēr ir jābūt diviem laukiem, kas apraksta sākumpunkta-galamērķa pārus. Taču unikālas ID&nbsp;vērtības ir nepiecie&scaron;amas tikai vienam no slāņiem (sākumpunkta vai galamērķa slānim).
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Izmērīt</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Izvēlieties, vai savienot sākumpunktus ar galamērķiem, izmantojot taisnlīnijas attālumu vai pārvieto&scaron;anās veidu. Izvades mar&scaron;ruti vedīs pa ceļiem un gājēju takām, respektējot attiecīgos noteikumus, piemēram, brauk&scaron;anas gadījumā&nbsp;&mdash; vienvirziena ielas un neatļautus pagriezienus. Pieejamos ceļo&scaron;anas veidus nosaka jūsu organizācijas administrators.  
+            </p>
+            <p>Ja izvēlaties iespēju  <b>Brauk&scaron;anas laiks</b>, <b>Brauk&scaron;anas laiks ārpus pilsētas</b> vai <b>Brauk&scaron;anas laiks ar kravas automa&scaron;īnu</b>, tiek piedāvātas brauk&scaron;anas laika mērī&scaron;anas opcijas.
+                <ul>
+                    <li>
+                        <p>Noņemiet atzīmi no izvēles rūtiņas  <b>Izmantot satiksmi</b>, lai atrastu visātrāko mar&scaron;rutu, pamatojoties uz fiksētu ātrumu.
+                        </p>
+                        <p>&Scaron;ī ir iespēja, ja jūs vēlaties aprēķināt vispārēju brauk&scaron;anas laiku, nevis aprēķināt to, izmantojot mainīgos satiksmes nosacījumus konkrētam izbrauk&scaron;anas laikam.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Atzīmējat  <b>Izmantot satiksmi</b>, lai atrastu visātrāko mar&scaron;rutu, pamatojoties uz noteiktā sākuma laika un mainīgajiem satiksmes apstākļiem. Izvēloties <b>Dzīvā satiksme</b>, atie&scaron;anas laiks no sākuma punkta ir iestatīts uz pa&scaron;reizējo laiku, un pa&scaron;reizējās un prognozētās satiksmes ātrums tiek ņemts no sensoriem un plūsmas, lai izveidotu mar&scaron;rutus. Prognozētais satiksmes ātrums tiek aprēķināts, atsaucoties uz dzīvās satiksmes ātrumu, vēsturisko ātrumu un pa&scaron;reizējiem notikumiem, piem., laika apstākļiem. Satiksmes ātrums tiek prognozēts 12 stundas uz priek&scaron;u, lai jūs varētu pārvietot slīdni un iestatīt izbrauk&scaron;anas laiku uz priek&scaron;u, līdz  12 stundām. </p>
+                        <p>Izmantojiet &scaron;os dzīvās-satiksmes iestatījumus, lai atrastu brauk&scaron;anas laikus izbrauk&scaron;anai tagad, izbrauk&scaron;anai vienas stundas laikā un tā tālāk.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Atzīmējot  <b>Izmantot satiksmi</b> un izvēloties <b>Satiksme,balstīta raksturīgajiem apstākļiem</b> dienu un laiku, rīks atrod ātrākos mar&scaron;rutus, balstoties uz vēsturiskiem vidējiem ātruma rādītājiem par katru piecu minū&scaron;u intervālu nedēļā. &Scaron;ie rezultāti ietver satiksmi, bet neietver pa&scaron;reizējās satiksmes nosacījumus un notikumus, kas var ievērojami at&scaron;ķirties no normas.
+                        </p>
+                        <p>Jūs varat izmantot &scaron;os vēsturiskos satiksmes iestatījumus, lai jautātu, piemēram, &quot;Cik ilgs laiks nepiecie&scaron;ams, lai sasniegtu &scaron;os galamērķus, ja izbrauk&scaron;ana ir pulksten 11.30 tre&scaron;dienā?&quot;
+                        </p>
+                        <p>Laiks, ko jūs norādat, attiecas uz to laika zonu, kurā atrodas jūsu sākumpunkti. Tātad, ja jūs norādāt laiku 8:00 un ir divi sākumpunkti, viens Ņujorkā un otrs Losandželosā, ceļi tiks ģenerēti ar izbrauk&scaron;anas laiku attiecīgi 8:00 pēc Austrumu laika un 08:00 pēc Klusā okeāna laika.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ņemiet vērā, ka transportlīdzeklis brauc projām no sākumpunkta, laiks ir pagājis un satiksmes apstākļi mainās. Rīks sākumpunkta savieno&scaron;anai ar galamērķi nodro&scaron;ina &scaron;īs izmaiņas, ja ir atzīmēta izvēles rūtiņa  <b>Izmantot satiksmi</b>, tomēr satiksmes iespējas netiek atbalstītas visos reģionos. Noklik&scaron;ķiniet uz rīka saites <b>Skatīt pieejamību</b>, lai noskaidrotu, vai tas tiek piedāvāts jūsu izpētes teritorijā.
+            </p>
+            <p>Iespēja  <b>Brauk&scaron;anas laiks ar kravas automa&scaron;īnu</b> var izmantot dinamisku brauk&scaron;anas ātrumu atkarībā no satiksmes (nepārsniedzot likumā noteikto kravas automa&scaron;īnas brauk&scaron;anas ātruma ierobežojumu). Piemēram, ja dinamiskais ātrums brauk&scaron;anai pa ielu atkarībā no reāllaika satiksmes ir 65&nbsp;jūdzes stundā, bet kravas automa&scaron;īnas brauk&scaron;anas ātruma ierobežojums attiecīgajā ielā ir 55&nbsp;jūdzes stundā, brauciena aprēķinā attiecīgajā ielā tiks izmantots ātrums 55&nbsp;jūdzes stundā.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Izvēlēties barjeras slāņus</h2></div>
+        <hr/>
+        <div>
+            <p> Viens vai vairāki elementi, kas darbojas kā īslaicīgi ierobežojumi (barjeras), braucot pa ielām. Varat norādīt barjeras, izmantojot punkta, līnijas vai laukuma elementus.
+            </p>
+            <p>Punkta barjera var modelēt nokritu&scaron;u koku, negadījumu, pārrautu elektropārvades līniju vai jebko citu, kas pilnībā bloķē satiksmi konkrētā ielas vietā. Brauk&scaron;ana ir atļauta pa ielu, ne&scaron;ķērsojot barjeru. Varat norādīt līdz 250&nbsp;elementiem, kas darbosies kā punkta barjeras.
+            </p>
+            <p>Līnijas barjera aizliedz braukt jebkur, kur barjera &scaron;ķērso ielas. Piemēram: parādi vai protesta gājienu, kas bloķē satiksmi vairākās ielās, var attēlot kā līnijas barjeru. Ja tās ielas elementu skaits, ko &scaron;ķērso visas līnijas barjeras, pārsniedz&nbsp;500, rīks uzrāda kļūdu.
+            </p>
+            <p>Laukuma barjera aizliedz braukt jebkur, kur laukums &scaron;ķērso ielas. Viens &scaron;ādu barjeru lietojuma veids ir attēlot plūdus, kas pārklāj ielu tīklu un padara ceļus neizbraucamus. Ja laukuma barjeras &scaron;ķērsoto ielas elementu skaits pārsniedz&nbsp;2000, rīks uzrāda kļūdu.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Maršruta forma</h2></div>
+        <hr/>
+        <div>
+            <p>Izmantojot pārvieto&scaron;anās veidu, izvēlieties mar&scaron;ruta formu, kas savieno katru sākumpunktu ar tā galamērķi:
+            </p>
+            <ul>
+                <li> <b>Mar&scaron;ruts pa ielām</b>&nbsp;&mdash; &scaron;ī forma tiek veidota, ņemot vērā izveidoto ceļu tīklu. Izmantojiet &scaron;o iespēju, ja vēlaties ģenerēt mar&scaron;rutus starp sākumpunktiem un galamērķiem.
+                </li>
+                <li> <b>Taisna līnija</b>&nbsp;&mdash; &scaron;ī forma ir taisna līnija, kas savieno sākumpunktu un galamērķi. &Scaron;ī opcija ir piemērotāka, ja vēlaties ģenerēt zirnekļa diagrammas vai iecienītākos mar&scaron;rutus (piemēram, lai parādītu, kurus veikalus klienti apmeklē).
+                </li>
+            </ul>
+            
+            <p>Labākais mar&scaron;ruts starp sākumpunktu un tam atbilsto&scaron;o galamērķi vienmēr tiek aprēķināts, ņemot vērā ceļo&scaron;anas veidu neatkarīgi no izvēlētās mar&scaron;ruta formas.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Elementu slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Ja elementu slānis jau pastāv, jums tiks lūgts norādīt citu nosaukumu. Elementu slānī tiks ietverts slānis katrai no &scaron;īm vienībām: mar&scaron;ruti, nepie&scaron;ķirtie koordinātu sākuma punkti un nepie&scaron;ķirtie galamērķi, ja kādu sākuma punktu nevarēs savienot ar galamērķi.
+            </p>
+            <p>Ja atlasīsit opciju  <b>Iekļaut mar&scaron;rutu slāņus</b>, katrs mar&scaron;ruts no rezultātiem tiek saglabāts arī kā mar&scaron;ruta slānis. Mar&scaron;ruta slānī ir iekļauta informācija par konkrēto mar&scaron;rutu, piemēram, mar&scaron;rutam pie&scaron;ķirtās pieturas, kā arī ceļa norādījumi. Mar&scaron;rutu slāņu veido&scaron;ana ir noderīga, ja vēlaties atsevi&scaron;ķus mar&scaron;rutus koplietot ar citiem jūsu organizācijas dalībniekiem vai vēlaties turpināt pārveidot mar&scaron;rutus, izmantojot kar&scaron;u skatītājā eso&scaron;o pogu <b>Virzieni</b>. Mar&scaron;rutu slāņiem kā prefikss tiek izmantots elementu slānim dotais nosaukums, kā arī tiek pievienots analīzes laikā ģenerētais mar&scaron;ruta nosaukums, lai izveidotu unikālu nosaukumu katram mar&scaron;ruta slānim.
+            </p>
+            <p>Var izveidot ne vairāk kā  1000 mar&scaron;rutu slāņus. Ja rezultātā ir vairāk nekā  1000 mar&scaron;rutu un ir atzīmēta iespēja  <b>Iekļaut mar&scaron;rutu slāņus</b>, tad rīks izveido tikai izvades elementu servisu.
+            </p>
+            <p>Izmantojot nolaižamo izvēlni  <b>Saglabāt rezultātus</b>, varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāti elementu slāņi un mar&scaron;rutu slāņi, ja tādi tiks izveidoti.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

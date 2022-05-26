@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolacija tačaka</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Alatka Interpolacija tačaka"></h2>
+        <hr/>
+    <p>Ova alatka vam omogućava da uradite predikciju vrednosti na novim lokacijama na osnovu mera iz kolekcije tačaka. Alatka uzima podatke o tačkama sa vrednostima pri svakoj tački i vraća raster predviđenih vrednosti.
+    </p>
+    <p>Drugi slučajevi upotrebe ove alatke uključuju sledeće:
+
+        <ul>
+            <li>Distrikt za upravljanje kvalitetom vazduha ima senzore koji mere nivoe zagađenja. Alatka Interpolacija tačaka može da se koristi za predviđanje nivoa zagađenja na lokacijama koje nemaju senzore, kao &scaron;to su lokacije sa populacijama koje su izložene riziku &ndash; na primer, &scaron;kole ili bolnice.
+                
+
+            </li>
+            <li>Predvidite koncentracije te&scaron;kih metala u usevima na osnovu uzoraka uzetih iz pojedinačnih biljaka.
+                
+
+            </li>
+            <li>Predvidite nivoe mineralnih nutritijenata (azota, fosfora, kalijuma i tako dalje) i drugih indikatora (kao &scaron;to je električna provodljivost) kako biste ispitali njihov odnos sa prinosom useva i propisali precizne količine đubriva za svaku lokaciju u polju.
+                
+
+            </li>
+            <li>Meteorolo&scaron;ke primene obuhvataju predikciju temperatura, padavina i povezanih promenljivih (kao &scaron;to je kisela ki&scaron;a).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Odaberite tačkasti sloj koji sadrži lokacije sa poznatim vrednostima</h2></div>
+        <hr/>
+        <div>
+            <p>Tačkasti sloj sadrži tačke u kojima su izmerene vrednosti.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Odaberite polje za interpolaciju</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite polje čije vrednosti želite da interpolirate Polje mora biti numeričko.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimizuj za</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite da li želite brzinu ili tačnost.
+            </p>
+            <p>Izračunavanje preciznijih predikcija traje duže. Ovaj parametar menja podrazumevane vrednosti nekoliko drugih parametara Interpolacije tačaka kako bi se optimizovala brzina izračunavanja, tačnost rezultata ili ravnoteža ta dva. Podrazumevano, alatka će optimizovati za ravnotežu.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Transformiši podatke u normalnu distribuciju</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite da li da transformi&scaron;ete podatke u normalnu distribuciju
+            </p>
+            <p>Interpolacija je najtačnija za podatke koji prate normalnu (zvonastu) distribuciju. Ako va&scaron;i podaci ne izgledaju normalno distribuirani, trebalo bi da izvr&scaron;ite transformaciju.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Veličina lokalnih modela</h2></div>
+        <hr/>
+        <div>
+            <p>Interpolacija tačaka funkcioni&scaron;e tako &scaron;to gradi lokalne modele interpolacije koji su pome&scaron;ani zajedno da bi kreirali krajnju mapu predikcije. Ovaj parametar kontroli&scaron;e koliko tačaka će se sadržati u svakom lokalnom modelu. Manje vrednosti će učiniti da rezultati budu vi&scaron;e lokalni i mogu da otkriju efekte malog obima, ali to može da uvede izvesnu nestabilnost u izračunavanja. Veće vrednosti će biti stabilnije, ali postoji mogućnost da neki lokalni efekti budu propu&scaron;teni.
+            </p>
+            <p>Vrednost može da bude u opsegu od 30 do 500, ali tipične vrednosti su između 50 i 200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Broj suseda</h2></div>
+        <hr/>
+        <div>
+            <p>Predikcije se izračunavaju na osnovu susednih tačaka. Ovaj parametar kontroli&scaron;e koliko tačaka će se koristiti u izračunavanju. Kori&scaron;ćenje većeg broja suseda će generalno proizvesti tačnije rezultate, ali će izračunavanje rezultata potrajati duže.
+            </p>
+            <p>Ova vrednost može da bude u opsegu od 1 do 64, ali tipične vrednosti su između 5 i 15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Veličina izlazne ćelije</h2></div>
+        <hr/>
+        <div>
+            <p>Veličina ćelije i jedinica za izlazne rastere.
+            </p>
+            <p>Jedinice koje su na raspolaganju su stope, milje, metri i kilometri.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Greška izlazne predikcije</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite da li želite da kreirate raster standardnih gre&scaron;aka za predviđene vrednosti.
+            </p>
+            <p>Standardne gre&scaron;e su koriste jer pružaju informacije o pouzdanosti predviđenih vrednosti. Jednostavno nepisano pravilo jeste da će tačna vrednost pasti unutar dve standardne gre&scaron;ke predviđene vrednosti u 95% slučajeva. Na primer, pretpostavimo da nova lokacija dobija predviđenu vrednost od 50 sa standardnom gre&scaron;kom od 5. To znači da najbolja pretpostavka ove alatke jeste da je prava vrednost na toj lokaciji 50, ali bi opravdano mogla da bude 40 ili 60. Da biste izračunali ovaj opseg opravdanih vrednosti, pomnožite standardnu gre&scaron;ku sa 2, dodajte ovu vrednost predviđenoj vrednosti da biste dobili gornju granicu opsega, a zatim ga oduzmite od predviđene vrednosti da biste dobili donju granicu opsega.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat mapi. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Možete da navedete ime fascikle u  <b>Mom sadržaju</b> gde će rezultat biti sačuvan kori&scaron;ćenjem padajućeg polja <b>Sačuvaj rezultat u</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Kreiraj linije dogledanja</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Alatka Kreiraj vidno polje"></h2>
+        <hr/>
+    <p>Ova alatka identifikuje oblasti koje posmatra može da vidi, uzimajući u obzir topografiju terena. Ulazne lokacije tačaka mogu da predstavljaju posmatrače (kao &scaron;to su ljudi na zemlji ili u tornjevima za uočavanje požara) ili posmatrane objekte (kao &scaron;to su vetrogeneratori, vodotornjevi, vozila ili drugi ljudi). Rezultati defini&scaron;u oblasti koje su vidljive sa posmatračkih lokacija.
+    </p>
+    <p>I posmatrači i posmatrani objekti mogu da imaju visinu iznad zemlje i ove visine se koriste za određivanje vidljivosti Na primer, vidno polje izračunato za vetrogeneratore visine 90 metara i osobu visine 180 cm koja stoji na zemlji obično će biti veće od vidnog polja izračunatog za vetrogeneratore visine 60 metara i osobu visine 150 cm.
+    </p>
+    <p>Sloj sa rezultatima zapisuje koliki se broj puta lokacija svake ćelije u rasteru ulazne povr&scaron;ine može videti pomoću ulaznih tačaka posmatranja. Nevidljive ćelije su predstavljenje vrednostima tipa NoData (bez podataka).
+    </p>
+    <p>Ako je opcija  <b>Koristi trenutni obuhvat mape</b> izabrana, biće analizirani samo oblast rastera i tačke posmatrača koji su vidljivi unutar trenutnog obuhvata mape. Ako nije izabrana, analiziraće se sve tačke opservacije u ulaznom sloju, čak i ako su izvan trenutnog obuhvata mape.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Elevaciona površ</h2></div>
+        <hr/>
+        <div>
+            <p>Elevaciona povr&scaron; koja se koristi za izračunavanje vidnog polja.
+            </p>
+            <p>Ako je vertikalna jedinica ulazne povr&scaron;i različita od horizontalne jedinice, kao kada su vrednosti elevacije predstavljene stopama, a koordinatni sistem je u metrima, povr&scaron; mora da ima definisan vertikalni koordinatni sistem. Razlog za to je &scaron;to alatka koristi vertikalne (Z) i horizontalne (XY) jedinice za izračunavanje Z faktora za analizu vidnog polja. Bez vertikalnog koordinatnog sistema, a time i bez raspoloživih informacija od Z jedinici, alatka će pretpostaviti da je Z jedinica ista kao XY jedinica. Rezultat toga je da će se za analizu koristiti unutra&scaron;nji Z faktor od 1,0, &scaron;to može dati neočekivane rezultate.
+            </p>
+            <p>Elevaciona povr&scaron; može da bude celobrojna ili sa pokretnim zarezom.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Tačkasti geoobjekti koji predstavljaju lokacije posmatrača</h2></div>
+        <hr/>
+        <div>
+            <p>Tačkasti geoobjekti koji predstavljaju lokacije posmatrača pri izračunavanju vidnog polja.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimizuj za</h2></div>
+        <hr/>
+        <div>
+            <p>Metod optimizacije koji se koristi za izračunavanje vidnog polja.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Ovaj metod optimizuje brzinu obrade, na u&scaron;trb izvesne tačnosti u cilju boljih performansi. Ovo je podrazumevano.
+
+                </li>
+                <li>Accuracy &mdash; 
+Ovaj metod je optimizovan za tačnost u rezultatima, na račun dužeg vremena obrade.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maksimalno rastojanje prikazivanja</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite rastojanje prekida gde će prestati izračunavanje vidljivih oblasti. Iza ovog rastojanja se neće određivati da li tačke posmatrača i drugi objekti mogu da se međusobno vide.
+            </p>
+            <p>Možete ili da navedete numeričku vrednost koja predstavlja linearno rastojanje ili da izaberete numeričko polje iz ulaznih geoobjekata posmatrača. Ako je polje obezbeđeno, vrednosti sadržane u polju moraju da budu u istim jedinicama kao i xy jedinica ulaznih podataka povr&scaron;ine elevacije.
+            </p>
+            <p>Imajte na umu da će velike vrednosti povećati vreme izračunavanja. Ukoliko nije drugačije navedeno, podrazumevano maksimalno rastojanje će biti izračunato na osnovu rezolucije i obuhvata ulaza elevacione povr&scaron;i.
+            </p>
+            <p>Ovaj parametar je koristan za modelovanje izvesnih pojava. Na primer, ograničavanjem obuhvata vidljivosti, možete da modelujete vremenske uslove kao &scaron;to su slaba magla. Slično, ograničavanje obuhvata vidljivosti vam može pružiti izvesnu kontrolu nad dobom dana, aproksimacijom efekta sumraka.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Maksimalno rastojanje prikazivanja</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Minimalno rastojanje dogledanja</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite rastojanje gde treba da počne izračunavanje vidljivih oblasti. Ćelije na povr&scaron;i bliže od ovog rastojanja nisu vidljive u izlazu ali mogu i dalje da blokiraju vidljivost ćelija između minimalnog i maksimalnog rastojanja dogledanja.
+            </p>
+            <p>Možete ili da navedete numeričku vrednost koja predstavlja linearno rastojanje ili da izaberete numeričko polje iz ulaznih geoobjekata posmatrača. Ako je polje obezbeđeno, vrednosti sadržane u polju moraju da budu u istim jedinicama kao i xy jedinica ulaznih podataka povr&scaron;ine elevacije.
+            </p>
+            <p>Ovaj parametar je koristan za kontrolisanje oblasti analize vidnog polja na određenom rastojanju od posmatrača. Na primer, ako procenjujete vidljivost sa vrha zgrade do udaljenog parka, možete da podesite minimalno rastojanje dogledanja tako da isključi oblasti u blizini koje vas ne zanimaju i da ostvarite bolju brzinu obrade.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Minimalno rastojanje dogledanja</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>Rastojanje je 3D</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite da li se minimalni i maksimalni parametri rastojanja dogledanja mere trodimenzionalno ili jednostavnije, dvodimenzionalno. Kada je izabrana ova opcija, rastojanja dogledanja se tretiraju kao 3D rastojanje. Kada nije izabrana ova opcija, tretiraju se kao 2D rastojanja.
+            </p> 
+            <p>2D rastojanje je jednostavno linearno rastojanje mereno između posmatrača i cilja kori&scaron;ćenjem njihovih projektovanih lokacija na nivou mora. 3D rastojanje pruža realniju vrednost uzimajući u razmatranje njihove relativne visine.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Elevacija lokacija posmatrača</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite elevaciju lokacija posmatrača.
+            </p>
+            <p>Možete da navedete bilo numeričku vrednost koja predstavlja elevaciju svih posmatrača ili kao polje koje predstavlja elevaciju svakog posmatrača. Ako je polje obezbeđeno, vrednost sadržana u polju moraju da budu u istim jedinicama kao i Z jedinica ulaznih podataka povr&scaron;ine elevacije.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Elevacija lokacija posmatrača</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Visina posmatrača</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite visinu iznad zemlje za lokacije posmatrača.
+            </p> 
+            <p>Možete da navedete bilo numeričku vrednost za visinu ili polje iz ulaznih geoobjekata posmatrača. Ako je polje obezbeđeno, vrednost sadržana u polju moraju da budu u istim jedinicama kao i z jedinica ulaznih podataka povr&scaron;ine elevacije.
+            </p>
+            <p>Podrazumevano je 180 cm. Ako gledate sa uzdignute lokacije, kao &scaron;to je osmatračnica ili visoka zgrada, iskoristite tu visinu umesto toga. Tokom izračunavanja vidnog polja, ova vrednost je dodata elevaciji posmatrača, ako je navedena; u suprotnom, dodaje se interpolirane z-vrednosti povr&scaron;ine.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Visina posmatrača</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Visina cilja</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite visinu struktura ili ljudi na zemlji koji se koriste za uspostavljanje vidljivosti.
+            </p>
+            <p>Možete da navedete bilo numeričku vrednost za visinu ili polje iz ulaznih geoobjekata posmatrača. Ako je polje obezbeđeno, vrednost sadržana u polju moraju da budu u istim jedinicama kao i z jedinica ulaznih podataka povr&scaron;ine elevacije.
+            </p>
+            <p>Rezultujuće vidno polje identifikuje one oblasti gde tačka posmatrača može da vidi ove objekte na zemlji. Suprotno je takođe tačno; objekti na zemlji mogu da vide tačku posmatrača. 
+            </p>
+            <p>Slede neki primeri postavki ciljne visine:
+            </p>
+            <ul>
+                <li>Ako va&scaron;e ulazne tačke predstavljaju vetrogeneratora i želite da odredite gde ljudi koji stoje na zemlji mogu da vide vetrogeneratore, unesite prosečnu visinu osobe (oko 180 cm).
+                    
+
+                </li>
+                <li>Ako va&scaron;e ulazne tačke predstavljaju osmatračnice za požare i želite da odredite koje osmatračnice mogu da vide oblak dima koji se diže 6 m u visinu ili vi&scaron;e, unesite 6 m za ciljnu visinu.
+                    
+
+                </li>
+                <li>Ako va&scaron;e ulazne tačke predstavljaju vidikovce duž nekih puteva ili staza i želite da odredite gde vetrogeneratori koji su visoki 120m ili vi&scaron;e mogu da se vide, unesite 120 m za visinu.
+                    
+
+                </li>
+                <li>Ako va&scaron;e ulazne tačke predstavljaju vidikovce i želite da odredite koliko oblasti na zemlji mogu da vide osobe koje stoje na vidikovcu, unesite nulu za ciljnu visinu. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Visina posmatrača</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Izlazna visina bi trebalo da postane vidljiva</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv izlaznog rezultata nivoa iznad zemlje (AGL). AGL rezultat je raster gde je svaka vrednost ćelije minimalna visina koju treba dodati inače nevidljivoj ćeliji kako bi je učinili vidljivom barem jednom posmatraču. Ćelijama koje su već bile vidljive će biti dodeljena 0 u ovom izlaznom rasteru.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat mapi. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Možete da navedete ime fascikle u  <b>Mom sadržaju</b> gde će rezultat biti sačuvan kori&scaron;ćenjem padajućeg polja <b>Sačuvaj rezultat u</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

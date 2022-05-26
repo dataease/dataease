@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/it/GeneralizedLinearRegression",{modifiedTitle:"Regressione lineare generalizzata - ${goal}",fit:"Misura",fitAndPredict:"Misurare e Prevedere",selectGoal:"Scegliere l'operazione da eseguire:",fitGoal:"Misurare un modello per valutare le performance del modello",fitAndPredictGoal:"Misurare un modello e prevedere dei valori",inputLayerLabel:"Scegliere un layer per generare un modello da",chooseDependentField:"Scegliere i campi da modellare",chooseDataType:"Scegliere il tipo di dati che si stanno modellando",
+continuousData:"Continuo",binaryData:"Binario",countData:"Conteggio",chooseExplanatoryField:"Scegliere i campi esplicativi",chooseFeaturesToPredict:"Scegliere un layer per prevedere valori per",chooseExplainMatch:"Scegliere come abbinare i campi esplicativi",outputLayerName:"GLR ${inputLayerName}",itemDescription:"Feature layer generato dall\u2019esecuzione delle soluzioni della Regressione lineare generalizzata ${goal}.",itemTags:"Risultato dell'analisi, Regressione lineare generalizzata, ${inputLayerName}, ${goal}",
+itemSnippet:"Feature layer generato dalla Regressione lineare generalizzata (${goal})"});

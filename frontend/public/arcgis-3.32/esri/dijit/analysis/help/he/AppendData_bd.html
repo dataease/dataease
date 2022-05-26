@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>הוסף נתונים</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="תרשים תהליך עבודה של הוספת נתונים"></h2>
+        <hr/>
+    <p>כלי זה מוסיף נתונים לשכבת ישויות מתארחת קיימת. הכלי 'הוסף נתונים' משנה את שכבת הקלט המקורית ולא מפיק שכבת פלט חדשה. באפשרותך להתאים שדות על בסיס שם השדה וסוג השדה, או באפשרותך להחיל שיטות התאמה מתקדמות יותר.
+    </p>
+    <p>להלן מספר דוגמאות: 
+        <ul>
+            <li>אתם עובד בחברת ביטוח גדולה שמנפיק רשומות מכירות על בסיס חודשי. עבור הדוח השנתי שלך, יש לגבש את הנתונים החודשיים לצורך ניתוח.  כדי להתחיל ניתוח מכירות, באפשרותך למנף את הכלי 'הוסף נתונים' כדי לעדכן את השכבה  AnnualReport_2018 ברגע שהמספרים החודשיים זמינים. מכיוון שאתה יודע שהארגון שלך שומר על סכמה עקבית בכל חודש, באפשרותך להשתמש בשטת מיפוי השדות שמוגדרת כברירת מחדל כדי להוסיף ביעילות ישויות על בסיס שם וסוג שדה.
+            </li>
+            <li>עשר קבוצות לשמירה על איכות הסביבה אוספות מאות אלפי מדידות אקלים בתוך תחום השיפוט שלהן.  ארגונים אלה מעוניינים לגבש את הנתונים שלהם כדי להבין טוב יותר דפוסים אזוריים וגלובליים. כל ארגון קובע את הסכמה עבור סט הנתונים שלו. כל אחד מהם מציין שמות שדות שונים עבור נתוני טמפרטורה ומהירות רוח.  בהינתן ההבדלים בין שמות השדות בסטים השונים של נתונים, ניתן למנף מיפוי שדות כדי לציין כיצד להוסיף מדידות טמפרטורה ומהירות רוח לשדות התואמים שלהן.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>בחר שכבה שאליה תרצה להוסיף</h2></div>
+        <hr/>
+        <div>
+            <p>ישויות הטבלה, הנקודה, הקו או הפוליגון שאליהן הנתונים יתווספו.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>השכבה שאליה אתה מוסיף תשתנה במהלך היישום של הכלי. לפני שתמשיך, ודא שברצונך לשנות שכבה זו.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>בנוסף לבחירת שכבה מהמפה שלך, באפשרותך לבחור באפשרות  <b>בחר שכבת ניתוח</b> בתחתית הרשימה הנפתחת כדי לדפדף לתכנים שלך עבור שכבת ישויות מתארחת. 
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>בחר שכבה שתרצה להוסיף</h2></div>
+        <hr/>
+        <div>
+            <p>ישויות הטבלה, הנקודה, הקו או הפוליגון שיתווספו לשכבת הקלט.
+            </p>
+            <p>בנוסף לבחירת שכבה מהמפה שלך, באפשרותך לבחור באפשרות  <b>בחר שכבת ניתוח</b> בתחתית הרשימה הנפתחת כדי לדפדף לתכנים שלך עבור סט נתוני שיתוף קובץ Big Data או שכבת ישויות. באפשרותך אופציונלית להחיל מסנן על שכבת הקלט או להחיל בחירה על שכבות מתארחות שנוספו למפה שלך. מסננים ובחירות מוחלים רק עבור ניתוח. 
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>הוסף את כל הישויות או הגדר סט משנה (אופציונלי)</h2></div>
+        <hr/>
+        <div>
+            <p>מזהה את הישויות להוספה. פרמטר זה הוא אופציונלי.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>בחר כיצד להוסיף שדות (אופציונלי)</h2></div>
+        <hr/>
+        <div>
+            <p>מציין איך שדות שכבת ההוספה מתווספות לשכבת הקלט. כברירת מחדל, כל הקלט התואם ושדות ההוספה יתווספו. שדות הם תואמים שם יש להם אותו שם שדה ואותו סוג שדה. אופציונלית, באפשרותך לבחור כיצד שדות יותאמו, או לחשב ביטויי Arcade לאכלוס ערכי שדה.
+            </p>
+            <p>לדוגמה, יש לך שכבת קלט עם שדות  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i>, ושכבת הוספה עם שדות <i>field_string</i>, <i>field_number</i> ו- <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>כברירת מחדל, הכלי יתאים  <i>field_number</i> בשכבת הקלט ל- <i>field_number</i> בשכבת ההוספה, ו- <i>field_string</i>  בשכבת הקלט ל- <i>field_string</i> בשכבת ההוספה.
+                    </li>
+                    <li>כברירת מחדל, שדות הקלט  <i>date_field</i> ו- <i>unused_field</i> יאוכלסו עם ערכים של <i>null</i> כי אין להם שדה תואם בשכבת ההוספה.
+                    </li>
+                    <li>אופציונלית, באפשרותך להוסיף ערכים לשדות שלא הותאמו אוטומטית כברירת מחדל. לדוגמה, ניתן להתאים את  <i>date_field</i> בשכבת הקלט עם שדה ההוספה <i>MY_DATE_FIELD</i>. כדי לעשות זאת, השתמש בתפריט הנפתח לצד <i>date_field</i> בעמודה הראשונה ובחר <i>MY_DATE_FIELD</i> מהתפריט הנפתח בעמודה השנייה.
+                    </li>
+                </ul>
+                 כדוגמה נוספת, לשכבת קלט יש שדות מספריים <i>value_1</i>&rlm;, <i>value_2</i>&rlm;, <i>value_3</i> ו- <i>my_Average</i>, ולשכבת הוספה יש שדות מספריים <i>value_1</i>&rlm;, <i>value_2</i> ו- <i>value_3</i>.
+                <ul>
+                    <li>כברירת מחדל,  <i>value_1</i>&rlm;, <i>value_2</i> ו- <i>value_3</i> יותאמו ויתווספו.
+                    </li>
+                    <li>בנוסף להתנהגות ברירת מחדל, ניתן לחשב ערכים עבור השדה  <i>my_Average</i>. עשה זאת תוך שימוש בשדות מרובים ובפעולות מתמטיות על ידי בחירת אפשרות הרשימה הנפתחת <b>ביטוי</b> בעמודה לצד <i>my_Average</i> ובניית ביטוי Arcade כגון <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

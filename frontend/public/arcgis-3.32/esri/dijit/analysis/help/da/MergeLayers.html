@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Flet lag</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Flet lag"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j kopierer objekter fra to lag til &eacute;t nyt lag. Lagene, der skal flettes, skal indeholde de samme objekttyper (punkter, linjer eller omr&aring;der). Du bestemmer, hvordan felter fra inputlagene skal samles og kopieres. For eksempel:
+        <ul>
+            <li>Jeg har tre lag for England, Wales og Skotland, og jeg vil gerne have et enkelt lag for Storbritannien. 
+            </li>
+            <li>Jeg har 12 lag, og hvert lag indeholder parcel-information for tilst&oslash;dende distrikter. Jeg vil gerne l&aelig;gge dem sammen til et enkelt lag og kun bevare de felter, der har sammen navn og type i de 12 input-lag.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hvis feltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, flettes kun de objekter, der er synlige inden for den aktuelle kortudstr&aelig;kning. Uden markering flettes alle objekter i begge lag, selv om de ligger uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg lag</h2></div>
+        <hr/>
+        <div>
+            <p>De punkt-, linje eller omr&aring;deobjekter, som skal flettes med det lag, der er angivet nedenfor. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Vælg det lag, der skal flettes</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg det lag, der skal flettes med det f&oslash;rste lag.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Redigér flettefelter</h2></div>
+        <hr/>
+        <div>
+            <p>Som standard overf&oslash;res alle felter fra begge input til outputtet. Du kan &aelig;ndre m&aring;den, som felterne overf&oslash;res til outputtet p&aring;, p&aring; f&oslash;lgende m&aring;de:
+                <ul>
+                    <li> <b>Omd&oslash;b</b> &ndash; Feltet omd&oslash;bes p&aring; outputtet.
+                    </li>
+                    <li> <b>Fjern</b> &ndash; Feltet fjernes fra outputtet.
+                    </li>
+                    <li> <b>Ens</b> &ndash; Feltnavnene bliver ens. V&aelig;rdier for felter fra laget, der skal flettes, kopieres til det tilsvarende outputfelt.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Hvis begge lag indeholder et felt med identisk navn og datatype, flettes indholdet af felterne til et felt med det p&aring;g&aelig;ldende navn. Det g&aelig;lder ikke felter, hvor  <b>Ens</b> benyttes i parameteren <b>Redig&eacute;r flettefelter</b>.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Détecter les incidents</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Detect Incidents (D&eacute;tecter les incidents)"></h2>
+        <hr/>
+    <p> Cet outil fonctionne avec une couche temporelle de points, de lignes, de surfaces ou de tables qui repr&eacute;sente un instant donn&eacute; dans le temps. &Agrave; l&rsquo;aide d&rsquo;entit&eacute;s organis&eacute;es de mani&egrave;re s&eacute;quentielle, appel&eacute;es pistes, cet outil d&eacute;termine quelle entit&eacute;s sont des incidents d&rsquo;int&eacute;r&ecirc;t. Les incidents sont d&eacute;termin&eacute;s par des conditions que vous sp&eacute;cifiez.
+    </p>
+    <p>D&rsquo;abord, l&rsquo;outil d&eacute;termine quelles entit&eacute;s appartiennent &agrave; une piste &agrave; l&rsquo;aide d&rsquo;un ou plusieurs champs. En utilisant le temps &agrave; chaque entit&eacute;, les pistes sont organis&eacute;es de mani&egrave;re s&eacute;quentielle et la condition d&rsquo;incident est appliqu&eacute;e. Les entit&eacute;s r&eacute;pondant &agrave; la condition d&rsquo;incident de d&eacute;part sont signal&eacute;es comme un incident. Vous pouvez si vous le souhaitez appliquer une condition d&rsquo;incident de fin&nbsp;; lorsque la condition de fin est vraie, l&rsquo;entit&eacute; n&rsquo;est plus un incident.  Les r&eacute;sultats sont renvoy&eacute;s avec les entit&eacute;s d&rsquo;origine (avec de nouvelle colonnes repr&eacute;sentant le nom de l&rsquo;incident) et indiquent quelles entit&eacute;s r&eacute;pondent &agrave; la condition d&rsquo;incident. Vous pouvez renvoyer toutes les entit&eacute;s d&rsquo;origine ou uniquement les entit&eacute;s qui constituent des incidents.
+    </p>
+    <p>Supposons par exemple que vous poss&eacute;diez des mesures GPS d'ouragans toutes les 10&nbsp;minutes. Chaque mesure GPS consigne le nom de l'ouragan, sa position, l'heure d'enregistrement et la vitesse du vent. Avec ces champs, vous pouvez cr&eacute;er un incident dans lequel une mesure dont la vitesse de vent est sup&eacute;rieure &agrave; 208&nbsp;km/h constitue un incident nomm&eacute;  <code>Catastrophique</code>. Si une condition de fin n&rsquo;est pas d&eacute;finie, l&rsquo;incident se termine si l&rsquo;entit&eacute; ne r&eacute;pond plus &agrave; la condition de d&eacute;but (la vitesse du vent ralentit &agrave; moins de 208&nbsp;km/h).
+    </p>
+    <p>Dans un autre exemple, vous surveillez les concentrations d&rsquo;un produit chimique dans vos canalisations d&rsquo;eau &agrave; l&rsquo;aide d&rsquo;un champ nomm&eacute;  <code>NiveauContamination</code>. Vous savez que les niveaux recommand&eacute;s sont inf&eacute;rieurs &agrave; 0,01&nbsp;mg/L et que les niveaux dangereux sup&eacute;rieurs &agrave; 0,03&nbsp;mg/L. Pour d&eacute;tecter les incidents o&ugrave; une valeur sup&eacute;rieure &agrave; 0,03&nbsp;mg/L constitue un incident et reste un incident jusqu&rsquo;au retour &agrave; la normale des niveaux de contamination, vous cr&eacute;ez un incident &agrave; l&rsquo;aide d&rsquo;une condition de d&eacute;but de <code>NiveauContamination&nbsp;&gt;&nbsp;0,03</code> et d&rsquo;une condition de fin de <code>NiveauContamination&nbsp;&lt;&nbsp;0,01</code>. Ceci marque toute s&eacute;quence dans laquelle les valeurs d&eacute;passent 0,03&nbsp;mg/L jusqu&rsquo;&agrave; leur retour &agrave; une valeur inf&eacute;rieure &agrave; 0,01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Sélectionner la couche dans laquelle les incidents doivent être détectés</h2></div>
+        <hr/>
+        <div>
+            <p>Les points, lignes, espaces ou tables allant &ecirc;tre utilis&eacute;s pour rechercher des incidents. La couche en entr&eacute;e doit &ecirc;tre temporelle avec des entit&eacute;s repr&eacute;sentant un instant dans le temps et doit comporter un ou plusieurs champs permettant d&rsquo;identifier les pistes.
+            </p>
+            <p>Outre le fait de choisir une couche de votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante pour parcourir votre contenu et rechercher une couche d&rsquo;entit&eacute;s ou un jeu de donn&eacute;es de partage de fichiers Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Sélectionner un ou plusieurs champs pour identifier les pistes</h2></div>
+        <hr/>
+        <div>
+            <p>Les champs qui repr&eacute;sentent l&rsquo;identifiant de piste. Vous pouvez utiliser un ou plusieurs champs pour repr&eacute;senter des valeurs de pistes uniques.
+            </p>
+            <p>Par exemple, si vous reconstruisez les pistes des ouragans, vous pouvez utiliser le nom de l&rsquo;ouragan comme nom de piste.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Créer une condition d'expression pour indiquer le début d'un incident</h2></div>
+        <hr/>
+        <div>
+            <p>Ajoutez une condition &agrave; l&rsquo;aide du g&eacute;n&eacute;rateur d&rsquo;expressions pour d&eacute;terminer ce que constitue un incident. Si la condition que vous sp&eacute;cifiez est vraie, l&rsquo;entit&eacute; constitue un incident. Si vous ne sp&eacute;cifiez pas de condition de fin, un incident se termine lorsque la condition de d&eacute;but n&rsquo;est plus vraie.
+            </p>
+            <p>Par exemple, vous souhaitez &ecirc;tre alert&eacute; lorsque la somme des champs  <code>concentration_1</code> et <code>concentration_2</code> est sup&eacute;rieure &agrave; <code>concentration_3</code>.   Pour ce faire, appliquez une condition de <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>Si vous vous int&eacute;ressez &agrave; la mani&egrave;re dont les concentrations varient dans le temps et souhaitez recevoir une alerte lorsque la  <code>concentration_1</code> actuelle est sup&eacute;rieure aux deux mesures pr&eacute;c&eacute;dentes de <code>concentration_2</code>, vous pouvez utiliser une expression telle que <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Créer une condition d’expression pour indiquer la fin d’un incident (facultatif)</h2></div>
+        <hr/>
+        <div>
+            <p>Si vous le souhaitez, ajoutez une condition &agrave; l&rsquo;aide du g&eacute;n&eacute;rateur d&rsquo;expressions pour d&eacute;terminer la fin d&rsquo;un incident. Si la condition de fin que vous sp&eacute;cifiez est vraie, l&rsquo;entit&eacute; ne constitue plus un incident. Si vous ne sp&eacute;cifiez pas de condition de fin, un incident se termine lorsque la condition de d&eacute;but n&rsquo;est plus vraie.    
+            </p>
+            <p>Par exemple, vous souhaitez &ecirc;tre alert&eacute; lorsque la somme des champs  <code>concentration_1</code> et <code>concentration_2</code> est sup&eacute;rieure &agrave; <code>concentration_3</code>, et vous souhaitez que l&rsquo;incident se termine si <code>concentration_4</code> est inf&eacute;rieur &agrave; <code>concentration_1</code>. Pour ce faire, appliquez une condition de d&eacute;but de <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;revenu&quot;] * .20)</code> et une condition de fin de <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>.
+            </p>
+            <p>Si vous voulez qu&rsquo;un incident prenne fin lorsque la moyenne de la valeur actuelle de  <code>concentration_1</code> et les quatre mesures pr&eacute;c&eacute;dentes sont sup&eacute;rieures &agrave; la premi&egrave;re mesure, vous pouvez utiliser une expression telle que <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Me montrer</h2></div>
+        <hr/>
+        <div>
+            <p>Toutes les m&eacute;thodes en sortie ajoutent les champs aux entit&eacute;s d&rsquo;origine. Il existe deux m&eacute;thodes pour d&eacute;terminer quelles entit&eacute;s sont renvoy&eacute;es&nbsp;:
+                <ul>
+                    <li> <b>All features (Toutes les entit&eacute;s)</b>&nbsp;: il s&rsquo;agit de la m&eacute;thode par d&eacute;faut. Toutes les entit&eacute;s dans l&rsquo;entr&eacute;e sont renvoy&eacute;es.
+                    </li>
+                    <li> <b>Only incidents (Uniquement les incidents)</b>&nbsp;: cette m&eacute;thode ne renvoie que les entit&eacute;s qui constituent des incidents. Les entit&eacute;s qui ne constituent pas des incidents ne sont pas renvoy&eacute;es.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analyser les données selon les intervalles temporels (facultatif)</h2></div>
+        <hr/>
+        <div>
+            <p>Indiquez si vous voulez d&eacute;tecter les incidents &agrave; l&rsquo;aide d&rsquo;intervalles temporels qui segmentent les entit&eacute;s en entr&eacute;e &agrave; analyser. Si vous utilisez des intervalles temporels, vous devez d&eacute;finir les intervalles temporels n&eacute;cessaires et, &eacute;ventuellement, le temps de r&eacute;f&eacute;rence. Si vous n&rsquo;indiquez pas de temps de r&eacute;f&eacute;rence, la date du 1er janvier 1970 est employ&eacute;e. 
+            </p>
+            <p>Si, par exemple, vous d&eacute;finissez la limite temporelle comme &eacute;tant un jour, &agrave; partir de 9&nbsp;heures du matin &agrave; la date du 1er janvier 1990, chaque piste sera tronqu&eacute;e &agrave; 9&nbsp;heures chaque jour et analys&eacute; au sein de ce segment. 
+            </p>
+            <p>L&rsquo;utilisation d&rsquo;intervalles temporels est une mani&egrave;re d&rsquo;acc&eacute;l&eacute;rer le calcul car elle g&eacute;n&egrave;re de plus petites pistes &agrave; analyser. S&rsquo;il est pertinent d&rsquo;appliquer une division par un intervalle temporel r&eacute;current dans le cadre de l&rsquo;analyse, il est recommand&eacute; d&rsquo;utiliser cette m&eacute;thode pour le traitement Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la couche &agrave; cr&eacute;er. Si vous &eacute;crivez sur une instance ArcGIS Data Store, les r&eacute;sultats seront enregistr&eacute;s dans  <b>My Content (Mon contenu)</b> et ajout&eacute;s &agrave; la carte. Si vous &eacute;crivez sur un partage de fichiers Big Data, les r&eacute;sultats seront enregistr&eacute;s dans le partage de fichiers Big Data et ajout&eacute;s &agrave; son manifeste. Il ne sera pas ajout&eacute; &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, l'outil &eacute;choue.
+            </p>
+            <p>Lors de l&rsquo;&eacute;criture sur  ArcGIS Data Store (r&eacute;pertoire de donn&eacute;es relationnelles ou spatio-temporelles) via la zone de liste d&eacute;roulante  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>, vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> o&ugrave; le r&eacute;sultat sera enregistr&eacute;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

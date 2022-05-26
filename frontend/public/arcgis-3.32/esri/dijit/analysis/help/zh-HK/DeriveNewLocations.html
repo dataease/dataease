@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>衍生新位置</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="衍生新位置"></h2>
+        <hr/>
+    <p>此工具可在研究區域中取得滿足一系列指定條件的新圖徵。這些標準可基於屬性查詢（如閒置宗地）和空間查詢（如位於洪泛區內的宗地）。
+
+    </p>
+    <p>如果勾選 <b>使用目前地圖範圍</b>，則僅對目前地圖範圍中可見的圖徵進行分析。如果未勾選，則對所有圖徵進行分析，包括超出目前地圖範圍的圖徵。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>衍生匹配以下表達式的新位置</h2></div>
+        <hr/>
+        <div>
+            <p>按一下 <b>新增表達式</b>按鈕以定義表達式。您可以新增多個表達式。輸入表達式以後，按一下 <b>執行分析</b>按鈕，分析圖層裡的圖徵會按照每個表達式進行篩選。符合所有表達式的圖徵部分將寫入結果圖層。
+            </p>
+            <p>您可以建立兩種基本類型的表達式：屬性表達式和空間表達式。屬性表達式用於查詢欄位值，例如  <code>where name is 'San Francisco'</code>。空間表達式有四種類型：
+                <ul>
+                    <li> <b>在某一距離範圍內</b>: 某圖徵部分在另一圖層的圖徵一定距離範圍內。例如，尋找距離洛杉磯河 500 英里以內的宗地部分。
+                    </li>
+                    <li> <b>完全包含</b>：該圖徵必須包含另一圖層中某個圖徵的所有部分。例如，尋找完全包含工業用宗地的流域。宗地的任何部分都不可以在流域範圍之外。
+                    </li>
+                    <li> <b>完全在其他圖徵範圍內</b>：該圖徵必須完全由另一圖層的某圖徵包圍。例如，尋找完全在城市邊界以內的學區。學區的任何部分都不可以在城市邊界以外。
+                    </li>
+                    <li> <b>相交</b>：圖徵或圖徵的部分必須與另一圖層中的圖徵重疊或相交。例如，尋找國家公園中遭受多次火災燒毀的植被。公園邊界以外的燒毀區域將不會包括在內。
+                    </li>
+                    <li> <b>最接近</b>：必須與另一圖層的某個圖徵最接近的圖徵。例如，尋找每所學校最近的綠地。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>每個空間表達式都有相應的反表達式（ <b>最接近</b>除外）； <b>不在某一距離範圍之內</b>、 <b>不完全包含</b>、 <b>不完全在其他圖徵範圍內</b>，和 <b>不相交</b>。
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層名稱已存在，系統將提示您提供其他名稱。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式功能表，可以在 <b>我的內容</b>中指定儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

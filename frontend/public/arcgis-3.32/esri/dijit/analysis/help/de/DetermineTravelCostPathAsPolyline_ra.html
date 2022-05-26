@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Reisekostenpfad als Polylinie ermitteln</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Abbildung zum Werkzeug &quot;Reisekostenpfad als Polylinie ermitteln&quot;"></h2>
+        <hr/>
+    <p>Dieses Werkzeug berechnet den kosteng&uuml;nstigsten Pfad zwischen Quellen und bekannten Zielen als Polylinie.
+    </p>
+    <p>Nachfolgend werden einige Beispielanwendungen aufgef&uuml;hrt:
+        <ul>
+            <li>Die beste Route suchen f&uuml;r eine neue Stra&szlig;e im Hinblick auf Baukosten.
+                
+
+            </li>
+            <li>Den Pfad von mehreren Positionen in Vororten (Quellen) zum n&auml;chstgelegenen Einkaufszentrum (Ziel) ermitteln.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Positionen in den Eingabe-Layern analysiert, die in der aktuellen Kartenausdehnung sichtbar sind. Wenn diese Option deaktiviert ist, werden alle Positionen in den beiden Eingabe-Layern analysiert, auch diejenigen, die sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Raster- oder Feature-Quell-Layer auswählen, von dem ausgehend Pfade ermittelt werden sollen</h2></div>
+        <hr/>
+        <div>
+            <p>Ein Image-Service oder Feature-Service, mit dem diejenigen Zellen identifiziert werden, von denen die kosteng&uuml;nstigste Route zum am wenigsten kostspieligen Ziel ermittelt wird.
+            </p>
+            <p>Wenn die Eingabe ein Image-Service ist, besteht die Eingabe aus Zellen mit g&uuml;ltigen Werten (0 ist ein g&uuml;ltiger Wert), und den restlichen Zellen muss &quot;NoData&quot; zugewiesen werden.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Reisekosten-Raster-Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Ein Raster, das die Impedanz oder die Kosten f&uuml;r eine planimetrische Bewegung durch jede Zelle definiert.
+            </p>
+            <p>Der Wert an jeder Zellenposition stellt die Kosten pro Einheitenentfernung f&uuml;r die Bewegung durch die Zelle dar. Jeder Zellenpositionswert wird mit der Zellenaufl&ouml;sung multipliziert, und gleichzeitig werden diagonale Bewegungen ausgeglichen, um die Gesamtkosten f&uuml;r die Bewegung durch die Zelle zu erhalten.
+            </p>
+            <p>Die Werte im Kosten-Raster k&ouml;nnen ganzzahlige oder Gleitkommawerte sein, sie d&uuml;rfen jedoch nicht negativ oder 0 sein (negative oder keine Kosten sind nicht zul&auml;ssig).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Eingabe-Ziel-Raster oder -Features</h2></div>
+        <hr/>
+        <div>
+            <p>Eine Eingabe, die die Ziele definiert, mit denen die Entfernung berechnet wird. Der Layer kann ein Raster- oder Feature-Layer sein.
+            </p>
+            <p>Wenn die Eingabe ein Image-Service ist, besteht die Eingabe aus Zellen mit g&uuml;ltigen Werten (0 ist ein g&uuml;ltiger Wert), und den restlichen Zellen muss &quot;NoData&quot; zugewiesen werden.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Name des Ergebnis-Layers für die Polylinie</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>Sie k&ouml;nnen den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis &uuml;ber das Dropdown-Feld <b>Ergebnis speichern in</b> gespeichert wird.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Typ der zu ermittelnden Pfade auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Definiert die Art und Weise, in der die Werte und Zonen der Eingabezieldaten in den Kostenpfadberechnungen interpretiert werden.
+            </p>
+            <ul>
+                <li>Der Beste: F&uuml;r alle Zellen oder Positionen in den Eingabezieldaten wird die kosteng&uuml;nstigste Route aus der Position mit dem Minimum der kosteng&uuml;nstigsten Routen zur Quellenposition abgeleitet. Hierbei handelt es sich um die Standardeinstellung.
+                    
+
+                </li>
+                <li>Zu jeder Zelle: F&uuml;r jede Zelle oder Position mit g&uuml;ltigen Werten in den Eingabezieldaten wird eine kosteng&uuml;nstigste Route ermittelt und im Ausgabe-Feature-Service gespeichert. Mit dieser Option wird jede Zelle der Eingabezieldaten separat behandelt und eine kosteng&uuml;nstigste Route f&uuml;r jede Zelle ermittelt.
+                    
+
+                </li>
+                <li>Zu jeder Zone: F&uuml;r jede Zone in den Eingabezieldaten wird eine kosteng&uuml;nstigste Route ermittelt und im Ausgabe-Feature-Service gespeichert. Bei dieser Option beginnt die kosteng&uuml;nstigste Route f&uuml;r jede Zone bei der Zelle oder Position mit der niedrigsten Kostenentfernungsgewichtung in der Zone.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

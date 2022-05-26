@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Rasti centroidus</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Rasti centroidus"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis veikia kelių ta&scaron;kų, linijos arba ploto elementų sluoksnyje ir nustato kiekvieno elemento centrą.
+    </p>
+    <p>Jei  <b>Naudoti esamą žemėlapio aprėptį</b> yra pažymėta, bus analizuojami tik įvesties kelių ta&scaron;kų, linijos arba ploto sluoksnio elementai, patenkantys į dabartinę matomą žemėlapio aprėptį. Jei nepažymėta, bus analizuojami visi įvesties sluoksnio elementai, net jei jie nepatenka į esamą žemėlapio aprėptį.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pasirinkite sluoksnį, kurio elementai bus naudojami centroidams generuoti</h2></div>
+        <hr/>
+        <div>
+            <p> Kelių ta&scaron;kų, linijos arba ploto sluoksnis, kuris bus naudojamas centroidams rasti.
+            </p>
+            <p>Pasirinkę sluoksnį žemėlapyje, galite pasirinkti  <b>Pasirinkite analizės sluoksnį</b>, kurį rasite i&scaron;plečiamo sąra&scaron;o apačioje. &Scaron;i parinktis atidaro galeriją, kurioje galite ie&scaron;koti duomenų rinkinių i&scaron; įvairių &scaron;altinių ir juos pasirinkti naudoti savo analizėje. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Rodyti man išvesties vietas</h2></div>
+        <hr/>
+        <div>
+            <p> Pažymėjus <b>Tikrajame centroide</b> (numatytoji parinktis), i&scaron;vestis pateiks kiekvieno įvesties elemento tikrąją centroido vietą. Centroidai bus i&scaron;dėstyti taip:
+                <ul>
+                    <li>Kelių ta&scaron;kų elementai &ndash; i&scaron;vesties centroidas bus kelių ta&scaron;kų elemento visų ta&scaron;kų vidurkio x ir y koordinatėse.
+                    </li>
+                    <li>Linijos elementai &ndash; i&scaron;vesties centroidas bus linijos elemento visų linijos segmentų vidurio ta&scaron;kų svertinio vidurkio x ir y koordinatėse. Svoris pagrįstas segmento ilgiu.
+                    </li>
+                    <li>Ploto elementai &ndash; i&scaron;vesties centroidas bus ploto centre.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Pažymėjus  <b>Yra įvesties elementuose</b>, i&scaron;vesties ta&scaron;ko elementai bus visuose įvesties elementuose. Gauti ta&scaron;ko elementai bus rodomi taip:
+                <ul>
+                    <li>Kelių ta&scaron;kų elementai &ndash; i&scaron;vesties centroidas sutaps su vienu kelių ta&scaron;kų grupės ta&scaron;ku.
+                    </li>
+                    <li>Linijos elementai &ndash; i&scaron;vesties centroidas bus ant linijos.  Jeigu linija yra i&scaron;lenkta, i&scaron;vestis bus linijos vidurio ta&scaron;ke. 
+                    </li>
+                    <li>Ploto elementai &ndash; i&scaron;vesties ta&scaron;kas bus ploto elemento viduje.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Tai sluoksnio, kuris bus sukurtas ir patalpintas  <b>Turinyje</b> ir pridėtas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnio pavadinimas jau egzistuoja, jūsų papra&scaron;ys pateikti kitą pavadinimą.
+            </p>
+            <p>I&scaron;plečiamajame meniu pasirinkę  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Fusionar capas</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Fusionar capas"></h2>
+        <hr/>
+    <p>Esta herramienta combina dos capas de entidades para crear una &uacute;nica capa de salida.    Las capas que se van a fusionar deben tener el mismo tipo de geometr&iacute;a y de tiempo.  Puede controlar la manera de unir y copiar los campos de las capas de entrada. Por ejemplo:
+        <ul>
+            <li>Tengo tres capas correspondientes a Inglaterra, Gales y Escocia y quiero obtener una &uacute;nica capa de Gran Breta&ntilde;a. 
+            </li>
+            <li>Tengo dos capas y cada una de ellas contiene informaci&oacute;n de parcelas de municipios contiguos.  Deseo unirlas en una sola capa y conservar &uacute;nicamente los campos que tienen el mismo nombre y el mismo tipo en las dos capas de entrada.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elegir capa</h2></div>
+        <hr/>
+        <div>
+            <p>La capa con entidades tabulares, de &aacute;rea, l&iacute;neas o puntos con la que se fusionar&aacute; la segunda capa de entidades. Todos los campos de esta capa se incluir&aacute;n en la capa de resultados.
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>Elegir capa para fusionar</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de entidades que se va a fusionar con la capa de entrada. La capa que se va a fusionar debe tener el mismo tipo de geometr&iacute;a y de tiempo que la capa de entrada.
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>Modificar la fusión de campos</h2></div>
+        <hr/>
+        <div>
+            <p>De forma predeterminada, todos los campos de ambas capas de entrada se incluir&aacute;n en la salida.  Puede modificar la forma de incluir en la salida los campos de la capa a fusionar con las siguientes opciones:
+                <ul>
+                    <li> <b>Cambiar nombre</b>: el nombre del campo cambiar&aacute; en la salida.
+                    </li>
+                    <li> <b>Eliminar</b>: el campo se eliminar&aacute; de la salida.
+                    </li>
+                    <li> <b>Concordar</b>: los nombres de campos ser&aacute;n equivalentes.  Los valores del campo de la capa que se va a fusionar se copiar&aacute;n al campo de salida equivalente.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Si ambas capas contienen un campo con un nombre y un tipo de datos id&eacute;nticos, el contenido de los campos se fusionar&aacute; en un solo campo de ese nombre. Esto no se aplica a los campos en los que se usa  <b>Coincidencia</b> en el par&aacute;metro <b>Modificar campos fusionados</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p> El nombre de la capa que se crear&aacute;.  Si escribe en un ArcGIS Data Store, sus resultados se guardar&aacute;n en  <b>Mi contenido</b> y se agregar&aacute;n al mapa. Si escribe en un recurso compartido de archivos de big data, sus resultados se almacenar&aacute;n en el recurso compartido de archivos de big data y se agregar&aacute;n a su manifiesto. No se agregar&aacute;n al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, la herramienta fallar&aacute;.
+            </p>
+            <p>Cuando escriba en  ArcGIS Data Store (big data store espaciotemporal o relacional) con el cuadro desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

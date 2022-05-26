@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>إنشاء أشكال فسيفساء</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="إنشاء أشكال فسيفساء"></h2>
+        <hr/>
+    <p>تُنشئ هذه الأداة أشكال فسيفساء فوق منطقة دراسة على أساس الشكل والحجم المحددين.
+    </p>
+    <p>يتم تعطيل خانة الاختيار  <b>استخدام مدى الخريطة الحالي</b> لهذه الأداة لأن المدى المستخدم لإنشاء أشكال فسيفساء يتم التحكم به من خلال معلمة <b>تحديد المدى</b>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>اختيار شكل</h2></div>
+        <hr/>
+        <div>
+            <p>الشكل أو الشكل الهندسي الفسيفساء الذي ترغب في إنشائه. الأشكال المتوفرة هي  <code>مربع</code> أو <code>سداسي</code> أو <code>شكل سداسي مستعرض</code> أو <code>مثلث</code> أو <code>مُعين</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>تحديد منطقة الدراسة</h2></div>
+        <hr/>
+        <div>
+            <p>المدى أو المنطقة التي ستغطيها أشكال الفسيفساء. يمكن تحديد المدى باستخدام مدى الخريطة الحالية أو مدى طبقة حالية أو برسم منطقة بفعالية يراد استخدامها كمدى.
+            </p>
+            <p>إذا تم اختيار طبقة معلم لتحديد المدى، سيتم تمكين خيار الاحتفاظ فقط بأشكال الفسيفساء المتقاطعة. في حالة الاختيار، سيتم إنشاء أشكال الفسيفساء هذه فقط، التي تغطي المعالم أو تتقاطع معها في طبقة المدى المحدد، في طبقة أشكال الفسيفساء الناتجة. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>غير مختار
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="تغطية المدى الكامل">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>مختار
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="تغطية المعلم">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>تحديد حجم الربط بتعيين</h2></div>
+        <hr/>
+        <div>
+            <p>حجم كل خلية. يمكن تحديد حجم الخلية بتحديد وحدات مربعة أو بتحديد مسافة يتم حسابها باستخدام القياسات التالية، حيث d = المسافة: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>مربع
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="أشكال الفسيفساء المربعة">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>سداسي
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="أشكال الفسيفساء السداسية">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>شكل سداسي مستعرض
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="أشكال الفسيفساء السداسية المستعرضة">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>مثلث
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="أشكال الفسيفساء المثلثة">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>معين
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="أشكال الفسيفساء المُعين">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p>هذا هو اسم الطبقة الذي سيتم إنشاؤه في  <b>محتوياتي</b> وإضافتها للخريطة.  إذا وُجدت الطبقة بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>عند استخدام القائمة المنسدلة  <b>حفظ النتائج في </b> يمكن تحديد اسم المجلد في <b>المحتويات </b> حيث يتم حفظ النتائج.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

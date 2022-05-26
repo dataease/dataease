@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Unificare straturi tematice</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Unificare straturi tematice"></h2>
+        <hr/>
+    <p>Acest instrument copiază obiecte spaţiale din două straturi tematice &icirc;ntr-un strat tematic nou. Straturile tematice de unificat trebuie să conţină toate aceleaşi tipuri de obiecte spaţiale (puncte, linii sau suprafeţe). Puteţi controla modul &icirc;n care c&acirc;mpurile din straturile tematice de intrare sunt unificate şi copiate. De exemplu:
+        <ul>
+            <li>Am trei straturi tematice pentru Anglia, Ţara Galilor şi Scoţia şi doresc un singur strat tematic al Marii Britanii. 
+            </li>
+            <li>Am 12 straturi tematice şi fiecare conţine informaţii despre parcele pentru diviziuni teritoriale &icirc;nvecinate. Vreau să le &icirc;mbin &icirc;ntr-un singur strat tematic, păstr&acirc;nd doar c&acirc;mpurile care au acelaşi nume şi acelaşi tip &icirc;n cele 12 straturi tematice de intrare.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă a hărţii</b>, vor fi unificate numai obiectele spaţiale vizibile &icirc;n extinderea curentă a hărţii.  Dacă nu se bifează, toate obiectele spaţiale din ambele straturi tematice vor fi unificate, chiar dacă se află &icirc;n afara extinderii curente a hărţii.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Alegere strat tematic</h2></div>
+        <hr/>
+        <div>
+            <p>Obiectele spaţiale punctuale, liniare sau de suprafaţă care vor fi unificate cu stratul tematic specificat mai jos. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Alegeţi stratul tematic pentru unificare</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeţi stratul tematic de unificat cu primul strat tematic.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Modificare câmpuri care se unifică</h2></div>
+        <hr/>
+        <div>
+            <p>&Icirc;n mod implicit, toate c&acirc;mpurile pentru ambele intrări vor fi transpuse la ieşire. Puteţi modifica modul &icirc;n care c&acirc;mpurile sunt transpuse la ieşire după cum urmează:
+                <ul>
+                    <li> <b>Redenumire</b>&mdash;C&acirc;mpul va fi redenumit la ieşire.
+                    </li>
+                    <li> <b>Eliminare</b>&mdash;C&acirc;mpul va fi eliminat din ieşire.
+                    </li>
+                    <li> <b>Corelare</b>&mdash;Numele c&acirc;mpurilor sunt făcute echivalente.  Valorile c&acirc;mpului dintr-un strat tematic de unificat vor fi copiate &icirc;n c&acirc;mpul de ieşire corelat.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Dacă ambele straturi tematice conțin un c&acirc;mp cu un nume sau tip de date identic, conținutul ambelor c&acirc;mpuri va fi unificat &icirc;ntr-un c&acirc;mp cu numele respectiv. Acest lucru nu este valabil pentru c&acirc;mpurile &icirc;n care se utilizează  <b>Corelare</b> &icirc;n parametrul <b>Modificare c&acirc;mpuri care se unifică</b>.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic care va fi creat &icirc;n  <b>Resursele mele</b> și adăugat &icirc;n hartă.  Numele implicit se bazează pe numele instrumentului și numele stratului tematic de intrare. Dacă numele stratului tematic rezultat există deja, vi se va solicita să furnizați un alt nume.
+            </p>
+            <p>Utiliz&acirc;nd meniul derul&acirc;nd  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

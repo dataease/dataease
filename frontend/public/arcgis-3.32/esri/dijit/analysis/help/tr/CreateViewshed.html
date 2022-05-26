@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Görüş Alanı Oluşturma</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="G&ouml;r&uuml;ş Alanı Oluştur"></h2>
+        <hr/>
+    <p>G&ouml;r&uuml;ş Alanı Oluştur aracı bir g&ouml;zlemcinin zemindeki nesneleri g&ouml;rebileceği alanlar oluşturur. Girdi g&ouml;zlemci noktaları g&ouml;zlemcileri (yerdeki kişiler veya yangın kulesindeki n&ouml;bet&ccedil;ileri) veya g&ouml;zlemlenen nesneleri (r&uuml;zgar t&uuml;rbinleri, su kuleleri, ara&ccedil;lar veya diğer insanlar) temsil edebilir. Sonu&ccedil; alanları, g&ouml;zlemcilerin g&ouml;zlenen nesneleri veya tam tersi durumun ger&ccedil;ekleştiği ve g&ouml;zlemlenen nesnelerin g&ouml;zlemcileri g&ouml;rebildiği alanlardır.
+    </p>
+    <p>Hem g&ouml;zlemciler hem de g&ouml;zlemlenen nesneler yerden belirli bir y&uuml;kseklikte olabilir ve bu y&uuml;kseklikler g&ouml;r&uuml;n&uuml;rl&uuml;ğ&uuml;n belirlenmesinde kullanılabilir. &Ouml;rneğin, 122 m'lik r&uuml;zgar t&uuml;rbinleri ve yerdeki 1,83 m boyundaki insanlar i&ccedil;in hesaplanan bir g&ouml;r&uuml;ş alanı, normal olarak 61 m'lik t&uuml;rbinler ve 1,83 m boyundaki insanlar i&ccedil;in hesaplanan bir g&ouml;r&uuml;ş alanından daha b&uuml;y&uuml;k olacaktır.
+    </p>
+    <p>G&ouml;r&uuml;ş alanı hesaplamasının ağa&ccedil; veya bina gibi engelleri dikkate almadığına dikkat edin. Hesaplamanın yalnızca g&ouml;zlemci ve g&ouml;zlemlenen nesneleri dikkate alan salt zemin tabanlı olarak yapıldığını kabul edebilirsiniz.
+    </p>
+    <p>Sonu&ccedil; katmanı g&ouml;r&uuml;n&uuml;r alanları temsil eden alan detaylarını kapsar.  <i>Frequency</i> alanı, her alanı g&ouml;rebilen g&ouml;zlemci noktası sayısını kaydeder. &Ouml;rneğin, her biri bir yangın g&ouml;zetleme kulesini temsil eden beş girdi noktanız varsa, <i>Frequency</i> alanı, bir ve beş arasında değer alacaktır; bir değerini taşıyan alanlar yalnızca bir kule tarafından, beş değerini taşıyan alanlar da t&uuml;m kuleler tarafından g&ouml;r&uuml;lebilir. Sonu&ccedil; katmanında ayrıca <i>DEMResolution</i> alanı bulunur; bu alan g&ouml;r&uuml;ş alanı oluşturmak i&ccedil;in kullanılan dijital y&uuml;kselti modeli (DEM) &ccedil;&ouml;z&uuml;n&uuml;rl&uuml;ğ&uuml;n&uuml; kaydeder.
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> işaretliyse, yalnızca ge&ccedil;erli harita yayılımı dahilinde g&ouml;r&uuml;n&uuml;r olan g&ouml;zlemci noktaları analiz edilir.  İşaretli değilse, girdi katmanındaki t&uuml;m g&ouml;zlemci noktaları, ge&ccedil;erli harita yayılımının dışında bile olsa analiz edilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Gözlemci konumlarını temsil eden nokta detayları</h2></div>
+        <hr/>
+        <div>
+            <p>G&ouml;zlemci konumları olarak kullanılacak nokta detayları. 
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Gözlemci konumlarının yüksekliği</h2></div>
+        <hr/>
+        <div>
+            <p>Bu, g&ouml;zlemci konumlarınızın zemini &uuml;zerindeki y&uuml;ksekliktir.    Varsayılan değer yaklaşık olarak ortalama bir insan boyundadır.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Yerdeki diğer nesnelerin yüksekliği</h2></div>
+        <hr/>
+        <div>
+            <p>Bu, g&ouml;r&uuml;n&uuml;rl&uuml;ğ&uuml; ayarlamak i&ccedil;in kullanılan yerdeki yapı veya insanların y&uuml;ksekliğidir. Sonu&ccedil; olarak ortaya &ccedil;ıkan g&ouml;r&uuml;ş alanları, diğer nesneleri g&ouml;rebilen bir g&ouml;zlemci noktasının bulunduğu alanlardır. Bunun tersi de doğrudur, diğer nesneler de bir g&ouml;zlemci noktasını g&ouml;rebilir. 
+            </p>
+            <p>
+                <ul>
+                    <li>G&ouml;zlemci noktalarınız r&uuml;zgar t&uuml;rbinlerini temsil ediyor ve insanların durduğu yerden t&uuml;rbinleri g&ouml;rebilmesini istiyorsanız, ortalama bir insanın boyunu (yaklaşık 1,80 m) girin.  Ortaya &ccedil;ıkan alanlar, yerde duran bir insanın r&uuml;zgar t&uuml;rbinlerini g&ouml;rebildiği alanlardır.
+                    </li>
+                    <li>G&ouml;zlemci noktalarınız yangın g&ouml;zetleme kulelerini temsil ediyor ve g&ouml;zetleme kulelerinin 7 m veya daha y&uuml;ksek dumanları g&ouml;rebilmesini istediğiniz kuleleri belirlerken, y&uuml;kseklik i&ccedil;in 7 m girin.  Sonu&ccedil;ta ortaya &ccedil;ıkan alanlar, en az 7 m y&uuml;ksekliğinde dumanı g&ouml;rebilen yangın g&ouml;zetleme kulesinin bulunduğu yerlerdir.
+                    </li>
+                    <li>G&ouml;zlemci noktalarınız yol ve patika boyunca manzara izleme noktalarını temsil ediyor ve 122 m veya daha y&uuml;ksek r&uuml;zgar t&uuml;rbinlerinin g&ouml;rebilmesini istiyorsanız, y&uuml;kseklik i&ccedil;in 122 m girin.  Sonu&ccedil;ta ortaya &ccedil;ıkan alanlar, manzara izleme noktasında duran ve en az 122 m y&uuml;ksekliğindeki r&uuml;zgar t&uuml;rbinini g&ouml;rebilen insanların bulunduğu yerlerdir.
+                    </li>
+                    <li>G&ouml;zlemci noktalarınız manzara izleme noktalarını temsil ediyor ve insanların durduğu yerden manzaranın ne kadarını g&ouml;rebildiğini belirlemek istiyorsanız, sıfır girin.  Sonu&ccedil;ta ortaya &ccedil;ıkan alanlar, genel manzara noktasından g&ouml;r&uuml;lebilen alanı belirtir.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Maksimum görüş mesafesi</h2></div>
+        <hr/>
+        <div>
+            <p>Bu, g&ouml;r&uuml;n&uuml;r alan hesaplamasının durdurulduğu bir kesim mesafesidir. Bu mesafenin &ouml;tesinde, g&ouml;zlemci noktalarının ve diğer nesnelerin birbirlerini g&ouml;r&uuml;p g&ouml;remeyeceği bilinmez. B&uuml;y&uuml;k değerler hesaplama s&uuml;resini artırır. İzin verilen maksimum değer 50 kilometredir (31 mil).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adıdır.  Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman adı zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+            <p> Bu aracın &ccedil;alıştırılması kredi harcamaz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

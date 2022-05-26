@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Routes plannen</h2><p/>
+        <h2><img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="Routes plannen"></h2>
+        <hr/>
+    <p>Routes plannen bepaalt hoe taken effici&euml;nt kunnen worden verdeeld over mobiel personeel.
+    </p>
+    <p>U voert een aantal stopplaatsen in en het aantal voertuigen dat beschikbaar is voor het bezoeken van de stopplaatsen. De tool wijst de stopplaatsen aan voertuigen toe en geeft routes weer die laten zien hoe elk voertuig de toegewezen stopplaats binnen de kortste tijd kan bereiken.
+    </p>
+    <p>Met Routes plannen bereikt mobiel personeel in minder tijd meer plaatsen, waardoor de productiviteit toeneemt en de klantenservice verbetert.
+        <ul>
+            <li>Huizen, restaurants of bouwplaatsen inspecteren
+                
+
+            </li>
+            <li>Reparatie-, installatie- of technische diensten leveren
+            </li>
+            <li>Post en kleine pakketten afleveren
+            </li>
+            <li>Verkoopgesprekken voeren
+            </li>
+            <li>Mensen van hun huis naar een evenement vervoeren
+            </li>
+        </ul>
+        
+    </p>
+    <p>De uitvoer van Routes plannen bevat een laag met stopplaatsen die zijn gecodeerd door de routes waaraan ze zijn toegewezen, een laag met routes die de kortste wegen tonen om de toegewezen stopplaatsen te bezoeken en, afhankelijk van het feit of bepaalde stopplaatsen niet konden worden bereikt, een laag met niet-toegewezen stopplaatsen. 
+    </p>
+    <p>Als  <b>Huidige kaartextent gebruiken</b> is aangevinkt, worden alleen de objecten geanalyseerd die binnen het huidige extent van de kaart zichtbaar zijn. Als deze optie niet wordt geselecteerd, worden alle objecten in de invoerlaag in aanmerking genomen, ook als ze zich buiten de huidige kaartomvang bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Kies de puntenlaag die de stopplaatsen weergeeft</h2></div>
+        <hr/>
+        <div>
+            <p>Kies de laag met punten die de routes (of voertuigen) moeten bezoeken. Deze punten worden toegewezen of niet-toegewezen stopplaatsen in de uitvoer. 
+            </p>
+            <p>Naast het kiezen van een laag uit uw kaart, kunt u  <b>Analyselaag kiezen</b> selecteren onderaan de vervolgkeuzelijst. Met deze optie wordt een galerij geopend waarin u kunt bladeren naar en datasets van verschillende bronnen kunt selecteren die u in uw analyse kunt gebruiken. 
+            </p>
+            <p>De tool ondersteunt maximaal 2.000 invoerobjecten. 
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Reismodus voor routes</h2></div>
+        <hr/>
+        <div>
+            <p>Kies uw reismodus. De uitvoer van routes volgt wegen of wandelpaden en houdt rekening met geldende regels zoals eenrichtingswegen en keerverboden voor gemotoriseerd verkeer en vrachtwagens. De beschikbare manieren van reizen worden bepaald door de beheerder van uw organisatie.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Routes starten bij stops</h2></div>
+        <hr/>
+        <div>
+            <p>Geef op waar en wanneer de voertuigen aan hun route beginnen.
+            </p>
+            <p>Met Routes plannen kunt u een of meer beginlocaties voor uw voertuigen opgeven.
+            </p>
+            <p>Als &eacute;&eacute;n puntlocatie is opgegeven, vertrekken alle voertuigen vanaf dat punt, ongeacht het aantal beschikbare voertuigen. U kunt een puntlaag kiezen met &eacute;&eacute;n punt of een punt aan de kaart toevoegen door  <b>Punt op kaart plaatsen</b> te kiezen, op de knop voor het bewerken van aangrenzende punten te klikken en op de kaart te klikken. 
+            </p>
+            <p>Als meerdere locaties zijn opgegeven, moet elk voertuig met zijn eigen punt worden geassocieerd. Het aantal voertuigen moet overeenkomen met het aantal punten op de laag. Kies een laag met meerdere punten en geef een veld op dat de individuele routes, voertuigen of chauffeurs uniek identificeert in de vervolgkeuzelijst  <b>Route ID</b>
+            </p>
+            <p>De begintijd is voor alle routes gelijk. De tijdzone voor de begintijd is gelijk aan de tijdzone waarin het beginpunt of -punten zich bevinden, dus zorg dat de tijd die u invoert de lokale tijd is. Stel bijvoorbeeld dat u zich in de tijdzone Pacific Standard Time (UTC-8:00) bevindt en dat de voertuigen die u routeert in de tijdzone Mountain Standard Time (UTC-7:00) zijn. Als het op dit moment 9:30 uur is PST (10:30 uur MST) is en uw voertuigen moeten hun routes over 30 minuten starten, moet u de begintijd instellen op 11:00 uur. 
+            </p>
+            <p>Als de voertuigen in verschillende tijdzones starten, kunnen de starttijden niet overeenkomen; ze zijn dan ten opzichte van elkaar verschoven. Als bijvoorbeeld een route op een punt in PST begint en een andere route in MST en u voert 11:00 uur in als starttijd, start de route in PST om 11:00 uur PST en de route in MST om 11:00 uur MST - een verschil van een uur.
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Routes eindigen bij stops</h2></div>
+        <hr/>
+        <div>
+            <p>Geef op waar de voertuigen hun routes be&euml;indigen.
+            </p>
+            <p>U kunt de routes op een van drie locaties laten eindigen: 
+                <ul>
+                    <li>Dezelfde locatie waar de routes begonnen, ongeacht of ze op &eacute;&eacute;n of meerdere locaties zijn begonnen
+                    </li>
+                    <li>Een enkele locatie
+                    </li>
+                    <li>Meerdere locaties - dat wil zeggen een eindpunt voor elke route
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Plaats een vinkje in  <b>Terug naar start</b> als de voertuigen hun routes op dezelfde locatie beginnen en eindigen.
+            </p>
+            <p>Om alle voertuigen naar een gemeenschappelijk eindpunt te routeren dat verschilt van het beginpunt, verwijdert u het vinkje bij  <b>Terug naar start</b> en voegt u een punt toe aan de kaart of u kiest een laag die precies &eacute;&eacute;n punt bevat.
+            </p>
+            <p>Om routes op unieke locaties te laten eindigen, verwijdert u het vinkje bij  <b>Terug naar start</b> en kiest u een laag die meer dan &eacute;&eacute;n punt bevat. Het aantal voertuigen moet overeenkomen met het aantal punten op de gekozen laag. In de vervolgkeuzelijst <b>Route ID</b> kiest u een veld dat de individuele routes, voertuigen of chauffeurs uniek aanduidt. Als de voertuigen op meerdere locaties beginnen en op meerdere locaties eindigen, moeten de route-ID&acute;s die voor de begin- en eindlagen gekozen zijn, overeenkomen.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Barrièrelagen selecteren</h2></div>
+        <hr/>
+        <div>
+            <p> E&eacute;n of meerdere objecten die dienen als tijdelijke beperkingen (barri&egrave;res) tijdens het reizen op de onderliggende straten. U kunt de barri&egrave;res specificeren door gebruik van punt-, lijn-, of polygoonobjecten.
+            </p>
+            <p>Een puntbarri&egrave;re kan een weergave zijn van een omgevallen boom, een ongeval, een omgewaaide elektriciteitspaal of iets anders waardoor een bepaald punt op straat volledig ontoegankelijk is voor verkeer. Verkeer heeft toegang tot de straat maar kan de barri&egrave;re niet passeren. U kunt tot 250 objecten aanduiden als puntbarri&egrave;re.
+            </p>
+            <p>Een lijnbarri&egrave;re verhindert de doorgang voor het verkeer daar waar de barri&egrave;re de straat kruist. Een optocht of protestmars bijvoorbeeld waardoor het verkeer geen toegang heeft tot verschillende straatsegmenten kan weergegeven worden met een lijnbarri&egrave;re. Indien het aantal straatobjecten dat wordt doorkruist door alle lijnbarri&egrave;res meer dan 500 is, geeft de tool een foutmelding.
+            </p>
+            <p>Een polygoonbarri&egrave;re verhindert de doorgang voor het verkeer daar waar de polygoon de straat kruist. Een manier waarop deze barri&egrave;re gebruikt wordt is voor het weergeven van een overstroming in een bepaald gebied of van een bepaald netwerk van straten waar geen verkeer mogelijk is. Indien het aantal straatobjecten dat wordt doorkruist door alle polygoonbarri&egrave;res meer dan 2000 is, geeft de tool een foutmelding.
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Maximum aantal voertuigen voor route</h2></div>
+        <hr/>
+        <div>
+            <p>Geef het aantal voertuigen op dat beschikbaar is voor het bezoeken van de stopplaatsen. De tool ondersteunt maximaal  100 voertuigen. 
+            </p>
+            <p>De tool kan mogelijk een oplossing vinden die minder voertuigen gebruikt dan het aantal dat u hier opgeeft, afhankelijk van het totale aantal stopplaatsen, hoeveel stopplaatsen per voertuig u toestaat, hoe ver de stopplaatsen uit elkaar liggen, de tijd die op elke stopplaats wordt doorgebracht en elke limiet die u instelt voor de totale routetijd per voertuig.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Maximum aantal stops per voertuig</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is een van twee parameters die de totale werklast op de routes in evenwicht brengen. U kunt een waarde opgeven tussen 1 en  200. 
+            </p>
+            <p>Door het maximale aantal stopplaatsen dat aan elk voertuig kan worden toegewezen te verlagen, is de kans groter dat de voertuigen een gelijk aantal stopplaatsen krijgen toegewezen. Hierdoor blijft de werklast tussen de chauffeurs in balans. Het nadeel is echter dat dit tot een minder effici&euml;nte oplossing kan voeren.
+            </p>
+            <p>Door het aantal stopplaatsen per voertuig te verhogen, heeft de tool meer vrijheid om naar effici&euml;ntere oplossingen te zoeken; de werklast kan echter onevenredig verdeeld zijn over chauffeurs en voertuigen. Houd er rekening mee dat u de werklasten op basis van tijd en op basis van het aantal stopplaatsen in balans kunt brengen door een waarde op te geven voor de parameter  <b>De totale routetijd per voertuig beperken</b>.
+            </p>
+            <p>De volgende voorbeelden demonstreren de effecten van het beperken van het maximale aantal stopplaatsen per voertuig of de totale tijd per voertuig. In alle voorbeelden zijn er zes stopplaatsen en twee routes die op dezelfde locatie beginnen.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="../images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="Gebalanceerde stopplaatsen en reistijden">
+                </td>
+                <td>
+                    <p>Gebalanceerde reistijden en stopplaatsen per route:
+                    </p>
+                    <p>De stopplaatsen zijn min of meer uniform verspreid, zodat instellen van het maximale aantal stopplaatsen per voertuig om de werklast evenredig te verdelen routes oplevert die ongeveer even lang duren.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Niet-gebalanceerde routetijden">
+                </td>
+                <td>
+                    <p>Gebalanceerde stopplaatsen per route maar niet-gebalanceerde reistijden:
+                    </p>
+                    <p>Vijf van de zes stopplaatsen zijn geclusterd in de omgeving van de beginlocatie, maar &eacute;&eacute;n stopplaats valt daarbuiten en voor deze is een veel langere reistijd nodig. De stopplaatsen evenredig verdelen tussen de twee routes zorgt voor niet-gebalanceerde reistijden.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="Gebalanceerde reistijden">
+                </td>
+                <td>
+                    <p>Niet-gebalanceerde stopplaatsen per route maar gebalanceerde reistijden:
+                    </p>
+                    <p>De stopplaatsen bevinden zich op dezelfde locatie als in de vorige afbeelding, maar door het maximale aantal stopplaatsen per route te verhogen en de totale reistijd per voertuig te verlagen, worden de reistijden in evenwicht gebracht.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Doorgebrachte tijd bij elke stop</h2></div>
+        <hr/>
+        <div>
+            <p>Stel de verwachte gemiddelde servicetijd in die op elke stopplaats wordt doorgebracht. Als u bijvoorbeeld een werkdag plant voor inspecteurs en de gemiddelde inspectietijd is 45 minuten, voer dan  <code>45</code> in.
+            </p>
+            <p>Aangenomen wordt dat de service-tijd op alle stopplaatsen gelijk is.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Beperk de totale routetijd per voertuig</h2></div>
+        <hr/>
+        <div>
+            <p>Geef de maximale hoeveelheid tijd op die een route van begin tot eind in beslag mag nemen. Dit omvat verwachte reistijd en servicetijden die op stopplaatsen langs de route zijn doorgebracht. Als chauffeurs niet langer dan een bepaalde tijd per dag mogen werken, bijvoorbeeld acht uur, kunt u die limiet hier aangeven.
+            </p>
+            <p>Raadpleeg de hulpfunctie voor  <b>Maximaal aantal stopplaatsen per voertuig</b> voor overwegingen bij het in evenwicht brengen van werklasten.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de objectlaag die gemaakt zal worden in  <b>Mijn content</b> en toegevoegd zal worden aan de kaart. Als de objectlaag al bestaat, wordt u gevraagd een andere naam te geven. De objectlaag zal een laag bevatten voor elk van de volgende zaken: routes, toegewezen stoppunten en niet-toegewezen stoppunten wanneer bepaalde stoppunten niet gekoppeld kunnen worden aan routes.
+            </p>
+            <p>Als u  <b>Routelagen toevoegen</b> selecteert, wordt elke route van het resultaat ook opgeslagen als een routelaag. Een routelaag bevat alle informatie van een bepaalde route, zoals de aan de route toegewezen stoppunten, en de routebeschrijvingen. Routelagen maken is nuttig als u de individuele routes wenst te delen met andere leden in uw organisatie of om routes verder aan te passen d.m.v. de <b>Routebeschrijving</b>-knop in de mapviewer. De routelagen gebruiken de naam van de feature layer als een voorvoegsel en de routenaam die gegenereerd is als onderdeel van de analyse. Deze wordt toegevoegd om een unieke naam voor elke routenaam te maken.
+            </p>
+            <p>Als u het vervolgkeuzemenu  <b>Resultaat opslaan in</b> gebruikt, kunt u de naam opgeven van een map in <b>Mijn Content</b> waarin de feature layer en de routelagen worden opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

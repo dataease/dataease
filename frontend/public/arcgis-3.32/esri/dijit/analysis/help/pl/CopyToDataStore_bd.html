@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Kopiuj do magazynu danych</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="Kopiuj do magazynu danych"></h2>
+        <hr/>
+    <p>Za pomocą tego narzędzia można skopiować warstwę wejściową do magazynu danych. Wyniki można skopiować do magazynu danych  ArcGIS Data Store (relacyjny magazyn danych lub magazyn dużych zbior&oacute;w danych czasowo-przestrzennych) z utworzeniem warstwy w portalu. Wyniki można też skopiować do udostępnionego pliku dużych zbior&oacute;w danych. 
+    </p>
+    <p>Można na przykład skopiować obiekty przechowywane w  <code>udostępnionym pliku dużych zbior&oacute;w danych</code> do <code>relacyjnego magazynu danych </code> i zdecydować, że zostaną skopiowane tylko obiekty znajdujące się w bieżącym zasięgu mapy. Spowoduje to utworzenie hostowanej usługi obiektowej zawierającej tylko te obiekty, kt&oacute;re należały do określonego zasięgu mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę w celu skopiowania</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa lub tabela, kt&oacute;ra zostanie skopiowana. 
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>Można użyć wszystkich lub wybranych obiektów (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p>Opcjonalnie użyj przycisku wyboru w celu zidentyfikowania lokalizacji do skopiowania.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Wybierz docelowy magazyn danych na potrzeby kopiowania</h2></div>
+        <hr/>
+        <div>
+            <p>Magazyn danych, do kt&oacute;rego zostanie skopiowana warstwa. Ten parametr zastąpi wyb&oacute;r w oknie  <b>Środowiska analizy</b>. Dostępne są następujące opcje:
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>Czasowo-przestrzenny</b> &mdash; wartość domyślna.
+                            </li>
+                            <li> <b>Relacyjny</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>Szablony danych wynikowych udostępnionych plik&oacute;w dużych zbior&oacute;w danych</b>
+                        <ul>
+                            <li>Lista dostępnych szablon&oacute;w udostępnionych plik&oacute;w dużych zbior&oacute;w danych w formacie  <b>NazwaUdostępnionegoPlikuDużychZbior&oacute;wDanych-NazwaSzablonu</b>. Szablony udostępnionych plik&oacute;w dużych zbior&oacute;w danych należy skonfigurować przed uruchomieniem narzędzia.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p> Nazwa warstwy, kt&oacute;ra zostanie utworzona w oknie Moje zasoby. W przypadku zapisywania w ArcGIS Data Store wyniki będą przechowywane w obszarze  <b>Moje zasoby</b> i dodawane do mapy. W przypadku zapisywania w udostępnionym pliku dużych zbior&oacute;w danych wyniki będą przechowywane w udostępnionym pliku dużych zbior&oacute;w danych i dodawane do jego manifestu. Nie będą dodawane do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, działanie narzędzia nie powiedzie się.
+            </p>
+            <p>W przypadku zapisywania w  ArcGIS Data Store (relacyjny magazyn danych lub magazyn dużych zbior&oacute;w danych czasowo-przestrzennych) przy użyciu listy rozwijanej  <b>Zapisz wynik w</b> można określić nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

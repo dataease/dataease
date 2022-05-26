@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Znajdź podobne lokalizacje</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Znajdź podobne lokalizacje"></h2>
+        <hr/>
+    <p>Na podstawie podanych kryteri&oacute;w narzędzie Znajdź podobne lokalizacje oblicza podobieństwo lokalizacji w warstwie propozycji wyszukiwania do co najmniej jednej lokalizacji referencyjnej. Za pomocą tego narzędzia można znaleźć odpowiedź na takie pytania, jak:
+        <ul>
+            <li>Kt&oacute;ry ze sklep&oacute;w jest najbardziej podobny pod względem profili klient&oacute;w do sklep&oacute;w mających najlepsze wyniki?
+            </li>
+            <li>Kt&oacute;re inne miejscowości są najbardziej zagrożone przy uwzględnieniu charakterystyki miejscowości, w kt&oacute;rych wystąpiła największa koncentracja przypadk&oacute;w zachorowań na daną chorobę?
+            </li>
+        </ul>
+        Aby znaleźć odpowiedzi na takie pytania, określa się lokalizacje referencyjne, proponowane lokalizacje wyszukiwania oraz pola reprezentujące kryteria, jakie mają być spełniane. Pierwsza warstwa wejściowa powinna zawierać lokalizacje referencyjne lub por&oacute;wnawcze. Może to być na przykład warstwa zawierająca sklepy z&nbsp;najlepszymi wynikami lub miejscowości z&nbsp;największą liczbą przypadk&oacute;w zachorowań na daną chorobę. Następnie należy podać warstwę zawierającą proponowane lokalizacje wyszukiwania. Mogą to być wszystkie sklepy lub wszystkie inne miejscowości. Na koniec należy określić co najmniej jedno pole używane do obliczenia podobieństwa. Następnie narzędzie Znajdź podobne lokalizacje uszereguje wszystkie proponowane lokalizacje wyszukiwania według stopnia podobieństwa do lokalizacji referencyjnych z uwzględnieniem wszystkich wybranych p&oacute;l.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę zawierającą lokalizacje referencyjne</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa punkt&oacute;w, liniowa lub obszar&oacute;w zawierająca lokalizacje referencyjne do por&oacute;wnania. 
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Możesz użyć wszystkich lub wybranych lokalizacji</h2></div>
+        <hr/>
+        <div>
+            <p>W&nbsp;razie potrzeby za pomocą przycisk&oacute;w selekcji określ lokalizacje referencyjne. Jeśli na przykład warstwa wejściowa zawiera wszystkie lokalizacje (lokalizacje referencyjne oraz proponowane lokalizacje wyszukiwania), do określenia lokalizacji referencyjnych trzeba użyć jednego z&nbsp;narzędzi selekcji. Jeśli utworzono dwie odrębne warstwy, w tym jedną z lokalizacjami referencyjnymi oraz drugą ze wszystkimi proponowanymi lokalizacjami wyszukiwania, nie trzeba dokonywać selekcji. 
+            </p>
+            <p>Jeśli występuje więcej niż jedna lokalizacja referencyjna, jedna lokalizacja jest tworzona przez uśrednienie wartości dla każdego z p&oacute;l używanych do analizy podobieństwa.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Wyszukaj podobne lokalizacje w</h2></div>
+        <hr/>
+        <div>
+            <p>Proponowane lokalizacje wyszukiwania w&nbsp;tej warstwie zostaną uszeregowane od najbardziej do najmniej podobnej. Podobieństwo opiera się na stopniu dopasowania poszczeg&oacute;lnych lokalizacji do lokalizacji referencyjnej z uwzględnieniem zdefiniowanych p&oacute;l. 
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Podobieństwo na podstawie</h2></div>
+        <hr/>
+        <div>
+            <p>Wybrane pola będą kryteriami służącymi do oceny podobieństwa. Jeśli na przykład zostanie wybrane pole populacji i dochodu, proponowane lokalizacje wyszukiwania z najniższą pozycją (o najlepszym dopasowaniu) to te, dla kt&oacute;rych wartości populacji i dochodu są podobne do występujących w lokalizacjach referencyjnych. 
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Pokaż mi</h2></div>
+        <hr/>
+        <div>
+            <p>Możesz wyświetlić wszystkie proponowane lokalizacje wyszukiwania uszeregowane od najbardziej do najmniej podobnej albo wskazać liczbę widocznych wynik&oacute;w. 
+                <ul>
+                    <li> <b>Wszystkie lokalizacje od najbardziej do najmniej podobnej</b> &mdash; wszystkie obiekty w warstwie propozycji wyszukiwania zostaną uwzględnione w warstwie wynikowej według uszeregowania.
+                    </li>
+                    <li> <b>Liczba zwracanych lokalizacji</b> &mdash; pozwala zdecydować, ile najbardziej podobnych propozycji lokalizacji ma być uwzględnionych w warstwie wynikowej. Domyślna wartość wejściowa wynosi 1.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Opcja umożliwiająca określenie nazwy warstwy, kt&oacute;ra zostanie utworzona w&nbsp;zakładce  <b>Moje zasoby</b> i&nbsp;dodana do mapy. Ta warstwa wynikowa będzie zawierać lokalizacje referencyjne oraz pewną liczbę uszeregowanych proponowanych lokalizacji wyszukiwania. Jeśli nazwa warstwy wynikowej już istnieje, zostanie wyświetlony komunikat z&nbsp;prośbą o&nbsp;zmianę nazwy.
+            </p>
+            <p>Używając listy rozwijanej  <b>Zapisz wynik w</b>, można określić nazwę folderu w zakładce <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>  
+        </div>
+    </div>
+</div>
+</html>

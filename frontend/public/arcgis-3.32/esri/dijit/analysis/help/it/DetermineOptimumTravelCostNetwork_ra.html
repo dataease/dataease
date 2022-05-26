@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Determina Optimum Travel Cost Network</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="Illustrazione dello strumento Determina Optimum Travel Cost Network"></h2>
+        <hr/>
+    <p>Questo strumento calcola la rete di costo ottimale da un gruppo di regioni di input.
+    </p>
+    <p>Un'applicazione di esempio di questo strumento &egrave; la ricerca della migliore rete per i veicoli di emergenza.
+    </p>
+    <p>Se l'opzione  <b>Usa estensione mappa corrente</b> &egrave; selezionata, verranno analizzate solo le posizioni nel layer di input visibili nell'estensione mappa corrente. Se questa opzione &egrave; deselezionata, verranno analizzate tutte le posizioni del layer di input, anche se esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Scegli il raster o il layer di posizione della feature per determinare gli itinerari di viaggio tra</h2></div>
+        <hr/>
+        <div>
+            <p>Le regioni di input che devono essere connesse dalla rete dal costo pi&ugrave; contenuto.
+            </p>
+            <p>Le regioni possono essere definite da un Image Service o un feature service.
+            </p>
+            <p>Per un Image Service, le regioni sono definite da gruppi di celle contigue (adiacenti) con lo stesso valore. Ogni regione deve essere numerata in modo univoco. Le celle che non fanno parte di alcuna regione devono essere NoData. Il tipo di raster deve essere un numero intero e i valori possono essere positivi o negativi.
+            </p>
+            <p>Per un feature service, l'input pu&ograve; essere puntuale, lineare o poligonale.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Scegli il layer raster costi di viaggio</h2></div>
+        <hr/>
+        <div>
+            <p>Un raster che definisce l'impedenza o il costo dello spostamento planimetrico attraverso ciascuna cella.
+            </p>
+            <p>Il valore ad ogni posizione di cella rappresenta la distanza costo per unit&agrave; per lo spostamento attraverso di essa. Ogni valore di posizione di una cella viene moltiplicato per la risoluzione della cella, compensando al contempo il movimento diagonale per ottenere il costo totale dell'attraversamento della cella.
+            </p>
+            <p>I valori del raster di costo possono essere a numero intero o a virgola mobile, ma non possono essere negativi o zero (non &egrave; possibile disporre di un costo negativo o zero).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Nome del layer polilineare dei percorsi ottimali di risultato</h2></div>
+        <hr/>
+        <div>
+            <p>Il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome.
+            </p>
+            <p>&Egrave; possibile specificare il nome di una cartella in  <b>I miei contenuti</b> in cui salvare il risultato usando la casella a discesa <b>Salva risultato in</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Nome del layer polilineare dei percorsi adiacenti di risultato</h2></div>
+        <hr/>
+        <div>
+            <p>Il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome.
+            </p>
+            <p>&Egrave; possibile specificare il nome di una cartella in  <b>I miei contenuti</b> in cui salvare il risultato usando la casella a discesa <b>Salva risultato in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/tasks/datareviewer/ReviewerAttributes",["dojo/_base/declare","dojo/json","dojo/has","dojo/_base/lang","../../kernel"],function(b,c,d,e,f){b=b(null,{declaredClass:"esri.tasks.datareviewer.ReviewerAttributes",sessionId:NaN,severity:NaN,resourceName:null,reviewStatus:null,reviewTechnician:null,notes:null,subtype:"",lifecycleStatus:NaN,constructor:function(){},toJSON:function(){var a={};isNaN(this.sessionId)||(a.sessionId=this.sessionId);isNaN(this.severity)||(a.severity=this.severity);null!==
+this.resourceName&&(a.resourceName=this.resourceName);null!==this.reviewStatus&&(a.reviewStatus=this.reviewStatus);null!==this.reviewTechnician&&(a.reviewTechnician=this.reviewTechnician);null!==this.notes&&(a.notes=this.notes);null!==this.subtype&&(a.subtype=this.subtype);isNaN(this.lifecycleStatus)||(a.lifecycleStatus=this.lifecycleStatus);return c.stringify(a)}});d("extend-esri")&&e.setObject("tasks.datareviewer.ReviewerAttributes",b,f);return b});

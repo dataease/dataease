@@ -1,0 +1,23 @@
+<div class="ShoppingCart">
+    <table data-dojo-attach-point="label" class="Label" data-dojo-attach-event="click:_toggleList">
+        <tr>
+            <td class="ShoppingCart_CounterTD">
+                <div class="ShoppingCart_CounterDivLeftBorder"></div><div data-dojo-attach-point="divCounter" class="ShoppingCart_CounterDiv"></div><div class="ShoppingCart_CounterDivRightBorder"></div>
+            </td>
+            <td class="ShoppingCart_LabelTd">
+                <div data-dojo-attach-point="selectedVariablesLabel"></div>
+            </td>
+            <td>
+                <div class="ShoppingCartOpener" data-dojo-attach-point="divShoppingCartOpener">&#x25bc;</div>
+            </td>
+        </tr>
+    </table>
+        
+    <div data-dojo-attach-point="divOuter" class="ShoppingCart_OuterDiv">
+        <div data-dojo-attach-point="divList" class="ShoppingCart_DivList">
+        </div>
+        <div data-dojo-attach-point="divEmpty" class="ShoppingCart_DivEmpty">
+            <div>${nls.noVariables}</div>
+        </div>
+    </div>
+</div>

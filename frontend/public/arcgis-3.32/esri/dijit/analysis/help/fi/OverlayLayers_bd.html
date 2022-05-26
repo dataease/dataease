@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Kerrostasot</h2><p/>
+        <h2><img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" alt="Kerrostasot"></h2>
+        <hr/>
+    <p>P&auml;&auml;llekk&auml;isyysanalyysi-ty&ouml;kalu yhdist&auml;&auml; kaksi tai useampia karttatasoja yhdeksi tasoksi. P&auml;&auml;llekk&auml;isyysanalyysi yhdist&auml;&auml; tavallaan karttapinon kaikkien karttojen tiedot yhteen karttaan. P&auml;&auml;llekk&auml;isyysanalyysi on kuitenkin paljon muutakin kuin vain eri karttojen yhteinen kuva, sill&auml; kaikki p&auml;&auml;llekk&auml;isyysanalyysiin tulevien kohteiden attribuutit n&auml;kyv&auml;t karttatason lopullisessa versiossa. P&auml;&auml;llekk&auml;isyysanalyysin avulla voit saada vastauksen yhteen maantieteen peruskysymyksist&auml;: &rdquo;Mik&auml; on mink&auml;kin p&auml;&auml;ll&auml;?&rdquo; Seuraavat ovat esimerkkej&auml;:
+        <ul>
+            <li>Mitk&auml; kiinteist&ouml;t ovat edellisten 100 vuoden aikana tulvineen alueen sis&auml;ll&auml;? (Sis&auml;ll&auml; on toinen tapa ilmaista p&auml;&auml;llekk&auml;isyytt&auml;.)
+                  
+            </li>
+            <li>Mihin tarkoitukseen tietyn maaper&auml;tyypin maa-alueita k&auml;ytet&auml;&auml;n?
+                 
+            </li>
+            <li>Mit&auml; kaivoja on hyl&auml;ttyjen armeijan tukikohtien alueilla?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jos  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> -toiminto on valittuna, vain l&auml;ht&ouml;karttatason ja p&auml;&auml;llekk&auml;isyyskarttatason nykyisess&auml; karttalaajuudessa n&auml;kyv&auml;t kohteet asetetaan p&auml;&auml;lle. Jos toimintoa ei ole valittu, p&auml;&auml;lle asetetaan kaikki l&auml;ht&ouml;karttatason ja p&auml;&auml;llekk&auml;isyyskarttatason kohteet, vaikka ne sijaitsisivat nykyisen karttalaajuuden ulkopuolella.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse lähtökarttataso</h2></div>
+        <hr/>
+        <div>
+            <p>P&auml;&auml;lle sijoitettavat piste-, viiva- tai aluekohteet.
+            </p>
+            <p class="OnlineOnly">Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse maailmankartaston analyysikarttataso</b>- tai <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, joka sis&auml;lt&auml;&auml; monissa analyyseissa hy&ouml;dyllisten karttatasojen kokoelman. 
+            </p>
+        </div>
+    </div>
+    <div id="overlayLayer">
+        <div><h2>Valitse kerrostaso</h2></div>
+        <hr/>
+        <div>
+            <p>L&auml;ht&ouml;karttatason p&auml;&auml;lle sijoitettava karttataso.  
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Valitse kerrostustapa</h2></div>
+        <hr/>
+        <div>
+            <p>Peittotapa m&auml;&auml;ritt&auml;&auml;, miten l&auml;ht&ouml;karttataso ja p&auml;&auml;llekk&auml;isyyskarttataso yhdistet&auml;&auml;n.  
+
+                <ul>
+                    <li> <b>Leikkaus</b>: Tulos sis&auml;lt&auml;&auml; vain ne p&auml;&auml;llekk&auml;isyyskarttatason kohteet tai osat, jotka osuvat p&auml;&auml;llekk&auml;in l&auml;ht&ouml;karttatason kohteiden kanssa. Kun m&auml;&auml;rit&auml;t viiva- tai aluekohteiden leikkauksia, voit m&auml;&auml;ritt&auml;&auml; tuloskohteiden tyypin.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Pisteet pisteiss&auml;
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Pisteet ja pisteet sy&ouml;tteen&auml;">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Pisteet ja pisteet, joissa tulosteena on piste">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Viivat viivoissa 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Viivat ja viivat sy&ouml;tteen&auml;">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Viivat ja viivat, joissa tulosteena on viiva">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Alueet alueissa
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Alueet ja alueet sy&ouml;tteen&auml;">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="Alueet ja alueet, joissa tulosteena on alue">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Pyyhi</b>: tulos sis&auml;lt&auml;&auml; p&auml;&auml;llekk&auml;isyyskarttatasossa sellaiset kohteet tai kohteiden osat, jotka eiv&auml;t mene p&auml;&auml;llekk&auml;in l&auml;ht&ouml;karttatason alueiden kanssa. P&auml;&auml;llekk&auml;isyyskarttataso voi sis&auml;lt&auml;&auml; alue-, viiva- tai pistekohteita.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen karttatason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -kohtaan ja lis&auml;t&auml;&auml;n karttaan. Sen kohdetyyppi (alue, viiva tai piste) on sama kuin l&auml;ht&ouml;karttatasossa ja p&auml;&auml;llekk&auml;isess&auml; karttatasossa. Oletusarvoinen nimi perustuu peittotapaan ja sy&ouml;tekarttatason nimeen. Jos taso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

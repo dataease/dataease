@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Utwórz bufory</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="Utw&oacute;rz bufory"></h2>
+        <hr/>
+    <p>Bufor jest obszarem obejmującym swym zasięgiem obszar w określonej odległości od punktu, linii lub obiektu powierzchniowego. 
+    </p>
+    <p>Bufory są zazwyczaj używane do tworzenia obszar&oacute;w, kt&oacute;re można analizować przy użyciu innych narzędzi. Na przykład na pytanie &bdquo;Jakie budynki znajdują się w odległości jednego kilometra od szkoły?&rdquo; można znaleźć odpowiedź, tworząc bufor o promieniu jednego kilometra wok&oacute;ł szkoły i nakładając na niego warstwę zawierającą obrys zabudowy. Wynik tej operacji stanowi warstwa z&nbsp;budynkami znajdującymi się w&nbsp;odległości do jednego kilometra od szkoły.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę do zastosowania buforu</h2></div>
+        <hr/>
+        <div>
+            <p>Obiekty punktowe, liniowe lub powierzchniowe do buforowania. Warstwy wejściowe muszą korzystać z układu wsp&oacute;łrzędnych odwzorowanych lub odniesienie przestrzenne przetwarzania musi zostać skonfigurowane w układzie wsp&oacute;łrzędnych odwzorowanych w oknie  <b>Środowiska analizy</b>.
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>Wybierz typ buforu do zastosowania</h2></div>
+        <hr/>
+        <div>
+            <p>Wielkość bufora obiekt&oacute;w wejściowych można podać na trzy sposoby: 
+                <ul>
+                    <li>Podaj odległość stosowaną do wszystkich obiekt&oacute;w.
+                    </li>
+                    <li>Podaj pole w warstwie wejściowej, kt&oacute;re zawiera wartość odległości. Można użyć pola znakowego lub liczbowego. Jeśli jednostka liniowa nie została zdefiniowana, zostaną użyte jednostki odniesienia przestrzennego. Jeśli używany jest układ wsp&oacute;łrzędnych geograficznych, przyjmuje się, że pola bez jednostek zawierają wartości wyrażone w metrach. 
+                    </li>
+                    <li>Utw&oacute;rz wyrażenie zawierające wiele p&oacute;l i operator&oacute;w matematycznych. Aby na przykład buforować według 10-krotnej wartości pola o nazwie  <i>predkosc_wiatru</i>, dodaj wyrażenie <i>$feature[&quot;predkosc_wiatru&quot;] x 10</i>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Wybierz metodę buforowania</h2></div>
+        <hr/>
+        <div>
+            <p>Można wybrać metodę  <b>Płaskie</b> lub metodę <b>Geodezyjne</b>. Metoda <b>Płaskie</b> może być szybsza i jest odpowiednia do przeprowadzania lokalnej analizy odwzorowanych danych. Metoda <b>Geodezyjne</b> jest odpowiednia w przypadku dużych obszar&oacute;w i wszystkich układ&oacute;w wsp&oacute;łrzędnych geograficznych.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>Wybierz typ metody agregacji</h2></div>
+        <hr/>
+        <div>
+            <p>Opcje umożliwiające określenie metody agregacji.   Po wybraniu metody agregacji można będzie utworzyć obszary wieloczęściowe lub jednoczęściowe. Można także będzie obliczyć statystyki na podstawie podanych p&oacute;l.
+                <ul>
+                    <li> <b>Wszystkie</b> &mdash; wszystkie obiekty zostaną zagregowane. Jeśli dozwolone są obiekty wieloczęściowe, wszystkie obiekty zostaną zagregowane w pojedynczy obiekt. Jeśli obiekty wieloczęściowe nie są dozwolone, obiekty sąsiadujące lub nakładające się zostaną zagregowane.
+                    </li>
+                    <li> <b>Pola</b> &mdash; obiekty zawierające to samo pole lub kombinację p&oacute;l zostaną zagregowane. Jeśli dozwolone są obiekty wieloczęściowe, wszystkie obiekty zawierające to samo pole zostaną zagregowane w pojedynczy obiekt. Jeśli obiekty wieloczęściowe nie są dozwolone, obiekty sąsiadujące lub nakładające się zawierające tą samą wartość pola zostaną zagregowane.
+                    </li>
+                    <li> <b>Brak</b> &mdash; nie zostaną zagregowane żadne obiekty. Jest to opcja domyślna.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Zezwalaj na obiekty wieloczęściowe</h2></div>
+        <hr/>
+        <div>
+            <p>Za pomocą tej opcji można zdecydować, czy wyniki będą składać się z obiekt&oacute;w jednoczęściowych czy wieloczęściowych. 
+
+            </p>
+            <p>
+                <ul>
+                    <li>Zaznaczona &mdash; wyniki analizy będą zawierać obiekty wieloczęściowe.   
+                    </li>
+                    <li>Niezaznaczona &mdash; wyniki analizy będą zawierać obiekty jednoczęściowe. Jest to ustawienie domyślne.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Dodaj statystyki (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p> Można obliczyć statystyki dla zsumowanych obiekt&oacute;w.W polach liczbowych można obliczyć następujące wartości:
+                <ul>
+                    <li>Liczba &mdash; zlicza wartości inne niż null.Może być używane w polach liczbowych lub znakowych. Liczba dla wartości [null, 0, 2] wynosi 2.
+                    </li>
+                    <li>Suma &mdash; suma wartości liczbowych w polu. Suma dla wartości [null, null, 3] wynosi 3.
+                    </li>
+                    <li>Średnia &mdash; średnia wartości liczbowych. Średnia dla wartości [0, 2, null] wynosi 1.
+                    </li>
+                    <li>Min &mdash; wartość minimalna w polu liczbowym. Wartość minimalna dla wartości [0, 2, null] wynosi 0. 
+                    </li>
+                    <li>Maks &mdash; wartość maksymalna w polu liczbowym. Wartość maksymalna dla wartości [0, 2, null] wynosi 2.
+                    </li>
+                    <li>Zakres &mdash; zakres pola liczbowego. Zakres jest obliczany przez odjęcie wartości minimalnych od wartości maksymalnej. Zakres dla wartości [0, null, 1] wynosi 1. Zakres dla wartości [null, 4] wynosi 0.
+                    </li>
+                    <li>Wariancja &mdash; wariancja pola liczbowego w ścieżce. Wariancja dla wartości [1] wynosi null. Wariancja dla wartości [null, 1,0,1,1] wynosi 0,25.
+                    </li>
+                    <li>Odchylenie standardowe &mdash; odchylenie standardowe pola liczbowego. Odchylenie standardowe dla wartości [1] wynosi null. Odchylenie standardowe dla wartości [null, 1,0,1,1] wynosi 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>W polach znakowych można obliczyć następujące wartości:
+                <ul>
+                    <li>Liczba &mdash; liczba ciąg&oacute;w znakowych innych niż null.
+                    </li>
+                    <li>Dowolne &mdash; ta statystyka to losowy przykład wartości znakowej w podanym polu.
+                    </li>
+                </ul>
+                Wszystkie statystyki są obliczane na podstawie wartości niepustych. Warstwa wynikowa zawiera nowe pole dla każdego wykonanego obliczenia statystycznego. Dodać można dowolną liczbę statystyk poprzez wybranie atrybutu oraz&nbsp;właściwej operacji statystycznej. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Wybierz aplikację ArcGIS Data Store, w której zostaną zapisane wyniki</h2></div>
+        <hr/>
+        <div>
+            <p>Wyniki analiz geoprzestrzennych są przechowywane w magazynie danych i udostępniane jako warstwa obiektowa w witrynie  Portal for ArcGIS. W większości przypadk&oacute;w wyniki powinny być przechowywane w magazynie danych czasowo-przestrzennych i jest to ustawienie domyślne. W niekt&oacute;rych przypadkach dobrym rozwiązaniem jest zapisanie wynik&oacute;w w relacyjnym magazynie danych. Poniżej podano sytuacje, kt&oacute;re mogą uzasadniać przechowywanie wynik&oacute;w w relacyjnym magazynie danych: 
+                <ul>
+                    <li>Wyniki mogą być używane w ramach kooperacji między portalami.
+                    </li>
+                    <li>Została włączona możliwość synchronizacji wynik&oacute;w.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nie należy używać relacyjnego magazynu danych, jeśli liczba wynik&oacute;w analiz geoprzestrzennych może się zwiększyć i może być konieczne zastosowanie magazynu dużych zbior&oacute;w danych czasowo-przestrzennych w celu obsłużenia dużych ilości danych.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p> Nazwa warstwy, kt&oacute;ra zostanie utworzona w oknie Moje zasoby. W przypadku zapisywania w ArcGIS Data Store wyniki będą przechowywane w obszarze  <b>Moje zasoby</b> i dodawane do mapy. W przypadku zapisywania w udostępnionym pliku dużych zbior&oacute;w danych wyniki będą przechowywane w udostępnionym pliku dużych zbior&oacute;w danych i dodawane do jego manifestu. Nie będą dodawane do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, działanie narzędzia nie powiedzie się.
+            </p>
+            <p>W przypadku zapisywania w  ArcGIS Data Store (relacyjny magazyn danych lub magazyn dużych zbior&oacute;w danych czasowo-przestrzennych) przy użyciu listy rozwijanej  <b>Zapisz wynik w</b> można określić nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

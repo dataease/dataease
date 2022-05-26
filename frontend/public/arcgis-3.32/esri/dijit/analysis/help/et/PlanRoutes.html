@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Kavanda marsruudid</h2><p/>
+        <h2><img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="Kavanda marsruudid"></h2>
+        <hr/>
+    <p>Marsruutide kavandamise t&ouml;&ouml;riist aitab teil &uuml;lesanded v&auml;lit&ouml;&ouml;tajate vahel t&otilde;husalt &auml;ra jagada.
+    </p>
+    <p>Teil tuleb t&ouml;&ouml;riistale anda hulk peatusi ja peatustesse s&otilde;itmiseks saadaolevate s&otilde;idukite arv. T&ouml;&ouml;riist m&auml;&auml;rab s&otilde;idukitele peatused ja tagastab marsruudid, mis n&auml;itavad, kuidas iga s&otilde;iduk j&otilde;uab oma m&auml;&auml;ratud peatusteni v&otilde;imalikult l&uuml;hikese ajaga.
+    </p>
+    <p>Marsruutide kavandamise t&ouml;&ouml;riista kasutamisel j&otilde;uavad v&auml;lit&ouml;&ouml;tajad rohkematesse kohtadesse v&auml;hema ajaga, mis omakorda t&otilde;stab nii produktiivsust kui ka klienditeeninduse kvaliteeti.
+        <ul>
+            <li>Saate kontrollida kodusid, restorane v&otilde;i ehitusplatse
+                
+
+            </li>
+            <li>Saate pakkuda hooldus-, paigaldus- v&otilde;i tehnilisi teenuseid
+            </li>
+            <li>Saate pakke kohale toimetada
+            </li>
+            <li>Saate teha m&uuml;&uuml;git&ouml;&ouml;d
+            </li>
+            <li>Saate inimesi kodudest &uuml;ritustele transportida
+            </li>
+        </ul>
+        
+    </p>
+    <p>Marsruutide kavandamise t&ouml;&ouml;riista v&auml;ljund koosneb peatusi sisaldavast kihist, kus peatused on t&auml;histatud neile m&auml;&auml;ratud marsruutidega, marsruutide kihist, mis n&auml;itab l&uuml;himaid teid m&auml;&auml;ratud peatuste k&uuml;lastamiseks, ja m&auml;&auml;ramata peatusi sisaldavast kihist, kui m&otilde;ne peatuseni ei j&otilde;utud. 
+    </p>
+    <p>Kui ruut  <b>Kasuta praeguse kaardi ulatust</b> on m&auml;rgitud, siis arvestatakse anal&uuml;&uuml;sis ainult praeguses kuvaulatuses n&auml;htavaid objekte.  Kui see ruut pole m&auml;rgitud, v&otilde;etakse k&otilde;ik sisendkihis olevad objektid arvesse ka siis, kui need pole praegu kaardil n&auml;ha.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Vali punktikiht, mis tähistab külastatavaid peatusi</h2></div>
+        <hr/>
+        <div>
+            <p>Valige punktide kiht, mida marsruudi k&auml;igus (v&otilde;i s&otilde;ites) tuleks k&uuml;lastada.  Nendest punktidest saavad v&auml;ljundis m&auml;&auml;ratud v&otilde;i m&auml;&auml;ramata peatused. 
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p>
+            <p>See t&ouml;&ouml;riist toetab kuni 2000 sisendobjekti. 
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Liikumisviis marsruutide jaoks</h2></div>
+        <hr/>
+        <div>
+            <p>Valige soovitud liikumisviis. V&auml;ljundmarsruudid j&auml;rgivad teid v&otilde;i jalgteid ja v&otilde;tavad arvesse kehtivaid reegleid (nt &uuml;hesuunalised t&auml;navad v&otilde;i keelatud p&ouml;&ouml;rded autode jaoks). Lubatud reisimisviisid m&auml;&auml;rab teie asutuse administraator.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Marsruudid algavad peatustes</h2></div>
+        <hr/>
+        <div>
+            <p>Saate m&auml;&auml;rata, kust ja millal s&otilde;idukid oma teekonda alustavad.
+            </p>
+            <p>Marsruudi kavandamise t&ouml;&ouml;riistaga saate s&otilde;idukite jaoks m&auml;&auml;rata &uuml;he v&otilde;i mitu alguspunkti.
+            </p>
+            <p>&Uuml;he alguspunkti m&auml;&auml;ramisel alustavad k&otilde;ik s&otilde;idukid teekonda sellest punktist, olenemata saadaval olevate s&otilde;idukite arvust. Saate valida &uuml;he punktiga punktikihi v&otilde;i kaardile ise punkti lisada. Selleks valige  <b>Lisa punkt kaardile</b>, kl&otilde;psake punkti redigeerimise nuppu ja seej&auml;rel kl&otilde;psake kaarti. 
+            </p>
+            <p>Mitme alguspunkti m&auml;&auml;ramise korral tuleb iga s&otilde;iduk seostada kindla alguspunktiga. S&otilde;idukite arv peab klappima punktide arvuga kihis. Valige mitme punktiga kiht ja m&auml;&auml;rake siis ripploendi  <b>Marsruudi ID v&auml;li</b> kaudu v&auml;li, mis v&otilde;imaldab kindla marsruudi, s&otilde;iduki v&otilde;i juhi kordumatult tuvastada.
+            </p>
+            <p>Algusaeg on k&otilde;igi teekondade jaoks sama. Alguskellaaja ajav&ouml;&ouml;nd vastab alguspunkti v&otilde;i -punktide asukoha ajav&ouml;&ouml;ndile. Seet&otilde;ttu sisestage kindlasti kohalik kellaaeg. Oletagem n&auml;iteks, et asute Kesk-Euroopa ajav&ouml;&ouml;ndis (CET), kuid s&otilde;idukid, mille teekondi soovite m&auml;&auml;ratleda, asuvad Ida-Euroopa ajav&ouml;&ouml;ndis (EET). Kui kell on praegu 9:30 CET (10:30 EET) ja teie s&otilde;idukid peavad oma teekonda alustama 30 minuti p&auml;rast, tuleb teil alguskellaajaks m&auml;&auml;rata 11:00. 
+            </p>
+            <p>Kui teie s&otilde;idukid stardivad erinevatest ajav&ouml;&ouml;nditest, ei saa nende algusaeg olla samaaegne &ndash; algusaja jaoks kasutatakse ajanihet. Kui &uuml;ks marsruut algab n&auml;iteks CET ajav&ouml;&ouml;ndist ja teine EET ajav&ouml;&ouml;ndist ning sisestate alguskellaajaks 11:00, algab CET ajav&ouml;&ouml;ndi marsruut kell 11:00 CET aja j&auml;rgi ja EET marsruut kell 11:00 EET aja j&auml;rgi &ndash; tunniajase vahega.
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Marsruudid lõpevad peatustes</h2></div>
+        <hr/>
+        <div>
+            <p>Saate m&auml;&auml;rata, kus s&otilde;idukid teekonna l&otilde;petavad.
+            </p>
+            <p>Marsruudid saate konfigureerida l&otilde;ppema &uuml;hes kolmest asukohast: 
+                <ul>
+                    <li>teekonna alguspunktis (s&otilde;ltumata sellest, kas s&otilde;idukid alustasid s&otilde;itu &uuml;hest v&otilde;i mitmest asukohast);
+                    </li>
+                    <li>&uuml;hes kindlas asukohas;
+                    </li>
+                    <li>mitmes asukohas &ndash; &uuml;ks l&otilde;pp-punkt iga teekonna jaoks.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Kui s&otilde;idukid alustavad ja l&otilde;petavad oma teekonna samas punktis, m&auml;rkige ruut  <b>Tagasi algusesse</b>.
+            </p>
+            <p>Kui soovite k&otilde;ik s&otilde;idukid samasse alguspunktist erinevasse l&otilde;pp-punkti suunata, t&uuml;hjendage ruut  <b>Tagasi algusesse</b> ja lisage kaardile soovitud punkt v&otilde;i valige kiht, mis sisaldab t&auml;pselt &uuml;hte punkti.
+            </p>
+            <p>Selleks, et k&otilde;igi s&otilde;idukite teekonnad l&otilde;ppeksid erinevates kohtades, t&uuml;hjendage ruut  <b>Tagasi algusesse</b> ja valige rohkem kui &uuml;hte punkti sisaldav kiht. S&otilde;idukite arv peab klappima punktide arvuga valitud kihis. Valige rippmen&uuml;&uuml;st <b>Marsruudi ID v&auml;li</b> v&auml;li, mis tuvastab kordumatult individuaalse marsruudi, s&otilde;iduki v&otilde;i juhi. Kui s&otilde;idukid alustavad s&otilde;itu mitmest asukohast ja l&otilde;petavad teekonna mitmes eri asukohas, peavad algus- ja l&otilde;pukihi jaoks valitud marsruudi-ID-d omavahel klappima.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Vali piirajakihid</h2></div>
+        <hr/>
+        <div>
+            <p> &Uuml;ks v&otilde;i mitu objekti, mis toimivad allpool paiknevatel t&auml;navatel s&otilde;itmise korral ajutiste piirangute (t&otilde;ketena). Saate m&auml;&auml;rata t&otilde;kked, kasutades punkti, joone v&otilde;i hulknurga objekte.
+            </p>
+            <p>Punktt&otilde;kke abil saab modelleerida mahakukkunud puud, avariid, allakukkunud elektriliini v&otilde;i midagi muud, mis t&otilde;kestab antud t&auml;navaosal liikluse t&auml;ielikult. T&auml;naval on liiklemine lubatud, kuid mitte l&auml;bi t&otilde;kke. Punktt&otilde;ketena saate m&auml;&auml;rata kuni 250 objekti.
+            </p>
+            <p>Joont&otilde;ke keelab liiklemise igal pool, kus t&otilde;ke l&otilde;ikub t&auml;navaga. Joont&otilde;kkega saab modelleerida n&auml;iteks paraadi v&otilde;i meeleavaldust, mis t&otilde;kestab liikluse mitmel t&auml;naval&otilde;igul. Kui k&otilde;igi joont&otilde;ketega ristuvate t&auml;navaobjektide arv &uuml;letab 500, annab t&ouml;&ouml;riist veateate.
+            </p>
+            <p>Hulknurkt&otilde;ke keelab liiklemise igal pool, kus hulknurk l&otilde;ikub t&auml;navatega. Selle t&otilde;kket&uuml;&uuml;bi &uuml;heks kasutuskohaks on &uuml;leujutuste modelleerimine, kui &uuml;leujutus h&otilde;lmab t&auml;navav&otilde;rku ja muudab seal liiklemise v&otilde;imatuks. Kui k&otilde;igi hulknurkt&otilde;ketega ristuvate t&auml;navaobjektide arv &uuml;letab 2000, annab t&ouml;&ouml;riist veateate.
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Maksimumarv sõidukeid marsruutide leidmiseks</h2></div>
+        <hr/>
+        <div>
+            <p>Saate m&auml;&auml;rata peatuste k&uuml;lastamiseks saadaolevate s&otilde;idukite arvu. See t&ouml;&ouml;riist toetab kuni  100 s&otilde;idukit. 
+            </p>
+            <p>T&ouml;&ouml;riist v&otilde;ib vahel leida sellise lahenduse, mis kasutab teie m&auml;&auml;ratud s&otilde;idukite arvust v&auml;hem s&otilde;idukeid, v&otilde;ttes arvesse peatuste koguarvu, lubatud peatuste arvu s&otilde;iduki kohta, peatuste omavahelist vahemaad, igas peatuses kuluvat aega ning kogu marsruudile seatud piiranguid s&otilde;iduki kohta.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Maksimumarv peatusi sõiduki kohta</h2></div>
+        <hr/>
+        <div>
+            <p>See on &uuml;ks kahest parameetrist, mis tasakaalustab k&otilde;igi marsruutide &uuml;ldist t&ouml;&ouml;koormust. Saate m&auml;&auml;rata v&auml;&auml;rtuse vahemikus 1 kuni  200. 
+            </p>
+            <p>Kui v&auml;hendate maksimaalset peatuste arvu s&otilde;iduki kohta, suureneb t&otilde;en&auml;osus, et igale s&otilde;idukile m&auml;&auml;ratakse sama arv peatuseid. See aitab tasakaalustada juhtide t&ouml;&ouml;koormust. Samas v&otilde;ib see p&otilde;hjustada tulemuse, mis on v&auml;hem efektiivne.
+            </p>
+            <p>Kui suurendate s&otilde;iduki kohta lubatud peatuste arvu, saab t&ouml;&ouml;riist efektiivsemate lahenduste leidmiseks vabamad k&auml;ed, kuid samas v&otilde;ib see viia t&ouml;&ouml;koormuse ebav&otilde;rdse jaotuseni juhtide ja s&otilde;idukite vahel. T&ouml;&ouml;koormust saate tasakaalustada nii peatuste arvu kui ka aja alusel. Selleks tuleb teil parameetri  <b>Piira kogu teekonna aega s&otilde;iduki kohta</b> jaoks m&auml;&auml;rata soovitud v&auml;&auml;rtus.
+            </p>
+            <p>J&auml;rgnevad n&auml;ited kirjeldavad seda, milline m&otilde;ju on maksimaalse peatuste arvu v&otilde;i s&otilde;iduki jaoks lubatava koguaja piiramisel. K&otilde;igis n&auml;idetes on kasutusel kuus peatust ja kaks marsruuti, mis algavad samast punktist.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="../images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="Tasakaalustatud peatused ja s&otilde;iduajad">
+                </td>
+                <td>
+                    <p>Tasakaalustatud s&otilde;iduajad ja peatused teekonna kohta
+                    </p>
+                    <p>Peatused on jaotatud enam-v&auml;hem &uuml;htlaselt. Seet&otilde;ttu aitab s&otilde;idukile peatuste arvu &uuml;lempiiri m&auml;&auml;ramine jagada t&ouml;&ouml;koormuse nii, et k&otilde;igile antakse enam-v&auml;hem sama kestusega marsruudid.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Tasakaalustamata s&otilde;iduajad">
+                </td>
+                <td>
+                    <p>Tasakaalustatud peatused, kuid tasakaalustamata s&otilde;iduajad
+                    </p>
+                    <p>Kuuest peatusest viis asuvad alguspunkti l&auml;hedal koos, ent &uuml;ks punkt on teistest kaugemal ja sinna j&otilde;udmiseks kulub m&auml;rksa rohkem aega. Peatuste v&otilde;rdsel jagamisel kahe marsruudi vahel pole s&otilde;iduajad tasakaalus.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="Tasakaalustatud s&otilde;iduajad">
+                </td>
+                <td>
+                    <p>Tasakaalustamata peatused, kuid tasakaalustatud s&otilde;iduajad
+                    </p>
+                    <p>Peatused on samas asukohas nagu eelmisel pildil, ent kui suurendate maksimaalset peatuste arvu marsruudi kohta ja piirate s&otilde;iduaega s&otilde;iduki kohta, on tulemuseks tasakaalustatud s&otilde;iduajad.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Igas peatuses viibitav aeg</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rake eeldatav keskmine teeninduseks kuluv aeg igas peatuses. Kui planeerite n&auml;iteks inspektorite t&ouml;&ouml;p&auml;eva graafikut ja &uuml;hele kontrollk&auml;igule kulub keskmiselt 45 minutit, sisestage v&auml;&auml;rtus  <code>45</code>.
+            </p>
+            <p>Teenindusaeg igas peatuses on eeldatavalt sama.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Piira kogu marsruudiks kuluvat aega sõiduki kohta</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rake maksimaalne aeg teekonna l&auml;bimiseks alguspunktist l&otilde;pp-punktini. See sisaldab eeldatavat s&otilde;iduaega ja teenuse osutamise aega marsruudile j&auml;&auml;vates peatustes. Kui juhi t&ouml;&ouml;p&auml;eva pikkus peaks piirduma kaheksa tunniga, saate selle piirm&auml;&auml;ra just siin seada.
+            </p>
+            <p>T&ouml;&ouml;koormuste tasakaalustamise kohta leiate lisateavet funktsiooni  <b>Maksimumarv peatuseid s&otilde;iduki kohta</b> abist.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Jaotises  <b>Minu sisu</b> loodava ja kaardile lisatava objektikihi nimi. Kui objektikiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi. Objektikiht sisaldab iga j&auml;rgmise &uuml;ksuse kihti: marsruudid, m&auml;&auml;ratud peatused ja m&auml;&auml;ramata peatused, kui m&otilde;nda sisesatud peatust ei saanud &uuml;helegi marsruudile m&auml;&auml;rata.
+            </p>
+            <p>Kui valite  <b>Kaasa marsruudikihid</b>, salvestatakse tulemuse iga marsruut marsruudikihina. Marsruudikiht sisaldab teavet konkreetse marsruudi kohta (nt marsruudile m&auml;&auml;ratud peatused ja ka teejuhised). Marsruudikihtide loomine on kasulik, kui soovite &uuml;ksikuid marsruute jagada oma ettev&otilde;tte teiste liikmetega v&otilde;i neid marsruute edaspidi muuta kaardivaaturi nupu <b>Teejuhised</b> abil. Marsruudikihid kasutavad objektikihi jaoks pandud nime eesliitena ja anal&uuml;&uuml;si osana genereeritud marsruudinimi lisatakse iga marsruudikihi jaoks kordumatu nime loomiseks.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemus</b> kaudu saate m&auml;&auml;rata jaotises <b>Minu sisu</b> selle kausta nime, kuhu objektikiht ja marsruudikihid salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

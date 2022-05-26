@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Hitta närmaste</h2><p/>
+        <h2><img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="Hitta n&auml;rmaste"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget anv&auml;nds f&ouml;r att hitta de n&auml;rmaste geoobjekten och f&ouml;r att rapportera och rangordna avst&aring;nden till de n&auml;rmaste geoobjekten. F&ouml;r att hitta vad som ligger n&auml;rmast kan verktyget m&auml;ta antingen ett avst&aring;nd med raka linjer eller ett valt f&auml;rdl&auml;ge. Det finns alternativ f&ouml;r att begr&auml;nsa antalet n&auml;rmaste geoobjekt som ska hittas eller inom vilket s&ouml;kavst&aring;nd s&ouml;kningen ska g&ouml;ras. Resultaten fr&aring;n det h&auml;r verktyget kan hj&auml;lpa dig besvara f&ouml;ljande typer av fr&aring;gor:
+        <ul>
+            <li>Vilken park ligger n&auml;rmast den h&auml;r platsen?
+            </li>
+            <li>Vilket sjukhus kan jag komma till p&aring; kortast k&ouml;rtid? Hur l&aring;ng tid skulle resan ta under rusningstrafik en tisdag klockan 17:30?
+            </li>
+            <li>Vilket &auml;r avst&aring;ndet l&auml;ngs v&auml;g mellan dessa st&ouml;rre st&auml;der?
+            </li>
+            <li>Vilka av dessa patienter bor inom tre kilometer fr&aring;n den kemiska fabriken?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hitta n&auml;rmaste returnerar ett lager som inneh&aring;ller de n&auml;rmaste geoobjekten och ett valfritt linjelager som l&auml;nkar startplatsen till de n&auml;rmaste platserna. Linjelagret inneh&aring;ller information om startplatsen, de n&auml;rmaste platserna och avst&aring;nden mellan dem.
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> &auml;r markerat anses endast de geoobjekt som &auml;r synliga i den aktuella kartutbredningen kunna vara startplatser och m&ouml;jliga n&auml;rmaste geoobjekt. Om alternativet inte markeras anv&auml;nds alla geoobjekt i indatalagret, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Ange startplatserna</h2></div>
+        <hr/>
+        <div>
+            <p>Hitta n&auml;rmaste m&auml;ter fr&aring;n geoobjekten i det lager du anger h&auml;r (startplatserna) till de platser du anger i n&auml;sta parameter. Verktyget har st&ouml;d f&ouml;r upp till  5 000 geoobjekt i varje lager. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>Hitta närmaste platser i</h2></div>
+        <hr/>
+        <div>
+            <p>Hitta n&auml;rmaste m&auml;ter fr&aring;n varje plats i det f&ouml;rsta lagret till geoobjekten i det h&auml;r lagret. Verktyget har st&ouml;d f&ouml;r upp till  5 000 platser i varje lager. </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. Det alternativet &ouml;ppnar ett galleri d&auml;r du kan bl&auml;ddra till och v&auml;lja dataupps&auml;ttningar fr&aring;n diverse k&auml;llor som du kan anv&auml;nda i din analys. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Mät</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;lj om du vill hitta n&auml;rmaste platser baserat p&aring; avst&aring;ndet som en rak linje eller ett valt f&auml;rdl&auml;ge. F&auml;rdl&auml;gena kan endast anv&auml;ndas om indatalagret inneh&aring;ller punkter. Vilka f&auml;rdl&auml;gen som &auml;r tillg&auml;ngliga avg&ouml;rs av organisationens administrat&ouml;r. N&auml;r du anv&auml;nder n&aring;got av f&auml;rdl&auml;gena g&ouml;rs m&auml;tningarna l&auml;ngs v&auml;gar eller g&aring;ngv&auml;gar med h&auml;nsyn till till&auml;mpliga regler, till exempel enkelriktade gator eller otill&aring;tna sv&auml;ngar.
+            </p>
+            <p>N&auml;r du m&auml;ter avst&aring;nd mellan linjer eller omr&aring;den &auml;r det avst&aring;ndet fr&aring;n eller till den n&auml;rmaste punkten l&auml;ngs linjen eller gr&auml;nsen till omr&aring;det som tas fram. 
+            </p> 
+            <p>Om du v&auml;ljer  <b>K&ouml;rtid</b>, <b>K&ouml;rtid p&aring; landsbygd</b> eller <b>Tid med lastbil</b> finns det olika s&auml;tt att m&auml;ta k&ouml;rtiden p&aring;.
+                <ul>
+                    <li>
+                        <p>Avmarkera  <b>Anv&auml;nd trafik</b> om du vill hitta de n&auml;rmaste geoobjekten baserat p&aring; statiska reshastigheter, till exempel hastighetsgr&auml;nser, snarare &auml;n varierande hastigheter orsakade av &auml;ndrade trafikf&ouml;rh&aring;llanden.
+                        </p>
+                        <p>Det h&auml;r alternativet passar b&auml;st om du vill veta vad som rent allm&auml;nt ligger n&auml;rmast, men inte n&ouml;dv&auml;ndigtvis beh&ouml;ver ta h&auml;nsyn till de n&auml;rmaste givna trafikf&ouml;rh&aring;llandena f&ouml;r en viss tid och dag.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Markera  <b>Anv&auml;nd trafik</b> om du vill hitta de n&auml;rmaste geoobjekten utifr&aring;n en viss starttid och varierande trafikf&ouml;rh&aring;llanden. Om du &auml;ven v&auml;ljer alternativet <b>Trafik i realtid</b> anges avresetiden fr&aring;n startpunkterna till den aktuella tiden, och de aktuella och f&ouml;rutsagda trafikhastigheterna refereras fr&aring;n sensorer och feeds f&ouml;r att fastst&auml;lla vilka geoobjekt som ligger n&auml;rmast. De f&ouml;rutsagda trafikv&auml;rdena ber&auml;knas genom att referera trafikhastigheter i realtid, historik f&ouml;r hastigheter och aktuella f&ouml;ruts&auml;ttningar, till exempel v&auml;der. Trafikhastigheterna f&ouml;ruts&auml;gs 12 timmar fram&aring;t, s&aring; du kan flytta skjutreglaget f&ouml;r att st&auml;lla in en avresetid upp till 12 timmar fram&aring;t i tiden.
+                        </p>
+                        <p>Anv&auml;nd dessa inst&auml;llningar f&ouml;r trafik i realtid f&ouml;r att ta reda p&aring; vilka geoobjekt du kan n&aring; p&aring; kortast tid om du &aring;ker nu, om du &aring;ker om en timme och s&aring; vidare.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Om du markerar  <b>Anv&auml;nd trafik</b> och v&auml;ljer <b>Trafik baserad p&aring; typiska f&ouml;rh&aring;llanden f&ouml;r</b> en dag och tid, hittar verktyget de n&auml;rmaste geoobjekten baserat p&aring; historiska snitthastigheter f&ouml;r varje femminutersintervall under en vanlig vecka. Resultaten omfattar trafik, men tar inte med aktuella trafikf&ouml;rh&aring;llanden och h&auml;ndelser. De aktuella f&ouml;rh&aring;llandena kan i h&ouml;g grad skilja sig fr&aring;n normen.
+                        </p>
+                        <p>Du kan anv&auml;nda dessa historiska trafikinst&auml;llningar f&ouml;r att till exempel ta reda p&aring; &quot;Vilka geoobjekt kan jag komma till snabbast om jag &aring;ker fr&aring;n startgeoobjektet klockan 11:30 p&aring; en onsdag?&quot; 
+                        </p>
+                        <p>Den tid du anger refererar till den tidszon d&auml;r dina startgeoobjekt finns. Om du st&auml;ller in tiden 08:00 och har tv&aring; startgeoobjekt, ett i New York City och ett annat i Los Angeles, hittas n&auml;rmaste platser baserat p&aring; avresetiden 08:00 Eastern Time respektive 08:00 Pacific Time.
+                        </p>
+                    </li>
+                </ul>
+                Observera att tiden g&aring;r och trafikf&ouml;rh&aring;llandena &auml;ndras medan bilen k&ouml;r ut&aring;t fr&aring;n startpunkten. Verktyget tar med dessa variationer i ber&auml;kningarna om du markerar <b>Anv&auml;nd trafik</b>, trafikfunktionen st&ouml;ds dock inte i alla regioner. Klicka p&aring; l&auml;nken <b>Se tillg&auml;nglighet</b> i verktyget om du vill ta reda p&aring; om funktionen st&ouml;ds i ditt unders&ouml;kningsomr&aring;de. 
+            </p>
+            <p> <b>Tid med lastbil</b> kan anv&auml;nda dynamiska hastigheter baserade p&aring; trafik men bara upp till hastighetsbegr&auml;nsningen f&ouml;r lastbilar. Om t.ex. den dynamiska hastigheten f&ouml;r en v&auml;g baserat p&aring; trafik i realtid &auml;r 110 km/h men hastighetsbegr&auml;nsningen f&ouml;r lastbilar p&aring; v&auml;gen &auml;r 90 km/h, anv&auml;nder ber&auml;kningen 90 km/h f&ouml;r den v&auml;gen.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Välj hinderlager</h2></div>
+        <hr/>
+        <div>
+            <p> Ange ett eller flera geoobjekt som fungerar som tillf&auml;lliga restriktioner (hinder) vid resor p&aring; de underliggande gatorna. Du kan ange hindren med hj&auml;lp av punkt-, linje eller polygongeoobjekt.
+            </p>
+            <p>Ett punkthinder kan vara ett nedfallet tr&auml;d, en olycka, en nedrasad elledning eller n&aring;gonting annat som fullst&auml;ndigt blockerar trafiken p&aring; en specifik plats l&auml;ngs gatan. Det &auml;r till&aring;tet att f&auml;rdas p&aring; gatan men inte genom hindret. Du kan ange att upp till 250 geoobjekt ska fungera som punkthinder.
+            </p>
+            <p>Ett linjehinder f&ouml;rbjuder resor &ouml;verallt d&auml;r hindret korsar gatorna. Till exempel kan en parad eller protestmarsch som blockerar trafiken p&aring; flera gatusegment modelleras med ett linjehinder. Om antalet gatugeoobjekt som korsas av alla linjehinder &ouml;verstiger 500 visas ett felmeddelande i verktyget.
+            </p>
+            <p>Ett polygonhinder f&ouml;rbjuder resor &ouml;verallt d&auml;r polygonen korsar gatorna. En anv&auml;ndning f&ouml;r den h&auml;r typen av hinder &auml;r att modellera &ouml;versv&auml;mningar som t&auml;cker delar av gatun&auml;tet och g&ouml;r det om&ouml;jligt att f&auml;rdas p&aring; v&auml;garna. Om antalet gatugeoobjekt som korsas av alla polygonhinder &ouml;verstiger 2&nbsp;000 visas ett felmeddelande i verktyget.
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>För varje plats i indatalagret</h2></div>
+        <hr/>
+        <div>
+            <p>Du har tv&aring; alternativ f&ouml;r att begr&auml;nsa s&ouml;kningen efter n&auml;rmaste platser. Ett alternativ &auml;r att begr&auml;nsa det maximala antalet n&auml;rmaste platser som ska hittas per startplats. Du kan hitta den n&auml;rmaste parken, de tv&aring; n&auml;rmaste och s&aring; vidare. Det andra alternativet &auml;r att st&auml;lla in ett maximalt s&ouml;kavst&aring;nd eller k&ouml;rtid.
+            </p>
+            <p>Om du avmarkerar alternativen &auml;r det maximala antalet n&auml;rmaste platser som kan hittas 100 (verktygets gr&auml;ns) och det maximala s&ouml;kavst&aring;ndet obegr&auml;nsat.
+            </p>
+            <p>Bearbetningstiden varierar beroende p&aring; antalet startplatser, antalet platser i n&auml;rheten och det maximala s&ouml;kavst&aring;ndet. Det tar l&auml;ngre tid att bearbeta n&auml;r det finns m&aring;nga platser eller stora s&ouml;kavst&aring;nd.
+            </p>
+            <p>Observera att verktyget kanske inte kan hitta n&aring;gon n&auml;rmaste plats inom angivet avst&aring;nd om s&ouml;kavst&aring;ndet har begr&auml;nsats. Det &auml;r ocks&aring; m&ouml;jligt att verktyget hittar f&auml;rre &auml;n det maximala antalet n&auml;rmaste platser du har angett.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; det geoobjektslager som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om geoobjektslagret redan finns uppmanas du att ange ett annat namn. Geoobjektslagret inneh&aring;ller tv&aring; lager: ett som representerar de n&auml;rmaste platserna och ett annat som representerar de linjer som f&ouml;rbinder indataplatserna med de n&auml;rmaste platserna.
+            </p>
+            <p>Om du v&auml;ljer  <b>Inkludera ruttlager</b> sparas varje rutt fr&aring;n resultatet &auml;ven som ett ruttlager. Ett ruttlager inneh&aring;ller all information f&ouml;r en specifik rutt, till exempel vilka stopp som rutten tilldelats samt v&auml;gbeskrivningar. Att skapa ruttlager &auml;r praktiskt om du vill dela enskilda rutter med andra medlemmar i din organisation eller om du vill &auml;ndra rutter ytterligare med knappen <b>V&auml;gbeskrivning</b> i kartvisaren. Ruttlagren anv&auml;nder geoobjektlagrets namn som prefix, och det ruttnamn som genereras under analysen l&auml;ggs till f&ouml;r att skapa ett unikt namn f&ouml;r varje ruttlager.
+            </p>
+            <p>Det maximala antalet ruttlager som kan skapas &auml;r  1 000. Om resultatet inneh&aring;ller fler &auml;n  1 000 rutter och  <b>Inkludera ruttlager</b> &auml;r markerat, skapar verktyget bara utdatageoobjekttj&auml;nsten.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r geoobjektlagret och ruttlagren (om de skapas) ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

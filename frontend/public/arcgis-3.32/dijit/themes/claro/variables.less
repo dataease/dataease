@@ -1,0 +1,379 @@
+// General
+
+@primary-color: #cfe5fa;													// Base color for entire theme
+@secondary-color: #efefef;												// Base color for bar-backgrounds
+@text-color: #000;													// Text color for enabled widgets
+@disabled-color: #d3d3d3;												// Base for disabled backgrounds and borders
+@error-color: #d46464;
+
+@container-background-color:#fff;										// Backgrounds for various content areas such as TitlePane, ContentPane and Inputs (if changed, adjust selected tab to match)
+
+@minor-selected-color: spin(saturate(darken(@primary-color, 6), 19), 0);						// Color for various arrows and buttons
+@base-border-color: spin(desaturate(darken(@primary-color, 29), 44), -1);		// Augmented and used directly by variables to create border colors for various widgets
+@unfocused-clickable-color: spin(saturate(lighten(@primary-color, 5), 10), 0);				// Background color for enabled buttons, text inputs
+@border-color: spin(desaturate(darken(@primary-color, 15), 67), 8);						// Border color for (enabled, unhovered) TextBox, Slider, Accordion, BorderContainer, TabContainer
+@minor-border-color: @disabled-color;									// Color of borders inside widgets: horizontal line in Calendar between weeks, around color swatches in ColorPalette, above Dialog action bar
+@popup-border-color: @base-border-color;								// Border for Dialog, Menu, Tooltip.   Must also update tooltip.png (the arrow image file) to match
+
+
+@disabled-border-color: @disabled-color;								// Border color for disabled/readonly Button, TextBox etc. widgets
+@disabled-background-color: @secondary-color;							// Disabled button, textbox, etc.
+@disabled-text-color: darken(@secondary-color, 43);											// Text color for disabled/readonly widgets
+
+@unselected-background-color: @secondary-color;							// Background color for unselected/unopened tab button, accordion pane, TitlePane, Menu items
+@unselected-text-color: darken(@secondary-color, 65);										// Text color for unselected/unopened tab button, accordion pane, TitlePane, Menu items
+
+@hovered-border-color: @base-border-color;								// Hover of textbox, tab label, BorderContainer splitter, Calendar, etc.
+@hovered-background-color: @minor-selected-color;	// Background color for hover of Button, MenuBar, Accordion pane, Calendar... anything that has a (non-white) color to start with and gets darker on hover
+@hovered-text-color: @text-color;										// Used for title of select Accordion pane, label of select tab, hovered Menu item, etc.
+
+@pressed-border-color:  @base-border-color;								// During click on Calendar day, Slider up/down buttons, tab button, etc.
+@pressed-background-color: spin(saturate(darken(@primary-color, 16), 12), 0);					// Background color while clicking on Accordion/TitlePane title bar, tab button, Calendar day, Toolbar button, Tree row.
+
+@selected-border-color: @base-border-color;  							// Selected AccordionPane, tab of nested TabContainer (but plain TabContainer is special)
+@selected-background-color: @primary-color;								// Selected Accordion pane, nested tab label, Tree row
+@selected-text-color: @text-color;										// title of selected Accordion pane, label of selected tab, hovered Menu item, etc.
+
+@bar-background-color: @secondary-color;								// MenuBar, Toolbar, action bar at bottom of dialog
+@pane-background-color: @container-background-color;					// Background color of Accordion panes, Dialogs, etc.
+@popup-background-color: @container-background-color;					// Background for Dialog.   TODO: currently use for ColorPalette, maybe should change.
+
+
+
+// Buttons
+@button-border-color:  @base-border-color;								// Border for (stand-alone) buttons in normal, hovered, or active state
+@button-background-color: @unfocused-clickable-color;					// Background color for (unhovered) buttons
+@button-hovered-background-color: @minor-selected-color;	// Background color for hovered buttons
+@button-pressed-background-color: @minor-selected-color;				// Background color for active buttons
+@button-border-radius: 4px;												// Rounded corner radius for buttons (except in toolbar)
+
+// Input widgets
+@focused-border-color: @base-border-color;								// Focused textbox, editor, select, etc.
+@error-border-color: @error-color;											// Border for textbox in error state
+@error-focused-border-color: darken(@error-color, 5);									// Border of textbox in error state, and focused
+@erroricon-background-color: @error-color;									// Background color for exclamation point validation icon (for TextBox in error state)
+@textbox-background-color: @container-background-color;					// Default background color of TextBox based widgets
+@textbox-hovered-background-color: @unfocused-clickable-color;			// Background color when hovering a unfocused TextBox, Select, Editor, or other input widget
+@textbox-focused-background-color: @textbox-background-color;
+@textbox-error-background-color: @textbox-background-color;
+@textbox-disabled-background-color: @disabled-background-color;
+
+@textbox-padding: 2px;	// Padding for Textbox, Textarea, etc.
+
+// CheckBox, RadioButton
+@focus-outline-color: darken(@secondary-color, 65);											// Color for artificial focus outline around labels of checkboxes
+
+// TabContainer
+@nestedtab-hovered-background-color: @unfocused-clickable-color;
+@nestedtab-hovered-border-color: @primary-color;
+@nestedtab-selected-border-color: @selected-border-color;
+@nestedtab-selected-background-color: @minor-selected-color;
+@tab-disabled-background-color: @disabled-color;						// For disabled tabs of a TabContainer (not officially supported)
+
+// Arrow buttons (stand alone, or inside ComboBox / ComboButton / Spinner / etc.
+@arrowbutton-background-color: @secondary-color;
+@arrowbutton-hovered-background-color: @minor-selected-color;			// Color of arrow when hovering ComboBox.   But hovering Spinner doesn't change arrow color (TODO)
+@arrowbutton-pressed-background-color: @minor-selected-color;
+@arrowbutton-inner-border-color: @container-background-color;									// Typically the arrows have an inner white border (a.k.a. padding) and then an outer black-ish border
+
+// Slider
+// Note: any changes here require corresponding changes in form/images/sliderThumbs.png
+@slider-fullbar-background-color: @primary-color;							// Background color for part of slider bar before (to the left or below) the handle
+@slider-remainingbar-background-color: @container-background-color;			// Background color for part of slider bar after (to the right or above) the handle
+@slider-hovered-fullbar-background-color: @minor-selected-color;			// Background color for part of bar of hovered slider before (to the left or below) the handle
+@slider-hovered-remainingbar-background-color: @container-background-color;	// Background color for part of bar of hovered slider after (to the right or above) the handle
+@slider-hoveredButton-background-color: @container-background-color;		// Background color of slider increment/decrement buttons when mouse is over slider but not over the buttons
+@slider-focused-fullbar-background-color: @minor-selected-color;			// Background color for part of bar of focused slider before (to the left or below) the handle
+@slider-focused-remainingbar-background-color: @container-background-color;	// Background color for part of bar of focused slider after (to the right or above) the handle
+@slider-button-hovered-background-color: @primary-color;					// Background color of slider increment/decrement buttons when mouse is over the buttons
+@slider-button-pressed-background-color: @minor-selected-color;				// Background color of slider increment/decrement buttons while button is depressed
+
+// Select, ComboBox
+@select-dropdownitem-background-color: @container-background-color;			// Background color for items in the drop down list of a ComboBox/Select
+@select-dropdownitem-hovered-background-color: @pressed-background-color;	// Background color for the hovered item in the drop down list of a ComboBox/Select
+@select-matchedtext-background-color: @minor-selected-color;				// Background color of text in ComboBox drop down that matches typed in phrase
+
+// Menus
+@menu-background-color: @popup-background-color;
+
+// Calendar
+@calendar-background-color: @primary-color;
+@calendar-currentmonth-background-color: @container-background-color;		// Background color for days of the current month
+@calendar-adjacentmonth-background-color: @unfocused-clickable-color;		// Background color used for days from previous or next month
+@calendar-adjacentmonth-text-color: @base-border-color;						// Text color used for days from previous or next month
+@calendar-date-pressed-border-color: @container-background-color;			// For some reason pressing a day of the month (as opposed to hovering it) makes the border go away, is this intentional?
+@calendar-date-pressed-background-color: @pressed-background-color;
+@calendar-date-selected-border-color: @selected-border-color;
+@calendar-date-selected-background-color: @minor-selected-color;
+@calendar-button-hovered-background-color: @unfocused-clickable-color;		// for hover or next/previous year, and month drop down (TODO: border and background are built in to calendarArrows.png, can't control from here)
+@calendar-button-hovered-border-color: @container-background-color;			// for hover or next/previous year, and month drop down
+@calendar-button-pressed-background-color: @pressed-background-color;
+@calendar-button-pressed-border-color: @pressed-border-color;
+
+
+// ProgressBar
+@progressbar-border-color: @popup-border-color;								// Border color of progress bar
+@progressbar-full-background-color:@minor-selected-color;					// Background color for part of progress bar indicating amount completed
+@progressbar-empty-background-color: @container-background-color;			// Background color for part of progress bar indicating amount remaining
+@progressbar-text-color: @text-color;										// Color of progress bar text (ex: "35%").  Must contrast with both empty and full background colors.
+
+// TimePicker
+@timepicker-minorvalue-background-color: @secondary-color;	// For 3:15, 3:30, 3:45 but not 3:00 or 4:00
+@timepicker-minorvalue-text-color: darken(@secondary-color, 43);
+@timepicker-majorvalue-background-color: @unfocused-clickable-color;	// For 3:00, 4:00, 5:00, etc.
+@timepicker-value-hovered-background-color: @pressed-background-color;
+@timepicker-value-hovered-text-color: @hovered-text-color;
+@timepicker-arrow-hovered-background-color: @minor-selected-color;
+
+// ColorPalette
+@colorpalette-background-color: @container-background-color;
+@swatch-border-color: @minor-border-color;
+@swatch-hovered-border-color: #000;
+@swatch-selected-border-color: #000;
+
+// Dialog
+@dialog-underlay-color: @container-background-color;			// the thing that grays out the screen when a dialog is shown
+@dialog-titlebar-border-color: @container-background-color;	// Inner border around the title sectionof a Dialog, inside the main border of the Dialog and the border between title and content
+@dialog-titlebar-background-color: @minor-selected-color;
+
+// Tooltip
+@tooltip-gradient-color: fade(@primary-color,10%);		// a little swath of color at the bottom of tooltips
+
+// BorderContainer
+@splitter-hovered-background-color: @primary-color;	// Color of splitter when user hovers it, before mouse down
+@splitter-dragged-background-color: @minor-selected-color;	// Color of splitter while it's being dragged
+
+// Toolbar
+@toolbar-button-checked-background-color: @container-background-color;								// a toggled-on button in the toolbar
+@toolbar-combobutton-hovered-unhoveredsection-background-color: spin(saturate(lighten(@primary-color, 8), 19), -29);	// when user hovers a ComboButton in a Toolbar, the other half of the button turns this color
+@toolbar-button-border-radius: 2px;			// Rounded corner radius for buttons for buttons in toolbar
+
+// DnD
+@dnd-avatar-background-color: @container-background-color;					// Background color of little Dialog-type box indicating dragged items
+@dnd-avatar-header-background-color: #f58383;		// Title bar for dragged items
+@dnd-avatar-candrop-header-background-color: #97e68d;// Title bar for dragged items when they can be dropped
+@dnd-dropseparator-color: @base-border-color;					// Color of line indicating that user is about to drop between items A & B
+
+// Document level
+@document-text-color: #131313;								// Text color for document itself (text outside of widgets)
+@document-shadedsection-background-color: @bar-background-color;// background color used for <pre>, <code>, and table header rows
+@document-border-color: @disabled-color;								// Border for <pre>, <code>, tables, etc.
+
+// Icons, arrows, etc.
+@image-arrow-sprite: "images/spriteArrows.png";
+@image-calendar-arrows: "images/calendarArrows.png";
+@image-calendar-arrows-ie6: "images/calendarArrows8bit.png";
+@image-checkmark: "images/checkmarkNoBorder.png";
+@image-checkmark-ie6: "images/checkmarkNoBorder.gif";
+@image-dialog-close: "images/dialogCloseIcon.png";
+@image-dialog-close-ie6: "images/dialogCloseIcon8bit.png";
+@image-dnd: "images/dnd.png";
+@image-editor-icons-enabled: "../../icons/images/editorIconsEnabled.png";
+@image-form-button-arrows: "form/images/buttonArrows.png";
+@image-form-checkbox-and-radios: "form/images/checkboxRadioButtonStates.png";
+@image-form-checkbox-and-radios-ie6: "form/images/checkboxAndRadioButtons_IE6.png";
+@image-form-common-arrows: "form/images/commonFormArrows.png";
+@image-form-error: "form/images/error.png";
+@image-form-slider-thumbs: "form/images/sliderThumbs.png";
+@image-layout-tab-close: "layout/images/tabClose.png";	// [x] icon to close a tab
+@image-loading-animation: "../../icons/images/loadingAnimation.gif";
+@image-loading-animation-rtl: "../../icons/images/loadingAnimation_rtl.gif";
+@image-tooltip: "images/tooltip.png";	// arrow connectors
+@image-tooltip-ie6: "images/tooltip8bit.png";	// arrow connectors (8 bit)
+@image-tree-expand: "images/treeExpandImages.png";
+@image-tree-expand-ie6: "images/treeExpandImages8bit.png";
+@image-progressbar-anim: "images/progressBarAnim.gif";
+
+// Mixins
+
+.border-radius (@radius) {
+	-moz-border-radius: @radius;
+	border-radius: @radius;
+}
+
+.box-shadow (@value) {
+	-webkit-box-shadow: @value;
+	-moz-box-shadow: @value;
+	box-shadow: @value;
+}
+
+.transition-property (@value) {
+	-webkit-transition-property: @value;
+	-moz-transition-property: @value;
+	transition-property: @value;
+}
+
+.transition-property (@value1, @value2) {
+	-webkit-transition-property: @value1, @value2;
+	-moz-transition-property: @value1, @value2;
+	transition-property: @value1, @value2;
+}
+
+.transition-duration (@value) {
+	-webkit-transition-duration: @value;
+	-moz-transition-duration: @value;
+	transition-duration: @value;
+}
+
+.transition-duration (@value1, @value2) {
+	-webkit-transition-duration: @value1, @value2;
+	-moz-transition-duration: @value1, @value2;
+	transition-duration: @value1, @value2;
+}
+
+.transition-timing-function (@value) {
+	-webkit-transition-timing-function: @value;
+	-moz-transition-timing-function: @value;
+	transition-timing-function: @value;
+}
+
+.linear-gradient (@value1, @value2) {
+	// summary:
+	//		Expands to browser specific background-image specifications for a linear-gradient (2 stops)
+ 	background-image: -moz-linear-gradient(@value1, @value2); // FF3.6 - FF15 (FF16+ supports linear-gradient)
+ 	background-image: -webkit-linear-gradient(@value1, @value2); // Chrome10+, Safari5.1+
+ 	background-image: -o-linear-gradient(@value1, @value2); // Opera 11.10+
+ 	background-image: linear-gradient(@value1, @value2);
+}
+.linear-gradient (@value1, @value2, @value3) {
+ 	background-image: -moz-linear-gradient(@value1, @value2, @value3); // FF3.6 - FF15 (FF16+ supports linear-gradient)
+ 	background-image: -webkit-linear-gradient(@value1, @value2, @value3); // Chrome10+, Safari5.1+
+ 	background-image: -o-linear-gradient(@value1, @value2, @value3); // Opera 11.10+
+ 	background-image: linear-gradient(@value1, @value2, @value3);
+}
+.linear-gradient (@value1, @value2, @value3, @value4) {
+ 	background-image: -moz-linear-gradient(@value1, @value2, @value3, @value4); // FF3.6 - FF15 (FF16+ supports linear-gradient)
+ 	background-image: -webkit-linear-gradient(@value1, @value2, @value3, @value4); // Chrome10+, Safari5.1+
+ 	background-image: -o-linear-gradient(@value1, @value2, @value3, @value4); // Opera 11.10+
+ 	background-image: linear-gradient(@value1, @value2, @value3, @value4);
+}
+.linear-gradient (@value1, @value2, @value3, @value4, @value5) {
+ 	background-image: -moz-linear-gradient(@value1, @value2, @value3, @value4, @value5); // FF3.6 - FF15 (FF16+ supports linear-gradient)
+ 	background-image: -webkit-linear-gradient(@value1, @value2, @value3, @value4, @value5); // Chrome10+, Safari5.1+
+ 	background-image: -o-linear-gradient(@value1, @value2, @value3, @value4, @value5); // Opera 11.10+
+ 	background-image: linear-gradient(@value1, @value2, @value3, @value4, @value5);
+}
+.linear-gradient (@value1, @value2, @value3, @value4, @value5, @value6) {
+ 	background-image: -moz-linear-gradient(@value1, @value2, @value3, @value4, @value5, @value6); // FF3.6 - FF15 (FF16+ supports linear-gradient)
+ 	background-image: -webkit-linear-gradient(@value1, @value2, @value3, @value4, @value5, @value6); // Chrome10+, Safari5.1+
+ 	background-image: -o-linear-gradient(@value1, @value2, @value3, @value4, @value5, @value6); // Opera 11.10+
+ 	background-image: linear-gradient(@value1, @value2, @value3, @value4, @value5, @value6);
+}
+.linear-gradient (@value1, @value2, @value3, @value4, @value5, @value6, @value7) {
+ 	background-image: -moz-linear-gradient(@value1, @value2, @value3, @value4, @value5, @value6, @value7); // FF3.6 - FF15 (FF16+ supports linear-gradient)
+ 	background-image: -webkit-linear-gradient(@value1, @value2, @value3, @value4, @value5, @value6, @value7); // Chrome10+, Safari5.1+
+ 	background-image: -o-linear-gradient(@value1, @value2, @value3, @value4, @value5, @value6, @value7); // Opera 11.10+
+ 	background-image: linear-gradient(@value1, @value2, @value3, @value4, @value5, @value6, @value7);
+}
+
+.alpha-white-gradient (@opacity1, @stop1, @opacity2, @stop2) {
+	// summary:
+	//		For setting up white background-image with variable transparency.
+	// example:
+	//		Gradient starts at top (0%) with 30% opacity, and then ends at bottom (100%) with full transparency
+	//		|	.alpha-white-gradient(0.3, 0%, 0, 100%)
+	//
+	.linear-gradient(rgba(255,255,255,@opacity1) @stop1, rgba(255,255,255,@opacity2) @stop2);
+}
+.alpha-white-gradient (@start, @opacity1, @stop1, @opacity2, @stop2) {
+	.linear-gradient(@start, rgba(255,255,255,@opacity1) @stop1, rgba(255,255,255,@opacity2) @stop2);
+}
+.alpha-white-gradient (@opacity1, @stop1, @opacity2, @stop2, @opacity3, @stop3) {
+	.linear-gradient(rgba(255,255,255,@opacity1) @stop1, rgba(255,255,255,@opacity2) @stop2, rgba(255,255,255, @opacity3) @stop3);
+}
+.alpha-white-gradient (@start, @opacity1, @stop1, @opacity2, @stop2, @opacity3, @stop3) {
+	.linear-gradient(@start, rgba(255,255,255,@opacity1) @stop1, rgba(255,255,255,@opacity2) @stop2, rgba(255,255,255, @opacity3) @stop3);
+}
+.alpha-white-gradient (@opacity1, @stop1, @opacity2, @stop2, @opacity3, @stop3, @opacity4, @stop4) {
+	.linear-gradient(rgba(255,255,255,@opacity1) @stop1, rgba(255,255,255,@opacity2) @stop2, rgba(255,255,255, @opacity3) @stop3, rgba(255,255,255, @opacity4) @stop4);
+}
+.alpha-white-gradient (@start, @opacity1, @stop1, @opacity2, @stop2, @opacity3, @stop3, @opacity4, @stop4) {
+	.linear-gradient(@start, rgba(255,255,255,@opacity1) @stop1, rgba(255,255,255,@opacity2) @stop2, rgba(255,255,255, @opacity3) @stop3, rgba(255,255,255, @opacity4) @stop4);
+}
+.alpha-white-gradient (@start, @opacity1, @stop1, @opacity2, @stop2, @opacity3, @stop3, @opacity4, @stop4, @opacity5, @stop5) {
+	.linear-gradient(@start, rgba(255,255,255,@opacity1) @stop1, rgba(255,255,255,@opacity2) @stop2, rgba(255,255,255, @opacity3) @stop3, rgba(255,255,255, @opacity4) @stop4, rgba(255,255,255, @opacity5) @stop5);
+}
+.alpha-white-gradient (@start, @opacity1, @stop1, @opacity2, @stop2, @opacity3, @stop3, @opacity4, @stop4, @opacity5, @stop5, @opacity6, @stop6) {
+	.linear-gradient(@start, rgba(255,255,255,@opacity1) @stop1, rgba(255,255,255,@opacity2) @stop2, rgba(255,255,255, @opacity3) @stop3, rgba(255,255,255, @opacity4) @stop4, rgba(255,255,255, @opacity5) @stop5, rgba(255,255,255, @opacity6) @stop6);
+}
+
+.gradient-and-filter (@color, @fade1, @fade2) {
+	// summary:
+	//		Sets up a background color with a vertical gradient.
+	//		In order to make transitions work properly on mozilla and webkit, this is done by combining
+	//		a background-color which will be changed based on state (ex: hover) with a constant
+	//		white alpha-transparency background-image.  On IE it creates a DXImageTransform filter.
+	// @color:
+	//		The color
+	// @fade1:
+	//		The percent to fade at the top
+	// @fade2:
+	//		The percent to fade at the bottom
+	background-color: @color; // the base color
+	.linear-gradient(fadeout(#fff, 100-@fade1), fadeout(#fff, 100-@fade2));
+	filter: ~"progid:DXImageTransform.Microsoft.gradient(startColorstr="lighten(@color, @fade1)~", endColorstr="lighten(@color, @fade2)~")"; // IE
+}
+.horizontal-gradient-and-filter (@color, @fade1, @fade2) {
+	// summary:
+	//		Sets up a background color with a horizontal gradient.
+	//		In order to make transitions work properly on mozilla and webkit, this is done by combining
+	//		a background-color which will be changed based on state (ex: hover) with a constant
+	//		white alpha-transparency background-image.  On IE it creates a DXImageTransform filter.
+	// @color:
+	//		The color
+	// @fade1:
+	//		The percent to fade at the top
+	// @fade2:
+	//		The percent to fade at the bottom
+	background-color: @color; // the base color
+	.linear-gradient(left, fadeout(#fff, 100-@fade1), fadeout(#fff, 100-@fade2));
+	filter: ~"progid:DXImageTransform.Microsoft.gradient(startColorstr="lighten(@color, @fade1)~", endColorstr="lighten(@color, @fade2)~"gradientType=1)"; // IE
+}
+
+
+// Mixins defining gradients
+
+.textbox-background-image () {
+	// summary:
+	//		Background image used for hovered TextBoxes and similar controls.
+	//		It's just a small inset shadow below the top border (inside of the TextBox).
+	.linear-gradient(rgba(127,127,127,0.2) 0%, rgba(127,127,127,0) 2px);
+}
+
+.standard-gradient (@pathToRoot: "") {
+	// summary:
+	//		Light to dark background-image used by widgets with short height (~16px) including:
+	//			- MenuBar, and hovered MenuItem/MenuBarItem
+	//			- arrow icon wrapper for Select, ComboBox, Spinner
+	//			- Toolbar and hovered Toolbar buttons
+	//			- TitlePane title bar, AccordionContainer title bar, Dialog title bar
+
+	// Fallback for IE
+	background-image: url("@{pathToRoot}images/standardGradient.png");
+	background-repeat: repeat-x;
+
+	// CSS gradient for other browsers
+	.alpha-white-gradient(0.7, 0%, 0, 100%);
+
+	// IE6 can't handle a background-image with transparency and a background-color; the color is blocked out
+	_background-image: none;
+}
+.active-gradient (@pathToRoot: "") {
+	// summary:
+	//		Light to dark background-image with an inset gray shadow at the top,
+	//		used by widgets when they are active (ie: mousedown) or selected, including:
+	//			- active MenuItem/MenuBarItem
+	//			- arrow icon wrapper for Select, ComboBox, Spinner when active or drop down is open
+	//			- active Toolbar buttons
+	//			- active TitlePane title bar, AccordionContainer title bar
+
+	// Fallback for IE
+	background-image: url("@{pathToRoot}images/activeGradient.png");
+	background-repeat: repeat-x;
+
+	// CSS gradient for other browsers
+	.linear-gradient(rgba(190,190,190,0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+
+	// IE6 can't handle a background-image with transparency and a background-color; the color is blocked out
+	_background-image: none;
+}

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Opprett synsfelt</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Opprett synsfelt"></h2>
+        <hr/>
+    <p>Verkt&oslash;yet Opprett synsfelt oppretter omr&aring;der der en observat&oslash;r kan se objekter p&aring; bakken. Inndatapunktene kan enten representere observat&oslash;rer (for eksempel mennesker p&aring; bakken eller utsiktsposter i et brannt&aring;rn) eller observerte objekter (som vindturbiner, hydranter, kj&oslash;ret&oslash;yer eller andre mennesker). Resultatomr&aring;dene er de omr&aring;dene der observat&oslash;rene kan se de observerte objektene og omvendt &ndash; de observerte objektene kan se observat&oslash;rene.
+    </p>
+    <p>B&aring;de observat&oslash;rene og de observerte objektene kan ha en h&oslash;yde over bakken, og disse h&oslash;ydene brukes til &aring; fastsl&aring; synligheten. Et synsfelt som er beregnet for 120 meter h&oslash;ye vindturbiner og personer p&aring; 1,80 meter som st&aring;r p&aring; bakken, vil for eksempel vanligvis v&aelig;re st&oslash;rre enn et synsfelt beregnet for 60 meter h&oslash;ye vindturbiner og personer p&aring; 1,80 meter.
+    </p>
+    <p>V&aelig;r oppmerksom p&aring; at det ikke tas hensyn til hindringer som tr&aelig;r eller bygninger, n&aring;r synsfelt beregnes. Du kan tenke deg at beregningen skjer p&aring; bar bakke der det ikke finnes noe annet enn observat&oslash;ren og de observerte objektene.
+    </p>
+    <p>Resultatlaget inneholder omr&aring;degeoobjekter som representerer synlige omr&aring;der. Feltet  <i>Frequency</i> registrerer antall observat&oslash;rpunkter som kan se hvert omr&aring;de. Hvis du for eksempel har fem inndatapunkter som hver representerer et brannt&aring;rn, inneholder feltet <i>Frequency</i> en verdi mellom &eacute;n og fem. Omr&aring;der med verdien &eacute;n, kan kun se ett t&aring;rn, og omr&aring;der med verdien fem, kan se alle t&aring;rnene. Resultatlaget inneholder ogs&aring; feltet <i>DEMResolution</i> som registrerer oppl&oslash;sningen p&aring; den digitale h&oslash;ydemodellen (DEM) som brukes til &aring; opprette synsfeltene.
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, er det kun observat&oslash;rpunktene som vises i gjeldende kartutstrekning, som analyseres. Hvis det ikke er merket av for dette alternativet, analyseres alle observat&oslash;rpunktene i inndatalaget, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punktgeoobjekter som representerer observatørlokasjoner</h2></div>
+        <hr/>
+        <div>
+            <p>Punktgeoobjektene som skal brukes som observat&oslash;rlokasjoner. 
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Høyde på observatørlokasjoner</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er h&oslash;yde over bakken for observat&oslash;rlokasjonene. Standarden er om lag gjennomsnittsh&oslash;yden for en person.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Høyden på andre objekter på bakken</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er h&oslash;yden p&aring; konstruksjoner eller mennesker p&aring; bakken som brukes til &aring; fastsette synlighet. Det resulterende synsfeltet er de omr&aring;dene der et observat&oslash;rpunkt kan se disse andre objektene. Og motsatt &ndash; der de andre objektene kan se et observat&oslash;rpunkt. 
+            </p>
+            <p>
+                <ul>
+                    <li>Hvis observat&oslash;rpunktene representerer vindturbiner og du vil finne ut om personer som st&aring;r p&aring; bakken, kan se turbinene, angir du gjennomsnittsh&oslash;yden for en person (omtrent 180 cm). Resultatet er de omr&aring;dene der en person som st&aring;r p&aring; bakken, kan se vindturbinene.
+                    </li>
+                    <li>Hvis observat&oslash;rpunktene representerer brannt&aring;rn og du vil finne ut hvilke brannt&aring;rn som kan se en r&oslash;yks&oslash;yle som er 6 meter eller h&oslash;yere, skriver du inn 6 meter for h&oslash;yde. Resultatet er de omr&aring;dene der et brannt&aring;rn kan se en r&oslash;yks&oslash;yle som er minst 6 meter h&oslash;y.
+                    </li>
+                    <li>Hvis observat&oslash;rpunktene representerer utsiktspunkt langs veier og stier og du vil finne ut hvor det er mulig &aring; se vindturbiner som er 120 meter eller h&oslash;yere, skriver du inn 120 meter for h&oslash;yden. Resultatet er de omr&aring;dene der en person som st&aring;r p&aring; et utkikkspunkt, kan se vindturbiner som er minst 120 meter h&oslash;ye.
+                    </li>
+                    <li>Hvis observat&oslash;rpunktene representerer utkikkspunkter og du vil finne ut hvor stort omr&aring;de av bakken det er mulig &aring; se for personer som st&aring;r utkikkspunktet, skriver du inn null. Resultatet er de omr&aring;dene som kan ses fra utkikkspunktet.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Maks. synsavstand</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er den avstanden der begreningen av synlige omr&aring;der stopper. Utover denne avstanden er det ukjent om observat&oslash;rpunktene og de andre objektene kan se hverandre. Store verdier &oslash;ker beregningstiden. H&oslash;yeste tillatte verdi er 50 kilometer (31 miles).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis lagnavnet finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+            <p> Det brukes ikke credits n&aring;r du kj&oslash;rer dette verkt&oslash;yet.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

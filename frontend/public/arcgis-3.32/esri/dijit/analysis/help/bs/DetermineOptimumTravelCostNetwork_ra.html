@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Utvrdi mrežu optimalnih putnih troškova</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="Ilustracija alata Utvrdi mrežu optimalnih putnih tro&scaron;kova"></h2>
+        <hr/>
+    <p>Ovaj alat izračunava mrežu optimalnih tro&scaron;kova iz skupa ulaznih regija.
+    </p>
+    <p>Jedan primjer primjene ovog alata jest traženje najbolje mreže za vozila u hitnom slučaju.
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, analizirat će se samo lokacije u ulaznom sloju koje su vidljive unutar trenutačnog obuhvata karte. Ako opcija nije označena, analizirat će se sve lokacije u ulaznom sloju, čak i ako se nalaze izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Izaberite raster ili sloj lokacija geoobjekata da biste utvrdili putanje između</h2></div>
+        <hr/>
+        <div>
+            <p>Ulazne regije koje treba povezati najpovoljnijom mrežom.
+            </p>
+            <p>Regije se mogu definirati uslugom slike ili uslugom geoobjekta.
+            </p>
+            <p>Za uslugu slike regije se definiraju po grupama susjednih (jedna pored druge) ćelija iste vrijednosti. Svaka regija mora imati jedinstveni broj. Ćelije koje nisu dio nijedne regije moraju biti bez podataka. Vrsta rastera mora biti cijeli broj, a vrijednosti mogu biti pozitivne ili negativne.
+            </p>
+            <p>Za uslugu geoobjekta unos može biti točka, linija ili poligon.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Izaberite rasterski sloj troškova putovanja</h2></div>
+        <hr/>
+        <div>
+            <p>Raster koji određuje impendanciju ili tro&scaron;kove za planimetrijsko kretanje do svake ćelije.
+            </p>
+            <p>Vrijednost na svakoj lokaciji ćelije predstavlja tro&scaron;kove po jedinici za udaljenost kretanja do ćelija. Svaka vrijednost lokacije ćelije množi se s razlučivosti ćelije pri čemu se također kompenzira za dijagonalno kretanje kako bi se do&scaron;lo do ukupnog tro&scaron;ka prolaska kroz ćeliju.
+            </p>
+            <p>Vrijednosti rastera tro&scaron;kova mogu biti cijeli brojevi ili plutajuća točka, ali ne mogu biti negativne ili nula (tro&scaron;ak ne može biti negativan ili nula).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Naziv sloja rezultata polilinije optimalnih putanja</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će se stvoriti u stavci  <b>Moj sadržaj</b> i dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Možete odrediti naziv mape u  <b>Mojem sadržaju</b> gdje će se rezultat spremiti pomoću padajućeg izbornika <b>Spremi rezultat u</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Naziv sloja rezultata polilinije susjednih putanja</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će se stvoriti u stavci  <b>Moj sadržaj</b> i dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Možete odrediti naziv mape u  <b>Mojem sadržaju</b> gdje će se rezultat spremiti pomoću padajućeg izbornika <b>Spremi rezultat u</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

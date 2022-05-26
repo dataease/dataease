@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Nokta Kümelerini Bul</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="Nokta K&uuml;melerini Bul"></h2>
+        <hr/>
+    <p> Nokta K&uuml;melerini Bul aracı, ortam g&uuml;r&uuml;lt&uuml;s&uuml;ndeki nokta &ouml;zellikli k&uuml;melerini mekansal dağılımlarına g&ouml;re bulur.
+    </p>
+    <p>&Ouml;rneğin, bir sivil toplum &ouml;rg&uuml;t&uuml;, haşere kaynaklı spesifik bir hastalık &uuml;zerinde &ccedil;alışıyor. Bir &ccedil;alışma alanında, bazıları istila edilmiş ve bazıları edilmemiş olan haneleri temsil eden bir nokta veri k&uuml;mesine sahiptir. Bir analist,  Nokta K&uuml;melerini Bul aracını kullanarak bir alanda işlem yapmaya başlayıp haşerelerin yok edilmesine yardımcı olmak i&ccedil;in, istila edilmiş hane halklarının k&uuml;melerini belirleyebilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kümelerin bulunacağı katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>K&uuml;melerin bulunacağı nokta katmanıdır. Katmanların izd&uuml;ş&uuml;ml&uuml; bir mekansal referansta olması gerekir veya işlemci mekansal başvuru  <b>Analiz Ortamları</b> kullanılarak izd&uuml;ş&uuml;mlenmiş bir koordinat sistemine ayarlanmalıdır.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Kullanılacak kümeleme yöntemini seç</h2></div>
+        <hr/>
+        <div>
+            <p>Nokta detay k&uuml;melerini &ccedil;evre g&uuml;r&uuml;lt&uuml;s&uuml;nden ayırmak i&ccedil;in kullanılacak k&uuml;meleme y&ouml;ntemi. Tanımlanmış bir mesafe veya kendi kendini ayarlayan k&uuml;meleme algoritması kullanmayı se&ccedil;ebilirsiniz.
+            </p>
+            <p>Tanımlanmış mesafe (DBSCAN), yoğun k&uuml;meleri seyrek g&uuml;r&uuml;lt&uuml;den ayırmak i&ccedil;in belirli bir arama aralığı kullanır. Tanımlanmış mesafe (DBSCAN) daha hızlıdır ancak yalnızca mevcut olabilecek t&uuml;m k&uuml;meleri tanımlamak i&ccedil;in iyi &ccedil;alışan &ccedil;ok net bir arama aralığı varsa uygundur. Tanımlanmış mesafe (DBSCAN) benzer yoğunluklara sahip k&uuml;meleri bulur.
+            </p>
+            <p>Kendi kendini ayarlama (HDBSCAN), bir arama aralığı belirtilmesini gerektirmez, ancak daha fazla zaman alan bir y&ouml;ntemdir. Kendi kendini ayarlama (HDBSCAN), tanımlanan mesafeye (DBSCAN) benzeyen nokta k&uuml;melerini bulur, ancak farklı arama aralıkları kullanarak değişen yoğunluklara sahip k&uuml;melere olanak tanır. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Bir küme olarak kabul edilecek minimum nokta sayısı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu parametre se&ccedil;ilen k&uuml;meleme y&ouml;ntemine bağlı olarak farklı şekilde kullanılır:
+            </p>
+            <p>
+                <ul>
+                    <li>Tanımlanmış mesafe (DBSCAN)&mdash;k&uuml;me oluşturmaya başlamak i&ccedil;in o nokta i&ccedil;in belirli bir mesafenin i&ccedil;inde bulunması gereken detayların sayısını belirtir. Mesafe,  <b>Arama aralığını şununla sınırla</b> parametresi kullanılarak tanımlanır.
+                    </li>
+                    <li>Kendi kendini ayarlama (HDBSCAN)&mdash;yoğunluğu tahmin ederken dikkate alınacak her bir noktaya komşu olan (noktanın kendisi dahil) detayların sayısını belirtir. Bu sayı, aynı zamanda k&uuml;meleri &ccedil;ıkarırken izin verilen minimum k&uuml;me boyutudur.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Arama aralığını şununla sınırla:</h2></div>
+        <hr/>
+        <div>
+            <p>Tanımlanmış mesafe (DBSCAN) kullanılırken, bu parametre  <b>Bir k&uuml;me olarak kabul edilecek minimum nokta sayısının</b> i&ccedil;inde bulunması gereken mesafedir. Bu parametre, kullanılacak k&uuml;meleme y&ouml;ntemi olarak kendi kendini ayarlama (HDBSCAN) se&ccedil;ildiğinde kullanılmaz.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> Oluşturulacak katmanın adı. Bir ArcGIS Data Store&lsquo;a yazdığınızda, sonu&ccedil;larınız  <b>İ&ccedil;eriğime</b> kaydedilir ve haritaya eklenir. Bir b&uuml;y&uuml;k veri dosya paylaşımına yazdığınızda,  sonu&ccedil;larınız b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;ine kaydedilir ve   manifestosuna eklenir.  haritaya eklenmez. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Detay katmanı zaten varsa ara&ccedil; &ccedil;alışmaz.
+            </p>
+            <p> ArcGIS Data Store&lsquo;a yazarken (ilişkisel ya da mekan-zamansal b&uuml;y&uuml;k veri deposu)  <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

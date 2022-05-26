@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Opisz zestaw danych</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Diagram procedury wykonywania zadań narzędzia Opisz zestaw danych"></h2>
+        <hr/>
+    <p>Narzędzie Opisz zestaw danych udostępnia bardziej szczeg&oacute;łowy wgląd w zestaw danych. Przed przeprowadzeniem analizy na dużej ilości danych można skorzystać z tego narzędzia, aby określić, co zawierają dane wejściowe i gdzie się znajdują. Domyślnie, wynikiem jest ciąg znakowy JSON zawierający kluczowe deskryptory warstwy wejściowej oraz tabela ze szczeg&oacute;łową statystyką sumaryczną dla każdego pola. 
+    </p>
+    <p>Opcjonalnie można utworzyć dodatkowe wynikowe warstwy obiektowe pozwalające na dalszy opis danych. Dostępne opcje to warstwa przykładowa lub warstwa zasięgu. Istnieje możliwość wybrania jednej z nich lub obydwu.
+    </p>
+    <p>Użytkownik korzysta, na przykład, z udostępnionego pliku dużych zbior&oacute;w danych zawierającego 15 zestaw&oacute;w danych. Każdy zestaw danych zawiera 10 milion&oacute;w obiekt&oacute;w powierzchniowych reprezentujących budynki i domy stojące w r&oacute;żnych regionach kraju. Zlecono analizę regionu C, ale nie wiadomo, kt&oacute;ry zestaw danych zawiera odpowiednie obiekty. Aby sprawdzić, kt&oacute;rego zestawu danych należy użyć, można uruchomić narzędzie Opisz zestaw danych i wybrać opcję utworzenia warstwy zasięgu. Pozwoli to zbadać, kt&oacute;ry zestaw danych obejmuje dany region.
+    </p>
+    <p>Innym przykładem może być przeprowadzenie analizy dużej ilości danych. W przypadku pełnego zestawu danych postępowanie zgodne z procedurą wykonywania zadań może jednak potrwać kilka godzin lub dni. Zamiast poświęcać czas i zasoby na wykonywanie pełnej analizy, można utworzyć warstwę przykładową i sprawdzić na niej skuteczność pełnej procedury wykonywania zadań.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz zestaw danych do opisania</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa zawierająca obiekty punktowe, liniowe, powierzchniowe lub tabelaryczne zostanie opisana i podsumowana, a następnie zostaną z niej pobrane pr&oacute;bki.
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Uzyskaj informacje o zestawie danych, tworząc (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p>Wygeneruj dodatkowe warstwy opisowe, aby lepiej poznać zawartość dużego zbioru danych. Można nie generować żadnej warstwy albo jedną lub obie następujące:
+            </p>
+            <ul>
+                <li> <b>Warstwa zasięgu</b> &mdash; obiekt powierzchniowy reprezentujący zasięg obiekt&oacute;w wejściowych lub obszar zainteresowania.
+                </li>
+                <li> <b>Warstwa przykładowa</b> &mdash; podzbi&oacute;r warstwy zawierający określoną liczbę obiekt&oacute;w wejściowych w zestawie danych lub obszarze zainteresowania.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Przykładowa warstwa</h2></div>
+        <hr/>
+        <div>
+            <p>Generowanie warstwy zawierającej podzbi&oacute;r obiekt&oacute;w warstwy wejściowej. Jeśli wybrana zostanie opcja  <b>Warstwa przykładowa</b>, można podać liczbę obiekt&oacute;w, kt&oacute;re mają zostać zwr&oacute;cone w warstwie przykładowej. Domyślnie w warstwie wynikowej zwracane jest 100 przykładowych obiekt&oacute;w.
+            </p>
+            <p>Wartość musi być większa niż zero. W przypadku podania liczby większej niż łączna liczba obiekt&oacute;w zostaną zwr&oacute;cone wszystkie obiekty.
+            </p>
+            <p>Jeśli wybrana zostanie opcja  <b>Użyj zasięgu bieżącej mapy</b>, warstwa przykładowa będzie zawierać obiekty mieszczące się w zasięgu mapy.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Warstwa zasięgu</h2></div>
+        <hr/>
+        <div>
+            <p>Wyb&oacute;r przycisku  <b>Warstwa zasięgu</b> powoduje wygenerowanie warstwy obiektowej zawierającej pojedynczy obiekt reprezentujący zasięg obiekt&oacute;w wejściowych. Ta opcja jest wybrana domyślnie.
+            </p>
+            <p>Jeśli wybrana zostanie opcja  <b>Użyj zasięgu bieżącej mapy</b>, warstwa zasięgu będzie reprezentować widoczny zasięg mapy.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p> Nazwa warstwy, kt&oacute;ra zostanie utworzona w oknie Moje zasoby. W przypadku zapisywania w ArcGIS Data Store wyniki będą przechowywane w obszarze  <b>Moje zasoby</b> i dodawane do mapy. W przypadku zapisywania w udostępnionym pliku dużych zbior&oacute;w danych wyniki będą przechowywane w udostępnionym pliku dużych zbior&oacute;w danych i dodawane do jego manifestu. Nie będą dodawane do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, działanie narzędzia nie powiedzie się.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

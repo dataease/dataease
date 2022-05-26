@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/et/DetermineOptimumTravelCostNetwork",{inputLayerLabel:"Valige rasterkiht v\u00f5i vektorkiht, et m\u00e4\u00e4ratleda reisiteekond vahemikus",inputCostRasterLabel:"Valige reisikulu rasterkiht",outputOptimumNetworkName:"Optimaalsete teede murdjoone tulemkihi nimi",outputNeighborNetworkName:"Naaberteede murdjoone tulemkihi nimi (valikuline)",outputLayerName:"M\u00e4\u00e4ratle kihi ${layername} optimaalne reisikulu",itemDescription:"Objektikiht loodi kihi ${layerName} optimaalse reisikulu v\u00f5rgu m\u00e4\u00e4ratlemise kaudu. ",
+itemTags:"Anal\u00fc\u00fcsi tulemus, M\u00e4\u00e4ratle optimaalse reisikulu v\u00f5rk, ${layername} ${fieldname}",itemSnippet:"Objektikiht loodi optimaalse reisikulu v\u00f5rgu m\u00e4\u00e4ratlemise kaudu."});

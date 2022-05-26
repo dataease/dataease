@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>일반화된 선형 회귀(Generalized Linear Regression)</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="일반화된 선형 회귀(Generalized Linear Regression) 워크플로 다이어그램"></h2>
+        <hr/>
+    <p>일반화된 선형 회귀(GLR)는 
+설명 변수와의 관계에 따라 예측을 생성하거나 종속 변수를 모델링합니다.  이 도구는 연속(가우시안), 이진(로지스틱), 개수(푸아송) 모델에 맞게 사용할 수 있습니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>분석 유형</h2></div>
+        <hr/>
+        <div>
+            <p>도구의 작동 모드를 지정합니다. 이 도구를 실행하여 성능만 평가하는 모델을 교육하거나, 모델을 교육하고 피처를 예측할 수 있습니다. 예측 유형은 다음과 같습니다.
+                <ul>
+                    <li> <b>모델 성능을 평가하기 위한 모델 적합화</b> - 모델이 적합화되고 입력 데이터에 적용됩니다. 이 옵션을 사용하면 새 데이터셋에서 예측을 생성하기 전에 모델의 정확성을 평가하고 예측 변수의 관계와 동인을 파악할 수 있습니다. 이 옵션의 결과는 적합화된 데이터 및 모델 진단의 피처 서비스가 됩니다.
+                    </li>
+                    <li> <b>모델 적합화 및 값 예측</b> - 입력 피처와 예측 피처에 대한 예측 또는 분류가 생성됩니다. 예측 피처와 예측될 피처 모두에 대해 설명 변수가 제공되어야 합니다. 이 옵션의 결과는 입력 데이터에 적합화된 모델의 피처 서비스, 예측 값 및 모델 진단의 피처 서비스가 됩니다.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>모델 성능을 평가하기 위한 모델 적합화</h2></div>
+        <hr/>
+        <div>
+            <p>이 모드를 사용하면 모델을 적합화하고 적합성을 조사할 수 있습니다.
+            </p>
+            <p>이 모델을 선택하면 입력 레이어를 사용하여 교육됩니다. 이 옵션을 사용하면 새 데이터셋에서 예측을 생성하기 전에 모델의 정확성을 평가할 수 있습니다. 이 옵션을 사용하면 모델 진단 결과가 표시되고 모델이 교육 데이터에 적용됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>모델 적합화 및 값 예측</h2></div>
+        <hr/>
+        <div>
+            <p>이 모드를 사용하면 모델을 적합화하고 모델을 데이터셋에 적용하여 예측을 생성할 수 있습니다.
+            </p>
+            <p>피처에 대한 예측이나 분류가 생성됩니다. 이 옵션의 결과물로는 피처 서비스, 모델 진단 및 변수 중요도 계산 테이블(선택)이 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>모델을 생성할 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>종속 변수와 설명 변수가 있는 포인트, 라인, 영역, 테이블 형식 피처를 포함하는 레이어입니다.
+            </p>
+            <p>맵에서 레이어를 선택하는 것 이외에, 드롭다운 목록의 하단에 있는  <b>Analysis Layer 선택</b>을 선택하여 빅데이터 파일 공유 데이터셋 또는 피처 레이어의 콘텐츠를 찾아볼 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>모델링할 필드 선택</h2></div>
+        <hr/>
+        <div>
+            <p>모델링할 관찰 값과 모델링 중인 값의 유형을 포함하는 숫자 필드입니다. 모델링할 수 있는 값은 세 가지 유형이 있습니다.
+                <ul>
+                    <li>연속 - 연속 값을 나타냅니다. 사용되는 모델은 가우시안이며 도구는 최소 제곱법 회귀를 수행합니다.
+                    </li>
+                    <li>이진 - 존재 또는 부재 값을 나타냅니다. 이 값은 1s 또는 0s여야 합니다. 사용되는 모델은 로지스틱 회귀입니다.
+                    </li>
+                    <li>개수 - 불연속 및 사건을 나타냅니다(예시: 범죄 발생 수, 질병 사건, 교통 사고). 사용되는 모델은 푸아송 회귀입니다. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>값을 예측할 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>추정치를 계산해야 하는 위치를 나타내는 피처가 포함된 레이어입니다. 이 데이터셋의 각 피처에는 지정된 모든 설명 변수의 값이 포함되어야 합니다. 이러한 피처의 종속 변수는 입력 레이어에 대해 보정된 모델을 사용하여 추정됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>설명 필드 선택</h2></div>
+        <hr/>
+        <div>
+            <p>값을 예측할 수 있는 설명 변수(필드)를 나타내는 하나 이상의 필드입니다. 숫자 필드만 보여집니다.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>설명 필드를 매칭할 방법 선택</h2></div>
+        <hr/>
+        <div>
+            <p>입력 레이어의 해당 변수가 예측 레이어의 변수와 매칭되는 방법입니다. 모델을 생성하는 데 사용된 변수만 테이블에 포함됩니다. 숫자 값만 사용됩니다. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> 생성될 레이어의 이름입니다. ArcGIS Data Store에 작성하는 경우  결과는  <b>내 콘텐츠</b>에 저장되고 맵에 추가됩니다. 빅데이터 파일 공유에 작성하는 경우  결과는 빅데이터 파일 공유에 저장되고 해당 매니페스트에 추가됩니다. 이러한 결과는 맵에 추가되지 않습니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있으면 도구를 사용할 수 없습니다.
+            </p>
+            <p>반환된 결과는 분석 유형에 따라 다릅니다. 모델 적합성을 평가하기 위해 적합화하는 경우 결과에는 모델에 적합한 입력 데이터의 레이어와 모델 적합성을 평가하는 결과 정보가 포함됩니다. 적합화 및 예측을 하는 경우 결과에는 모델에 적합한 입력 데이터의 레이어, 예측된 결과의 레이어, 모델 적합성을 평가하는 결과 정보가 포함됩니다.
+            </p>
+            <p> ArcGIS Data Store(관계형 또는 시공간 빅데이터 저장소)에 작성하는 경우  <b>결과 저장:</b> 드롭다운 상자를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Stvori poligone vremena vožnje</h2><p/>
+        <h2><img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" alt="Stvori poligone vremena vožnje"></h2>
+        <hr/>
+    <p>Alat Stvori poligone vremena vožnje stvara poligone područja koja se mogu doseći unutar određenog vremena vožnje, udaljenosti vožnje, udaljenosti hodanja i tako dalje. Mjeri od jedne ili od vi&scaron;e točaka (do 1.000) duž cesta ili staza za stvaranje sloja koji vam može pomoći odgovoriti na pitanja kao &scaron;to su:
+        <ul>
+            <li>Gdje mogu stići odavde u roku od 30 minuta vožnje?
+            </li>
+            <li>Gdje mogu stići odavde u roku od 30 minuta vožnje u 17:30 za vrijeme gužve?
+            </li>
+            <li>&Scaron;to se sve nalazi unutar dva kilometra hoda od mog hotela?
+            </li>
+            <li>Do kojih područja u gradu vatrogasci mogu stići unutar 5 minuta? 
+            </li>
+            <li>Ako se ovdje izgradi nova vatrogasna postaja, na koji se način može pobolj&scaron;ati pokrivenost za odaziv na požare?
+            </li>
+            <li>Koje prostore trži&scaron;ta pokriva moje poslovanje?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Možda ćete moći odgovoriti na svoja pitanja samo putem vizualizacije izlaznih poligona. Također možete izvr&scaron;iti dodatnu prostornu analizu upotrebom izlaznih poligona. Na primjer, pokretanje alata Agregiraj točke koristeći se poligonima vremena vožnje s demografskih podacima može pomoći odrediti koja bi vam potencijalna lokacija za trgovinu pružila najbolju bazu kupaca za va&scaron;u vrstu poslovanja. 
+    </p>
+    <p>
+        <table>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        <tr><td valign="baseline"><img src="../images/tip.png"></td><td valign="baseline"><h2>Tip:&ensp;</h2></td>
+        <td valign="baseline">
+            <p>Za stvaranje poligona mjerenjem zračnih udaljenosti, a ne mjerenjem udaljenosti cestom, radije upotrijebite alat Stvori pojas.
+            </p>
+        </td></tr>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        </table>
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, samo će se geoobjekti koji su vidljivi unutar trenutačnog obuhvata karte upotrijebiti za stvaranje poligona na temelju vremena vožnje ili udaljenosti vožnje. Ako opcija nije označena, svi će se geoobjekti u ulaznom sloju upotrijebiti, čak i ako se nalaze izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izaberite točkasti sloj oko kojeg će biti izračunat poligon vremena vožnje</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti geoobjekti oko kojih će se izračunati poligon. Možete odabrati način izračuna poligona na temelju načina putovanja (vožnja, vožnja kamionom ili hodanje) i mjerenja (vrijeme ili udaljenost).
+            </p>
+            <p>Osim odabira sloja iz karte, možete odabrati opciju  <b>Izaberi sloj za analizu</b> koja se nalazi na dnu popisa padajućeg izbornika. Ova opcija otvara galeriju u kojoj možete pretraživati i odabrati skupove podataka iz raznih izvora te ih koristiti u svojoj analizi. 
+            </p>
+            <p>Alat podržava do 1.000 geoobjekata u ulaznom sloju.
+
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Izmjeri</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite svoj način putovanja (vožnja, vožnja kamionom ili hodanje) i mjerenja (vrijeme ili udaljenost). Dostupne načine putovanja određuje administrator va&scaron;e organizacije. Nakon &scaron;to odaberete način i mjerenje, unesite trajanje ili udaljenost do  5 sati (300 minuta) ili  300 milja (482,80 kilometara). 
+            </p>
+            <p>Smjer putovanja ( <b>Od mjesta usluge</b> ili <b>prema mjestu usluge</b>) može utjecati na način kako se područja generiraju. Stvori poligone vremena vožnje po&scaron;tivat će smjer jednosmjernih ulica, izbjegavati protuzakonita okretanja i držati se drugih pravila, ovisno o smjeru putovanja. Trebali biste odabrati smjer putovanja prema vrsti ulaznih lokacija i kontekstu va&scaron;e analize. Na primjer, poligon vremena vožnje za trgovinu za dostavu pizze trebao bi biti stvoren u smjeru dalje od mjesta usluge, dok bi poligon vremena vožnje za bolnicu trebao biti stvoren u smjeru prema mjestu usluge.
+            </p>
+            <p>Kada odaberete  <b>vrijeme vožnje</b>, <b>vrijeme vožnje ruralnim područjem</b> ili <b>vrijeme vožnje kamionom</b>, možete izmjeriti vrijeme vožnje.
+                <ul>
+                    <li>
+                        <p>Odznačite opciju  <b>Upotrijebi promet</b> za stvaranje poligona vremena vožnje na temelju fiksnih brzina. Ovo je opcija koju odabrate ako želite općenito mjerenje poligona vremena vožnje, ne izračun na temelju prometnih uvjeta za određeno vrijeme polaska.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Označite opciju  <b>Upotrijebi promet</b> za stvaranje poligona vremena vožnje na temelju zadanog početnog vremena i promjenjivih prometnih uvjeta. Ako odaberete i opciju <b>Promet uživo</b>, vrijeme polaska od ulaznih točaka postavlja se na trenutačno vrijeme, a trenutačne i predviđene brzine prometa referencirane su od senzora i sadržaja kako bi se stvorili poligoni vremena vožnje. Predviđene brzine prometa računaju se referenciranjem brzina prometa uživo, prija&scaron;njih brzina i trenutačnih događaja kao &scaron;to je vrijeme. Brzine prometa predviđaju se za 12 sati unaprijed pa možete pomaknuti klizač za postavljanje vremena polaska unaprijed do 12 sati.
+                        </p>
+                        <p>Upotrijebite ove postavke za promet uživo da biste saznali do kojih se područja može doći ako krenete sada, ako krenete za jedan sat itd.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Ako označite opciju  <b>Upotrijebi promet</b> i izaberete opciju <b>Promet na temelju tipičnih uvjeta za</b> dan i vrijeme, alat stvara poligone vremena vožnje na temelju prosjeka prija&scaron;njih brzina za svaki interval od pet minuta u rutinskom tjednu. Rezultati uključuju promet, no isključuju utjecaj trenutačnih prometnih uvjeta i događaja koji se mogu znatno razlikovati od norme.
+                        </p>
+                        <p>Možete upotrijebiti postavke za povijest prometa da biste pitali, primjerice, &bdquo;Do kojih područja mogu stići ako krenem u 11:30 ujutro u srijedu?&rdquo; 
+                        </p>
+                        <p>Vrijeme koje postavite referira se na vremensku zonu u kojoj se nalaze ulazne točke. Stoga, ako postavite vrijeme na 8:00 ujutro i imate dvije točke, jednu u New York Cityju i jednu u Los Angelesu, najbliža područja vremena vožnje generirat će se za 8:00 ujutro. Istočno vrijeme i 8:00 ujutro. Pacifičko vrijeme.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Imajte na umu da kako vozilo vozi dalje od točke, vrijeme prolazi i mijenjaju se prometni uvjeti. Alat Poligoni vremena vožnje uzima u obzir ove varijacije kada odaberete  <b>Vrijeme vožnje</b> i označite <b>Upotrijebi promet</b>. Međutim, ne podržavaju sve regije promet. Kliknite na poveznicu <b>Vidi dostupnost</b> na alatu da biste saznali nudi li se u va&scaron;em radnom području.
+            </p>
+            <p> <b>Vrijeme vožnje kamionom</b> može upotrijebiti dinamične brzine putovanja na temelju prometa, ali samo do zakonskog ograničenja brzine kamiona. Na primjer, ako je dinamična brzina za ulicu na temelju prometa uživo 65 milja na sat, ali je brzina kamiona za tu ulicu 55 milja na sat, u izračunu će se upotrijebiti 55 milja na sat za tu ulicu.
+            </p>
+            <p> <b>Vrijeme hodanja</b> i <b>Udaljenost hodanja</b> upotrebljavaju fiksnu brzinu 5 kilometara po satu (3,1 milja po satu) i prate pje&scaron;ačke staze, kao i određene ulice (ali zanemaruju pravila koja se odnose na automobile, kao &scaron;to su jednosmjerne ulice). </p>
+            <p> <b>Udaljenost vožnje kamionom</b> koristi se fiksnim brzinama i slijedi pravila koja su primjenjiva za te&scaron;ka vozila, dok se <b>udaljenost vožnje</b> i <b>udaljenost vožnje ruralnim područjem</b> koriste fiksnim brzinama i slijede pravila koja su primjenjiva za vozila poput automobila.
+            </p> 
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Odaberite slojeve ograničenja</h2></div>
+        <hr/>
+        <div>
+            <p> Jedan ili vi&scaron;e geoobjekata koji funkcioniraju kao privremena ograničenja (barijere) kad se krećete odgovarajućim ulicama. Možete navesti ograničenja upotrebom točkastih, linijskih ili poligonalnih geoobjekata.
+            </p>
+            <p>Točkasto ograničenje može predstavljati sru&scaron;eno stablo, nesreću, sru&scaron;eni dalekovod ili bilo &scaron;to &scaron;to u potpunosti blokira promet na određenom mjestu u ulici. Kretanje je dopu&scaron;teno po ulici, ali ne kroz ograničenje. Možete navesti do 250 geoobjekata koji će funkcionirati kao točkasta ograničenja.
+            </p>
+            <p>Linijsko ograničenje sprječava kretanje svugdje gdje ograničenje presijeca ulice. Na primjer, povorka ili prosvjed koji zaustavljaju promet kroz nekoliko dijelova ulica mogu se modelirati pomoću linijskog ograničenja. Ako broj geoobjekata na ulici koji presijecaju linijska ograničenja prema&scaron;uje 500, alat će javiti da je do&scaron;lo do pogre&scaron;ke.
+            </p>
+            <p>Poligonsko ograničenje sprječava kretanje svugdje gdje poligon presijeca ulice. Ova vrsta ograničenja može se upotrijebiti za modeliranje poplavljenih područja ulične mreže gdje kretanje cestom nije moguće. Ako broj geoobjekata na ulici koji presijecaju poligonska ograničenja prema&scaron;uje 2000, alat će javiti da je do&scaron;lo do pogre&scaron;ke.
+            </p>
+        </div>
+    </div>
+    <div id="DissolveType">
+        <div><h2>Poligoni od različitih točaka</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite kako se postupa sa zajedničkim poligonima različitih ulaznih točaka kada dosegnu jedan drugog. Moguće je sljedeće:
+                <ul>
+                    <li> <b>Preklapanje</b> &ndash; poligoni različitih ulaznih točaka mogu pokrivati istu cestu. To je korisno kada trebate znati sve ulazne točke koje mogu doseći određenu lokaciju unutar zadanog vremena ili udaljenosti.
+                    </li>
+                    <li> <b>Ukloni</b> &ndash; svi se poligoni spajaju u jedan i određenu lokaciju ne može pokriti vi&scaron;e od jednog poligona. To je korisno kada jedino trebate znati da se područje može doseći unutar zadanog vremena ili udaljenosti, ali ne trebate znati koje točno ulazne točke mogu doseći lokaciju.
+                    </li>
+                    <li> <b>Dijeljenje</b> &ndash; poligoni različitih ulaznih točaka koji bi se preklapali dijele se po sredini, tako da se međusobno dijele. To je korisno kada želite vidjeti koja se područja nalaze unutar danog vremena ili udaljenosti ulaznih točaka i istovremeno odrediti koja je ulazna točka najbliža tom području.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="showHoles">
+        <div><h2>Prikaži nedostupna područja kao rupe</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite hoće li izlazne povr&scaron;ine uključivati rupe ako neke ulice nije bilo moguće dosegnuti zbog vremena ili udaljenosti  <b>mjerenja</b> ili zbog ograničenja koja postavlja način putovanja.
+            </p>
+            <p>Područja vremena vožnje stvorena upotrebljavajući ovaj parametar imaju ograničenje od od 15 minuta ili 15 milja (24 kilometara).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će se stvoriti u dijelu  <b>Moj sadržaj</b> i dodati karti.  Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako naziv sloja već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+        </div>
+    </div>
+    <div id="includeReachableStreets">
+        <div><h2>Uključi dostupne ulice</h2></div>
+        <hr/>
+        <div>
+            <p>Uključi ulice koje se upotrebljavaju za stvaranje područja vremena vožnje kao izlazni sloj. 
+            </p>
+            <p>Stvori poligone vremena vožnje mjeri doseg mjesta usluge uzduž mreže ulica te stvara poligone vremena vožnje pomoću ulica kojima se putovalo. Zato su područja približna procjena ulica kojima se putovalo. Ako će va&scaron;a analiza utvrditi koje su ulice pokrivene unutar specifične udaljenosti putovanja ili vremena od mjesta usluge, stvaranje dostupnih ulica može biti točnije od upotrebe područja vremena vožnje za procjenu je li određena ulica bila dostupna.
+            </p>
+            <p>Područja vremena vožnje stvorena upotrebljavajući ovaj parametar imaju ograničenje od od 15 minuta ili 15 milja (24 kilometara).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

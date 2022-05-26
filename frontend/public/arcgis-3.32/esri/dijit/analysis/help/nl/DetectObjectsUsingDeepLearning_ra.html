@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Objecten detecteren met behulp van deep learning</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="Objecten detecteren met behulp van deep learning"></h2>
+        <hr/>
+    <p>Deze tool voert een getraind deep learningmodel uit op een invoerraster om een ​​featureklasse te produceren die de gevonden objecten bevat. De objecten kunnen selectiekaders of vlakken zijn rond de gevonden objecten of wijzen naar de middelpunten van de objecten.
+    </p>
+    <p>Als  <b>Huidige kaartextent gebruiken</b> is aangevinkt, wordt alleen het rastergebied dat binnen het huidige extent van de kaart zichtbaar is, geanalyseerd. Als de optie niet is aangevinkt, wordt het volledige raster geanalyseerd, zelfs als dit zich buiten de huidige extent van de kaart bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Kies een afbeelding die wordt gebruikt om objecten te detecteren</h2></div>
+        <hr/>
+        <div>
+            <p>De invoerafbeelding die wordt gebruikt om objecten te detecteren.
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Kies een deep learningmodel dat wordt gebruikt om objecten te detecteren</h2></div>
+        <hr/>
+        <div>
+            <p>Het deep learningpakketitem voor invoer ( <code>.dlpk</code>).
+            </p>
+            <p>Het deep learningpakket bestaat uit het Esri-modeldefinitie JSON-bestand ( <code>.emd</code>), het binaire deep learningmodelbestand en optioneel het Python-rasterobject dat moet worden gebruikt.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Geef de argumenten van het deep learningmodel op</h2></div>
+        <hr/>
+        <div>
+            <p>De functieargumenten worden gedefinieerd in de Python-rasterfunctieklasse waarnaar wordt verwezen door het invoermodel. Dit is waar men bijkomende deep learningparameters en argumenten voor experimenten en verfijning opsomt, zoals een vertrouwensdrempel voor het aanpassen van de gevoeligheid.
+            </p>
+            <p>De namen van de argumenten worden ingevuld door de tool bij het lezen van de Python-module op de rasteranalyseserver.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>Verwijder dubbele objecten uit de uitvoer (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p>Voert niet-maximale onderdrukking uit, waarbij dubbele objecten worden ge&iuml;dentificeerd en de duplicaatobject met een lagere betrouwbaarheidswaarde wordt verwijderd. 
+                <ul>
+                    <li>Niet aangevinkt&mdash;alle objecten die worden gedetecteerd, bevinden zich in de uitvoerfeatureklasse. Dit is de standaardinstelling.
+                        
+
+                    </li>
+                    <li>Aangevinkt&mdash;hiermee worden dubbele objecten verwijderd die worden gedetecteerd.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>Vertrouwenscoreveld</h2></div>
+        <hr/>
+        <div>
+            <p>Het veld in de featureservice dat de vertrouwenscores bevat als uitvoer door de objectdetectiemethode.
+            </p>
+            <p>Deze parameter is vereist wanneer u de parameter  <b>Niet-maximale onderdrukking</b> aanvinkt.
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>Veld klassewaarde</h2></div>
+        <hr/>
+        <div>
+            <p>Het veld van de klassewaarde in de uitvoerfeatureservice. Als dit niet wordt opgegeven, gebruikt de tool de standaardklasse-velden <i>Classvalue</i> en <i>Value</i>. Als deze velden niet bestaan, worden alle objecten behandeld als dezelfde objectklasse.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>Maximale overlapverhouding</h2></div>
+        <hr/>
+        <div>
+            <p>De maximale overlapverhouding voor twee overlappende objecten, die wordt gedefinieerd als de verhouding van het snijpuntgebied ten opzichte van het uniegebied. De standaardwaarde is 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>U kunt de naam van een map opgeven in  <b>Mijn Content</b>, waar het resultaat wordt opgeslagen met het vervolgkeuzemenu <b>Resultaat opslaan in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

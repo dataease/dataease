@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Kiindulópontok összekapcsolása a célokkal</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="Kiindul&oacute;pontok &ouml;sszekapcsol&aacute;sa a c&eacute;lokkal"></h2>
+        <hr/>
+    <p>A Kiindul&oacute;pontok &ouml;sszekapcsol&aacute;sa a c&eacute;lokkal eszk&ouml;z pontp&aacute;rok k&ouml;z&ouml;tti utaz&aacute;si idő vagy t&aacute;vols&aacute;g m&eacute;r&eacute;s&eacute;re haszn&aacute;lhat&oacute;. Az eszk&ouml;z k&eacute;pes jelent&eacute;st k&eacute;sz&iacute;teni l&eacute;gvonalbeli t&aacute;vols&aacute;gokr&oacute;l; utaz&aacute;si m&oacute;don alapul&oacute;, p&eacute;ld&aacute;ul gyalogos vagy vezet&eacute;si t&aacute;vols&aacute;gokr&oacute;l; vagy utaz&aacute;si m&oacute;don alapul&oacute; utaz&aacute;si időtartamokr&oacute;l. Az eszk&ouml;z haszn&aacute;lat&aacute;val elv&eacute;gezheti az al&aacute;bbi műveleteket:
+    </p>
+    <p>
+        <ul>
+            <li>Kisz&aacute;m&iacute;thatja az ing&aacute;z&oacute;k &aacute;ltal a munk&aacute;ba j&aacute;r&aacute;s sor&aacute;n megtett teljes t&aacute;vols&aacute;got vagy utaz&aacute;si időt.
+            </li>
+            <li>Megm&eacute;rheti, hogy milyen t&aacute;vols&aacute;got tesznek meg a v&aacute;s&aacute;rl&oacute;k, hogy az &uuml;zlet&eacute;ben v&aacute;s&aacute;roljanak. Az inform&aacute;ci&oacute; felhaszn&aacute;l&aacute;s&aacute;val meghat&aacute;rozhatja piaci hat&oacute;k&ouml;r&eacute;t, k&uuml;l&ouml;n&ouml;sen hirdet&eacute;si kamp&aacute;nyokhoz vagy &uacute;j &uuml;zletek hely&eacute;nek kiv&aacute;laszt&aacute;s&aacute;hoz.
+            </li>
+            <li>Kisz&aacute;m&iacute;thatja j&aacute;rműflott&aacute;ja v&aacute;rhat&oacute; menetteljes&iacute;tm&eacute;ny&eacute;t. Ezut&aacute;n a Ter&uuml;leten bel&uuml;li &ouml;sszegz&eacute;s eszk&ouml;z futtat&aacute;s&aacute;val jelent&eacute;st k&eacute;sz&iacute;thet a fut&aacute;steljes&iacute;tm&eacute;nyről &aacute;llamok vagy m&aacute;s r&eacute;gi&oacute;k szerint.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Adja meg a kezdő- &eacute;s a v&eacute;gpontot, &eacute;s az eszk&ouml;z eredm&eacute;ny&uuml;l ad egy r&eacute;teget, amely tartalmazza az &uacute;tvonalak vonalait, bele&eacute;rtve a p&aacute;rt alkot&oacute; kezdőpontok &eacute;s a c&eacute;lhelyek k&ouml;z&ouml;tti m&eacute;r&eacute;seket. 
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;s haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel a program csak az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen l&aacute;that&oacute; vektoros elemeket veszi figyelembe az elemz&eacute;sn&eacute;l.  Ha nincs bejel&ouml;lve, akkor a bemeneti r&eacute;teg &ouml;sszes vektoros elem&eacute;t figyelembe veszi, akkor is, ha azok k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Kiindulási helyeknek megfelelő pont réteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki a kiindul&aacute;si hely(ek)nek megfelelő pont r&eacute;teget.  Az eszk&ouml;z legfeljebb  5000 kiindul&aacute;si helyet &eacute;s  5000 c&eacute;lhelyet t&aacute;mogat. </p>
+            <p>Ha a v&aacute;lasztott r&eacute;tegen pontosan egy kiindul&aacute;si hely tal&aacute;lhat&oacute;, akkor az eszk&ouml;z ezt k&ouml;ti &ouml;ssze minden c&eacute;lhellyel.
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Célhely réteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki a c&eacute;l(ok)nak megfelelő r&eacute;teget, amely(ek)kel &ouml;ssze k&iacute;v&aacute;nja k&ouml;tni a kiindul&aacute;si helyeket. Az eszk&ouml;z legfeljebb  5000 kiindul&aacute;si helyet &eacute;s  5000 c&eacute;lhelyet t&aacute;mogat. </p>
+            <p>Ha a v&aacute;lasztott r&eacute;tegen pontosan egy c&eacute;l tal&aacute;lhat&oacute;, akkor az eszk&ouml;z ezt k&ouml;ti &ouml;ssze az adott c&eacute;llal. 
+            </p>
+            <p>Egy kiindul&aacute;si hely &eacute;s sok c&eacute;l eset&eacute;n az eszk&ouml;z a kiindul&aacute;si helyet &ouml;sszek&ouml;ti mindegyik c&eacute;llal.
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p>
+            <p> Sok kiindul&aacute;si hely &eacute;s sok c&eacute;l eset&eacute;n sz&uuml;ks&eacute;g van k&eacute;t mezőre, amelyek le&iacute;rj&aacute;k a kiindul&aacute;si hely-c&eacute;lhely: az egyik az <b>Azonos&iacute;t&oacute; mező a kiindul&aacute;si helyeken</b>, a m&aacute;sik az <b>Azonos&iacute;t&oacute; mező egyeztet&eacute;se a c&eacute;lhelyeken</b>. Az eszk&ouml;z az elemz&eacute;s sor&aacute;n &ouml;sszek&ouml;ti az eredeti c&eacute;lhelyp&aacute;rokat. T&eacute;telezz&uuml;nk fel p&eacute;ld&aacute;ul k&eacute;t kiindul&aacute;si helyet <code>Rosie</code> &eacute;s <code>Harold</code> &eacute;rt&eacute;kű azonos&iacute;t&oacute; mezővel &eacute;s k&eacute;t c&eacute;lhelyet megegyező azonos&iacute;t&oacute; &eacute;rt&eacute;kkel. A <code>Rosie</code> kiindul&aacute;si helyet a <code>Rosie</code> c&eacute;lhellyel, a <code>Harold</code> kiindul&aacute;si helyet a <code>Harold</code> c&eacute;lhellyel k&ouml;ti &ouml;ssze. Nincs m&aacute;s csatlakoz&aacute;s vagy m&eacute;r&eacute;s.
+            </p>
+            <p>Ha azonos sz&aacute;m&uacute; kiindul&aacute;si hely &eacute;s c&eacute;l&aacute;llom&aacute;s van, akkor az azonos&iacute;t&oacute; &eacute;rt&eacute;kek legyenek egyediek az egyes r&eacute;tegeken; a c&eacute;l&aacute;llom&aacute;sokat tartalmaz&oacute; r&eacute;tegen p&eacute;ld&aacute;ul nem lehet k&eacute;t  <code>Rosie</code> &eacute;rt&eacute;k. A kiindul&aacute;si &eacute;s a c&eacute;lhely r&eacute;tegen l&eacute;vő &eacute;rt&eacute;keknek pontosan meg kell egyeznie ahhoz, hogy p&aacute;rt alkossanak; a <code>Harold</code> nem kapcsolhat&oacute; &ouml;ssze a helytelen&uuml;l &iacute;rt <code>Harodl</code> &eacute;rt&eacute;kkel. 
+            </p>
+            <p>Az eszk&ouml;z lehetőv&eacute; teszi egy kiindul&aacute;si hely t&ouml;bb c&eacute;l&aacute;llom&aacute;ssal val&oacute; &ouml;sszek&ouml;t&eacute;s&eacute;t, illetve egy c&eacute;l&aacute;llom&aacute;s t&ouml;bb kiindul&aacute;si hellyel val&oacute; &ouml;sszek&ouml;t&eacute;s&eacute;t. Ilyen esetekben sz&uuml;ks&eacute;g van k&eacute;t mezőre, amelyek le&iacute;rj&aacute;k a kiindul&aacute;si hely-c&eacute;l&aacute;llom&aacute;s p&aacute;rokat. Azonban csak egy r&eacute;tegnek (vagy a kiindul&aacute;si hely vagy a c&eacute;l&aacute;llom&aacute;s) kell egyedi azonos&iacute;t&oacute; &eacute;rt&eacute;kkel rendelkeznie.
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Mérés</h2></div>
+        <hr/>
+        <div>
+            
+            <p>V&aacute;lasszon, hogy a kiindul&oacute;pontokat l&eacute;gvonalbeli t&aacute;vols&aacute;g vagy utaz&aacute;si m&oacute;d haszn&aacute;lat&aacute;val k&iacute;v&aacute;nja-e &ouml;sszekapcsolni a c&eacute;lokkal. A kimeneti &uacute;tvonalak a k&ouml;zutakat vagy k&ouml;zlekedőutakat k&ouml;vetik, &eacute;s betartj&aacute;k az &eacute;rv&eacute;nyes szab&aacute;lyokat, figyelembe veszik p&eacute;ld&aacute;ul az egyir&aacute;ny&uacute; k&ouml;zleked&eacute;st &eacute;s a fordul&aacute;si vagy tehersz&aacute;ll&iacute;t&aacute;si tilalmat.  Az el&eacute;rhető utaz&aacute;si m&oacute;dokat a szervezet adminisztr&aacute;tora hat&aacute;rozza meg.  
+            </p>
+            <p>Az  <b>Utaz&aacute;si idő</b>, <b>Vid&eacute;ki utaz&aacute;si idő</b>, vagy <b>Tehersz&aacute;ll&iacute;t&aacute;si idő</b> lehetős&eacute;g kiv&aacute;laszt&aacute;sakor v&aacute;laszthat, hogyan k&iacute;v&aacute;nja m&eacute;rni az utaz&aacute;si időt.
+                <ul>
+                    <li>
+                        <p>A  <b>Forgalom haszn&aacute;lata</b> jel&ouml;lőn&eacute;gyzet jel&ouml;l&eacute;s&eacute;nek megsz&uuml;ntet&eacute;s&eacute;vel r&ouml;gz&iacute;tett sebess&eacute;gek alapj&aacute;n megkeresheti a leggyorsabb &uacute;tvonalakat.
+                        </p>
+                        <p>V&aacute;lassza ezt a lehetős&eacute;get, ha az utaz&aacute;si időt &aacute;ltal&aacute;ban k&iacute;v&aacute;nja m&eacute;rni, &eacute;s nem egy meghat&aacute;rozott indul&aacute;si idő v&aacute;ltoz&oacute; k&ouml;zleked&eacute;si helyzete alapj&aacute;n.
+                        </p>
+                    </li>
+                    <li>
+                        <p>A  <b>Forgalom haszn&aacute;lata</b> jel&ouml;lőn&eacute;gyzet bejel&ouml;l&eacute;s&eacute;vel megadott indul&aacute;si idő &eacute;s v&aacute;ltoz&oacute; k&ouml;zleked&eacute;si helyzet alapj&aacute;n megkeresheti a leggyorsabb &uacute;tvonalakat. Ha a <b>Val&oacute;s idejű forgalom</b> lehetős&eacute;get is bejel&ouml;li, akkor a kiindul&aacute;si helyeken az indul&aacute;si idő az aktu&aacute;lis idő lesz, &eacute;s az &uacute;tvonalak &eacute;rz&eacute;kelők &eacute;s h&iacute;rfolyamok &aacute;ltal szolg&aacute;ltatott, aktu&aacute;lis &eacute;s a v&aacute;rhat&oacute; forgalmon alapul&oacute; sebess&eacute;g alapj&aacute;n j&ouml;nnek l&eacute;tre. Az eszk&ouml;z a v&aacute;rhat&oacute; forgalmon alapul&oacute; sebess&eacute;get val&oacute;s idejű forgalom szerinti, kor&aacute;bbi sebess&eacute;gek &eacute;s aktu&aacute;lis, p&eacute;ld&aacute;ul időj&aacute;r&aacute;si esem&eacute;nyek alapj&aacute;n sz&aacute;m&iacute;tja ki. A forgalom v&aacute;rhat&oacute; sebess&eacute;ge 12 &oacute;r&aacute;val jelezhető előre, azaz a cs&uacute;szka elh&uacute;z&aacute;s&aacute;val  12 &oacute;r&aacute;val &aacute;ll&iacute;thatja előr&eacute;bb az indul&aacute;si időt. </p>
+                        <p>A fenti val&oacute;s idejű forgalmi be&aacute;ll&iacute;t&aacute;sok haszn&aacute;lat&aacute;val megkeresheti az utaz&aacute;si időt azonnali indul&aacute;s, egy &oacute;r&aacute;n bel&uuml;li indul&aacute;s stb. eset&eacute;n.
+                        </p>
+                    </li>
+                    <li>
+                        <p>A  <b>Forgalom haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel &eacute;s a <b>Időszak jellemző viszonyain alapul&oacute; forgalom</b> v&aacute;laszt&aacute;s&aacute;val kiv&aacute;laszthatja a napot &eacute;s az időpontot, az eszk&ouml;z pedig megkeresi a leggyorsabb &uacute;tvonalakat a kor&aacute;bbi &aacute;tlagsebess&eacute;gek alapj&aacute;n egy szok&aacute;sos h&eacute;t &ouml;tperces intervallumaira vet&iacute;tve. Az eredm&eacute;nyek tartalmazz&aacute;k a forgalmat, de kiszűrve az aktu&aacute;lis k&ouml;zleked&eacute;si helyzet &eacute;s az olyan esem&eacute;nyek hat&aacute;s&aacute;t, amelyek jelentősen elt&eacute;rhetnek a szok&aacute;sost&oacute;l.
+                        </p>
+                        <p>A kor&aacute;bbi forgalmi be&aacute;ll&iacute;t&aacute;sok haszn&aacute;lat&aacute;val v&aacute;laszt kaphat p&eacute;ld&aacute;ul arra a k&eacute;rd&eacute;sre, hogy &bdquo;Mennyi ideig tart &aacute;ltal&aacute;ban a c&eacute;lhelyek el&eacute;r&eacute;se szerda d.e. 11:30 &oacute;rai indul&aacute;s eset&eacute;n?&rdquo;
+                        </p>
+                        <p>A be&aacute;ll&iacute;tott idő annak az időz&oacute;n&aacute;nak felel meg, amelyben a megadott kiindul&aacute;si helyek tal&aacute;lhat&oacute;k. Ha teh&aacute;t p&eacute;ld&aacute;ul d.e. 8:00 &oacute;r&aacute;ra &aacute;ll&iacute;tja az időt, &eacute;s k&eacute;t kiindul&aacute;si helyet ad meg, az egyik New York, a m&aacute;sik Los Angeles, akkor k&eacute;t &uacute;tvonal j&ouml;n l&eacute;tre, az egyik Keleti idő szerinti d.e. 8:00 &oacute;rai indul&aacute;si idővel, a m&aacute;sik a csendes-&oacute;ce&aacute;ni idő szerinti d.e. 8:00 &oacute;rai indul&aacute;si idővel.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>&Uuml;gyeljen arra, hogy mik&ouml;zben a j&aacute;rmű t&aacute;volodik a kiindul&aacute;si helytől, az idő m&uacute;lt&aacute;val a k&ouml;zleked&eacute;si helyzet v&aacute;ltozik. A Kiindul&oacute;pontok &ouml;sszekapcsol&aacute;sa a c&eacute;lokkal eszk&ouml;z figyelembe veszi ezeket a vari&aacute;ci&oacute;kat, ha r&aacute;kattint a  <b>Forgalom haszn&aacute;lata</b> lehetős&eacute;gre; azonban nem minden r&eacute;gi&oacute; t&aacute;mogatja a forgalmat. Az eszk&ouml;zben az <b>El&eacute;rhetős&eacute;g megtekint&eacute;se</b> hivatkoz&aacute;sra kattintva megtekintheti, hogy el&eacute;rhető-e a minta ter&uuml;leten.
+            </p>
+            <p>A  <b>Tehersz&aacute;ll&iacute;t&aacute;si idő</b> k&eacute;pes forgalmon alapul&oacute; dinamikus utaz&aacute;si sebess&eacute;get haszn&aacute;lni, de legfeljebb a teheraut&oacute;k t&ouml;rv&eacute;nyben megengedett maxim&aacute;lis sebess&eacute;ghat&aacute;r&aacute;ig. Ha p&eacute;ld&aacute;ul a dinamikus sebess&eacute;g egy k&ouml;z&uacute;ton a val&oacute;s idejű forgalom alapj&aacute;n 65 m&eacute;rf&ouml;ld/&oacute;ra, de a teherg&eacute;pj&aacute;rművekre &eacute;rv&eacute;nyes sebess&eacute;gkorl&aacute;toz&aacute;s az adott k&ouml;z&uacute;ton 55 m&eacute;rf&ouml;ld/&oacute;ra, akkor a sz&aacute;m&iacute;t&aacute;s az 55 m&eacute;rf&ouml;ld/&oacute;ra sebess&eacute;get veszi figyelembe ezen a k&ouml;z&uacute;ton.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Határrétegek kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p> Egy vagy t&ouml;bb olyan funkci&oacute;, ami ideiglenes korl&aacute;toz&aacute;sk&eacute;nt műk&ouml;dik (hat&aacute;rk&eacute;nt), amikor az &eacute;rintett utc&aacute;kon k&ouml;zlekedik. A korl&aacute;tokat a pontok, vonalak vagy polygon tulajdons&aacute;gaival hat&aacute;rozhatja meg.
+            </p>
+            <p>Egy korl&aacute;t pont lehet egy let&ouml;r&ouml;tt fa&aacute;g, egy k&ouml;zleked&eacute;si baleset, egy leszakadt elektromos vezet&eacute;k, vagy b&aacute;rmi, ami egy adott helyen teljes m&eacute;rt&eacute;kben megakad&aacute;lyozza az utcai k&ouml;zleked&eacute;st. A k&ouml;zleked&eacute;s enged&eacute;lyezett az utc&aacute;n, de a korl&aacute;t ponton t&uacute;l m&aacute;r nem. Legfeljebb 250 olyan funkci&oacute;t hat&aacute;rozhat meg, ami hat&aacute;rk&eacute;nt műk&ouml;dhet.
+            </p>
+            <p>A korl&aacute;t vonal megakad&aacute;lyozza a k&ouml;zleked&eacute;st minden olyan ponton, ahol az keresztezi az utc&aacute;t. P&eacute;ld&aacute;ul egy felvonul&aacute;s vagy t&uuml;ntet&eacute;s megakad&aacute;lyozza a k&ouml;zleked&eacute;st t&ouml;bb utca szakaszon is, ez&eacute;rt ezt korl&aacute;t vonallal lehet modellezni. Ha az utc&aacute;t keresztező korl&aacute;t vonalak sz&aacute;ma meghaladja az 500-at, akkor az eszk&ouml;z hiba&uuml;zenetet ad.
+            </p>
+            <p>A polygon korl&aacute;t megakad&aacute;lyozza a k&ouml;zleked&eacute;st minden olyan ponton, ahol az keresztezi az utc&aacute;t. Ilyen jellegű korl&aacute;t lehet p&eacute;ld&aacute;ul egy &aacute;rad&aacute;s, ami utc&aacute;k eg&eacute;sz h&aacute;l&oacute;zat&aacute;t fedi le, &iacute;gy megakad&aacute;lyozva a k&ouml;zleked&eacute;st. Ha az utc&aacute;t keresztező polygonok sz&aacute;ma meghaladja az 2000-et, akkor az eszk&ouml;z hiba&uuml;zenetet ad.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Útvonal alakja</h2></div>
+        <hr/>
+        <div>
+            <p>Utaz&aacute;si m&oacute;d haszn&aacute;lata sor&aacute;n v&aacute;lasszon olyan &uacute;tvonal alakot, amely mindegyik kiindul&aacute;si helyet &ouml;sszek&ouml;ti annak c&eacute;l&aacute;llom&aacute;s&aacute;val:
+            </p>
+            <ul>
+                <li> <b>Utc&aacute;k k&ouml;vet&eacute;se</b> &ndash; Az alak az aktu&aacute;lis k&ouml;z&uacute;ti h&aacute;l&oacute;zaton alapul. Ez a legjobb v&aacute;laszt&aacute;s, ha kiindul&aacute;si helyek &eacute;s c&eacute;l&aacute;llom&aacute;sok k&ouml;z&ouml;tt szeretne &uacute;tvonalakat l&eacute;trehozni.
+                </li>
+                <li> <b>Egyenes vonal</b> &ndash; Az alak egy egyenes vonal, amely &ouml;sszek&ouml;ti a kiindul&aacute;si helyet a c&eacute;l&aacute;llom&aacute;ssal. Ez a legjobb v&aacute;laszt&aacute;s, ha p&oacute;kh&aacute;l&oacute; &aacute;br&aacute;t vagy vonalas &aacute;br&aacute;t k&iacute;v&aacute;n l&eacute;trehozni (pl. annak bemutat&aacute;s&aacute;ra, hogy a v&aacute;s&aacute;rl&oacute;k mely boltokat l&aacute;togatj&aacute;k meg).
+                </li>
+            </ul>
+            
+            <p>A kiindul&aacute;si hely &eacute;s a c&eacute;l&aacute;llom&aacute;s k&ouml;z&ouml;tti legjobb &uacute;tvonal kisz&aacute;m&iacute;t&aacute;sa mindig az utaz&aacute;si m&oacute;don alapul f&uuml;ggetlen&uuml;l a kiv&aacute;lasztott &uacute;tvonal alakt&oacute;l.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott vektoros r&eacute;teg neve. Ha a vektoros r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet. A vektoros r&eacute;teg tartalmaz egy-egy r&eacute;teget az al&aacute;bbiak mindegyik&eacute;hez: &uacute;tvonalak, nem hozz&aacute;rendelt kiindul&aacute;si helyek &eacute;s nem hozz&aacute;rendelt c&eacute;lhelyek, ha egyes kiindul&aacute;si helyeket nem siker&uuml;lt hozz&aacute;rendelni a c&eacute;lhely&uuml;kh&ouml;z.
+            </p>
+            <p>Az  <b>&Uacute;tvonal r&eacute;tegek belefoglal&aacute;sa</b> kijel&ouml;l&eacute;sekor az eszk&ouml;z az eredm&eacute;ny minden egyes &uacute;tvonal&aacute;t elmenti &uacute;tvonal r&eacute;tegk&eacute;nt. Az &uacute;tvonal r&eacute;teg mag&aacute;ban foglalja az adott &uacute;tvonal &ouml;sszes inform&aacute;ci&oacute;j&aacute;t, p&eacute;ld&aacute;ul az &uacute;tvonalhoz hozz&aacute;rendelt meg&aacute;ll&oacute;helyeket &eacute;s a halad&aacute;si ir&aacute;nyokat. &Uacute;tvonal r&eacute;tegek l&eacute;trehoz&aacute;sa olyankor hasznos, ha szeretn&eacute; megosztani az egyes &uacute;tvonalakat a szervezet m&aacute;s tagjaival, vagy szeretn&eacute; tov&aacute;bb m&oacute;dos&iacute;tani az &uacute;tvonalakat az <b>Ir&aacute;nyok</b> gomb haszn&aacute;lat&aacute;val a t&eacute;rk&eacute;pn&eacute;zegető ablakban. Az &uacute;tvonal r&eacute;tegek a vektoros r&eacute;tegen megadott nevet haszn&aacute;lj&aacute;k előtagk&eacute;nt, &eacute;s az elemz&eacute;s r&eacute;szek&eacute;nt l&eacute;trehozott &uacute;tvonaln&eacute;v hozz&aacute;ad&aacute;s&aacute;val l&eacute;trehozz&aacute;k az egyes &uacute;tvonal r&eacute;tegek egyedi nev&eacute;t.
+            </p>
+            <p>A l&eacute;trehozhat&oacute; &uacute;tvonal r&eacute;tegek maxim&aacute;lis sz&aacute;ma  1000. Ha az eredm&eacute;ny t&ouml;bb mint  1000 &uacute;tvonalat tartalmaz, &eacute;s az  <b>&Uacute;tvonal r&eacute;tegek befoglal&aacute;sa</b> be van jel&ouml;lve, akkor az eszk&ouml;z csak a kimeneti vektoros elem szolg&aacute;ltat&aacute;st hozza l&eacute;tre.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti a vektoros r&eacute;teget &eacute;s a l&eacute;trehozott &uacute;tvonalr&eacute;tegeket.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

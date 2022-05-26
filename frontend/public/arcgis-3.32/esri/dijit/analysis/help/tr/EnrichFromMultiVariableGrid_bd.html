@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Çok Değişkenli Kılavuzdan Zenginleştir</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="&Ccedil;ok Değişkenli Kılavuzdan Zenginleştir"></h2>
+        <hr/>
+    <p> &Ccedil;ok Değişkenli Kılavuzdan Zenginleştir aracı, &ccedil;ok değişkenli bir kılavuzdan gelen &ouml;znitelikleri bir nokta katmanına etkin bir şekilde birleştirir.
+    </p>
+    <p>&Ccedil;ok değişkenli bir kılavuz, birden &ccedil;ok katmandan gelen &ouml;znitelikleri tek bir &ccedil;okgen grid&rsquo;i (kılavuz) halinde toplayan &Ccedil;ok Değişkenli Grid Oluştur aracıyla oluşturulan herhangi bir katmandır. Zenginleştirme i&ccedil;in &ccedil;ok değişkenli bir kılavuz kullanmak, daha fazla mekansal analizde kullanılmak &uuml;zere verileri işaretlemek i&ccedil;in geniş ve &ccedil;eşitli bir bilgi koleksiyonunu bir nokta katmanına hızlı bir şekilde eklemenizi sağlar.
+    </p>
+    <p>&Ouml;rneğin, ge&ccedil;en yıl bir şehirde meydana gelen yeni bir su&ccedil; olayları katmanı aldığınızı varsayalım. Su&ccedil; sıklığı ile &ccedil;eşitli demografik, ekonomik ve coğrafi fakt&ouml;rler arasındaki ilişkileri modellemek istiyorsunuz. Bu fakt&ouml;rleri tanımlayan verilere erişiminiz var, ancak bu veriler farklı geometri t&uuml;rlerine sahip beş farklı katmanda depolanmış. Ayrıca, bazı katmanlar, b&uuml;y&uuml;k veri dosya paylaşımında, bazıları ise detay servisi olarak depolanmış. Bu bilgiyi saklamak i&ccedil;in &ccedil;ok değişkenli bir grid oluşturup ardından bu grid&rsquo;i su&ccedil; olaylarınızla  &Ccedil;ok Değişkenli Kılavuzdan Zenginleştir aracını kullanarak birleştirdiğinizde yalnızca iki aracı &ccedil;alıştırarak &ccedil;ok &ccedil;eşitli &ouml;znitelikleri nokta katmanınıza etkin bir şekilde ekleyebilirsiniz. Ardından birleştirilen &ouml;znitelikleri a&ccedil;ıklayıcı değişkenler olarak kullanabilir ve sonu&ccedil; katmanıyla bir su&ccedil; sıklığı modeli oluşturmaya başlayabilirsiniz.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Zenginleştirilecek nokta detaylarını seçin</h2></div>
+        <hr/>
+        <div>
+            <p>&Ccedil;ok değişkenli grid ile zenginleştirilecek olan nokta detayları.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Zenginleştirmenin yapılacağı çok değişkenli grid’i seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Girdi noktası detayları ile birleştirilecek &ouml;znitelikleri i&ccedil;eren &ccedil;ok değişkenli grid katmanı. Bu katman, &Ccedil;ok Değişkenli Grid Oluşturma aracı kullanılarak oluşturulmuş ve barındırılan bir detay katmanı olmalıdır. Bir b&uuml;y&uuml;k veri dosya paylaşımında saklanan &ccedil;ok değişkenli grid katmanları bu araca girdi olarak desteklenmez.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Eklenecek değişkenleri seçin</h2></div>
+        <hr/>
+        <div>
+            <p>&Ccedil;ok değişkenli grid katmanındaki &ouml;znitelikler, nokta detayları grid ile kesiştiği her durumda girdi noktası detaylarına eklenecektir.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> Oluşturulacak katmanın adı. Bir ArcGIS Data Store&lsquo;a yazdığınızda, sonu&ccedil;larınız  <b>İ&ccedil;eriğime</b> kaydedilir ve haritaya eklenir. Bir b&uuml;y&uuml;k veri dosya paylaşımına yazdığınızda,  sonu&ccedil;larınız b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;ine kaydedilir ve   manifestosuna eklenir.  haritaya eklenmez. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Detay katmanı zaten varsa ara&ccedil; &ccedil;alışmaz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

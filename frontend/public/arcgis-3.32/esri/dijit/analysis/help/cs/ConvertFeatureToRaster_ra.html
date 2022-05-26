@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Převést prvek na rastr</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="N&aacute;stroj Přev&eacute;st prvek na rastr"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj přev&aacute;d&iacute; prvky na rastrovou datovou sadu.
+    </p>
+    <p>Jakoukoli tř&iacute;du prvků obsahuj&iacute;c&iacute; bodov&eacute;, liniov&eacute; nebo polygonov&eacute; prvky lze přev&eacute;st na rastrovou datovou sadu.
+    </p>
+    <p>Střed buňky se použ&iacute;v&aacute; k určen&iacute; hodnoty pixelu v&yacute;stupn&iacute;ho rastru.
+    </p>
+    <p>Typ vstupn&iacute;ho pole určuje typ v&yacute;stupn&iacute;ho rastru. Pokud je pole typu cel&eacute; č&iacute;slo, v&yacute;stupn&iacute; rastr bude tak&eacute; celoč&iacute;seln&yacute;; pokud je pole typu desetinn&eacute; č&iacute;slo, v&yacute;stup bude tak&eacute; desetinn&yacute;.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Zvolte vrstvu prvků, kterou chcete převést.</h2></div>
+        <hr/>
+        <div>
+            <p>Vstupn&iacute; vrstva prvků k převodu na rastrovou datovou sadu.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Zvolit pole</h2></div>
+        <hr/>
+        <div>
+            <p>Zvolte pole, kter&eacute; bude použito k&nbsp;přiřazen&iacute; hodnot k&nbsp;v&yacute;stupn&iacute;mu rastru.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Výstupní velikost buňky</h2></div>
+        <hr/>
+        <div>
+            <p>Velikost buňky a jednotka pro v&yacute;stupn&iacute; rastry.
+            </p>
+            <p>Dostupn&yacute;mi jednotkami jsou m&iacute;le, stopy, kilometry a metry. V&yacute;choz&iacute; hodnotou jsou stopy.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>N&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; se do mapy. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>Můžete zadat n&aacute;zev složky v  <b>Můj obsah</b>, kde bude v&yacute;sledek uložen pomoc&iacute; rozbalovac&iacute;ho seznamu <b>Uložit v&yacute;sledek do</b> .
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="aoToolbox">
+        <p>La caja de herramientas An&aacute;lisis de entidades contiene una serie de herramientas a las que puede acceder y utilizar.  Estas tareas se clasifican en categor&iacute;as; las categor&iacute;as son simplemente agrupaciones l&oacute;gicas y no afectan en modo alguno a la forma en que accede o utiliza las tareas.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Resumir datos</h2>
+        <hr/>
+        <p>Estas herramientas calculan recuentos totales, longitudes, &aacute;reas y estad&iacute;sticas descriptivas b&aacute;sicas de entidades y sus atributos que se encuentran dentro de &aacute;reas o cerca de otras entidades.
+            <ul>
+                <li> <b>Agregar puntos</b> calcula estad&iacute;sticas de los puntos que se encuentran dentro de las &aacute;reas especificadas.
+                </li>
+                <li> <b>Unir entidades</b> transfiere atributos de una capa o tabla a otra bas&aacute;ndose en las relaciones espaciales y de atributo.
+                </li>
+                <li> <b>Resumir cerca de</b> calcula estad&iacute;sticas de entidades y sus atributos que se encuentran dentro de una distancia especificada.
+                </li>
+                <li> <b>Resumir dentro de</b> calcula estad&iacute;sticas de entidades de &aacute;rea y atributos que se superponen entre s&iacute;.
+                </li>
+                <li> <b>Resumir centro y dispersi&oacute;n</b> calcula entidades centrales y distribuciones direccionales.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Consolidar puntos</h2></td>
+                    <td>
+                    <img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" class="titleImage" alt="Consolidar puntos">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Usando una capa de entidades de puntos y una capa de entidades de &aacute;rea, esta herramienta determina los puntos que se encuentran dentro de cada &aacute;rea y calcula estad&iacute;sticas sobre todos los puntos contenidos en cada &aacute;rea. Por ejemplo:
+                <ul>
+                    <li>Dadas las ubicaciones de puntos de los incidentes criminales, cuenta el n&uacute;mero de cr&iacute;menes por condado o por otros distritos administrativos.
+                    </li>
+                    <li>Busca los ingresos m&aacute;s altos y m&aacute;s bajos por ubicaciones de franquicias en cada estado.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Unir entidades</h2></td>
+                    <td>
+                    <img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" class="titleImage" alt="Unir entidades">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Unir entidades transferir&aacute; los atributos de una capa o tabla a otra bas&aacute;ndose en las relaciones espaciales y de atributo. Por ejemplo:
+                <ul>
+                    <li>Adjunta un l&iacute;mite com&uacute;n o informaci&oacute;n demogr&aacute;fica a sus datos de incidentes.
+                    </li>
+                    <li>Identifica las instalaciones m&aacute;s cercanas a una ubicaci&oacute;n conocida.
+                    </li>
+                    <li>Determina el n&uacute;mero de residencias que se encuentran en zonas de inundaci&oacute;n.
+                    </li>
+                    <li>Identifica h&aacute;bitats comunes para distintas especies salvajes.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeNearbyTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Resumir cerca de</h2></td>
+                    <td>
+                    <img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" class="titleImage" alt="Resumir cerca de">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Busca entidades que est&aacute;n dentro de una distancia especificada de las entidades de la capa de entrada.   La distancia puede medirse a lo largo de l&iacute;neas rectas o rutas viables de un modo de viaje.  A continuaci&oacute;n, se calculan las estad&iacute;sticas para las entidades cercanas. Por ejemplo:
+                <ul>
+                    <li>Calcula la poblaci&oacute;n total que se encuentra a menos de cinco minutos de la ubicaci&oacute;n propuesta para una nueva tienda.
+                    </li>
+                    <li>Calcula el n&uacute;mero de incorporaciones a la autov&iacute;a a un m&aacute;ximo de cinco minutos de la ubicaci&oacute;n propuesta para una nueva tienda con el fin de usarlas como medida de la accesibilidad de una tienda.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Resumir dentro de</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Resumir dentro de">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Busca &aacute;reas (y porciones de &aacute;reas) que se superponen entre dos capas y calcula estad&iacute;sticas sobre la superposici&oacute;n. Por ejemplo:
+                <ul>
+                    <li>Dada una capa de &aacute;reas de cuencas hidrogr&aacute;ficas y una capa de &aacute;reas de uso del suelo, calcule la superficie total del tipo de uso del suelo para cada cuenca hidrogr&aacute;fica. 
+                    </li>
+                    <li>Dada una capa de parcelas de un condado y una capa de l&iacute;mites de ciudades, resuma el valor medio de las parcelas vac&iacute;as en cada ciudad.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeCenterAndDispersionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Resumir centro y dispersión</h2></td>
+                    <td>
+                    <img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" class="titleImage" alt="Resumir centro y dispersi&oacute;n">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Esta herramienta utiliza entidades de puntos para calcular la entidad central, el centro medio, el centro mediano o la elipse (distribuci&oacute;n). Por ejemplo:
+                <ul>
+                    <li>Considerando una capa de centroides de grupo de bloques, la entidad central ponderada por poblaci&oacute;n podr&iacute;a usarse para identificar qu&eacute; parte de la ciudad es la m&aacute;s accesible para un centro de artes esc&eacute;nicas.
+                    </li>
+                    <li>Considerando una capa de observaciones del alce dentro de un parque durante varios a&ntilde;os, el centro medio puede utilizarse para ver d&oacute;nde se congrega el alce en verano y en invierno.
+                    </li>
+                    <li>Considerando una capa de incidentes de incendios, el centro mediano puede utilizarse para medir la tendencia central de los incendios sin verse afectada por valores at&iacute;picos perif&eacute;ricos.
+                    </li>
+                    <li>Considerando una capa de muestras de pozos de aguas subterr&aacute;neas, la elipse se puede utilizar para determinar el modo de propagaci&oacute;n de un contaminante.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>Enriquecimiento de datos</h2>
+        <hr/>
+        <p>Estas herramientas ayudan a explorar el car&aacute;cter de las &aacute;reas. Se devuelven estad&iacute;sticas y datos demogr&aacute;ficos detallados para las &aacute;reas elegidas. 
+            <ul>
+                <li> <b>Enriquecer capa</b> obtiene informaci&oacute;n acerca de las personas, los lugares y los negocios de un &aacute;rea espec&iacute;fica o incluidos dentro de una distancia o un tiempo de viaje seleccionado desde una ubicaci&oacute;n.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Enriquecer capa</h2></td>
+                    <td>
+                    <img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" class="titleImage" alt="Enriquecer capa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Obtiene informaci&oacute;n acerca de las personas, los lugares y los negocios de un &aacute;rea espec&iacute;fica o incluidos dentro de una distancia o un tiempo de viaje seleccionado desde una ubicaci&oacute;n.
+
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="largesize">
+        <h2>Buscar ubicaciones</h2>
+        <hr/>
+        <p>Estas herramientas se utilizan para identificar o crear las entidades que cumplen los criterios que usted especifica.  El tipo de criterio depender&aacute; de la herramienta que utilice. Por ejemplo, sus criterios pueden basarse en consultas espaciales o de atributos, &aacute;reas visibles desde una altura concreta, &aacute;reas aguas abajo para puntos de drenaje espec&iacute;ficos o tiempo de conducci&oacute;n en unas condiciones de tr&aacute;fico determinadas.
+            <ul>
+                <li> <b>Elegir mejores instalaciones</b> selecciona las mejores ubicaciones para las instalaciones asignando ubicaciones que tienen demanda para esas instalaciones de forma que se satisfaga un determinado objetivo.
+                </li>
+                <li> <b>Crear cuenca visual</b> crea &aacute;reas visibles sobre la base de las ubicaciones especificadas.
+                </li>
+                <li> <b>Crear cuencas hidrogr&aacute;ficas</b> crea &aacute;reas de captaci&oacute;n bas&aacute;ndose en las ubicaciones que especificas.
+                </li>
+                <li> <b>Derivar nuevas ubicaciones</b> crea nuevas &aacute;reas a partir de ubicaciones del &aacute;rea de estudio que cumplen una serie de criterios.
+                </li>
+                <li> <b>Buscar centroides</b> busca el centro representativo (centroide) de las entidades de entrada.
+                </li>
+                <li> <b>Buscar ubicaciones existentes</b> busca &aacute;reas de una capa que cumplen una serie de criterios.
+                </li>
+                <li> <b>Buscar ubicaciones similares</b> busca las ubicaciones m&aacute;s similares a una o varias ubicaciones de referencia en funci&oacute;n de los criterios especificados.
+                </li>
+                <li class="PortalOnly"> <b>Geocodificar ubicaciones de tabla</b> convierte direcciones de una tabla en coordenadas. 
+                </li>
+                <li> <b>Trazado aguas abajo</b> determina las rutas de flujo en direcci&oacute;n aguas abajo y desde las ubicaciones especificadas.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="ChooseBestFacilitiesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Elegir mejores instalaciones</h2></td>
+                    <td>
+                    <img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" class="titleImage" alt="Elegir mejores instalaciones">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Elige las mejores ubicaciones para las instalaciones asignando ubicaciones que tienen demanda para esas instalaciones de forma que se satisfaga un determinado objetivo.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Crear cuenca visual</h2></td>
+                    <td>
+                    <img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" class="titleImage" alt="Crear cuenca visual">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Crea &aacute;reas que est&aacute;n visibles en funci&oacute;n de las ubicaciones que se especifiquen.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateWatershedsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Crear cuencas hidrográficas</h2></td>
+                    <td>
+                    <img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" class="titleImage" alt="Crear cuencas hidrogr&aacute;ficas">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Crea &aacute;reas de captaci&oacute;n en funci&oacute;n de las ubicaciones especificadas.
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveNewLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Derivar nuevas ubicaciones</h2></td>
+                    <td>
+                    <img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" class="titleImage" alt="Derivar nuevas ubicaciones">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Crea en el &aacute;rea de estudio nuevas entidades existentes que cumplen una serie de criterios especificados. Estos criterios se pueden basar en consultas de atributos (por ejemplo, parcelas que est&aacute;n vac&iacute;as) y consultas espaciales (por ejemplo, a 1 kil&oacute;metro de un r&iacute;o). 
+            </p>
+            <br/>
+        </div>
+        <div id="FindCentroidsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Buscar centroides</h2></td>
+                    <td>
+                    <img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" class="titleImage" alt="Buscar centroides">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Busca el centro representativo (centroide) de cada entidad multipunto, de l&iacute;nea o de &aacute;rea que sea de entrada.
+            </p>
+            <br/>
+        </div>
+        <div id="FindExistingLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Buscar ubicaciones existentes</h2></td>
+                    <td>
+                    <img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" class="titleImage" alt="Buscar ubicaciones existentes">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Selecciona en el &aacute;rea de estudio entidades existentes que cumplen una serie de criterios especificados. Estos criterios se pueden basar en consultas de atributos (por ejemplo, parcelas que est&aacute;n vac&iacute;as) y consultas espaciales (por ejemplo, a 1 kil&oacute;metro de un r&iacute;o). 
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Geocodificar ubicaciones de tabla</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="Geocodificar ubicaciones de tabla">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Convierte direcciones en coordenadas. Usa esta herramienta con direcciones en una hoja de c&aacute;lculo de Excel o un archivo CSV.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Buscar ubicaciones similares</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="Buscar ubicaciones similares">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Busca las ubicaciones m&aacute;s similares a una o varias ubicaciones de referencia en funci&oacute;n de los criterios que especifiques.
+            </p>
+            <br/>
+        </div>
+        <div id="TraceDownstreamTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Seguimiento aguas abajo</h2></td>
+                    <td>
+                    <img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" class="titleImage" alt="Seguimiento aguas abajo">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Determina los recorridos del flujo aguas abajo desde las ubicaciones que especifique.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="largesize">
+        <h2>Analizar patrones</h2>
+        <hr/>
+        <p>Estas herramientas le ayudan a identificar, cuantificar y visualizar los patrones espaciales de sus datos.  
+            <ul>
+                <li> <b>Calcular densidad</b> toma cantidades conocidas de un fen&oacute;meno y las expande a trav&eacute;s del mapa.
+                </li>
+                <li> <b>Buscar puntos calientes</b> identifica clustering estad&iacute;sticamente significativo en el patr&oacute;n espacial de sus datos.
+                </li>
+                <li> <b>Buscar valores at&iacute;picos</b> determina si hay alg&uacute;n valor at&iacute;pico estad&iacute;sticamente significativo en el patr&oacute;n espacial de sus datos.
+                </li>
+                <li> <b>Buscar cl&uacute;steres de puntos</b> encuentra cl&uacute;steres de entidades de punto dentro del ruido colindante en funci&oacute;n de su distribuci&oacute;n espacial.
+                </li>
+                <li> <b>Interpolar puntos</b> predice los valores de las nuevas ubicaciones en funci&oacute;n de las mediciones encontradas en un conjunto de puntos.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calcular densidad</h2></td>
+                    <td>
+                    <img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" class="titleImage" alt="Calcular densidad">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>El an&aacute;lisis de densidad toma cantidades conocidas de un fen&oacute;meno y las extiende por el mapa. Puedes usar esta herramienta, por ejemplo, para mostrar concentraciones de rayos o de tornados, acceso a las instalaciones m&eacute;dicas y densidades de poblaci&oacute;n.
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Buscar puntos calientes</h2></td>
+                    <td>
+                    <img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" class="titleImage" alt="Buscar puntos calientes">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Esta herramienta crea un mapa que muestra el clustering espacial estad&iacute;sticamente significativo que existe en tus datos. Usa esta herramienta para revelar los puntos calientes (rojos) y fr&iacute;os (azules) inesperados de valores altos y bajos de viviendas, densidades de actos delictivos, v&iacute;ctimas mortales de accidentes de tr&aacute;fico, desempleo o biodiversidad, por ejemplo.
+            </p>
+            <br/>
+        </div>
+        <div id="FindOutliersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Buscar valores atípicos</h2></td>
+                    <td>
+                    <img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" class="titleImage" alt="Buscar valores at&iacute;picos">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Esta herramienta crea un mapa que muestra agrupaciones y valores at&iacute;picos espaciales estad&iacute;sticamente significativos presentes en sus datos. Utilice esta herramienta para identificar entidades que tengan valores considerablemente distintos a sus vecinos.  Por ejemplo, puede utilizar esta herramienta para buscar patrones de gasto an&oacute;malos, determinar d&oacute;nde est&aacute;n los l&iacute;mites m&aacute;s marcados entre riqueza y pobreza en un &aacute;rea de estudio o determinar si hay condados en Estados Unidos con una esperanza de vida excepcionalmente baja en comparaci&oacute;n con sus vecinos.
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Buscar clústeres de puntos</h2></td>
+                    <td>
+                    <img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" class="titleImage" alt="Buscar cl&uacute;steres de puntos">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Esta herramienta detecta en qu&eacute; &aacute;reas existen concentraciones de puntos y d&oacute;nde est&aacute;n separados por &aacute;reas vac&iacute;as o con escasos puntos. Los puntos que no forman parte de un cl&uacute;ster se etiquetan como ruido.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpolar puntos</h2></td>
+                    <td>
+                    <img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" class="titleImage" alt="Interpolar puntos">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Esta herramienta te permite predecir los valores de nuevas ubicaciones en funci&oacute;n de las mediciones encontradas en un conjunto de puntos. La herramienta toma los datos de puntos con valores en cada punto y devuelve &aacute;reas clasificadas por los valores predichos. Puedes usar esta herramienta, por ejemplo, para predecir los niveles de precipitaciones en una cuenca hidrogr&aacute;fica a partir de las mediciones realizadas en los distintos pluvi&oacute;metros.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="largesize">
+        <h2>Utilizar proximidad</h2>
+        <hr/>
+        <p>  Estas herramientas te ayudan a responder a una de las preguntas m&aacute;s comunes del an&aacute;lisis espacial: &quot;&iquest;Qu&eacute; est&aacute; cerca de qu&eacute;?&quot;
+            <ul>
+                <li> <b>Conectar or&iacute;genes con destinos</b> mide el tiempo de recorrido o la distancia entre pares de puntos.
+                </li>
+                <li> <b>Crear zonas de influencia</b> crea &aacute;reas de igual distancia desde las entidades.
+                </li>
+                <li> <b>Crear &aacute;reas de tiempo de recorrido</b> busca &aacute;reas en torno a las ubicaciones a las que se puede llegar en un periodo de tiempo dado.
+                </li>
+                <li> <b>Buscar m&aacute;s cercano</b> identifica aquellos lugares que est&aacute;n m&aacute;s cerca de ubicaciones conocidas.
+                </li>
+                <li> <b>Planificar rutas</b> determina la mejor manera de definir las rutas de una flota de veh&iacute;culos para visitar muchas paradas.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ConnectOriginsToDestinationsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Conectar orígenes con destinos</h2></td>
+                    <td>
+                    <img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" class="titleImage" alt="Conectar or&iacute;genes con destinos">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Conectar or&iacute;genes con destinos mide el tiempo de recorrido o la distancia entre pares de puntos. La herramienta puede notificar distancias en l&iacute;nea recta, distancias en carretera o tiempos de recorrido. Con esta herramienta, puedes
+            </p>
+            <p>
+                <ul>
+                    <li>Calcula la distancia o el tiempo total que los trabajadores emplean en sus desplazamientos de casa al trabajo.
+                    </li>
+                    <li>Mide a qu&eacute; distancia viajan los clientes para comprar en tus establecimientos. Usa esta informaci&oacute;n para definir el alcance de tu mercado, en especial al elegir los destinatarios de las campa&ntilde;as publicitarias o elegir las ubicaciones de los nuevos establecimientos.
+                    </li>
+                    <li>Calcular el kilometraje esperado para tu flota de veh&iacute;culos. Despu&eacute;s de eso, ejecuta la herramienta Resumir dentro de para conocer el kilometraje por estado o por otra regi&oacute;n.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Debes proporcionar puntos iniciales y finales, y la herramienta devuelve una capa que contiene l&iacute;neas de rutas, incluidas las mediciones, entre los pares de or&iacute;genes y destinos.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateBuffersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Crear zonas de influencia</h2></td>
+                    <td>
+                    <img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" class="titleImage" alt="Crear zonas de influencia">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Una zona de influencia es un &aacute;rea que cubre una distancia dada desde una entidad de puntos, de l&iacute;nea o de &aacute;rea. 
+            </p>
+            <p>Las zonas de influencia se suelen utilizar para crear &aacute;reas que se pueden analizar m&aacute;s a fondo usando otras herramientas como Superponer capas. Por ejemplo, si la pregunta es &quot;&iquest;Qu&eacute; edificios est&aacute;n a menos de un kil&oacute;metro del colegio?&quot;, la respuesta se puede encontrar creando una zona de influencia de un kil&oacute;metro en torno al colegio y superponiendo la zona de influencia con la capa que contiene las superficies de los edificios. El resultado final es una capa con los edificios que se encuentran a un kil&oacute;metro del colegio.  
+            </p>
+            <br/>
+        </div>
+        <div id="CreateDriveTimeAreasTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Crear áreas de tiempo de recorrido por vehículo</h2></td>
+                    <td>
+                    <img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" class="titleImage" alt="Crear &aacute;reas de tiempo de recorrido">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Un &aacute;rea de tiempo de recorrido es el &aacute;rea a la que se puede llegar en un tiempo de recorrido especificado o que est&aacute; a una distancia de conducci&oacute;n dada. Las &aacute;reas de tiempo de recorrido pueden ayudar a responder a preguntas como:
+                <ul>
+                    <li>&iquest;A d&oacute;nde puedo ir desde aqu&iacute; conduciendo 30 minutos?
+                    </li>
+                    <li>&iquest;A d&oacute;nde puedo ir desde aqu&iacute; conduciendo 30 minutos a las 6:00 p.m. durante la hora punta?
+                    </li>
+                    <li>&iquest;A qu&eacute; &aacute;reas de la ciudad pueden llegar los bomberos en cinco minutos? &iquest;En qu&eacute; medida mejorar&iacute;a la cobertura de la respuesta frente a los incendios si se construyera aqu&iacute; un nuevo parque de bomberos?
+                    </li>
+                    <li>&iquest;Qu&eacute; &aacute;reas de mercado cubre mi negocio? &iquest;Qu&eacute; &aacute;reas est&aacute;n a un m&aacute;ximo de 15 km de mis tiendas?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindNearestTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Buscar más cercano</h2></td>
+                    <td>
+                    <img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" class="titleImage" alt="Buscar m&aacute;s cercano">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Mide el coste de viajar entre los incidentes y las instalaciones y determina cu&aacute;les est&aacute;n m&aacute;s cerca entre s&iacute;. El resultado es una capa que muestra las mejores rutas entre incidentes e instalaciones junto con el coste (tiempo y distancia) del viaje para cada ruta. Por ejemplo, puedes usar esta herramienta para encontrar el hospital m&aacute;s cercano a un accidente o el cajero m&aacute;s pr&oacute;ximo a tu ubicaci&oacute;n actual.
+            </p>
+            <br/>
+        </div>
+        <div id="PlanRoutesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Planificar rutas</h2></td>
+                    <td>
+                    <img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" class="titleImage" alt="Planificar rutas">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Si proporcionas un conjunto de paradas y el n&uacute;mero de veh&iacute;culos disponibles para visitar las paradas, Planificar rutas determina la manera de asignar las paradas con eficiencia a los veh&iacute;culos y definir las rutas de estos hasta las paradas.
+            </p>
+            <p>Usa esta herramienta para planificar el trabajo de un equipo m&oacute;vil de inspectores, tasadores, proveedores de servicios de asistencia en el hogar y otros; entregar o recoger mercanc&iacute;as en ubicaciones remotas u ofrecer servicios de transportes a las personas.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>Administrar datos</h2>
+        <hr/>
+        <p>Estas herramientas se usan para la administraci&oacute;n diaria de los datos geogr&aacute;ficos y para combinar datos antes del an&aacute;lisis.  
+            <ul>
+                <li> <b>Disolver l&iacute;mites</b> fusiona &aacute;reas que comparten un l&iacute;mite y un valor de atributo.
+                </li>
+                <li> <b>Extraer datos</b> crea datasets nuevos extrayendo entidades de los datos existentes.
+                </li>
+                <li> <b>Generar teselaciones</b> crea teselaciones seg&uacute;n la extensi&oacute;n de los datos.
+                </li>
+                <li> <b>Fusionar capas</b> copia todas las entidades de dos o m&aacute;s capas existentes en una capa nueva.
+                </li>
+                <li> <b>Superponer capas</b> combina dos o m&aacute;s capas en una sola capa.  
+La superposici&oacute;n equivale a examinar una pila de mapas y crear un &uacute;nico mapa que contenga toda la informaci&oacute;n encontrada en la pila.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Disolver límites</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Disolver l&iacute;mites">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Las &aacute;reas que se superponen o comparten un l&iacute;mite se fusionan para formar una sola &aacute;rea.    
+            </p>
+            <p>Puede controlar qu&eacute; l&iacute;mites est&aacute;n fusionados especificando un campo. Por ejemplo, si tiene una capa de condados y cada condado tiene un atributo  <i>State_Name</i>, puede disolver los l&iacute;mites utilizando el atributo <i>State_Name</i>.  Los condados adyacentes se fusionar&aacute;n si tienen el mismo valor de <i>State_Name</i>.  El resultado final es una capa de l&iacute;mites de estado.
+            </p>
+            <br/>
+        </div>
+        <div id="ExtractDataTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Extraer datos</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" class="titleImage" alt="Extraer datos">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Crea un archivo zip, CSV o KMZ de datos a partir de las capas y de un &aacute;rea de inter&eacute;s especificada.
+            </p>
+            <p> 
+            </p>
+            <br/>
+        </div>
+        <div id="GenerateTessellationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Generar teselaciones</h2></td>
+                    <td>
+                    <img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" class="titleImage" alt="Generar teselaciones">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Genera teselaciones en un &aacute;rea de estudio siguiendo una forma y un tama&ntilde;o espec&iacute;ficos.
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Fusionar capas</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="Fusionar capas">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Copia las entidades de dos o m&aacute;s capas existentes en una nueva capa. Por ejemplo:
+                <ul>
+                    <li>Tengo tres capas correspondientes a Inglaterra, Gales y Escocia y quiero obtener una &uacute;nica capa de Gran Breta&ntilde;a. 
+                    </li>
+                    <li>Tengo doce capas y cada una de ellas contiene informaci&oacute;n de parcelas de municipios contiguos. Deseo unirlas en una sola capa y conservar &uacute;nicamente los atributos que tienen el mismo nombre y el mismo tipo en las doce capas de entrada.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Superponer capas</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" class="titleImage" alt="Superponer capas">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Superposici&oacute;n combina dos o m&aacute;s capas en una sola capa. La superposici&oacute;n equivale a examinar una pila de mapas y crear un &uacute;nico mapa que contenga toda la informaci&oacute;n encontrada en la pila. Por ejemplo:
+                <ul>
+                    <li>&iquest;Qu&eacute; parcelas est&aacute;n dentro de las llanuras aluviales de 100 a&ntilde;os? (&quot;Dentro de&quot; es solo otra forma de decir &quot;encima de&quot;.)
+                          
+                    </li>
+                    <li>&iquest;Qu&eacute; carreteras est&aacute;n dentro de qu&eacute; pa&iacute;ses?
+                    </li>
+                    <li>&iquest;Qu&eacute; uso del suelo est&aacute; encima de qu&eacute; tipo de suelo?
+                         
+                    </li>
+                    <li>&iquest;Qu&eacute; pozos est&aacute;n dentro de bases militares abandonadas?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Seyahat Masraf Yolunu Çoklu Çizgi Olarak Belirle</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Seyahat Masraf Yolunu &Ccedil;oklu &Ccedil;izgi Olarak Belirleme aracının &ccedil;izimi"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, kaynaklar ve bilinen hedefler arasındaki en az maliyetli yol &ccedil;oklu &ccedil;izgilerini hesaplar.
+    </p>
+    <p>&Ouml;rnek uygulamalar arasında şunlar yer alır:
+        <ul>
+            <li>İnşaat maliyetleri a&ccedil;ısından yeni bir yol i&ccedil;in en iyi rotanın bulunması.
+                
+
+            </li>
+            <li>Bir&ccedil;ok banliy&ouml; b&ouml;lgesinden (kaynak) en yakın alışveriş merkezine (varış noktasına) gidilecek yolun belirlenmesi.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> işaretli ise, yalnızca ge&ccedil;erli harita yayılımında g&ouml;r&uuml;n&uuml;r olan girdi katmanlarındaki konumlar analiz edilir. İşaretli değilse, her iki girdi katmanındaki t&uuml;m konumlar, ge&ccedil;erli harita yayılımının dışında bile olsa analiz edilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Şunlardan yolları belirlemek için raster veya detay kaynağı katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>En az maliyetli varış noktasına en az maliyetli yolun belirlendiği h&uuml;creleri tanımlayan bir g&ouml;r&uuml;nt&uuml; servisi veya detay servisi.
+            </p>
+            <p>Girdi bir g&ouml;r&uuml;nt&uuml; servisi ise, girdi ge&ccedil;erli değerlere sahip olan h&uuml;crelerden oluşur (sıfır ge&ccedil;erli bir değerdir) ve kalan h&uuml;creler NoData (Verisiz) olarak belirlenmelidir.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Seyahat maliyeti raster katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Her bir h&uuml;crenin i&ccedil;inden planimetrik olarak hareket etmek i&ccedil;in empedansı ya da maliyeti tanımlayan bir raster.
+            </p>
+            <p>Her h&uuml;cre konumundaki değer, h&uuml;cre i&ccedil;inde hareket etmek i&ccedil;in birim başına maliyet mesafesini temsil eder. Her h&uuml;cre konumu değeri h&uuml;cre &ccedil;&ouml;z&uuml;n&uuml;rl&uuml;ğ&uuml; ile &ccedil;arpılırken, aynı zamanda h&uuml;cre i&ccedil;inden ge&ccedil;menin toplam maliyetini elde etmek i&ccedil;in &ccedil;apraz (diyagonal) hareketi dengeler.
+            </p>
+            <p>Maliyet rasterının değerleri tamsayı veya kayan nokta olabilir, ancak negatif veya sıfır olamaz (negatif veya sıfır maliyete sahip olamazsınız).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Girdi Hedef Rasterı veya Detayları</h2></div>
+        <hr/>
+        <div>
+            <p>Mesafeyi hesaplamak i&ccedil;in kullanılan hedefleri tanımlayan girdi. Katman, raster veya detay olabilir.
+            </p>
+            <p>Girdi bir g&ouml;r&uuml;nt&uuml; servisi ise, girdi ge&ccedil;erli değerlere sahip olan h&uuml;crelerden oluşur (sıfır ge&ccedil;erli bir değerdir) ve kalan h&uuml;creler NoData (Verisiz) olarak belirlenmelidir.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Sonuç çoklu çizgi katman adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adı. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>İ&ccedil;eriğim</b>&rsquo;de, <b>Sonu&ccedil;ları Kaydet</b> a&ccedil;ılır kutusunu kullanarak sonucun kaydedileceği klas&ouml;r&uuml;n adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Belirlenecek yol türlerini seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Girdi hedef verisindeki değerler ve b&ouml;lgelerin maliyet yolu hesaplamalarında nasıl yorumlanacağını tanımlar.
+            </p>
+            <ul>
+                <li>En İyi Tek&mdash;Girdi hedef verilerindeki t&uuml;m h&uuml;creler veya konumlar i&ccedil;in, en d&uuml;ş&uuml;k maliyetli yol, kaynak konuma giden en d&uuml;ş&uuml;k maliyetli yolların minimum olanına sahip olan konumdan t&uuml;retilir. Varsayılan değerdir
+                    
+
+                </li>
+                <li>Her H&uuml;creye&mdash;Girdi hedef verilerinde ge&ccedil;erli değerlere sahip her h&uuml;cre veya konum i&ccedil;in, en az maliyetli yol belirlenir ve &ccedil;ıktı detay servisinde kaydedilir. Bu se&ccedil;enekle, girdi hedef verilerinin her bir h&uuml;cresi ayrı ayrı ele alınır ve her biri i&ccedil;in h&uuml;creden en az maliyetli yol belirlenir.
+                    
+
+                </li>
+                <li>Her B&ouml;lgeye&mdash;Girdi hedef verilerindeki her b&ouml;lge i&ccedil;in, en az maliyetli yol belirlenir ve &ccedil;ıktı detay servisinde kaydedilir. Bu se&ccedil;enekle, her b&ouml;lge i&ccedil;in en d&uuml;ş&uuml;k maliyetli yol, b&ouml;lgedeki en d&uuml;ş&uuml;k maliyetli mesafe ağırlıklandırmasına sahip h&uuml;cre veya konumda başlar.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Pixels classificeren met behulp van deep learning</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Pixels classificeren met behulp van deep learning"></h2>
+        <hr/>
+    <p>Deze tool voert een getraind deep learningmodel uit op een invoerraster om een ​​geclassificeerd raster te produceren en aan elke geldige pixel wordt een klasselabel toegewezen.
+    </p>
+    <p>Als  <b>Huidige kaartextent gebruiken</b> is aangevinkt, wordt alleen het rastergebied dat in de huidige extent van de kaart zichtbaar is, geanalyseerd. Als dit niet is aangevinkt, wordt het volledige raster geanalyseerd, zelfs als dit zich buiten de huidige extent van de kaart bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Kies een afbeelding die wordt gebruikt om pixels te classificeren</h2></div>
+        <hr/>
+        <div>
+            <p>De invoerafbeelding om te classificeren.
+            </p>
+            <p>Dit kan een imageservice-URL, een rasterlaag of een imageservicelaag zijn.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Kies een deep learningmodel dat wordt gebruikt om pixels te classificeren</h2></div>
+        <hr/>
+        <div>
+            <p>Het deep learningpakketitem voor invoer ( <code>.dlpk</code>).
+            </p>
+            <p>Het deep learningpakket bestaat uit het Esri-modeldefinitie JSON-bestand ( <code>.emd</code>), het binaire deep learningmodelbestand en optioneel het Python-rasterobject dat moet worden gebruikt.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Geef de argumenten van het deep learningmodel op</h2></div>
+        <hr/>
+        <div>
+            <p>De functieargumenten worden gedefinieerd in de Python-rasterfunctieklasse waarnaar wordt verwezen door het invoermodel. Dit is waar men bijkomende deep learningparameters en argumenten voor experimenten en verfijning opsomt, zoals een vertrouwensdrempel voor het aanpassen van de gevoeligheid.
+            </p>
+            <p>De namen van de argumenten worden ingevuld door de tool bij het lezen van de Python-module op de rasteranalyseserver.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>U kunt de naam van een map opgeven in  <b>Mijn Content</b>, waar het resultaat wordt opgeslagen met het vervolgkeuzemenu <b>Resultaat opslaan in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

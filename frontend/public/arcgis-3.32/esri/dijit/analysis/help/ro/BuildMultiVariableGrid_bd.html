@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Build Multi-Variable Grid</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Diagrama fluxului de lucru Completare date"></h2>
+        <hr/>
+    <p>Instrumentul Build Multi-Variable Grid lucrează cu unul sau mai multe straturi tematice de obiecte spațiale punct, linie sau poligon. Instrumentul generează o grilă de coșuri pătrate sau hexagonale și calculează valorile pentru fiecare coș pe baza proximității fiecărui strat tematic de intrare. Aceste valori pot include următoarele variabile: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Distance to Nearest</b>&mdash;Distanța de la fiecare coș la cel mai apropiat obiect spațial
+            </li>
+            <li> <b>Attribute of Nearest</b>&mdash;O valoare de c&acirc;mp a obiectului spațial cel mai apropiat de fiecare coș
+            </li>
+            <li> <b>Summary of Nearby</b>&mdash;O statistică specificată a tuturor obiectelor spațiale &icirc;ntr-o anumită distanță de fiecare coș
+            </li>
+            <li> <b>Summary of Intersecting</b>&mdash;O statistică specificată a tuturor obiectelor spațiale care intersectează fiecare coș
+            </li>
+        </ul>
+        
+    </p>
+    <p>Stratul tematic rezultant va include doar variabilele specificate de dvs. Aceste variabile vă pot ajuta să &icirc;nțelegeți proximitatea și distribuția datelor dvs. Rezultatele vă pot ajuta să &icirc;ncepeți să răspundeți la &icirc;ntrebări precum:
+        <ul>
+            <li>Av&acirc;nd &icirc;n vedere straturile tematice multiple ale infrastructurii de transport public, care parte a orașului este cel mai puțin accesibilă transportului public?
+            </li>
+            <li>Av&acirc;nd &icirc;n vedere straturile tematice de căi navigabile, cum ar fi lacurile și r&acirc;urile, care este denumirea corpului de apă cel mai apropiat de fiecare localizare din SUA?
+            </li>
+            <li>Av&acirc;nd &icirc;n vedere un strat tematic de venituri pe gospodărie, unde &icirc;n SUA se găsește cea mai mare variația a veniturilor pe o rază de 50 mile?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Alegeți tipurile de coșuri folosite pentru construcția grilei multi-variabile</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Tipul și dimensiunea coșurilor care vor fi folosite pentru construcția grilei multi-variabile. Pentru opțiunea  <b>Square</b>, numărul şi unităţile specificate determină &icirc;nălţimea şi lungimea pătratului. Pentru opțiunea <b>Hexagon</b>, numărul şi unităţile specificate determină distanţa dintre laturile paralele.
+            </p>
+            <p>Această analiză utilizează coşuri şi necesită un sistem de coordonate proiectat. Puteţi seta  <b>Sistemul de coordonate de procesare</b> din <b>Medii de analiză</b>. Dacă sistemul dvs. de coordonate de procesare nu este setat la un sistem de coordonate proiectat, vi se va indica să &icirc;l setaţi atunci c&acirc;nd <b>Executați Analiza</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Alegeți straturile tematice de intrare și variabilele pe care doriți să le includeți în grilă</h2></div>
+        <hr/>
+        <div>
+            <p>Faceți clic pe butonul de adăugare  ( <b>+</b>) pentru a deschide fereastra <b>Add Variables</b> și a adăuga un strat tematic analizei dvs. &Icirc;n fereastra <b>Add Variables</b>, alegeți un strat tematic de intrare și configurația variabilele de calculat pentru acel strat tematic de intrare.
+            </p>
+            <p>După ce ați ales și configurat variabilele pe care doriți să le calculați, stratul tematic va fi listat &icirc;n fereastra instrumentului cu orice alte straturi tematice selectate. Faceţi clic pe butonul de editare pentru orice strat tematic pentru a deschide fereastra  <b>Add Variables</b> și a vedea toate variabilele configurate pentru acel strat tematic. Faceți clic pe butonul de ștergere pentru orice strat tematic pentru a elimina acel strat tematic și toate variabilele aferente din analiză.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Add Variables</h2></div>
+        <hr/>
+        <div>
+            <p>Această fereastră vă permite să alegeți un strat tematic de intrare și să configurați variabilele de calculat pentru acel strat tematic de intrare. Pentru a &icirc;ncepe, utilizați meniul vertical  <b>Choose an input layer</b> pentru a selecta stratul tematic punct, poligon sau linie pe care doriți să-l adăugați analizei dvs.
+            </p>
+            <p>&Icirc;n afară de a alege un strat tematic din harta dvs., puteţi selecta opţiunile  <b>Alegere strat tematic de analiză</b> &icirc;n partea inferioară a listei verticale pentru a răsfoi conţinutul pentru stratul tematic sau setul de date pentru partajarea de fişiere big data.
+            </p>
+            <p>După ce ați ales un strat tematic de intrare, faceți clic pe butonul  <b>Add a variable</b> pentru a deschide o nouă variabilă spre editare. Trebuie să furnizați o denumire unică pentru fiecare variabilă. Aceasta va fi denumirea c&acirc;mpului care este creat &icirc;n tabelul de atribute al stratului tematic rezultant.
+            </p>
+            <p>Folosiți meniul vertical pentru a selecta tipul variabilei de adăugat. Fiecare tip de variabilă trebuie configurat cu un set unic de parametri, și toți parametrii sunt necesari.
+            </p>
+            <p>După ce ați adăugat toate variabilele dorite pentru stratul tematic ales, faceți clic pe butonul  <b>Add</b> pentru a salva variabilele.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p> Numele stratului tematic care va fi creat. Dacă scrieți &icirc;ntr-un ArcGIS Data Store, rezultatele dvs. vor fi salvate &icirc;n  <b>Resursele mele</b> și adăugate pe hartă. Dacă scrieți &icirc;ntr-o partajare de fişiere big data, rezultatele dvs. vor fi stocate &icirc;n partajarea de fişiere big data și adăugate la manifestul acesteia. Nu vor fi adăugate pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic există deja, instrumentul va eşua.
+            </p>
+            <p>C&acirc;nd scrieți &icirc;n  ArcGIS Data Store (depozit de date relaționale sau spațio-temporale de volum mare) utiliz&acirc;nd caseta derulantă  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

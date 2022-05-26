@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Detectar Objetos Utilizando Aprendizado Detalhado</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="Detectar Objetos Utilizando Aprendizado Detalhado"></h2>
+        <hr/>
+    <p>Esta ferramenta executa um modelo de aprendizado detalhado e testado em um raster de entrada para produzir uma classe de fei&ccedil;&atilde;o contendo os objetos localizados por ela. As fei&ccedil;&otilde;es podem ser caixas delimitadoras ou pol&iacute;gonos ao redor dos objetos encontrados ou pontos nos centros dos objetos.
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente as &aacute;reas do raster que s&atilde;o vis&iacute;veis na extens&atilde;o de mapa atual ser&atilde;o analisadas. Se n&atilde;o selecionada, o raster inteiro ser&aacute; analisado, mesmo que estiver fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Escolher imagem utilizada para detectar objetos</h2></div>
+        <hr/>
+        <div>
+            <p>A imagem de entrada utilizada para detectar objetos.
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Escolher modelo de aprendizado detalhado utilizado para detectar objetos</h2></div>
+        <hr/>
+        <div>
+            <p>O item do pacote de aprendizado detalhado de entrada ( <code>.dlpk</code>) .
+            </p>
+            <p>O pacote de aprendizado detalhado &eacute; composto do arquivo JSON da defini&ccedil;&atilde;o de modelo da Esri ( <code>.emd</code>), o arquivo de modelo bin&aacute;rio de aprendizado detalhado e, opcionalmente, a fun&ccedil;&atilde;o de raster do Python a ser utilizada.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Especificar parâmetros do modelo de aprendizado detalhado</h2></div>
+        <hr/>
+        <div>
+            <p>Os par&acirc;metros da fun&ccedil;&atilde;o s&atilde;o definidos na classe de fun&ccedil;&atilde;o de raster do Python referenciada pelo modelo de entrada. &Eacute; aqui que voc&ecirc; lista os par&acirc;metros adicionais de aprendizado detalhado e os par&acirc;metros para experimentos e refinamentos, como um limite de confian&ccedil;a para ajustar a sensibilidade.
+            </p>
+            <p>Os nomes dos par&acirc;metros s&atilde;o preenchidos pela ferramenta da leitura do m&oacute;dulo Python no servidor de an&aacute;lise do raster.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>Remover feições duplicadas da saída (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Executa supress&atilde;o n&atilde;o m&aacute;xima, onde objetos duplicados s&atilde;o identificados e a fei&ccedil;&atilde;o duplicada com um valor de confian&ccedil;a inferior &eacute; removida. 
+                <ul>
+                    <li>Desmarcada&mdash;Todos os objetos detectados estar&atilde;o na classe de fei&ccedil;&atilde;o de sa&iacute;da. Este &eacute; o padr&atilde;o.
+                        
+
+                    </li>
+                    <li>Marcada&mdash;Remove objetos duplicados que s&atilde;o detectados.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>Campo de pontuação de confiança</h2></div>
+        <hr/>
+        <div>
+            <p>O campo no servi&ccedil;o da fei&ccedil;&atilde;o que cont&eacute;m as pontua&ccedil;&otilde;es de confian&ccedil;a como sa&iacute;da pelo m&eacute;todo de detec&ccedil;&atilde;o do objeto.
+            </p>
+            <p>Este par&acirc;metro &eacute; exigido quando voc&ecirc; marca o par&acirc;metro  <b>Sem Supress&atilde;o M&aacute;xima</b> .
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>Campo de valor da classe</h2></div>
+        <hr/>
+        <div>
+            <p>O campo de valor da classe no servi&ccedil;o de fei&ccedil;&atilde;o de sa&iacute;da. Se n&atilde;o especificado, a ferramenta utilizar&aacute; os campos de valor da classe padr&atilde;o  <i>Classvalue</i> e <i>Value</i>. Se estes campos n&atilde;o existirem, todas as fei&ccedil;&otilde;es ser&atilde;o tratadas como a mesma classe de objeto.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>Taxa máxima de sobreposição</h2></div>
+        <hr/>
+        <div>
+            <p>A taxa m&aacute;xima de sobreposi&ccedil;&atilde;o para duas fei&ccedil;&otilde;es sobrepostas, que &eacute; definida como a propor&ccedil;&atilde;o da &aacute;rea de intersec&ccedil;&atilde;o sobre a &aacute;rea de uni&atilde;o. O padr&atilde;o &eacute; 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Voc&ecirc; pode especificar o nome de uma pasta em  <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo utilizando a caixa suspensa <b>Salvar resultados em</b> .
+            </p>
+        </div>
+    </div>
+</div>
+</html>

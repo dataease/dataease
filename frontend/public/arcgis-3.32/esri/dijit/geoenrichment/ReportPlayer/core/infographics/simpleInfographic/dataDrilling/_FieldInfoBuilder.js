@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/infographics/simpleInfographic/dataDrilling/_FieldInfoBuilder",["../../../supportClasses/templateJsonUtils/fieldInfo/FieldInfoNameUtil","../../../supportClasses/templateJsonUtils/fieldInfo/FieldInfoBuilder"],function(d,e){return{provideFieldInfoForChartPoint:function(a,f,g,c,h){var b=a.fullName;delete a.fullName;if(b){c=c||"n";var k=c+"/"+b;a.fieldInfo={name:d.createFieldNameFromVariable(b,c),alias:a.label,fieldCategory:g?"":f.label,hasVariable:!0,
+variableID:b.substr(b.indexOf(".")+1),fullName:b,statefulName:k};d.provideQualifiedFieldInfoTemplateName(a.fieldInfo,h||d.ENRICHED_DATA_NO_LEVELS)}else a.script&&(a.fieldInfo=e.createFieldInfoFromScript(a.script),delete a.script)}}});

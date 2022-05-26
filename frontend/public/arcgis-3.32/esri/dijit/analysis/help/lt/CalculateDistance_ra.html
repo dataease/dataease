@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Skaičiuoti atstumą</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Skaičiuoti atstumą"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis skaičiuoja Euklido atstumą, kryptį ir priskyrimą i&scaron; vieno &scaron;altinio arba &scaron;altinių rinkinio.
+    </p>
+    <p>Taikymo pavyzdžiai apima tokius klausimus:
+
+        <ul>
+            <li>Koks atstumas iki artimiausio miesto?
+                
+
+            </li>
+            <li>Koks atstumas iki artimiausio kelio?
+                
+
+            </li>
+            <li>Koks atstumas iki artimiausio vandens &scaron;altinio?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jei  <b>Naudoti esamą žemėlapio aprėptį</b> pažymėta, bus analizuojamos tik tie įvesties sluoksnio elementai, kurie patenka į esamo žemėlapio aprėptį. Jei nepažymėta, bus analizuojami visi įvesties sluoksnio elementai, net jei jie nepatenka į esamą žemėlapio aprėptį.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Pasirinkite rastro arba elementų padėties sluoksnį, iki kurio norite apskaičiuoti atstumą</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnis, kuris apibrėžia &scaron;altinius, iki kurių bus skaičiuojamas atstumas. Sluoksnis gali būti vaizdų paslauga arba elementų paslauga.
+            </p>
+            <p>Vaizdų paslaugos įvesties tipas gali būti sveikasis skaičius arba reik&scaron;mė su slankiuoju kableliu.
+            </p>
+            <p>Elementų paslaugos įvestis gali būti ta&scaron;kas, linija arba plotas.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maksimalus skaičiuotinas atstumas</h2></div>
+        <hr/>
+        <div>
+            <p>Maksimalus atstumas, kuris gali būti skaičiuojamas. Pavyzdžiui, jei nurodysite 10 000 metrų reik&scaron;mę, bus skaičiuojamas Euklido atstumas iki &scaron;altinio vietų, kurios ne toliau nei ta reik&scaron;mė (atstumas).
+            </p>
+            <p>Jei reik&scaron;mė nepateikiama, atstumas bus skaičiuojamas iki nurodytos aprėpties.
+            </p>
+            <p>Galimi matavimo vienetai: kilometrai, metrai, mylios ir pėdos.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Išvesties gardelės dydis</h2></div>
+        <hr/>
+        <div>
+            <p>I&scaron;vesties rastrų gardelės dydis ir matavimo vienetai.
+            </p>
+            <p>Matavimo vienetai gali būti kilometrai, metrai, mylios ir pėdos.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Rezultatų atstumo sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnio, kuris bus sukurtas puslapyje  <b>Turinys</b> ir įtrauktas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau egzistuoja, būsite papra&scaron;yti pateikti kitą pavadinimą.
+            </p>
+            <p>Galite nurodyti aplanko  <b>Turinyje</b>, kuriame rezultatai bus įra&scaron;yti naudojant i&scaron;&scaron;okantįjį meniu <b>Rezultatą įra&scaron;yti į</b>, pavadinimą.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Rezultatų krypties sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Pavadinimas sluoksnio, kuris bus sukurtas puslapyje  <b>Turinys</b>. Įveskite pavadinimą, kuris dar nėra naudojamas <b>Turinyje</b>.
+            </p>
+            <p>Galite nurodyti aplanko  <b>Turinyje</b>, kuriame rezultatai bus įra&scaron;yti naudojant i&scaron;&scaron;okantįjį meniu <b>Rezultatą įra&scaron;yti į</b>, pavadinimą.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Rezultatų priskyrimo sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Pavadinimas sluoksnio, kuris bus sukurtas puslapyje  <b>Turinys</b>. Įveskite pavadinimą, kuris dar nėra naudojamas <b>Turinyje</b>.
+            </p>
+            <p>Galite nurodyti aplanko  <b>Turinyje</b>, kuriame rezultatai bus įra&scaron;yti naudojant i&scaron;&scaron;okantįjį meniu <b>Rezultatą įra&scaron;yti į</b>, pavadinimą.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Pasirinkti priskyrimo lauką</h2></div>
+        <hr/>
+        <div>
+            <p>Laukas įvesties &scaron;altinio sluoksnyje, kuriame yra reik&scaron;mės, apibrėžiančios kiekvieną &scaron;altinį. Tai gali būti sveikasis skaičius arba tekstinis &scaron;altinio duomenų rinkinio laukas.
+            </p>
+            <p>Numatytoji reik&scaron;mė yra  <i>Value</i>. Jei naudojant elementų paslaugą nėra lauko <i>Value</i>, bus naudojamas pirmasis pasiekiamas sveikasis skaičius arba tekstinis laukas. Jei nėra tinkamų laukų, bus naudojamas ObjectID laukas (pavyzdžiui, OID arba FID, priklausomai nuo elementų įvesties tipo).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>既存フィーチャの検索</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="既存フィーチャの検索"></h2>
+        <hr/>
+    <p>このツールは、指定した一連の条件を満たす分析範囲内で、既存のフィーチャを選択します。これらの条件は、属性検索 (所有者のいない土地区画など) と空間検索 (河川から 1 マイル以内など) に基づきます。
+    </p>
+    <p> <b>[現在のマップ範囲を使用]</b> がオンの場合、現在のマップ範囲に表示される入力レイヤーのフィーチャだけが解析されます。オフの場合、すべてのフィーチャが、現在のマップ範囲内になくても解析されます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>属性および空間クエリを使用して、検索するフィーチャを含むレイヤーを選択</h2></div>
+        <hr/>
+        <div>
+            <p>下記の属性検索と空間検索の組み合わせに基づいてフィーチャを検索するポイント レイヤー、ライン レイヤー、またはエリア レイヤー。
+            </p>
+            <p>マップからレイヤーを選択するだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択することもできます。このオプションを選択すると、解析で使用するためにさまざまなソースのデータセットを参照して選択できるギャラリーが開きます。 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>フィーチャを検索するクエリの構築</h2></div>
+        <hr/>
+        <div>
+            <p> <b>[条件式の追加]</b> ボタンを追加して、条件式を定義します。複数の条件式を追加できます。条件式を入力して <b>[分析の実行]</b> ボタンをクリックすると、入力レイヤーのフィーチャは、各条件式に基づいてフィルター処理されます。すべての条件式を満たすこれらのフィーチャが、結果レイヤーとして出力されます。
+            </p>
+            <p>作成できる条件式には、属性タイプと空間タイプの 2 つの基本的な種類があります。属性条件式は、フィールド値に関する検索で、たとえば、「 <code>where name is 'San Francisco'</code>」のような式です。空間条件式には次の 4 種類があります。
+                <ul>
+                    <li> <b>[一定距離内]</b>: フィーチャは、別のレイヤーのフィーチャから一定の距離内にある必要があります。たとえば、ロサンゼルス川から 500 m 以内にある土地区画を検索する場合などです。
+                    </li>
+                    <li> <b>[完全に含む]</b>: フィーチャには、別のレイヤー内のすべてのフィーチャが含まれている必要があります。たとえば、工業用地として指定された土地区画を完全に含んでいる集水域を検索する場合などです。集水域の外側にある土地区画は含まれません。
+                    </li>
+                    <li> <b>[完全に含まれる]</b>: フィーチャは、別のレイヤー内のフィーチャに完全に囲まれている必要があります。たとえば、完全に都市の境界線内にある学区を検索する場合などです。都市の境界の外側にある学区は含まれません。
+                    </li>
+                    <li> <b>[交差する]</b>: フィーチャには、別のレイヤー内のフィーチャの一部が含まれます。たとえば、川が交差している部分の土地区画を検索する場合などです。土地区画を通過する、または土地区画の境界線に接している川の一部は、土地区画と交差します。
+                    </li>
+                    <li> <b>[最も近い]</b>: フィーチャは、別のレイヤー内のフィーチャに最も近い必要があります。たとえば、各ホテルに最も近いレストランを検索します。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>各空間条件式には、 <b>[最も近い]</b> を例外として、対応する否定の条件式 ( <b>[一定距離内にない]</b>、 <b>[完全に含まない]</b>、 <b>[完全に含まれない]</b>、および <b>[交差しない]</b>) があります。
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p>これは、 <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前です。デフォルト名は、ツール名と入力レイヤー名に基づいて設定されます。レイヤー名がすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存先]</b> ドロップダウン メニューを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

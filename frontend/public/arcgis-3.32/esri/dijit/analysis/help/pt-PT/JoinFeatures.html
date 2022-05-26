@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Ligar Elementos</h2><p/>
+        <h2><img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" alt="Unir Elementos"></h2>
+        <hr/>
+    <p>Ligar Elementos funciona com duas camadas e liga atributos entre um elemento e outro com base em rela&ccedil;&otilde;es espaciais e de atributos. A ferramenta determina todos os elementos de entrada que correspondem &agrave;s condi&ccedil;&otilde;es de liga&ccedil;&atilde;o definidas e anexa a camada de liga&ccedil;&atilde;o &agrave; camada alvo. 
+    </p>
+    <p>Ligar Elementos pode ser aplicado a pontos, linhas, &aacute;reas e tabelas. Uma liga&ccedil;&atilde;o espacial requer que os seus dados possuam uma geometria. 
+    </p>
+    <p>Caso  <b>Utilizar a atual extens&atilde;o de mapa</b> se encontre selecionado, apenas ser&atilde;o analisados os elementos que se encontrem vis&iacute;veis na atual extens&atilde;o do mapa.  Se n&atilde;o estiver selecionado, todos os elementos da camada alvo e da camada de liga&ccedil;&atilde;o ser&atilde;o analisados, mesmo que se encontrem fora da atual extens&atilde;o de mapa.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Selecionar camada alvo</h2></div>
+        <hr/>
+        <div>
+            <p>A camada alvo que ter&aacute; atributos da camada de liga&ccedil;&atilde;o anexada &agrave; respetiva tabela.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, pode selecionar  <b>Escolher Camada de An&aacute;lise</b> que se encontra na parte inferior da lista pendente. Esta op&ccedil;&atilde;o abre uma galeria, na qual pode navegar e selecionar conjuntos de dados de v&aacute;rias fontes para utilizar na sua an&aacute;lise. 
+            </p> 
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Selecionar camada para ligar à camada alvo</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de liga&ccedil;&atilde;o com os atributos que ser&atilde;o anexados &agrave; camada alvo.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, pode selecionar  <b>Escolher Camada de An&aacute;lise</b> que se encontra na parte inferior da lista pendente. Esta op&ccedil;&atilde;o abre uma galeria, na qual pode navegar e selecionar conjuntos de dados de v&aacute;rias fontes para utilizar na sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="joinType">
+        <div><h2>Selecionar o(s) tipo(s) de ligação</h2></div>
+        <hr/>
+        <div>
+            <p>Pode aplicar uma liga&ccedil;&atilde;o espacial, uma liga&ccedil;&atilde;o de atributos ou uma combina&ccedil;&atilde;o de ambas. 
+                <ul>
+                    <li> <b>Espacial</b>&mdash;Recorre a uma rela&ccedil;&atilde;o espacial especificada para ligar elementos. Isto exige que ambas as camadas possuam geometria.
+                    </li>
+                    <li> <b>Atributo</b>&mdash;Liga elementos com base em campos iguais.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Escolher uma relação espacial</h2></div>
+        <hr/>
+        <div>
+            <p>A rela&ccedil;&atilde;o espacial que determinar&aacute; se os elementos se ligam uns aos outros. As rela&ccedil;&otilde;es dispon&iacute;veis depender&atilde;o do tipo de geometria (ponto, linha, &aacute;reas) utilizada como elementos de entrada. As rela&ccedil;&otilde;es dispon&iacute;veis incluem as seguintes:
+                <ul>
+                    <li> <b>Id&ecirc;nticos a</b>&mdash;Os elementos da camada alvo ter&atilde;o correspond&ecirc;ncia caso sejam id&ecirc;nticos a elementos da camada de liga&ccedil;&atilde;o.
+                    </li>
+                    <li> <b>Interseta</b>&mdash;Os elementos da camada alvo ter&atilde;o correspond&ecirc;ncia caso intersetem elementos da camada de liga&ccedil;&atilde;o.
+                    </li>
+                    <li> <b>Cont&eacute;m completamente</b>&mdash;Os elementos ter&atilde;o correspond&ecirc;ncia caso os elementos da camada alvo contenham completamente elementos da camada de liga&ccedil;&atilde;o.
+                    </li>
+                    <li> <b>Completamente contidos</b>&mdash;Os elementos ter&atilde;o correspond&ecirc;ncia caso os elementos da camada alvo se encontrem completamente contidos em elementos da camada de liga&ccedil;&atilde;o.
+                    </li>
+                    <li> <b>A uma dist&acirc;ncia de</b>&mdash;Os elementos da camada alvo ter&atilde;o correspond&ecirc;ncia caso se encontrem a uma dist&acirc;ncia especificada de elementos da camada de liga&ccedil;&atilde;o.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Ligação de atributos</h2></div>
+        <hr/>
+        <div>
+            <p>A rela&ccedil;&atilde;o de atributos que determinar&aacute; se os elementos se ligam uns aos outros. Os elementos s&atilde;o correspondidos quando os valores de campo na camada de liga&ccedil;&atilde;o s&atilde;o iguais a valores de campo da camada alvo. 
+            </p>
+            <p>Por exemplo, suponha que tem uma camada geogr&aacute;fica com os endere&ccedil;os residenciais de todo um condado (incluindo um campo com o c&oacute;digo postal  <i>ZIP</i>) e uma tabela com dados demogr&aacute;ficos de sa&uacute;de por c&oacute;digo postal (incluindo um campo chamado <i>HEALTHZIP</i>). Pode ligar os dados de sa&uacute;de aos dados residenciais ao corresponder o campo <i>ZIP</i> ao campo <i>HEALTHZIP</i>, o que resultar&aacute; numa camada de resid&ecirc;ncias com os seus correspondentes dados de sa&uacute;de.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Escolher operação de ligação</h2></div>
+        <hr/>
+        <div>
+            <p>Determina como as liga&ccedil;&otilde;es entre a camada alvo e a camada de liga&ccedil;&atilde;o ser&atilde;o geridas caso se determine que v&aacute;rios elementos na camada de liga&ccedil;&atilde;o t&ecirc;m a mesma rela&ccedil;&atilde;o com a camada alvo. As seguintes s&atilde;o duas opera&ccedil;&otilde;es de liga&ccedil;&atilde;o de entre as quais escolher:
+                <ul>
+                    <li> <b>Ligar one to one</b>&mdash;Esta op&ccedil;&atilde;o liga os elementos da camada alvo a um &uacute;nico elemento na camada de liga&ccedil;&atilde;o. O modo como os elementos s&atilde;o ligados &eacute; determinado pelo par&acirc;metro <b>Adicionar Estat&iacute;sticas</b> ou o par&acirc;metro <b>Definir que registo &eacute; mantido</b> . Se <b>Adicionar estat&iacute;sticas</b> for utilizado, todos os elementos ligados correspondidos ser&atilde;o resumidos para cada elemento na camada alvo. A contagem de elementos ligados ser&aacute; adicionada por predefini&ccedil;&atilde;o.Se <b>Definir que registo &eacute; mantido</b>
+ for utilizado, pode optar entre manter o primeiro registo correspondente (predefini&ccedil;&atilde;o) ou manter um registo correspondente baseado numa express&atilde;o. Uma express&atilde;o pode utilizar um campo num&eacute;rico
+(op&ccedil;&atilde;o para registo de maior ou de menor dimens&atilde;o) ou um campo de data (op&ccedil;&atilde;o para mais recente ou mais antigo).
+                    </li>
+                    <li> <b>Ligar one to many</b>&mdash;Esta op&ccedil;&atilde;o liga todos os elementos da camada de liga&ccedil;&atilde;o correspondentes &agrave; camada de alvo.  A camada resultante conter&aacute; m&uacute;ltiplos registos do elemento alvo.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Por exemplo, suponha que pretende encontrar supermercados que se encontrem at&eacute; 5 quil&oacute;metros de um mercado agr&iacute;cola.   Neste caso, a camada a ligar tem um &uacute;nico elemento que representa um mercado agr&iacute;cola, e os elementos em liga&ccedil;&atilde;o representam as mercearias locais que possuem incluindo atributos, como o total de vendas anuais. Utilizando a ferramenta  <b>Ligar Elementos</b> , descobrir&aacute; que cinco mercearias correspondem a esses crit&eacute;rios. Caso especifique uma opera&ccedil;&atilde;o de liga&ccedil;&atilde;o <b>Ligar one to many</b>, no final ter&aacute; cinco elementos no resultado, com cada linha a representar o mercado agr&iacute;cola e um supermercado. Caso especifique uma rela&ccedil;&atilde;o <b>Ligar one to one</b> e selecione uma estat&iacute;stica, no final ter&aacute; um elemento representando o mercado agr&iacute;cola e as informa&ccedil;&otilde;es resumidas referentes aos supermercados, tais como a contagem (5), e outras estat&iacute;sticas opcionais, como a soma de vendas anuais.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Adicionar estatísticas (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Caso se encontre selecionada uma op&ccedil;&atilde;o  <b>Ligar one to one</b> para campos num&eacute;ricos, pode resumir e calcular estat&iacute;sticas em elementos ligados.   Por predefini&ccedil;&atilde;o, a contagem de elementos ligados com correspond&ecirc;ncia ser&aacute; calculada e adicionada &agrave; camada resultante.  Caso opte por n&atilde;o acrescentar estat&iacute;sticas adicionais, o primeiro elemento com correspond&ecirc;ncia da camada de liga&ccedil;&atilde;o ser&aacute; ligado ao primeiro elemento com correspond&ecirc;ncia da camada alvo.   Pode calcular uma ou mais das op&ccedil;&otilde;es que se seguem:
+            </p>
+            <ul>
+                <li>Soma
+                </li>
+                <li>M&iacute;nimo
+                </li>
+                <li>M&aacute;ximo
+                </li>
+                <li>M&eacute;dia
+                </li>
+                <li>Desvio Padr&atilde;o
+                </li>
+            </ul>
+            
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se o nome da camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Guardar resultado em</b> pode definir o nome da pasta em <b>O Meu Conte&uacute;do</b> onde o resultado ser&aacute; guardado.
+            </p>
+        </div>
+    </div>
+    <div id="isView">
+        <div><h2>Criar resultados como vista de camada de elementos alojada</h2></div>
+        <hr/>
+        <div>
+            <p> Criar resultados como uma vista da camada de elementos alojada permitir&aacute; que os dados permane&ccedil;am atualizados, enquanto os dados da origem se alteram.  Camadas de visualiza&ccedil;&atilde;o alojadas de elementos que cont&ecirc;m liga&ccedil;&otilde;es (joins) ser&atilde;o apenas de leitura e n&atilde;o consomem cr&eacute;ditos de an&aacute;lise ou armazenamento.
+            </p>
+            <p>Pode criar uma como de camada de elementos alojada a partir dos resultados de an&aacute;lise caso todas as condi&ccedil;&otilde;es que se seguem se verifiquem:
+                <ul>
+                    <li>&Eacute; propriet&aacute;rio de ambas as camadas.
+                    </li>
+                    <li>Ambas as camadas s&atilde;o camadas de elementos alojadas.
+                    </li>
+                    <li>Est&aacute; a efetuar uma liga&ccedil;&atilde;o baseada em atributos.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

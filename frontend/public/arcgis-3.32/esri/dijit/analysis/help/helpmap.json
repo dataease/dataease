@@ -1,0 +1,138 @@
+{
+    "version": "1.0",
+    "map": {
+        "AggregatePoints": {
+            "toolDescription": "aggregate-points.htm",
+            "pointLayer": "aggregate-points.htm",
+            "polygonLayer": "aggregate-points.htm"
+        },
+        "AggregatePoints_bd": {
+            "toolDescription": "geoanalyticstool-aggregatepoints.htm"
+        },
+        "CalculateDensity": {
+            "toolDescription": "calculate-density.htm",
+            "inputLayer": "calculate-density.htm"
+        },
+        "ChooseBestFacilities": {
+            "toolDescription": "choose-best-facilities.htm",
+            "allocateToExistingFacilities": "choose-best-facilities.htm#ESRI_SECTION3_6E6EB159DCDA4ED79DCE1CF23AC3D3D8",
+            "minimizeTravel": "choose-best-facilities.htm#ESRI_SECTION3_31FB2F550C7F4FB1898889D1335458E0",
+            "maximizeCoverage": "choose-best-facilities.htm#ESRI_SECTION3_98834C1F3F984696B49D06DB5C286ADF",
+            "maximizeCoverageWithCapacity": "choose-best-facilities.htm#ESRI_SECTION3_71F01CF021DC4336803F092D636F1973",
+            "coverAPercentageOfDemand": "choose-best-facilities.htm#ESRI_SECTION3_6866E70248774F1CBAC6E6138AC50AC7",
+            "demandLocationsLayer": "choose-best-facilities.htm#ESRI_SECTION2_0698EBA6340E4A6B93BB4BB31C4F71DF",
+            "requiredFacilitiesLayer": "choose-best-facilities.htm#ESRI_SECTION2_0698EBA6340E4A6B93BB4BB31C4F71DF",
+            "candidateFacilitiesLayer": "choose-best-facilities.htm#ESRI_SECTION2_0698EBA6340E4A6B93BB4BB31C4F71DF",
+            "goal": "choose-best-facilities.htm#ESRI_SECTION1_4A4428B0C3FB41069B16FB2BC11F37DC"
+        },
+        "ConnectOriginsToDestinations": {
+            "toolDescription": "connect-origins-to-destinations.htm"
+        },
+        "CreateBuffers": {
+            "toolDescription": "create-buffers.htm",
+            "inputLayer": "create-buffers.htm"
+        },
+        "CreateBuffers_bd": {
+            "toolDescription": "geoanalytics-create-buffers.htm"
+        },
+        "CreateDriveTimeAreas": {
+            "toolDescription": "create-drive-time-areas.htm",
+            "inputLayer": "create-drive-time-areas.htm"
+        },
+        "DeriveNewLocations": {
+            "toolDescription": "derive-new-locations.htm",
+            "Expression": "derive-new-locations.htm"
+        },
+        "CreateViewshed": {
+            "toolDescription": "create-viewshed.htm"
+        },
+        "CreateWatersheds": {
+            "toolDescription": "create-watersheds.htm"
+        },
+        "DissolveBoundaries": {
+            "toolDescription": "dissolve-boundaries.htm",
+            "multiPartFeatures": "dissolve-boundaries.htm#GUID-84ECA8C6-2027-4C08-9B48-8F81D95A94AB"
+        },
+        "EnrichLayer": {
+            "toolDescription": "enrich-layer.htm",
+            "DataCollection": "enrich-layer.htm"
+        },
+        "ExtractData": {
+            "toolDescription": "extract-data.htm",
+            "InputLayers": "extract-data.htm"
+        },
+        "FindCentroids": {
+          "toolDescription": "find-centroids.htm"
+        },
+        "FindExistingLocations": {
+            "toolDescription": "find-existing-locations.htm",
+            "Expression": "find-existing-locations.htm"
+        },
+        "FindHotSpots": {
+            "toolDescription": "find-hot-spots.htm",
+            "AnalysisFieldPoly": "find-hot-spots.htm#ESRI_SECTION1_7743ED5A2AE3411B83140D82EEB8A41B",
+            "AnalysisFieldPoint": "find-hot-spots.htm#ESRI_SECTION2_1B09039F95004047B30B0B957F2FA893",
+            "BoundingPolygonLayer": "find-hot-spots.htm#ESRI_SECTION3_F9D255E9146E44CF99DCC140A3BB9CBB",
+            "AggregationPolygonLayer": "find-hot-spots.htm#ESRI_SECTION3_4AFB54649EC44003A2DDE65953B54AE3"
+        },
+        "FindNearest": {
+            "toolDescription": "find-nearest.htm",
+            "analysisLayer": "find-nearest.htm"
+        },
+        "FindPointClusters": {
+          "toolDescription": "find-point-clusters.htm"
+        },
+        "FindOutliers": {
+            "toolDescription": "find-outliers.htm"
+        },
+        "FindSimilarLocations": {
+            "toolDescription": "find-similar-locations.htm",
+            "inputLayer": "find-similar-locations.htm#ESRI_SECTION1_0B2B928A26BC4659B2143D06017F991E",
+            "searchLayer": "find-similar-locations.htm#ESRI_SECTION1_0B2B928A26BC4659B2143D06017F991E",
+            "analysisFields": "find-similar-locations.htm#ESRI_SECTION1_B78395564C414EA79B3386D3AA8C740C"
+        },
+        "GenerateTessellations": {
+            "toolDescription": "generate-tessellations.htm"
+        },
+        "GeocodeLocationsfromTable": {
+            "toolDescription": "geocode-locations-from-table.htm",
+            "geocodeServiceURL": "geocode-locations-from-table.htm"
+        },
+        "InterpolatePoints": {
+            "toolDescription": "interpolate-points.htm"
+        },
+        "JoinFeatures": {
+            "toolDescription": "join-features.htm"
+        },
+        "JoinFeatures_bd": {
+            "toolDescription": "geoanalytics-join-features.htm"
+        },
+        "MergeLayers": {
+            "toolDescription": "merge-layers.htm"
+        },
+        "OverlayLayers": {
+            "toolDescription": "overlay-layers.htm",
+            "inputLayer": "overlay-layers.htm"
+        },
+        "PlanRoutes": {
+            "toolDescription": "plan-routes.htm",
+            "endLayer": "plan-routes.htm#ESRI_SECTION2_F8AA174031C949E2B75BD6A397D6678D",
+            "startLayer": "plan-routes.htm#ESRI_SECTION2_F8AA174031C949E2B75BD6A397D6678D"
+        },
+        "SummarizeAttributes_bd": {
+            "toolDescription": "geoanalytics-summarize-attributes.htm"
+        },
+        "SummarizeCenterAndDispersion": {
+          "toolDescription": "summarize-center-and-dispersion.htm"
+        },
+        "SummarizeNearby": {
+            "toolDescription": "summarize-nearby.htm"
+        },
+        "SummarizeWithin": {
+            "toolDescription": "summarize-within.htm"
+        },
+        "TraceDownstream": {
+            "toolDescription": "trace-downstream.htm"
+        }
+    }
+}

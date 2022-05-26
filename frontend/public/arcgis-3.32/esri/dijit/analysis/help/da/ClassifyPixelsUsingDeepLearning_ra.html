@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Klassificer pixels ved hjælp af Deep Learning</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Klassificer pixels ved hj&aelig;lp af Deep Learning"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j k&oslash;rer en tr&aelig;net Deep Learning-model p&aring; en inputraster for at frembringe en klassificeret raster, og hver gyldig pixel har en tildelt en klasseetiket.
+    </p>
+    <p>Hvis afkrydsningsfeltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, er det kun det rasteromr&aring;de, der er synligt i den aktuelle kortudstr&aelig;kning, der analyseres. Hvis det ikke er markeret, analyseres hele rasteren, selvom den er uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Vælg det billede, der bruges skal bruges til at klassificere pixels</h2></div>
+        <hr/>
+        <div>
+            <p>Det input-billede, der skal klassificeres.
+            </p>
+            <p>Det kan v&aelig;re en URL til en billedtjeneste, et rasterlag eller et billedtjenestelag.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Vælg den Deep Learning-model, der skal bruges til at klassificere pixels</h2></div>
+        <hr/>
+        <div>
+            <p>Elementet Deep Learning-inputpakken ( <code>.dlpk</code>).
+            </p>
+            <p>Deep Learning-pakken best&aring;r af Esri-modeldefinitionens JSON-filen ( <code>.emd</code>), den bin&aelig;re Deep Learning-modelfil, og evt. den Python rasterfunktion, der skal anvendes.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Angiv argumenter for Deep Learning-model</h2></div>
+        <hr/>
+        <div>
+            <p>Funktionsargumenterne er defineret i Python raster-funktionsklassen, der refereres til i inputmodellen.. Her angiver du p&aring; yderligere Deep learning-parametre og -argumenter for eksperimenter og forfinelse, f.eks. en trov&aelig;rdighedst&aelig;rskel for justering af f&oslash;lsomheden.
+            </p>
+            <p>Navnet p&aring; argumenterne udfyldes af v&aelig;rkt&oslash;jet ved at l&aelig;se Python-modulet p&aring; rasteranalyse-serveren.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; det lag, som oprettes under  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Du kan angive navnet p&aring; en mappe i  <b>Mit indhold</b>, hvor resultatet bliver gemt ved at benytte rullelisten <b>Gem resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

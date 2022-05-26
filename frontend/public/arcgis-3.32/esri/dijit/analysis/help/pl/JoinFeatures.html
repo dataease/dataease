@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Złącz obiekty</h2><p/>
+        <h2><img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" alt="Złącz obiekty"></h2>
+        <hr/>
+    <p>Operując na dw&oacute;ch warstwach, narzędzie Złącz obiekty umożliwia połączenie atrybut&oacute;w jednego obiektu z innym obiektem na podstawie relacji przestrzennych i atrybutowych. Narzędzie ustala wszystkie obiekty wejściowe, kt&oacute;re spełniają określone warunki złączenia, a następnie dołącza warstwę złączenia do warstwy docelowej. 
+    </p>
+    <p>Narzędzie Złącz obiekty można stosować do punkt&oacute;w, linii, obszar&oacute;w i tabel. Złączenie przestrzenne wymaga, aby dane miały geometrię. 
+    </p>
+    <p>Jeśli zaznaczono opcję  <b>Użyj bieżącego zasięgu mapy</b>, analizowane będą tylko obiekty widoczne w bieżącym zasięgu mapy. Jeśli powyższa opcja nie jest zaznaczona, analizowane będą wszystkie obiekty w&nbsp;warstwie docelowej i warstwie złączenia, nawet jeśli będą znajdować się poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Wybierz warstwę docelową</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa docelowa, do tabeli kt&oacute;rej zostaną dołączone atrybuty z warstwy złączenia.
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p> 
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Wybierz warstwę do złączenia z warstwą docelową</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa złączenia zawierająca atrybuty, kt&oacute;re zostaną dołączone do warstwy docelowej.
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+        </div>
+    </div>
+    <div id="joinType">
+        <div><h2>Wybierz typ połączenia</h2></div>
+        <hr/>
+        <div>
+            <p>Można zastosować złączenie przestrzenne, złączenie atrybutowe lub kombinację tych dw&oacute;ch typ&oacute;w. 
+                <ul>
+                    <li> <b>Przestrzenne</b> &mdash; obiekty są łączone przy użyciu określonych relacji przestrzennych. W tym przypadku obie warstwy muszą mieć geometrię.
+                    </li>
+                    <li> <b>Atrybutowe</b> &mdash; łączy obiekty na podstawie p&oacute;l o takich samych wartościach.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Wybierz relację przestrzenną</h2></div>
+        <hr/>
+        <div>
+            <p>Relacja przestrzenna, kt&oacute;ra decyduje o tym, czy obiekty zostaną ze sobą połączone. Dostępne relacje zależą od typu geometrii (punkt, linia, obszary) używanej w obiektach wejściowych. Dostępne są następujące relacje:
+                <ul>
+                    <li> <b>Takie same jak</b> &mdash; obiekty w warstwie docelowej zostaną dopasowane, jeśli są takie same jak obiekty w warstwie złączenia.
+                    </li>
+                    <li> <b>Przecina się</b> &mdash; obiekty w warstwie docelowej zostaną dopasowane, jeśli przecinają się z obiektami w warstwie złączenia.
+                    </li>
+                    <li> <b>Całkowicie zawiera</b> &mdash; obiekty zostaną dopasowane, jeśli obiekty w warstwie docelowej całkowicie zawierają obiekty w warstwie złączenia.
+                    </li>
+                    <li> <b>Całkowicie wewnątrz</b> &mdash; obiekty zostaną dopasowane, jeśli obiekty w warstwie docelowej znajdują się całkowicie wewnątrz obiekt&oacute;w w warstwie złączenia.
+                    </li>
+                    <li> <b>W odległości do</b> &mdash; obiekty w warstwie docelowej zostaną dopasowane, jeśli znajdują się w określonym promieniu od obiekt&oacute;w w warstwie złączenia.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Złączenie atrybutowe</h2></div>
+        <hr/>
+        <div>
+            <p>Relacja atrybutowa, kt&oacute;ra decyduje o tym, czy obiekty zostaną ze sobą złączone. Obiekty są dopasowywane, jeśli wartości w polach warstwy połączenia są r&oacute;wne wartościom w polach warstwy docelowej. 
+            </p>
+            <p>Zał&oacute;żmy na przykład, że dla całego powiatu istnieje warstwa danych geograficznych z adresami zamieszkania, zwierająca pole  <i>ZIP</i> (kod pocztowy) i tabelaryczny zestaw danych demograficznych dotyczących zdrowia według kod&oacute;w pocztowych zawierający pole o nazwie <i>HEALTHZIP</i> (zdrowie - kod pocztowy). Zestaw danych zdrowotnych można złączyć z danymi na temat adres&oacute;w zamieszkania, dopasowując pole <i>ZIP</i> do pola <i>HEALTHZIP</i>, co spowoduje powstanie warstwy adres&oacute;w zamieszkania z odpowiadającymi im danymi zdrowotnymi.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Wybierz operację połączenia</h2></div>
+        <hr/>
+        <div>
+            <p>Określa, w jaki spos&oacute;b będą obsługiwane złączenia między warstwą docelową i warstwą złączenia, jeśli w warstwie złączenia zostanie znalezionych wiele obiekt&oacute;w o takich samych relacjach z warstwą docelową. Można wybrać jedną z dw&oacute;ch następujących operacji złączenia:
+                <ul>
+                    <li> <b>Złączenie jeden do jeden</b> &mdash; ta opcja pozwala połączyć obiekty w warstwie docelowej z pojedynczym obiektem w warstwie złączenia. To, jak warstwy są łączone, zależy od parametru <b>Dodaj statystyki</b> lub <b>Zdefiniuj zachowywany rekord</b>. Opcjonalnie, jeśli używana jest opcja <b>Dodaj statystyki</b>, dopasowane połączone obiekty zostaną podsumowane względem poszczeg&oacute;lnych obiekt&oacute;w w warstwie docelowej. Domyślnie zostanie dodana liczba złączonych obiekt&oacute;w. Jeśli używana jest opcja <b>Zdefiniuj zachowywany rekord</b>, można wybrać opcję zachowania pierwszego zgodnego rekordu (opcja domyślna) lub zachowania zgodnego rekordu na podstawie wyrażenia. W wyrażeniu można użyć pola liczbowego (opcja największego lub najmniejszego rekordu) lub pola daty (opcja najnowszego lub najstarszego rekordu).
+                    </li>
+                    <li> <b>Złączenie jeden do wielu</b> &mdash; ta opcja pozwala złączyć pierwszy pasujący obiekt w warstwie złączenia z pierwszym pasującym obiektem warstwy docelowej. Warstwa wynikowa będzie zawierać wiele rekord&oacute;w obiektu docelowego.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Zał&oacute;żmy, że chcesz znaleźć supermarkety w promieniu 5 kilometr&oacute;w od rynku produkt&oacute;w rolnych. W tym przypadku warstwa, do kt&oacute;rej będą dołączane obiekty, zawiera pojedynczy obiekt reprezentujący rynek produkt&oacute;w rolnych, a dołączane obiekty reprezentują lokalne sklepy spożywcze, kt&oacute;re mają atrybuty, takie jak suma rocznej sprzedaży. Używając narzędzia  <b>Złącz obiekty</b>, stwierdzasz, że pięć sklep&oacute;w spożywczych spełnia kryteria. Jeśli zostanie podana operacja <b>Złączenie jeden do wielu</b>, dane wynikowe będą zawierać pięć obiekt&oacute;w, a każdy wiersz będzie reprezentować rynek produkt&oacute;w rolnych i jeden z supermarket&oacute;w. W przypadku określenia relacji <b>Złączenie jeden do jeden</b> i wybrania statystyki dane wynikowe będą zawierać jeden obiekt reprezentujący rynek produkt&oacute;w rolnych i zbiorcze informacje o supermarketach, takie jak ich liczba (5) i inne dane statystyczne, na przykład suma rocznej sprzedaży.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Dodaj statystyki (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p>Jeśli została wybrana opcja  <b>Złączenie jeden do jeden</b>, w przypadku p&oacute;l liczbowych można dokonać podsumowania i obliczyć statystyki dotyczące złączonych obiekt&oacute;w. Domyślnie liczba złączonych obiekt&oacute;w zostanie obliczona i dodana do warstwy wynikowej. Jeśli nie zostanie wybrana opcja dodawania statystyk, pierwszy pasujący obiekt w warstwie złączenia zostanie połączony z pierwszym pasującym obiektem w warstwie docelowej. Można obliczyć jedną lub większą liczbę z&nbsp;następujących wartości:
+            </p>
+            <ul>
+                <li>Suma
+                </li>
+                <li>Minimum
+                </li>
+                <li>Maksimum
+                </li>
+                <li>Średnia
+                </li>
+                <li>Odchylenie standardowe
+                </li>
+            </ul>
+            
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli ta nazwa warstwy już istnieje, wyświetlona zostanie prośba o podanie innej nazwy.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+    <div id="isView">
+        <div><h2>Tworzenie wyników w postaci widoku hostowanej warstwy obiektowej</h2></div>
+        <hr/>
+        <div>
+            <p> Wyniki utworzone w postaci widoku hostowanej warstwy obiektowej pozostają aktualne, gdy zmienia się źr&oacute;dło danych. Widoki hostowanej warstwy obiektowej zawierające złączenia są widokami tylko do odczytu, a ich analizowanie i przechowywanie nie powoduje wykorzystania kredyt&oacute;w.
+            </p>
+            <p>Widok hostowanej warstwy obiektowej można utworzyć na podstawie wynik&oacute;w analizy, gdy spełnione są wszystkie następujące warunki:
+                <ul>
+                    <li>Obie warstwy są Twoją własnością.
+                    </li>
+                    <li>Obie warstwy są hostowanymi warstwami obiektowymi.
+                    </li>
+                    <li>Wykonywane jest złączenie na podstawie atrybut&oacute;w.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

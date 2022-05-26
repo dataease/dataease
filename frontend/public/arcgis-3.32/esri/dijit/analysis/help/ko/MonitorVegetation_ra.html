@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>식생 모니터링(Monitor Vegetation)</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="포털용 식생 모니터링 도구"></h2>
+        <hr/>
+    <p>이 도구는 멀티밴드 래스터 레이어 밴드에 대해 산술 연산을 수행하여 처리 범위의 식생 커버리지 정보를 나타냅니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>입력 데이터 선택</h2></div>
+        <hr/>
+        <div>
+            <p>멀티밴드 래스터 레이어를 선택합니다. 입력 래스터에 적합한 밴드가 있는지 확인합니다.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>식생을 모니터링할 방법 선택</h2></div>
+        <hr/>
+        <div>
+            <p>식생 색인 레이어를 생성하는 방법을 선택합니다. 다양한 식생 색인을 통해 특정 피처를 쉽게 강조하거나 여러 노이즈를 줄일 수 있습니다.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI는 위성 이미지를 통해 지구 환경을 모니터링하기 위한 비선형 식생 색인입니다. NDVI와 유사하지만 대기 효과에 덜 민감합니다. 이 방법은 나지의 영향을 받으므로 식생 밀도가 중간 이하인 지역에는 사용하지 않는 것이 좋습니다.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+GVI는 원래 Landsat MSS 이미지에서 설계되었지만 Landsat TM 이미지에 사용할 수 있도록 수정되었습니다. 이 방법은 Landsat TM Tasseled Cap 녹색 식생 색인이라고도 합니다. 이 모니터링 색인은 동일한 스펙트럼 특성을 공유하는 밴드가 있는 이미지에도 사용할 수 있습니다.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2는 SAVI 방법의 나지 영향력을 최소화하기 위해 시도되는 식생 색인입니다.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI는 녹색 또는 비교 생물량이 표시된 이미지를 생성할 수 있는 표준화된 색인입니다. 이 색인은 다중스펙트럼 래스터 데이터셋의 두 밴드에 대한 특성 비교를 활용합니다. Red 밴드의 엽록소 색소 흡수율과 NIR 밴드의 높은 식물 재료 반사율을 비교합니다.
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI는 차이 식생 색인과 유사하지만 대기 변동 사항에 민감합니다. 이 방법을 사용하여 여러 이미지를 비교하는 경우 대기가 보정된 이미지에만 사용해야 합니다. 이 정보는 데이터 공급업체가 제공할 수 있습니다.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI는 토지 밝기 보정 계수를 사용하여 토지 밝기 영향을 최소화하기 위해 사용되는 식생 색인입니다. 이 방법은 대개 식생 피복 비율이 낮은 건조 지역에 사용됩니다.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+술탄의 수식 과정에는 6밴드 8비트 이미지가 사용되며 이 과정은 특정 알고리즘에 적용되어 3밴드 8비트 이미지를 생성합니다. 결과 이미지에는 해안 지대의 사문석이라고 하는 암석층이 강조됩니다. 이 수식은 Landsat 5 또는 7 씬의 TM 및 ETM 밴드를 기반으로 설계되었습니다.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+변환된 SAVI는 토양 라인에 임의의 경사 및 차단이 있는 것으로 간주하여 토양 밝기 영향을 최소화하기 위해 사용되는 식생 색인입니다.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>NIR 밴드 및 Red 밴드의 색인 지정</h2></div>
+        <hr/>
+        <div>
+            <p>NIR 및 Red 밴드의 밴드 색인을 지정합니다.
+            </p>
+            <p>각 위성 센서 및 항공 카메라에서는 밴드 색인으로 분산되는 정보를 캡처합니다. 각 밴드 색인에는 전자기 스펙트럼의 특정 부분에 대한 정보가 포함됩니다. 이 식생 모니터링 방법을 사용하려면 NIR 및 Red 파장이 캡처된 밴드 색인을 지정해야 합니다.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>토양 라인의 경사</h2></div>
+        <hr/>
+        <div>
+            <p>토양 라인의 경사입니다. 경사는 산점도에서의 NIR 및 Red 밴드 간의 대략적인 선형 관계입니다.
+            </p>
+            <p>이 매개변수는 변환된 토양 조정 식생 색인 방법에만 유효합니다.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>절편</h2></div>
+        <hr/>
+        <div>
+            <p>특정 토양 라인에 대해 Red 밴드의 반사율 값이 0인 경우,
+            </p>
+            <p> <code>(a = NIR - sRed)</code> NIR(근적외선)의 값입니다.
+            </p> 
+            <p>이 매개변수는 변환된 토양 보정 식생 지수 방법에만 유효합니다.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>녹색 식생 커버의 양</h2></div>
+        <hr/>
+        <div>
+            <p>SAVI 방법에 필요한 녹색 식생 커버의 양을 지정합니다.
+            </p>
+            <p>유효한 값은 다음과 같습니다. 
+
+                <ul>
+                    <li>1 = 녹색 식생 커버가 없는 지역
+                        
+ 
+                    </li>
+                    <li>0.5 = 녹색 식생 커버가 중간 정도인 지역
+                        
+ 
+                    </li>
+                    <li>0 = 녹색 식생 커버가 매우 높은 지역
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>조정 계수</h2></div>
+        <hr/>
+        <div>
+            <p>변환된 토양 보정 식생 지수 방법에서 요구하는 토양 영향을 최소화하는 데 도움이 되는 조정 계수를 지정합니다. 기본 값은 0.08입니다.
+            </p>
+            <p>낮은 값은 토양 영향을 무시해도 된다는 것을 의미합니다. 높은 값은 토양이 결과에 영향을 주는 것을 의미합니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에 생성되고 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 결과가 저장될 <b>내 콘텐츠</b>에서 폴더 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

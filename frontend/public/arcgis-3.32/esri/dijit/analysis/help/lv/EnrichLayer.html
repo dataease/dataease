@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Uzlabot slāni</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Uzlabot slāni"></h2>
+        <hr/>
+    <p>&Scaron;is rīks uzlabo jūsu datus, iegūstot faktus par cilvēkiem, vietām un biznesa datiem, kas atrodas ap jūsu datu izvietojumu, un iespējo jūs atbildēt uz jauniem jautājumiem par izvietojumiem, uz kuriem jūs nevarat atbildēt, izmantojot tikai kartes. Piemēram: Kādi cilvēki &scaron;eit dzīvo? Ko cilvēkiem &scaron;eit patīk darīt? Kādi ir viņu paradumi un dzīvesveids? Kāda veida uzņēmumi pastāv &scaron;inī areālā?
+    </p>
+    <p>Rezultāts būs jauns slānis, kas saturēs visu demogrāfisko un ģeogrāfisko informāciju no dotajām datu kolekcijām. &Scaron;ī jaunā informācija tiek pievienota tabulai kā lauki.
+    </p>
+    <p>Ja ir atzīmēta iespēja  <b>Lietot pa&scaron;reizējo kartes pārklājumu</b>, tiks uzlaboti tikai ievades slāņa redzamās daļas elementi pa&scaron;reizējā kartes pārklājumā.  Ja iespēja nav atzīmēta, tad tiks uzlaboti visi ievades slāņa elementi&nbsp;&mdash; arī tie, kas atrodas ārpus pa&scaron;reizējā kartes pārklājuma.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlieties slāni, ko bagātināt ar jauniem datiem</h2></div>
+        <hr/>
+        <div>
+            <p>Punkta, līnijas vai laukuma slānis, kas tiks uzlabots ar jauniem atribūtu datiem. 
+            </p>
+            <p>Papildus slāņa izvēlei no kartes varat atlasīt opciju  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta lejasdaļā. &Scaron;ī opcija atver galeriju, kurā varēsiet pārlūkot un atlasīt datu kopas no dažādiem avotiem un izmantot savā analīzē. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Bagātināšanas mainīgie</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Noklik&scaron;ķiniet uz  <b>Atlasīt mainīgos</b>, lai atvērtu <b>Datu pārlūku</b>. <b>Datu pārlūks</b> palīdz atrast un atlasīt bagātinā&scaron;anas mainīgos atsevi&scaron;ķi vai kolekcijās.
+            </p>
+            <p>Reģions tiek atlasīts automātiski, pamatojoties uz jūsu datiem. Varat izvēlēties citu reģionu, ja jūsu dati aptver vairāk nekā vienu valsti. 
+            </p>
+            <p>Bagātinā&scaron;anas mainīgie tiek izkārtoti datu kolekcijās vieglai piekļuvei. Atlasot datu kolekciju, pārlūks parāda dažus no populārākajiem bagātinā&scaron;anas mainīgajiem &scaron;ajā kolekcijā. Sadaļā  <b>Turpināt pārlūko&scaron;anu</b>, tas parāda arī kategorijas, kas atrodas kolekcijā. Katrā kategorijā varat atlasīt visas apak&scaron;kategorijas vai atvērt apak&scaron;kategoriju un atlasīt atsevi&scaron;ķus bagātinā&scaron;anas mainīgos. Varat arī izmantot meklē&scaron;anas lodziņu, lai atrastu konkrētu mainīgo kategorijā.
+            </p>
+            <p>Atlasot mainīgos, ko iekļaut bagātinā&scaron;anai, tie tiek pievienoti iepirkumu ratiņos, kas atrodas  <b>Datu pārlūka</b> stūrī. Izmantojiet &scaron;os iepirkumu ratiņus, lai sekotu līdzi atlasīto mainīgo skaitam.
+            </p>
+            <p>Katrs atlasītais mainīgais tiks pievienots kā lauks jūsu rezultāta slānī.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Definēt jomas, ko uzlabot</h2></div>
+        <hr/>
+        <div>
+            <p>Definējiet apgabalu ap saviem ievades punktiem vai līnijām, kas ir jāuzlabo, izmantojot vai nu lineāro attālumu, vai atlasīto ceļo&scaron;anas veidu. Lineāram attālumam ievadiet vērtību līdz 1000&nbsp;jūdzēm (1609&nbsp;kilometriem). Ceļo&scaron;anas veidus var izmantot tikai tad, ja jūsu ievades slānī ir punkti. Pieejamos ceļo&scaron;anas veidus nosaka jūsu organizācijas administrators. Izmantojot kādu no ceļo&scaron;anas veidiem, mērījumi tiek veikti pa ceļu vai taku, respektējot attiecīgos noteikumus, piemēram, vienvirziena ielas, neatļautus pagriezienus u.tml. Pēc pārvieto&scaron;anās veida un mērījuma izvēles ievadiet ilgumu vai attālumu līdz 5&nbsp;stundām (300&nbsp;minūtēm) vai 300&nbsp;jūdzēm (482,8&nbsp;kilometriem).
+            </p>
+            <p>Ja ir atzīmēta izvēles rūtiņa  <b>Atgriezt rezultātu kā robežojo&scaron;us apgabalus</b>, atgrieztais rezultāts būs teritorijas elementi, kā to definē iepriek&scaron; norādītās laika vai attāluma vērtības.  Ja izvēles rūtiņa nav atzīmēta, atgrieztais rezultāts būs punkta elementi.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slāņa nosaukums jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta izvēlnē, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

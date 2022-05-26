@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="raToolbox">
+        <p>L'analisi raster consente di eseguire un'analisi di grandi dataset raster utilizzando  ArcGIS Image Server. Ci&ograve; consente di analizzare un maggior numero di dati pi&ugrave; velocemente sfruttando la potenza del server. I set di strumenti attualmente disponibili tramite l'esperienza utente Web di  Portal for ArcGIS sono  <b>Riepiloga dati</b>, <b>Analizza modelli</b>, <b>Usa prossimit&agrave;</b>, <b>Analizza immagine</b>, <b>Analizza terreno</b>, <b>Gestisci dati</b> e <b>Apprendimento profondo</b>.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="smallsize">
+        <h2>Riepiloga dati</h2>
+        <hr/>
+        <p>Questo set di strumenti contiene uno strumento per il calcolo di alcune statistiche per un layer raster entro i confini di area definiti. 
+            <ul>
+                <li> <b>Riepiloga raster entro</b> consente di calcolare le statistiche per celle raster che rientrano nei confini di area definiti.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="SummarizeRasterWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Riepiloga raster entro</h2></td>
+                    <td>
+                    <img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" class="titleImage" alt="Strumento Riepiloga raster entro">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Consente di calcolare alcune statistiche di riepilogo per celle raster che rientrano in aree definite.
+            </p>
+            <p>Di seguito sono riportate alcune applicazioni di esempio: 
+
+                <ul>
+                    <li>Dato un layer di aree con spartiacque e un layer raster di elevazione, calcolare l'intervallo di elevazioni entro ciascun spartiacque al fine di determinare quelli che avranno il flusso di energia pi&ugrave; elevato.
+                        
+
+                    </li>
+                    <li>Dato un layer di unit&agrave; di gestione amministrativa e un layer raster di categorie di uso del terreno, calcolare la variet&agrave; di valori di uso del terreno entro ciascuna area di gestione per identificare quelli che richiedono pi&ugrave; lavoro per determinare un piano di gestione.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>Analizza modelli</h2>
+        <hr/>
+        <p>Questi strumenti consentono di identificare, quantificare e visualizzare i modelli spaziali nei dati. 
+
+            <ul>
+                <li> <b>Calcolo densit&agrave;</b> consente di valutare quantit&agrave; note di alcuni fenomeni e di creare una mappa di densit&agrave; diffondendo tali quantit&agrave; nella mappa.
+                    
+
+                </li>
+                <li> <b>Interpolazione punti</b> consente di prevedere i valori in corrispondenza di nuove posizioni sulla base delle misurazioni trovate in una raccolta di punti.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calcolo Densità</h2></td>
+                    <td>
+                    <img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" class="titleImage" alt="Strumento Calcolo densit&agrave;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>L'analisi della densit&agrave; consente di valutare quantit&agrave; note di alcuni fenomeni e di creare una mappa di densit&agrave; diffondendo tali quantit&agrave; nella mappa. Questo strumento pu&ograve; essere utilizzato, ad esempio, per mostrare le concentrazioni di fulmini o tornado, di accessi alle strutture sanitarie e di densit&agrave; di popolazione.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsEBKTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpolazione punti</h2></td>
+                    <td>
+                    <img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" class="titleImage" alt="Strumento Interpolazione punti">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Questo strumento consente di prevedere i valori in corrispondenza di nuove posizioni sulla base delle misurazioni trovate in una raccolta di punti.  Lo strumento considera i dati relativi ai punti con valori in corrispondenza di ciascun punto e restituisce aree classificate in base ai valori previsti.  Pu&ograve; essere utilizzato, ad esempio, per prevedere i livelli di precipitazioni in uno spartiacque sulla base delle misurazioni effettuate in corrispondenza dei singoli misuratori di precipitazioni.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>Usa prossimità</h2>
+        <hr/>
+        <p>Questi strumenti consentono di rispondere a una delle domande pi&ugrave; comuni dell'analisi spaziale: &quot;Che cosa &egrave; vicino a cosa?&quot;
+
+            <ul>
+                <li> <b>Calcola distanza</b> calcola distanza euclidea, direzione e assegnazione da una singola origine o da un gruppo di origini.
+                    
+
+                </li>
+                <li> <b>Determina Optimum Travel Cost Network</b> calcola la rete di costo ottimale da un gruppo di regioni di input.
+                    
+
+                </li>
+                <li> <b>Determina costi di viaggio dell&rsquo;itinerario come polilinea</b> calcola la polilinea di percorso a basso costo tra origini e destinazioni note.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDistanceTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calcola Distanza</h2></td>
+                    <td>
+                    <img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" class="titleImage" alt="Calcola distanza">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Calcola distanza euclidea, direzione e assegnazione da una singola origine o da un gruppo di origini. &Egrave; possibile utilizzare questo strumento per determinare quanto sono lontani una strada, un edificio o un parco da una posizione. &Egrave; inoltre possibile determinare la direzione da percorrere da una posizione per tornare a un&rsquo;origine nel modo pi&ugrave; diretto. Per ogni posizione nell'area di studio &egrave; possibile vedere l&rsquo;origine pi&ugrave; vicina.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineOptimumTravelCostNetworkTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Determina Optimum Travel Cost Network</h2></td>
+                    <td>
+                    <img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" class="titleImage" alt="Illustrazione dello strumento Determina Optimum Travel Cost Network">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Calcola la rete di costo ottimale da un gruppo di regioni di input.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineTravelCostPathAsPolylineTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Determina costi di viaggio dell’itinerario come polilinea</h2></td>
+                    <td>
+                    <img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" class="titleImage" alt="Illustrazione strumento Determina costi di viaggio dell&rsquo;itinerario come polilinea">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Calcola la polilinea di percorso a basso costo tra origini e destinazioni note.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeImageCategory" class="smallsize">
+        <h2>Analizza immagine</h2>
+        <hr/>
+        <p>Il seguente strumento consente di analizzare immagini. 
+            <ul>
+                <li>Lo strumento  <b>Applica Modello Raster Function</b> elabora le immagini con la catena di funzioni, come specificato dal Modello Raster Function.
+                </li>
+                <li> <b>Monitora vegetazione</b> rileva la vegetazione all'interno di un'immagine, in base a operazioni aritmetiche sulle bande.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ApplyRFxTemplateTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Applica Modello Raster Function</h2></td>
+                    <td>
+                    <img src="../images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" class="titleImage" alt="Applica Modello Raster Function">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Elabora le immagini con la catena di funzioni, come specificato dal Modello Raster Function.
+            </p>
+            <br/>
+        </div>
+        <div id="MonitorVegetationTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Monitora vegetazione</h2></td>
+                    <td>
+                    <img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" class="titleImage" alt="Strumento Monitora vegetazione per Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Esegue un'operazione aritmetica sulle bande di un layer raster multibanda per mostrare informazioni sulla copertura della vegetazione nell'area di studio.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeTerrainCategory" class="regularsize">
+        <h2>Analizza terreno</h2>
+        <hr/>
+        <p>Questi strumenti consentono di analizzare superfici raster. 
+            <ul>
+                <li> <b>Calcola pendenza</b> consente di calcolare la ripidezza del terreno.
+                    
+
+                </li>
+                <li> <b>Deriva aspetto</b> consente di calcolare la direzione della pendenza pi&ugrave; ripida per ciascuna posizione.
+                    
+
+                </li>
+                <li> <b>Crea campo di vista</b> consente di identificare ci&ograve; che viene visto da qualunque punto del paesaggio.
+                    
+
+                </li>
+                <li> <b>Spartiacque</b> consente di calcolare l'area contribuente  sopra le posizioni identificate su una superficie.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateSlopeTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calcola pendenza</h2></td>
+                    <td>
+                    <img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" class="titleImage" alt="Strumento Calcola pendenza per Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Identifica una superficie che mostra la pendenza dei dati di elevazione di input. La pendenza rappresenta la percentuale di variazione dell'elevazione per ogni cella di modello di elevazione digitale (DEM).
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveAspectTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Deriva aspetto</h2></td>
+                    <td>
+                    <img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" class="titleImage" alt="Strumento Deriva aspetto per Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Identifica la direzione con la massima percentuale di variazione in discesa da una cella a quelle vicine. L'aspetto pu&ograve; essere considerato come la direzione della pendenza.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Crea Campo di Vista</h2></td>
+                    <td>
+                    <img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" class="titleImage" alt="Strumento Crea campo di vista">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Determina le posizioni su una superficie raster che sono visibili per un insieme di osservatori.
+            </p>
+            <br/>
+        </div>
+        <div id="WatershedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Spartiacque</h2></td>
+                    <td>
+                    <img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" class="titleImage" alt="Attivit&agrave; spartiacque">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Determina l'area contribuente su una serie di celle in un raster.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>Gestisci dati</h2>
+        <hr/>
+        <p>Questi strumenti vengono utilizzati per la gestione quotidiana dei dati geografici e per combinare i dati prima dell'analisi. 
+            <ul>
+                <li> <b>Estrai raster</b> taglia delle porzioni da un dataset raster per un'ulteriore analisi.
+                    
+
+                </li>
+                <li> <b>Rimappa valori</b> assegna valori diversi a celle raster.
+                    
+
+                </li>
+                <li> <b>Converti feature in raster</b> rasterizza dati vettoriali.
+                    
+
+                </li>
+                <li> <b>Converti raster in feature</b> vettorizza dati raster.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ExtractRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Estrai raster</h2></td>
+                    <td>
+                    <img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" class="titleImage" alt="Strumento Estrai raster per Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Estrae celle da un raster basato su un valore, una forma o l'estensione di un diverso dataset.
+            </p>
+            <br/>
+        </div>
+        <div id="RemapValuesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rimappa valori</h2></td>
+                    <td>
+                    <img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" class="titleImage" alt="Strumento Rimappa valori per Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Modifica il singolo valore o l'intervallo di valori di celle in nuovi valori.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertFeatureToRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Converte feature in raster</h2></td>
+                    <td>
+                    <img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" class="titleImage" alt="Strumento Converte feature in raster">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Crea un nuovo dataset raster da un feature dataset esistente.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertRasterToFeatureTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Converte raster in feature</h2></td>
+                    <td>
+                    <img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" class="titleImage" alt="Strumento Converte raster in feature">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Crea un nuovo feature dataset da un dataset raster esistente.
+            </p>
+            <br/>
+        </div>
+    <div id="DeepLearningCategory" class="largesize">
+        <h2>Apprendimento profondo del set di strumenti</h2>
+        <hr/>
+        <p>Questi strumenti 	vengono utilizzati per rilevare feature specifiche in un'immagine o per classificare pixel in un dataset di raster. L'apprendimento profondo &egrave; un tipo di metodo di apprendimento automatico per intelligenza artificiale che rileva feature all'interno di immagini usando vari layer in reti neurali in cui ogni layer &egrave; in grado di estrarre una o pi&ugrave; feature uniche nell'immagine. Questi strumenti consumano modelli addestrati per rilevare feature specifiche in framework di apprendimento profondo di parti terze, come TensorFlow, CNTK e Keras, ed emettere feature o mappe di classe.
+            <ul>
+                <li> <b>Classifica pixel usando l'apprendimento profondo</b> produce un raster classificato usando un modello di apprendimento profondo addestrato.
+                </li>
+                <li> <b>Rileva oggetti usando l'apprendimento profondo</b> produce una feature class contenente oggetti che trova in un raster di input usando un modello di apprendimento profondo addestrato.
+                </li>
+            </ul>
+             
+        </p>
+    </div>
+        <div id="ClassifyPixelsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Classifica pixel usando l'apprendimento profondo</h2></td>
+                    <td>
+                    <img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" class="titleImage" alt="Classifica pixel usando l'apprendimento profondo">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Runs a trained deep learning model on an input raster to produce a classified raster, with each valid pixel having a class label assigned.
+            </p>
+            <br/>
+        </div>
+        <div id="DetectObjectsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rileva oggetti usando l'apprendimento profondo</h2></td>
+                    <td>
+                    <img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="Rileva oggetti usando l'apprendimento profondo">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Runs a trained deep learning model on an input raster to produce a feature class containing the objects it finds. The features can be bounding boxes or polygons around the objects found, or points at the centers of the objects.
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

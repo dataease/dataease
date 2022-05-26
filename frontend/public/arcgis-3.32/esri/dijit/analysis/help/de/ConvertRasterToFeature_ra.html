@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Raster in Feature konvertieren</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Werkzeug &quot;Raster in Feature konvertieren&quot;"></h2>
+        <hr/>
+    <p>Dieses Werkzeug konvertiert ein Raster in ein Feature-Dataset, wie Punkte, Linien oder Polygone.
+    </p>
+    <p>Mithilfe des Parameters  <b>Feld ausw&auml;hlen</b> k&ouml;nnen Sie festlegen, welches Attributfeld des Eingabe-Raster-Datasets in der Ausgabe-Feature-Class zu einem Attribut wird. Dieser Parameter ist nur f&uuml;r ganzzahlige Raster verf&uuml;gbar, deren verkn&uuml;pfte Tabelle zus&auml;tzliche Attribute aufweist.
+    </p>
+    <p>Das Eingabe-Raster kann eine beliebige Zellengr&ouml;&szlig;e haben.
+    </p>
+    <p>Ganzzahlige Raster k&ouml;nnen in Punkt-, Linien oder Polygon-Features konvertiert werden, Gleitkomma-Raster lassen sich jedoch nur in Punkt-Features konvertieren.
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Raster-Zellen konvertiert, die in der aktuellen Kartenausdehnung sichtbar sind. Wenn diese Option deaktiviert ist, werden auch dann alle Raster-Layer konvertiert, wenn sie sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden. Beachten Sie dies, wenn der Raster-Layer gro&szlig; ist oder eine sehr hohe Aufl&ouml;sung hat.
+    </p>
+    <p>Nachfolgend finden Sie Anwendungsf&auml;lle dieses Werkzeugs:
+ 
+        <ul>
+            <li>Erstellen Sie Polygon-Features aus einem Landnutzungsklassifizierungs-Raster.
+                
+ 
+            </li>
+            <li>In einem DEM identifizierte Wasserl&auml;ufe k&ouml;nnen in Linien-Features konvertiert werden.
+                
+
+            </li>
+            <li>Ein DEM kann in Punkt-Features konvertiert werden, die in einem nicht Raster-basierten Workflow verwendet werden k&ouml;nnen.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Zu konvertierenden Raster-Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Eingabe-Raster-Layer, der in Feature-Layer konvertiert wird.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Feld auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie ein Feld fest, das angibt, welcher Wert f&uuml;r die Konvertierung verwendet werden soll.
+            </p>
+            <p>Dies kann ein ganzzahliger oder ein Textwert sein.
+            </p>
+            <p>Ein Feld, das Gleitkommawerte enth&auml;lt, kann nur verwendet werden, wenn die Ausgabe in einem Punkt-Dataset erfolgt.
+            </p>
+            <p>Standardm&auml;&szlig;ig wird das Feld  <i>Value</i> verwendet, das einen Wert in jeder Raster-Zelle enth&auml;lt.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Ausgabetyp auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>W&auml;hlen Sie den Ausgabetyp zwischen Punkt, Linie oder Polygon aus.
+            </p>
+            <ul>
+                <li>Punkt: Das Raster wird in ein Punkt-Dataset konvertiert.
+                    
+ 
+                </li>
+                <li>Linie: Das Raster wird in ein Linien-Feature-Dataset konvertiert.
+                    
+ 
+                </li>
+                <li>Polygon: Das Raster wird in ein Polygon-Feature-Dataset konvertiert.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Linien oder Polygone vereinfachen</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie fest, ob die Features vereinfacht werden sollen.
+            </p>
+            <p>Wenn diese Option aktiviert ist (Standardeinstellung), werden die Linien- oder Polygon-Features gegl&auml;ttet, um ein generalisierteres Ergebnis zu erstellen. Wenn diese Option deaktiviert ist, folgen die linearen Features den Zellengrenzen des Raster-Datasets.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>Sie k&ouml;nnen den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis &uuml;ber das Dropdown-Feld <b>Ergebnis speichern in</b> gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

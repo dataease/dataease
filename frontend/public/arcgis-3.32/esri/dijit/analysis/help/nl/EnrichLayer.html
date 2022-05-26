@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Enrich Layer</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Laag verrijken"></h2>
+        <hr/>
+    <p>Met deze tool worden uw gegevens verrijkt door feiten op te halen over de bevolking, plaatsen en bedrijven rondom uw gegevenslocaties en kunt u nieuwe vragen over locaties beantwoorden die u niet met kaarten alleen kunt beantwoorden. Bijvoorbeeld: wat voor mensen wonen er? Wat doen mensen in dit gebied graag? Wat zijn hun gewoonten en levensstijlen? Wat voor soorten bedrijven zijn er in dit gebied?
+    </p>
+    <p>Het resultaat wordt een nieuwe kaartlaag met alle demografische en geografische gegevens uit bepaalde gegevensverzamelingen. Deze nieuwe gegevens worden toegevoegd als velden in de tabel.
+    </p>
+    <p>Als  <b>Huidige kaartextent gebruiken</b> is geselecteerd, worden alleen de objecten verrijkt in de invoerlaag die zichtbaar is binnen het huidige kaartextent. Als deze optie niet wordt geselecteerd, worden alle objecten in de invoerlaag verrijkt, ook als ze zich buiten de huidige kaartomvang bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies laag om met nieuwe data te verrijken.</h2></div>
+        <hr/>
+        <div>
+            <p>De punt-, lijn- of vlakkenlaag die worden verrijkt met nieuwe attribuutgegevens. 
+            </p>
+            <p>Naast het kiezen van een laag uit uw kaart, kunt u  <b>Analyselaag kiezen</b> selecteren onderaan de vervolgkeuzelijst. Met deze optie wordt een galerij geopend waarin u kunt bladeren naar en datasets van verschillende bronnen kunt selecteren die u in uw analyse kunt gebruiken. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Verrijkingsvariabelen</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Klik op  <b>Variabelen selecteren</b> om de <b>Gegevensbrowser</b> te openen. De <b>Gegevensbrowser</b> helpt u om afzonderlijk of in verzamelingen te zoeken naar verrijkingsvariabelen en deze te selecteren.
+            </p>
+            <p>Er wordt automatisch een regio geselecteerd op basis van uw gegevens. U kunt een andere regio kiezen als uw gegevens meer dan &eacute;&eacute;n land dekken. 
+            </p>
+            <p>De verrijkingsvariabelen worden geordend in gegevensverzamelingen voor eenvoudige toegang. Wanneer u een gegevensverzameling selecteert, toont de browser enkele van de meest populaire verrijkingsvariabelen in die verzameling. Onder  <b>Ga verder met bladeren</b> worden ook categorie&euml;n binnen de verzameling weergegeven. Binnen elke categorie kunt u volledige subcategorie&euml;n selecteren of u kunt inzoomen op een subcategorie en afzonderlijke verrijkingsvariabelen selecteren. U kunt het zoekvak ook gebruiken om te zoeken naar een specifieke variabele binnen een categorie.
+            </p>
+            <p>Wanneer u variabelen selecteert om op te nemen voor verrijking, worden deze toegevoegd aan de winkelwagen in de hoek van de  <b>Gegevensbrowser</b>. Gebruik deze winkelwagen om bij te houden hoeveel variabelen u hebt geselecteerd.
+            </p>
+            <p>Elke geselecteerde variabele wordt toegevoegd als een veld in uw resultatenlaag.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Te verrijken gebieden definiëren</h2></div>
+        <hr/>
+        <div>
+            <p>Definieer het gebied rond uw invoerpunten of lijnen die verrijkt worden door een afstand hemelsbreed of een geselecteerde manier van reizen te gebruiken. Voer voor een afstand hemelsbreed een waarde in van maximaal 1609 kilometer. Reismethoden kunnen alleen worden gebruikt als uw invoerlaag punten bevat. De beschikbare manieren van reizen worden bepaald door de beheerder van uw organisatie. Bij gebruik van de reismanieren worden de metingen gedaan over wegen of wandelpaden en er wordt rekening gehouden met geldende regels zoals eenrichtingswegen, keerverboden, etcetera. Nadat u uw methode van reizen en uw meeteenheid hebt gekozen, voert u een duur of afstand in van maximaal  5 uur (300 minuten) of 300 mijl (482,8 kilometer).
+            </p>
+            <p>Als  <b>Resultaat als grensgebieden retourneren</b> is aangevinkt, wordt het geretourneerde resultaat gedefinieerd door de tijd- of afstandswaarden hierboven. Indien niet aangevinkt, bestaat het geretourneerde resultaat uit puntobjecten.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laagnaam al bestaat, wordt u gevraagd een nieuwe naam te verschaffen.
+            </p>
+            <p>Met behulp van het vervolgkeuzemenu  <b>Resultaat opslaan in</b> kunt u de naam van een map opgeven in <b>Mijn Content</b> waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

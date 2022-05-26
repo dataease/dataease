@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>レイヤーのマージ</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="レイヤーのマージ"></h2>
+        <hr/>
+    <p>このツールは、2 つのレイヤーのフィーチャを 1 つの新しいレイヤーにコピーします。マージされるすべてのレイヤーは、同じフィーチャ タイプ (ポイント、ライン、エリア) を含んでいる必要があります。入力レイヤーのフィールドを結合およびコピーする方法を制御できます。たとえば、次のように指定します。
+        <ul>
+            <li>イングランド、ウェールズ、スコットランドの 3 つのレイヤーから、1 つのイギリスのレイヤーを作成する。
+            </li>
+            <li>12 のレイヤーがあり、それぞれに隣接するタウンシップの土地区画情報が含まれている。これらを 1 つのレイヤーに結合し、12 の入力レイヤーで同じ名前とタイプを持つフィールドだけを保持する。
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>[現在のマップ範囲を使用]</b> がオンの場合、現在のマップ範囲に表示されるフィーチャだけがマージされます。オフの場合、両方のレイヤー内にあるすべてのフィーチャが、現在のマップ範囲内になくてもマージされます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>レイヤーの選択</h2></div>
+        <hr/>
+        <div>
+            <p>下記のレイヤーにマージするポイント フィーチャ、ライン フィーチャ、またはエリア フィーチャ。
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>マージするレイヤーの選択</h2></div>
+        <hr/>
+        <div>
+            <p>最初のレイヤーにマージするレイヤーを選択します。
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>マージするフィールドの変更</h2></div>
+        <hr/>
+        <div>
+            <p>デフォルトでは、入力レイヤーのすべてのフィールドが出力レイヤーに引き継がれます。フィールドを出力レイヤーに引き継ぐ方法は、次のように変更できます。
+                <ul>
+                    <li> <b>[名前変更]</b> - フィールド名を変更して、出力レイヤーに追加します。
+                    </li>
+                    <li> <b>[削除]</b> - フィールドを出力レイヤーから削除します。
+                    </li>
+                    <li> <b>[一致]</b> - フィールド名をマージ先レイヤーのフィールド名と同じ名前にします。マージされるレイヤーのフィールドの値は、一致させる出力フィールドにコピーされます。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>両方のレイヤーに同じ名前とデータ タイプのフィールドが含まれている場合、両方のフィールドの内容がその名前の 1 つのフィールドにマージされます。これは、 <b>[マージするフィールドの変更]</b> パラメーターに <b>[一致]</b> が使用されているフィールドには適用されません。
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p>これは、 <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前です。デフォルト名は、ツール名と入力レイヤー名に基づいて設定されます。レイヤー名がすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存先]</b> ドロップダウン メニューを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

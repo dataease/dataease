@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/ro/EnrichFromMultiVariableGrid",{choosePointLyrLabel:"Alege\u021bi obiectele spa\u021biale de tip punct pentru a le \u00eembog\u0103\u021bi",chooseMVgridLyrLabel:"Alege\u021bi grila cu variabile multiple de la care s\u0103 \u00eembog\u0103\u021bi",chooseVariables:"Alege\u021bi variabilele pe care dori\u021bi s\u0103 le ad\u0103uga\u021bi",outputLayerName:"${inputFeatures} \u00eembog\u0103\u021bit din ${gridLayer}",itemDescription:"Strat tematic de obiecte spa\u021biale generat din rularea solu\u021biei \u00cembog\u0103\u021bire din gril\u0103 cu variabile multiple pentru ${inputFeatures}.",
+itemTags:"Rezultat analiz\u0103, \u00cembog\u0103\u021bire din gril\u0103 cu variabile multiple, ${inputFeatures}, ${gridLayer}",itemSnippet:"Strat tematic de obiecte spa\u021biale generat din \u00cembog\u0103\u021bire din gril\u0103 cu variabile multiple."});

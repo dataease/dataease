@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/sl/DetermineOptimumTravelCostNetwork",{inputLayerLabel:"Izberite rastrski ali geoobjektni lokacijski sloj za dolo\u010ditev poti med",inputCostRasterLabel:"Izberite rastrski sloj s potnimi stro\u0161ki",outputOptimumNetworkName:"Ime polilinijskega sloja z rezultati optimalnih poti",outputNeighborNetworkName:"Ime polilinijskega sloja z rezultati sosednih poti (izbirno)",outputLayerName:"Dolo\u010di optimalne potne stro\u0161ke za ${layername}",itemDescription:"Geoobjektni sloj, ustvarjen z orodjem Dolo\u010di optimalno omre\u017eje potnih stro\u0161kov na ${layerName}. ",
+itemTags:"Rezultat analize, Dolo\u010di optimalno omre\u017eje potnih stro\u0161kov, ${layername} ${fieldname}",itemSnippet:"Geoobjektni sloj, ustvarjen z orodjem Dolo\u010di optimalno omre\u017eje potnih stro\u0161kov."});

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Sažmi raster unutar</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Alat Sažmi Raster unutar"></h2>
+        <hr/>
+    <p>Ovaj alat sažima raster na temelju područja (zona) određenih prvim slojem unosa.
+    </p>
+    <p>Neki primjeri primjena uključuju sljedeće:
+    </p>
+    <p>
+        <ul>
+            <li>Ako imate sloj granica sliva i sloja granica zemlji&scaron;ta prema načinu kori&scaron;tenja zemlji&scaron;ta, izračunajte ukupnu poljoprivrednu povr&scaron;inu načina kori&scaron;tenja zemlji&scaron;ta za svaki sliv.
+                
+
+            </li>
+            <li>Ako imate sloj parcela u okrugu i sloj granica grada, sažmite prosječnu vrijednost praznih parcela unutar svake granice grada.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, analizirat će se samo oni geoobjekti u sloju unosa i sloju koji će se sažeti, a koji su vidljivi unutar trenutačnog obuhvata karte. Ako opcija nije označena, analizirat će se svi geoobjekti u ulaznom sloju i sloju koji će se sažeti, čak i ako se nalaze izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Odaberite sloj područja za sažimanje ostalih rasterskih slojeva unutar definiranih granica</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj koji određuje granice područja ili zona koji će se sažeti.
+            </p>
+            <p>Sloj može biti raster ili podaci geoobjekata. Za rastere, zone se određuju prema svim lokacijama u unosu koje imaju istu vrijednost ćelije. Područja ne moraju biti susjedna.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Odaberite polje za definiranje ograničenja</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je atribut sloja koji će se koristiti za određivanje granica područja.
+            </p>
+            <p>Na primjer, pretpostavimo da prvi ulazni sloj određuje upravljanje granicama jedinice s atributima koji određuju regiju, okrug i ID parcele za svaku jedinicu. Također imate sloj rastera koji određuje indeks biolo&scaron;ke raznolikosti za svaku lokaciju. S poljem koje odaberete možete odlučiti izračunati prosječnu biolo&scaron;ku raznolikost na lokalnoj, okružnoj ili regionalnoj razini.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Odaberite rasterski sloj za sažimanje</h2></div>
+        <hr/>
+        <div>
+            <p>Ćelije rastera u ovom sloju sažet će se prema područjima (zonama) u koje spadaju.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Odaberite statistiku za izračun</h2></div>
+        <hr/>
+        <div>
+            <p>Kada odaberete sloj za sažimanje, dodatno možete izračunati statistiku bilo kojeg brojčanog atributa točaka, linija ili poligona u ulaznom sloju poligona.
+            </p>
+            <p>Dostupne vrste statistika kad je odabrano polje cijeli broj jesu prosjek, većina, maksimum, srednja vrijednost, minimum, manjina, raspon, standardno odstupanje, zbroj i raznolikost.
+            </p>
+            <p>Ako je polje plutajuća točka, opcije su prosjek, maksimum, minimum, raspon, standardno odstupanje i zbroj.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Zanemari vrijednosti koje nedostaju u izračunu</h2></div>
+        <hr/>
+        <div>
+            <p>Ako odlučite zanemariti vrijednosti koje nedostaju, upotrijebit će se samo ćelije koje imaju vrijednost u sloju koji se sažima za određivanje vrijednosti rezultata za to područje. U suprotnom, ako neke vrijednosti nedostaju za područje, smatra se da nema dovoljno informacija za statistički izračun za sve ćelije u toj zoni, a to će područje dobiti nultu vrijednost (nema podataka) u rezultatu.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će se stvoriti u stavci  <b>Moj sadržaj</b> i dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Možete odrediti naziv mape u  <b>Mojem sadržaju</b> gdje će se rezultat spremiti pomoću padajućeg izbornika <b>Spremi rezultat u</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

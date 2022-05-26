@@ -1,0 +1,195 @@
+<div class="esriAnalysis">
+  <div data-dojo-type="dijit/layout/ContentPane" style="margin-top:0.5em; margin-bottom: 0.5em;">
+    <div data-dojo-attach-point="_ToolContentTitle" class="analysisTitle">
+      <table class="esriFormTable">
+        <tr>
+          <td class="esriToolIconTd"><div class="geographicallyWeightedRegressionIcon"></div></td>
+          <td class="esriAlignLeading esriAnalysisTitle" data-dojo-attach-point="_toolTitle">
+            <label data-dojo-attach-point="_titleLbl">${i18n.geographicallyWeightedRegression}</label>
+            <nav class="breadcrumbs"  data-dojo-attach-point="_analysisModeLblNode">
+              <a href="#" class="crumb breadcrumbs__modelabel" data-dojo-attach-event="onclick:_handleModeCrumbClick" data-dojo-attach-point="_analysisModeCrumb"></a>
+              <a href="#" class="crumb is-active" data-dojo-attach-point="_analysisTitleCrumb" style="font-size:16px;">${i18n.geographicallyWeightedRegression}</a>
+            </nav>
+          </td>
+          <td>
+            <div class="esriFloatTrailing" style="padding:0;">
+              <div class="esriFloatLeading">
+                <a href="#" class='esriFloatLeading helpIcon' esriHelpTopic="toolDescription"></a>
+              </div>
+              <div class="esriFloatTrailing">
+                <a href="#" data-dojo-attach-point="_closeBtn" title="${i18n.close}" class="esriAnalysisCloseIcon"></a>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div style="clear:both; border-bottom: #CCC thin solid; height:1px;width:100%;"></div>
+  </div>
+  <div data-dojo-type="dijit/form/Form" data-dojo-attach-point="_form" readOnly="true">
+    <table class="esriFormTable"  data-dojo-attach-point="_generateTessellationsTable">
+      <tbody>
+      <!--A Line/Horzontal Divider-->
+      <tr data-dojo-attach-point="_titleRow" style="display: none;">
+        <td colspan="3" class="sectionHeader one-width" data-dojo-attach-point="_generatetesellationpolygonsToolDescription"></td>
+      </tr>
+      <!--Choose Layer Title-->
+      <tr data-dojo-attach-point="_analysisLabelRow">
+        <td colspan="2" class="width-90 padBottom0">
+          <label class="esriFloatLeading  esriTrailingMargin025 esriAnalysisNumberLabel">${i18n.oneLabel}</label>
+          <label class="esriAnalysisStepsLabel">${i18n.chooseLayer}</label>
+        </td>
+        <td class="shortTextInput strict-onebythree-width padBottom0">
+          <a href="#" class='esriFloatTrailing helpIcon' esriHelpTopic="inputLayer"></a>
+        </td>
+      </tr>
+      <!--Choose Layer Select Box Widget-->
+      <tr>
+        <td colspan="3">
+          <select class="esriLeadingMargin1 longInput esriAnalysisSelect esriLongLabel" data-dojo-type="dijit/form/Select" data-dojo-attach-point="_analysisSelect" data-dojo-attach-event="onChange:_handleAnalysisLayerChange"></select>
+        </td>         
+      </tr>
+      <!--Choose field Label-->
+      <tr>
+        <td colspan="2" class="padBottom0">
+          <label data-dojo-attach-point="_labelOne" class="esriFloatLeading esriTrailingMargin025 esriAnalysisNumberLabel">${i18n.twoLabel}</label>
+          <label data-dojo-attach-point="_polylabel" class="esriAnalysisStepsLabel">${i18n.chooseField}</label>
+        </td>
+        <td class="shortTextInput padBottom0">
+          <a href="#" class='esriFloatTrailing helpIcon' data-dojo-attach-point="_analysisFieldHelpLink" esriHelpTopic="dependentVariable"></a>
+        </td>
+      </tr>
+      <!--Choose field Select Box Widget-->
+      <tr>
+        <td colspan="3">
+          <select class="esriLeadingMargin1 longInput esriAnalysisSelect esriLongLabel" data-dojo-type="dijit/form/Select" data-dojo-attach-point="_fieldSelect" data-dojo-attach-event="onChange:_handleFieldChange" data-dojo-props="required:true"></select>
+        </td>         
+      </tr>
+      <!--Choose explanatory fields Label-->
+      <tr>
+        <td colspan="2" class="padBottom0">
+          <label data-dojo-attach-point="_labelOne" class="esriFloatLeading esriTrailingMargin025 esriAnalysisNumberLabel">${i18n.threeLabel}</label>
+          <label data-dojo-attach-point="_polylabel" class="esriAnalysisStepsLabel">${i18n.chooseExplanatoryField}</label>
+        </td>
+        <td class="shortTextInput padBottom0">
+          <a href="#" class='esriFloatTrailing helpIcon' data-dojo-attach-point="_analysisFieldHelpLink" esriHelpTopic="explanatoryVariables"></a>
+        </td>
+      </tr>
+      <!--Choose the explanatory variable | MultiSelect Widget-->
+      <tr>      
+        <td colspan="3">  
+          <select class="esriLeadingMargin1 longInput esriMultiSelect" multiple="true" data-dojo-type="dojox/form/CheckedMultiSelect" data-dojo-props="required:true" data-dojo-attach-point="_explanatoryFieldSelect">
+          </select>
+        </td>
+      </tr>
+      <!--Choose neighborhood Label-->
+      <tr>
+        <td colspan="2" class="padBottom0">
+          <label class="esriFloatLeading esriTrailingMargin025 esriAnalysisNumberLabel">${i18n.fourLabel}</label>
+          <label class="esriAnalysisStepsLabel">${i18n.chooseNeighborhood}</label>
+        </td>
+        <td class="shortTextInput" class="padBottom0">
+          <a href="#" class='esriFloatTrailing helpIcon' esriHelpTopic="NeighborhoodType"></a>
+        </td>
+      </tr>
+      <!--Choose neighbourhood Select Box Widget-->
+      <tr>
+        <td colspan="3">
+          <select class="esriLeadingMargin1 longInput esriAnalysisSelect esriLongLabel" data-dojo-type="dijit/form/Select" data-dojo-attach-point="_neighborhoodSelect" data-dojo-attach-event="onChange:_handleNeighborhoodCriteriaChange">
+            <option value="DistanceBand" selected="selected">${i18n.distanceBand}</option>
+            <option value="NumberOfNeighbors">${i18n.numNeighbors}</option>
+          </select>
+        </td>         
+      </tr>
+      <!-- Choose distance band UI -->
+      <tr data-dojo-attach-point="_distanceBandInputUI">
+        <td>
+          <input type="text" data-dojo-type="dijit/form/NumberTextBox" data-dojo-props="intermediateChanges:true,required:true" data-dojo-attach-point="_distanceBandInput" class="esriLeadingMargin1">
+        </td>
+        <td>
+          <select class="esriLeadingMargin1 longInput esriAnalysisSelect esriLongLabel" data-dojo-props="required:true" data-dojo-type="dijit/form/Select" data-dojo-attach-point="_distanceBandUnitSelect" data-dojo-attach-event="onChange:_handleDistanceBandUnitChange">
+            <option value="Meters">${i18n.meters}</option>
+            <option value="Kilometers">${i18n.kilometers}</option>
+            <option value="Feet">${i18n.feet}</option>
+            <option value="Yards">${i18n.yards}</option>
+            <option value="Miles">${i18n.miles}</option>
+            <option value="NauticalMiles">${i18n.nautMiles}</option>
+          </select>
+        </td>
+        <td></td>          
+      </tr>
+      <!-- Choose number of neighbors UI -->
+      <tr data-dojo-attach-point="_neighborsInputUI" class="hide">
+        <td colspan="2">
+          <input type="text" data-dojo-type="dijit/form/NumberSpinner" data-dojo-props="intermediateChanges:true,smallDelta:1,required:false" data-dojo-attach-point="_neighborsNumberInput" class="esriLeadingMargin1"></input>      
+        </td>
+        <td>
+        </td>
+      </tr>
+      <!--Choose weighted Label-->
+      <tr>
+        <td colspan="2" class="padBottom0">
+          <label class="esriFloatLeading esriTrailingMargin025 esriAnalysisNumberLabel">${i18n.fiveLabel}</label>
+          <label class="esriAnalysisStepsLabel">${i18n.chooseWeighted}</label>
+        </td>
+        <td class="shortTextInput" class="padBottom0">
+          <a href="#" class='esriFloatTrailing helpIcon' esriHelpTopic="localWeightingScheme"></a>
+        </td>
+      </tr>
+      <!--Choose weight type Select Box Widget-->
+      <tr>
+        <td colspan="3">
+          <select class="esriLeadingMargin1 longInput esriAnalysisSelect esriLongLabel" data-dojo-type="dijit/form/Select" data-dojo-attach-point="_weightSelect">
+            <option value="BiSquare" selected="selected">${i18n.bisquare}</option>
+            <option value="Gaussian">${i18n.gaussian}</option>
+          </select>
+        </td>         
+      </tr>
+      <!--Result Layer | Title-->
+      <tr>
+        <td colspan="2" class="padBottom0">
+          <label class="esriFloatLeading esriTrailingMargin025 esriAnalysisNumberLabel">${i18n.sixLabel}</label>
+          <label class="esriAnalysisStepsLabel">${i18n.resultLayerName}</label>
+        </td>
+        <td class="shortTextInput" class="padBottom0">
+          <a href="#" class='esriFloatTrailing helpIcon' esriHelpTopic="outputTrainedName" data-dojo-attach-point="_outputLayerHelpNode"></a>
+        </td>
+      </tr>
+      <!--Result Layer | Text Box-->
+      <tr>
+        <td colspan="3">
+          <input type="text" data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="trim:true,required:true" class="longTextInput esriLeadingMargin1" data-dojo-attach-point="_outputLayerInput"></input>
+        </td>                
+      </tr>
+      <!--Save result in | Input Box-->
+      <tr>
+        <td colspan="3">
+          <div class="esriLeadingMargin1" data-dojo-attach-point="_chooseFolderRow">
+            <label style="font-size:smaller;">${i18n.saveResultIn}</label>
+            <input class="longInput esriFolderSelect" data-dojo-attach-point="_webMapFolderSelect" data-dojo-type="dijit/form/FilteringSelect" trim="true">
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div data-dojo-attach-point="_ToolContentButtons" style="padding:5px;margin-top:5px;border-top:solid 1px #BBB;">
+    <div class="esriExtentCreditsCtr">
+      <label data-dojo-attach-point="_chooseExtentDiv" class="esriSelectLabel esriExtentLabel">
+        <input type="radio" data-dojo-attach-point="_useExtentCheck" data-dojo-type="dijit/form/CheckBox" data-dojo-props="checked:true" name="extent" value="true"/>
+        ${i18n.useMapExtent}
+      </label>
+    </div>
+    <button data-dojo-type="dijit/form/Button" type="submit" data-dojo-attach-point="_saveBtn" class="esriLeadingMargin4 esriAnalysisSubmitButton" data-dojo-attach-event="onClick:_handleSaveBtnClick">
+      ${i18n.runAnalysis}
+    </button>
+  </div>
+  <div data-dojo-type="dijit/Dialog" title="${i18n.creditTitle}" data-dojo-attach-point="_usageDialog" style="width:40em;">
+    <div data-dojo-type="esri/dijit/analysis/CreditEstimator"  data-dojo-attach-point="_usageForm"></div>
+  </div>
+  <div class="esriFormWarning esriRoundedBox" data-dojo-attach-point="_errorMessagePane" style="display:none;">
+    <a href="#" title="${i18n.close}" class="esriFloatTrailing esriAnalysisCloseIcon" title='${i18n.close}' data-dojo-attach-event="onclick:_handleCloseMsg">
+    </a>
+    <span data-dojo-attach-point="_bodyNode"></span>
+  </div>
+</div>

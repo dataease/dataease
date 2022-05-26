@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Theo dõi Thảm thực vật</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="C&ocirc;ng cụ Theo d&otilde;i Thảm thực vật cho Cổng th&ocirc;ng tin"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y thực hiện một ph&eacute;p to&aacute;n số học tr&ecirc;n c&aacute;c band của lớp raster đa band để ph&aacute;t hiện th&ocirc;ng tin về lượng bao phủ của thảm thực vật ở khu vực nghi&ecirc;n cứu.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Chọn dữ liệu đầu vào</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn lớp raster đa băng tần. Đảm bảo rằng raster đầu v&agrave;o c&oacute; c&aacute;c dải s&oacute;ng ph&ugrave; hợp.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Chọn phương pháp để theo dõi thảm thực vật</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn phương ph&aacute;p để tạo lớp chỉ số thảm thực vật. C&aacute;c chỉ số thảm thực vật kh&aacute;c nhau c&oacute; thể gi&uacute;p l&agrave;m nổi bật c&aacute;c đối tượng nhất định hoặc giảm độ nhiễu.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI l&agrave; một chỉ số thảm thực vật phi tuyến t&iacute;nh để theo d&otilde;i m&ocirc;i trường to&agrave;n cầu từ ảnh vệ tinh. N&oacute; tương tự như NDVI, nhưng &iacute;t nhạy với những t&aacute;c động m&ocirc;i trường hơn. C&ocirc;ng cụ n&agrave;y bị ảnh hưởng bởi đất trống; do đ&oacute; kh&ocirc;ng n&ecirc;n sử dụng c&ocirc;ng cụ ở c&aacute;c khu vực c&oacute; thảm thực vật thưa hoặc đặc trung b&igrave;nh.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+GVI ban đầu được thiết kế từ ảnh Landsat MSS nhưng đ&atilde; được chỉnh sửa để sử dụng với ảnh Landsat TM. N&oacute; c&ograve;n được gọi l&agrave; chỉ số thảm thực vật xanh Landsat TM Tasseled Cap. Chỉ số theo d&otilde;i n&agrave;y cũng c&oacute; thể được sử dụng với ảnh chứa c&aacute;c dải s&oacute;ng c&oacute; đặc điểm quang phổ giống nhau.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 l&agrave; chỉ số thảm thực vật gi&uacute;p giảm thiểu ảnh hưởng của đất trống ở phương ph&aacute;p SAVI.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI l&agrave; chỉ số ti&ecirc;u chuẩn cho ph&eacute;p bạn tạo một ảnh hiển thị độ bao phủ xanh, hoặc sinh khối tương đối. Chỉ số n&agrave;y tận dụng độ tương phản về đặc điểm của hai dải s&oacute;ng từ tập dữ liệu raster đa phổ: độ hấp thu chất diệp lục trong dải s&oacute;ng đỏ v&agrave; hệ số phản xạ cao của nguy&ecirc;n liệu thực vật trong dải s&oacute;ng cận hồng ngoại (NIR).
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI tương tự với chỉ số thảm thực vật ch&ecirc;nh lệch; tuy nhi&ecirc;n n&oacute; nhạy với c&aacute;c thay đổi m&ocirc;i trường. Khi sử dụng phương ph&aacute;p n&agrave;y để so s&aacute;nh c&aacute;c ảnh kh&aacute;c nhau, chỉ sử dụng tr&ecirc;n c&aacute;c ảnh đ&atilde; được chỉnh sửa về kh&iacute; quyển. Th&ocirc;ng tin n&agrave;y c&oacute; thể được cung cấp bởi nh&agrave; cung cấp dữ liệu của bạn.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI l&agrave; một chỉ số thảm thực vật gi&uacute;p giảm thiểu ảnh hưởng về độ s&aacute;ng của đất bằng c&aacute;ch sử dụng hệ số điều chỉnh độ s&aacute;ng của đất. Chỉ số n&agrave;y thường được sử dụng trong c&aacute;c khu vực kh&ocirc; cằn c&oacute; độ bao phủ của thảm thực vật thấp.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Quy tr&igrave;nh C&ocirc;ng thức của Sultan sử dụng một ảnh 8-bit s&aacute;u dải s&oacute;ng v&agrave; &aacute;p dụng thuật to&aacute;n cụ thể để tạo ra ảnh 8 bit ba dải s&oacute;ng. Ảnh kết quả l&agrave;m nổi bật sự h&igrave;nh th&agrave;nh của đ&aacute; được gọi l&agrave; kho&aacute;ng vật tr&ecirc;n bờ biển. C&ocirc;ng thức n&agrave;y được thiết kế dựa tr&ecirc;n c&aacute;c dải s&oacute;ng TM v&agrave; ETM của scene Landsat 5 hoặc 7.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+SAVI chuyển đổi l&agrave; chỉ số thảm thực vật gi&uacute;p giảm thiểu ảnh hưởng về độ s&aacute;ng của đất bằng c&aacute;ch giả định rằng đường đất c&oacute; độ dốc v&agrave; phần chắn t&ugrave;y &yacute;.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Xác định chỉ số của dải sóng NIR và dải sóng Đỏ</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định chỉ số dải s&oacute;ng cho NIR v&agrave; c&aacute;c dải s&oacute;ng đỏ.
+            </p>
+            <p>Mỗi cảm biến vệ tinh v&agrave; camera tr&ecirc;n kh&ocirc;ng chụp th&ocirc;ng tin, th&ocirc;ng tin sẽ được ph&acirc;n th&agrave;nh c&aacute;c chỉ số dải s&oacute;ng. Mỗi chỉ số dải s&oacute;ng chứa th&ocirc;ng tin d&agrave;nh cho một phần cụ thể của quang phổ điện từ. Phương ph&aacute;p theo d&otilde;i thảm thực vật n&agrave;y y&ecirc;u cầu bạn x&aacute;c định chỉ số dải s&oacute;ng đ&atilde; chụp bước s&oacute;ng NIR v&agrave; bước s&oacute;ng đỏ.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Độ dốc của đường đất</h2></div>
+        <hr/>
+        <div>
+            <p>Độ dốc của đường đất. Độ dốc l&agrave; mối quan hệ tuyến t&iacute;nh gần đ&uacute;ng giữa dải s&oacute;ng NIR v&agrave; dải s&oacute;ng đỏ tr&ecirc;n biểu đồ ph&acirc;n t&aacute;n.
+            </p>
+            <p>Tham số n&agrave;y chỉ hợp lệ đối với phương ph&aacute;p Chỉ số Thảm thực vật Được điều chỉnh theo Đất Được chuyển đổi.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Phần chắn</h2></div>
+        <hr/>
+        <div>
+            <p>Gi&aacute; trị của NIR khi gi&aacute; trị phản xạ của dải s&oacute;ng đỏ (Đỏ) bằng 0 đối với đường đất cụ thể.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , khi dải s&oacute;ng Đỏ bằng 0.
+            </p> 
+            <p>Tham số n&agrave;y chỉ hợp lệ đối với phương ph&aacute;p Chỉ số Thảm thực vật Được điều chỉnh theo Đất Được chuyển đổi.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Số lượng bao phủ của thảm thực vật xanh</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định số lượng bao phủ của thảm thực vật xanh, vốn l&agrave; yếu tố bắt buộc của phương ph&aacute;p SAVI.
+            </p>
+            <p>C&aacute;c gi&aacute; trị hợp lệ như sau: 
+
+                <ul>
+                    <li>1 = Khu vực kh&ocirc;ng c&oacute; độ bao phủ thảm thực vật xanh
+                        
+ 
+                    </li>
+                    <li>0,5 = Khu vực c&oacute; độ bao phủ thảm thực vật xanh ở mức trung b&igrave;nh
+                        
+ 
+                    </li>
+                    <li>0 = Khu vực c&oacute; độ bao phủ thảm thực vật xanh ở mức cao
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Hệ số điều chỉnh</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định hệ số điều chỉnh để giảm thiểu ảnh hưởng của đất, vốn l&agrave; bắt buộc với phương ph&aacute;p Chỉ số Thảm thực vật Được điều chỉnh theo Đất Được chuyển đổi. Gi&aacute; trị mặc định l&agrave; 0,08.
+            </p>
+            <p>Gi&aacute; trị thấp nghĩa l&agrave; bạn đang bỏ qua ảnh hưởng của đất. Gi&aacute; trị cao nghĩa l&agrave; đất sẽ ảnh hưởng đến kết quả của bạn.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Bạn c&oacute; thể chỉ định t&ecirc;n của một thư mục trong  <b>Nội dung của t&ocirc;i</b> m&agrave; tại đ&oacute; kết quả sẽ được lưu bằng c&aacute;ch sử dụng hộp xổ xuống <b>Lưu kết quả v&agrave;o</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

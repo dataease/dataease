@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Resumir dins de</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Resumir dins de"></h2>
+        <hr/>
+    <p>Aquesta eina cerca entitats (i parts d'entitats) que estan dins dels l&iacute;mits de les &agrave;rees de la primera capa d'entrada.  Per exemple:
+        <ul>
+            <li>Donada una capa de l&iacute;mits de conques hidrogr&agrave;fiques i una capa de l&iacute;mits d'&uacute;s del s&ograve;l per tipus d'&uacute;s, calculeu la superf&iacute;cie total del tipus d'&uacute;s del s&ograve;l per a cada conca hidrogr&agrave;fica. 
+            </li>
+            <li>Donada una capa de parcel&middot;les d'un comtat i una capa de l&iacute;mits de ciutats, resumiu el valor mitj&agrave; de les parcel&middot;les buides en cada l&iacute;mit de la ciutat.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s s'analitzaran les entitats de la capa d'entrada i la capa que es resumir&agrave; que siguin visibles a l'extensi&oacute; de mapa actual.  Si l'opci&oacute; est&agrave; desactivada, s'analitzaran totes les entitats de la capa d'entrada i la capa que es resumir&agrave;, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Trieu la capa d'àrees per resumir altres entitats dins dels seus límits</h2></div>
+        <hr/>
+        <div>
+            <p>Capa d'&agrave;rees que es far&agrave; servir per resumir les entitats que estiguin dins dels seus l&iacute;mits. 
+            </p>
+            <p>Podeu triar entre una capa d'&agrave;rees que proporcioneu o bins que es generen quan s'executa l'eina. Quan es generen bins, en el cas del  <b>Quadrat</b>, el nombre i les unitats que s'especifiquen determinen l'altura i la longitud del quadrat. En el cas de l' <b>Hex&agrave;gon</b>, el nombre i les unitats que s'especifiquen determinen la dist&agrave;ncia entre els costats paral&middot;lels.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b>, que es troba al final de la llista desplegable. Aquesta opci&oacute; obre una galeria on podeu cercar i seleccionar datasets de diversos or&iacute;gens per u utilitzar-los a l'an&agrave;lisi. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Trieu la capa que es resumirà</h2></div>
+        <hr/>
+        <div>
+            <p>Es resumiran les entitats d'aquesta capa que estiguin dins dels l&iacute;mits de les entitats de la capa d'entrada anterior. 
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b>, que es troba al final de la llista desplegable. Aquesta opci&oacute; obre una galeria on podeu cercar i seleccionar datasets de diversos or&iacute;gens per u utilitzar-los a l'an&agrave;lisi. 
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Afegeix estadístiques des de la capa que es resumirà</h2></div>
+        <hr/>
+        <div>
+            <p>Teniu l'opci&oacute; de calcular les estad&iacute;stiques dels atributs num&egrave;rics dels punts que estiguin dins dels l&iacute;mits de les entitats. 
+            </p>
+            <p>Si s'activa la casella  <b>Recompte de punts</b>, es calcular&agrave; el nombre total de punts dins de cada l&iacute;mit d'&agrave;rea.  Tamb&eacute; podeu calcular les estad&iacute;stiques dels atributs num&egrave;rics dels punts que estiguin dins de cada l&iacute;mit d'&agrave;rea.
+            </p>
+            <ul>
+                <li> <b>Suma</b>: valor total del camp especificat.
+                </li>
+                <li> <b>Mitjana</b>: mitjana del camp especificat.
+                </li>
+                <li> <b>M&iacute;nim</b>: valor m&eacute;s baix del camp especificat.
+                </li>
+                <li> <b>M&agrave;xim</b>: valor m&eacute;s alt del camp especificat.
+                </li>
+                <li> <b>Desviaci&oacute; est&agrave;ndard</b>: desviaci&oacute; est&agrave;ndard dels valors del camp especificat.
+                </li>
+            </ul>
+            
+            <p>Si la capa que es resumir&agrave; no t&eacute; cap camp de nombre, no hi haur&agrave; estad&iacute;stiques addicionals disponibles.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Afegeix estadístiques des de</h2></div>
+        <hr/>
+        <div>
+            <p>Teniu l'opci&oacute; de calcular les estad&iacute;stiques dels atributs num&egrave;rics de les l&iacute;nies que es resumiran. 
+            </p>
+            <p>Si s'activa la casella  <b>Longitud total de l&iacute;nies a</b>, es calcular&agrave; la longitud total de les l&iacute;nies dins de cada l&iacute;mit d'&agrave;rea.  Tamb&eacute; podeu calcular les estad&iacute;stiques dels atributs num&egrave;rics de les l&iacute;nies que estiguin dins de cada l&iacute;mit d'&agrave;rea.
+            </p>
+            <ul>
+                <li> <b>Suma</b>: valor total del camp especificat.
+                </li>
+                <li> <b>Mitjana</b>: mitjana del camp especificat.
+                </li>
+                <li> <b>M&iacute;nim</b>: valor m&eacute;s baix del camp especificat.
+                </li>
+                <li> <b>M&agrave;xim</b>: valor m&eacute;s alt del camp especificat.
+                </li>
+                <li> <b>Desviaci&oacute; est&agrave;ndard</b>: desviaci&oacute; est&agrave;ndard dels valors del camp especificat.
+                </li>
+            </ul>
+            
+            <p>Si la capa que es resumir&agrave; no t&eacute; cap camp de nombre, no hi haur&agrave; estad&iacute;stiques addicionals disponibles.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Afegeix estadístiques des de</h2></div>
+        <hr/>
+        <div>
+            <p>Teniu l'opci&oacute; de calcular les estad&iacute;stiques dels atributs num&egrave;rics de les &agrave;rees que es resumiran. 
+            </p>
+            <p>Si s'activa la casella  <b>Suma l'&agrave;rea mitjan&ccedil;ant</b>, es calcular&agrave; l'&agrave;rea total de les entitats que estiguin dins de cada l&iacute;mit d'&agrave;rea de la primera capa d'entrada.  Tamb&eacute; podeu calcular les estad&iacute;stiques dels atributs num&egrave;rics de les entitats que estiguin dins de cada l&iacute;mit d'&agrave;rea.
+            </p>
+            <ul>
+                <li> <b>Suma</b>: valor total del camp especificat.
+                </li>
+                <li> <b>Mitjana</b>: mitjana del camp especificat.
+                </li>
+                <li> <b>M&iacute;nim</b>: valor m&eacute;s baix del camp especificat.
+                </li>
+                <li> <b>M&agrave;xim</b>: valor m&eacute;s alt del camp especificat.
+                </li>
+                <li> <b>Desviaci&oacute; est&agrave;ndard</b>: desviaci&oacute; est&agrave;ndard dels valors del camp especificat.
+                </li>
+            </ul>
+            
+            <p>Si la capa que es resumir&agrave; no t&eacute; cap camp de nombre, no hi haur&agrave; estad&iacute;stiques addicionals disponibles.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Afegeix estadístiques des de</h2></div>
+        <hr/>
+        <div>
+            <p>Quan h&agrave;giu triat una capa per resumir-la, tindreu l'opci&oacute; de calcular les estad&iacute;stiques de qualsevol atribut num&egrave;ric dels punts, les l&iacute;nies o les &agrave;rees que estiguin dins de la capa d'&agrave;rees d'entrada. 
+            </p>
+            <ul>
+                <li> <b>Suma</b>: valor total del camp especificat.
+                </li>
+                <li> <b>Mitjana</b>: mitjana del camp especificat.
+                </li>
+                <li> <b>M&iacute;nim</b>: valor m&eacute;s baix del camp especificat.
+                </li>
+                <li> <b>M&agrave;xim</b>: valor m&eacute;s alt del camp especificat.
+                </li>
+                <li> <b>Desviaci&oacute; est&agrave;ndard</b>: desviaci&oacute; est&agrave;ndard dels valors del camp especificat.
+                </li>
+            </ul>
+            
+            <p>Segons el tipus d'entitats que resumiu, podeu calcular el recompte total de punts, la longitud total de les l&iacute;nies o l'&agrave;rea total.
+            </p>
+            <p>Si la capa que es resumir&agrave; no t&eacute; cap camp de nombre, no hi haur&agrave; estad&iacute;stiques addicionals disponibles.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Trieu el camp pel qual voleu agrupar</h2></div>
+        <hr/>
+        <div>
+            <p>Aquest &eacute;s un atribut de les entitats  <b>Resumir</b> que podeu utilitzar per calcular les estad&iacute;stiques individuals de cada valor d'atribut &uacute;nic. Per exemple, suposeu que la primera capa d'entrada cont&eacute; els l&iacute;mits de la ciutat i que les entitats de resum s&oacute;n parcel&middot;les.  Un dels atributs de les parcel&middot;les &eacute;s <i>Status</i>, que cont&eacute; dos valors: VACANT i OCCUPIED. Per calcular l'&agrave;rea total de les parcel&middot;les buides i ocupades dins dels l&iacute;mits de les ciutats, feu servir <i>Status</i> com a atribut pel qual voleu agrupar. Les estad&iacute;stiques de cada grup i el recompte d'entitats que estan dins del l&iacute;mit de cada &agrave;rea es mostraran a la finestra emergent de la capa de resultats.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Afegeix minoria, majoria</h2></div>
+        <hr/>
+        <div>
+            <p>Aquesta casella de selecci&oacute; est&agrave; habilitada quan trieu un camp pel qual voleu agrupar.    Si voleu saber quins valors d'atribut de cada grup s&oacute;n minoritaris (menys dominants) o majoritaris (m&eacute;s dominants) en cada l&iacute;mit de la primera capa d'entrada, seleccioneu  <b>Afegeix minoria, majoria</b>.   Quan seleccioneu <b>Afegeix minoria, majoria</b>, s'afegeixen dos camps nous a la capa de resultats.   Si tamb&eacute; seleccioneu <b>Afegeix percentatges</b>, s'afegeixen dos camps addicionals a la capa de resultats que contenen els percentatges dels valors d'atribut majoritaris i minoritaris en cada grup.
+            </p>
+            <ul>
+                <li>Si esteu resumint punts, el c&agrave;lcul dels valors de minoria i majoria es basa en el recompte de punts en cada &agrave;rea l&iacute;mit de la capa d'&agrave;rees d'entrada.  
+                </li>
+                <li>Si esteu resumint l&iacute;nies, el c&agrave;lcul dels valors de minoria i majoria es basa en la longitud de les l&iacute;nies en cada &agrave;rea l&iacute;mit de la capa d'&agrave;rees d'entrada.  
+                </li>
+                <li>Si esteu resumint &agrave;rees, el c&agrave;lcul dels valors de minoria i majoria es basa en les &agrave;rees en cada &agrave;rea l&iacute;mit de la capa d'&agrave;rees d'entrada.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Afegeix percentatges</h2></div>
+        <hr/>
+        <div>
+            <p>Aquesta casella de selecci&oacute; est&agrave; habilitada quan trieu un camp pel qual voleu agrupar.    Seleccioneu  <b>Afegeix percentatges</b> si voleu obtenir el percentatge de cada valor d'atribut en cada grup.  S'afegeix un camp nou a la taula de resultats que cont&eacute; els percentatges de cada valor d'atribut en cada grup.   Si l'opci&oacute; <b>Afegeix percentatges</b> tamb&eacute; est&agrave; activada, s'afegeixen dos camps addicionals a la capa de resultats que contenen els percentatges dels valors d'atribut majoritaris i minoritaris en cada grup.
+            </p>
+        </div>
+    </div>
+    <div id="ResultLayerName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa.  El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si el nom de la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Mitjan&ccedil;ant el men&uacute; desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/uk/FieldAndCategoricalCheck",{fields:"\u041f\u043e\u043b\u0435",categorical:"\u041a\u0430\u0442\u0435\u0433\u043e\u0440\u0456\u0430\u043b\u044c\u043d\u0435",requiredMessage:"\u041f\u043e\u0442\u0440\u0456\u0431\u043d\u043e \u0432\u0438\u0431\u0440\u0430\u0442\u0438 \u0449\u043e\u043d\u0430\u0439\u043c\u0435\u043d\u0448\u0435 1 \u043f\u043e\u044f\u0441\u043d\u044e\u0432\u0430\u043b\u044c\u043d\u0443 \u0437\u043c\u0456\u043d\u043d\u0443."});

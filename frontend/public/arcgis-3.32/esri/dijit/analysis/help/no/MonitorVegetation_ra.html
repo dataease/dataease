@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Overvåk vegetasjon</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Portalverkt&oslash;y for &aring; overv&aring;ke vegetasjon"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet utf&oslash;rer en aritmetisk operasjon p&aring; b&aring;ndene i et flerb&aring;nds rasterlag for &aring; vise informasjon om vegetasjonsdekningen i studieomr&aring;det.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg inndata</h2></div>
+        <hr/>
+        <div>
+            <p>Velg det flerb&aring;nds rasterlaget. S&oslash;rg for at inndatarasteret har de riktige b&aring;ndene tilgjengelig.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Velg metode for overvåking av vegetasjon</h2></div>
+        <hr/>
+        <div>
+            <p>Velg metoden som skal brukes til &aring; opprette vegetasjonsindekslaget. De ulike vegetasjonsindeksene kan bidra til &aring; fremheve enkelte geoobjekter eller redusere ulike former for st&oslash;y.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI er en ikke-line&aelig;r vegetasjonsindeks for global milj&oslash;overv&aring;kning fra satellittbilder. Den ligner p&aring; NDVI, men den er mindre f&oslash;lsom for atmosf&aelig;riske effekter. Den p&aring;virkes av &aring;pen jord, derfor anbefales det ikke &aring; bruke den i omr&aring;der med sparsom eller moderat tett vegetasjon.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+GVI ble opprinnelig utviklet fra Landsat MSS-bilder, men er blitt modifisert for bruk med Landsat TM-bilder. Den er ogs&aring; kjent som Landsat TM tasseled Cap gr&oslash;nn vegetasjonsindeks. Denne overv&aring;kingsindeksen kan ogs&aring; benyttes sammen med bilder som har b&aring;nd med samme spektralkarakteristika.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 er en vegetasjonsindeks som fors&oslash;ker &aring; minimere &aring;pen jord-p&aring;virkning p&aring; SAVI-metoden.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI er en standardisert indeks som gj&oslash;r at du kan generere et bilde som viser gr&oslash;nnhet, eller relativ biomasse. Denne indeksen drar nytte av kontrasten fra karakteristikken av to b&aring;nd fra et multispektralt rasterdatasett. Klorofyllpigmentabsorpsjonene i det r&oslash;de b&aring;ndet og den h&oslash;ye refleksjonen av plantemateriale i det n&aelig;r infrar&oslash;de (NIR) b&aring;ndet.
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI ligner p&aring; en differansevegetasjonsindeks, men den er f&oslash;lsom for atmosf&aelig;riske variasjoner. N&aring;r du bruker denne metoden for &aring; sammenligne ulike bilder, b&oslash;r den bare brukes p&aring; bilder som er blitt atmosf&aelig;risk korrigert. Denne informasjonen kan gis av din dataleverand&oslash;r.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI er en vegetasjonsindeks som fors&oslash;ker &aring; minimalisere p&aring;virkning fra jordlysstyrke ved hjelp av en korrigeringsfaktor for jordlysstyrke. Dette brukes ofte i t&oslash;rre omr&aring;der hvor det vegetative dekket er lavt.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Sultans formel-prosessen tar et seksb&aring;nds 8-bits bilde og benytter en bestemt algoritme p&aring; det for &aring; produsere et treb&aring;nds 8-bits bilde. Den resulterende bildet fremhever steinformasjoner som kalles ofiolitter i kystlinjer. Denne formelen ble utarbeidet p&aring; bakgrunn av TM- og ETM-b&aring;ndene i en Landsat 5- eller 7-scene.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+Transformed-SAVI er en vegetasjonsindeks som fors&oslash;ker &aring; minimalisere p&aring;virkning fra jordlysstyrke ved &aring; anta at jordlinjen har en vilk&aring;rlig helning og brytning.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Angi indekser for NIR-båndet og Red-båndet</h2></div>
+        <hr/>
+        <div>
+            <p>Angi b&aring;ndindeksene for NIR-b&aring;ndet og Red-b&aring;ndet.
+            </p>
+            <p>Hver satellittsensor og et flykamera fanger opp informasjon som er delt opp i b&aring;ndindekser. Hver b&aring;ndindeks inneholder informasjon for en bestemt del av det elektromagnetiske spekteret. Denne vegetasjonsoverv&aring;kingsmetoden krever at du oppgir b&aring;ndindeksen som fanget opp NIR- og Red-b&oslash;lgelengdene.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Helling for jordlinje</h2></div>
+        <hr/>
+        <div>
+            <p>Jordlinjens helning. Helningen er det omtrentlige line&aelig;re forholdet mellom NIR og de r&oslash;de b&aring;ndene p&aring; et punktdiagram.
+            </p>
+            <p>Denne parameteren er gyldig bare for Transformed Soil-Adjusted Vegetation Index-metoden.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Avskjær</h2></div>
+        <hr/>
+        <div>
+            <p>Verdien av NIR n&aring;r refleksjonsverdien av det r&oslash;de (Red-) b&aring;ndet er 0 for de bestemte jordlinjene.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , n&aring;r Red er 0.
+            </p> 
+            <p>Denne parameteren er gyldig bare for Transformed Soil-Adjusted Vegetation Index-metoden.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Mengde grønn vegetasjonsdekning</h2></div>
+        <hr/>
+        <div>
+            <p>Angir mengden av gr&oslash;nn vegetasjonsdekning, slik SAVI-metoden krever.
+            </p>
+            <p>Gyldige verdier er f&oslash;lgende: 
+
+                <ul>
+                    <li>1 = omr&aring;der uten gr&oslash;nt vegetasjonsdekke
+                        
+ 
+                    </li>
+                    <li>0,5 = omr&aring;der med moderat gr&oslash;nt vegetasjonsdekke
+                        
+ 
+                    </li>
+                    <li>0 = omr&aring;der med h&oslash;y grad av gr&oslash;nt vegetasjonsdekke
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Justeringfaktor</h2></div>
+        <hr/>
+        <div>
+            <p>Angir justeringsfaktoren som bidrar til &aring; minimere jordeffekten, slik Transformed Soil-Adjusted Vegetation Index-metoden krever. Standardverdien er 0,08.
+            </p>
+            <p>En lav verdi betyr at du ignorerer jordeffekten. En h&oslash;y verdi betyr at jorden vil p&aring;virke resultatet.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Du kan angi navnet p&aring; en mappe i  <b>Mitt innhold</b>, der resultatet blir lagret via rullegardinlisten <b>Lagre resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

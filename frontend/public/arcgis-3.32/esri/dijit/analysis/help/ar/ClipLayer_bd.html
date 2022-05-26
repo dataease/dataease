@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>قص الطبقة</h2><p/>
+        <h2><img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" alt="قص الطبقة"></h2>
+        <hr/>
+    <p>تستخرج أداة قص الطبقة &quot;Clip Layer&quot; نقطة إدخال أو خط أو معالم منطقة تتراكب على مناطق الاقتصاص. يكون الإخراج عبارة عن مجموعة فرعية من بيانات الإدخال القائمة على مناطق الاهتمام. فيما يلي أمثلة على استخدام الأداة:
+        <ul>
+            <li>ما هي الأنهار الرئيسية الموجودة في ولاية نبراسكا؟
+                  
+            </li>
+            <li>ما هي المنازل التي تقع داخل منطقة فيضان ساحلي؟
+            </li>
+            <li>ما هي الأعاصير التي ضربت اليابسة في عام 2011؟
+                 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>اختيار معالم لقصها</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم اقتصاص النقطة، أو الخط، أو طبقة المنطقة. ستُنشئ مجموعة فرعية من هذه المعالم.
+            </p>
+            <p>بالإضافة إلى اختيار طبقة من الخريطة، يمكنك تحديد  <b>اختيار طبقة التحليل</b> أسفل القائمة المنسدلة لاستعراض محتوياتك لمجموعة بيانات مشاركة ملف البيانات الضخمة أو طبقة معالم.
+            </p>
+        </div>
+    </div>
+    <div id="clipLayer">
+        <div><h2>اختيار منطقة لقصها</h2></div>
+        <hr/>
+        <div>
+            <p>طبقة المنطقة التي ستقتص منها معالم طبقة الإدخال. تحدد هذه المعالم حدود المجموعة الفرعية.
+            </p>
+            <p>بالإضافة إلى اختيار طبقة من الخريطة، يمكنك تحديد  <b>اختيار طبقة التحليل</b> أسفل القائمة المنسدلة لاستعراض محتوياتك لمجموعة بيانات مشاركة ملف البيانات الضخمة أو طبقة معالم.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p> سيتم إنشاء اسم الطبقة في المحتوى. إذا كنت تقوم بالكتابة إلى ArcGIS Data Store، سيتم حفظ نتائجك في  <b>محتواي</b> وإضافته إلى الخريطة. إذا كنت تقوم بالكتابة إلى مشاركة ملف بيانات ضخمة، ستخزن نتائجك في مشاركة ملف البيانات الضخمة وإضافتها إلى البيان الخاص بها. لن تتم إضافتها إلى الخريطة. يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجِدَت الطبقة بالفعل، ستفشل الأداة.
+            </p>
+            <p>عند الكتابة إلى  ArcGIS Data Store (مخزن بيانات ضخمة للموضع المكاني والزماني أو ارتباطية) باستخدام مربع السهم المنسدل  <b>حفظ النتائج في</b>، يمكن تحديد اسم المجلد في <b>محتواي</b> حيث يتم حفظ النتائج.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

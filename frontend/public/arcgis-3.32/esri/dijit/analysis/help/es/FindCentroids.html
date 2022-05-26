@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Buscar centroides</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Buscar centroides"></h2>
+        <hr/>
+    <p>Esta herramienta funciona con una capa de entidades multipunto, de l&iacute;nea o de &aacute;rea, para determinar el centro representativo de cada entidad.
+    </p>
+    <p>Si se ha activado  <b>Usar la extensi&oacute;n del mapa actual</b>, solo se analizar&aacute;n las entidades de la capa multipunto, de l&iacute;nea o de &aacute;rea de entrada que est&aacute;n visibles en la extensi&oacute;n de mapa actual.  Si la opci&oacute;n est&aacute; desactivada, se analizar&aacute;n todas las entidades de la capa de entrada, aunque est&eacute;n fuera de la extensi&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Seleccionar la capa cuyas entidades se usarán para generar centroides</h2></div>
+        <hr/>
+        <div>
+            <p> La capa multipunto, de l&iacute;nea o de &aacute;rea que se utilizar&aacute; para buscar centroides.
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Mostrarme ubicaciones de salida</h2></div>
+        <hr/>
+        <div>
+            <p> Si se ha activado <b>En el centroide verdadero</b> (predeterminado), la salida devolver&aacute; la ubicaci&oacute;n verdadera del centroide para cada entidad de entrada. Los centroides estar&aacute;n ubicados de la siguiente manera:
+                <ul>
+                    <li>Entidades multipunto: el centroide de salida estar&aacute; ubicado en las coordenadas x e y medias de todos los puntos de la entidad multipunto.
+                    </li>
+                    <li>Entidades de l&iacute;nea: el centroide de salida estar&aacute; ubicado en la media ponderada de las coordenadas x e y de los puntos medios de todos los segmentos de l&iacute;nea de la entidad de l&iacute;nea. La ponderaci&oacute;n se basa en la longitud del segmento.
+                    </li>
+                    <li>Entidades de &aacute;rea: el centroide de salida estar&aacute; ubicado en el centro del &aacute;rea.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Si se ha activado  <b>contenido por entidades de entrada</b>, las entidades de punto de salida estar&aacute;n contenidas por o dentro de cada entidad de entrada. Las entidades de punto resultantes aparecer&aacute;n de la siguiente manera:
+                <ul>
+                    <li>Entidades multipunto: el centroide de salida coincidir&aacute; con uno de los puntos del grupo multipunto.
+                    </li>
+                    <li>Entidades de l&iacute;nea: el centroide de salida estar&aacute; en la l&iacute;nea.  Si la l&iacute;nea es curva, la salida estar&aacute; en el punto medio de la l&iacute;nea. 
+                    </li>
+                    <li>Entidades de &aacute;rea: el punto de salida estar&aacute; dentro de la entidad de &aacute;rea.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa.  El nombre predeterminado se basa en el nombre de la herramienta y el nombre de la capa de entrada. Si el nombre de capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Con el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,24 @@
+<div data-dojo-attach-point="containerNode">
+
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'eainfo',minOccurs:0,
+      label:'${i18nFgdc.eainfo.caption}'">
+      
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'overview',maxOccurs:'unbounded',
+        label:'${i18nFgdc.eainfo.overview}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'eaover',
+            label:'${i18nFgdc.eainfo.eaover}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+        </div>
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'eadetcit',maxOccurs:'unbounded',
+            label:'${i18nFgdc.eainfo.eadetcit}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+        </div>
+    </div>
+    
+  </div>
+  
+</div>

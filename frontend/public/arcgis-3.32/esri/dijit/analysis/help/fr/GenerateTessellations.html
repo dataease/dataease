@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Générer des tessellations</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="G&eacute;n&eacute;rer des tessellations"></h2>
+        <hr/>
+    <p>Cet outil g&eacute;n&egrave;re des tessellations sur une zone d&rsquo;&eacute;tude bas&eacute;e sur la taille et la forme sp&eacute;cifi&eacute;es.
+    </p>
+    <p>La case &agrave; cocher  <b>Use current map extent (Utiliser l&rsquo;&eacute;tendue courante de la carte)</b> est d&eacute;sactiv&eacute;e pour cet outil, car l&rsquo;&eacute;tendue utilis&eacute;e pour g&eacute;n&eacute;rer les tessellations est g&eacute;r&eacute;e par le param&egrave;tre <b>Define extent (D&eacute;finir l&rsquo;&eacute;tendue)</b>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Choisir une forme</h2></div>
+        <hr/>
+        <div>
+            <p>Forme ou g&eacute;om&eacute;trie des tessellations que vous souhaitez cr&eacute;er. Les formes disponibles sont les suivantes&nbsp;:  <code>Square</code>, <code>Hexagon</code>, <code>Transverse Hexagon</code>, <code>Triangle</code> et <code>Diamond</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Définir la zone d’étude</h2></div>
+        <hr/>
+        <div>
+            <p>&Eacute;tendue ou zone couverte par les tessellations. L&rsquo;&eacute;tendue peut &ecirc;tre d&eacute;termin&eacute;e &agrave; l&rsquo;aide de l&rsquo;&eacute;tendue courante de la carte, l&rsquo;&eacute;tendue d&rsquo;une couche existante ou par le dessin interactif d&rsquo;une zone &agrave; employer comme &eacute;tendue.
+            </p>
+            <p>Si une couche d&rsquo;entit&eacute;s a &eacute;t&eacute; s&eacute;lectionn&eacute;e pour d&eacute;terminer l&rsquo;&eacute;tendue, l&rsquo;option visant &agrave; ne conserver que les tessellations d&rsquo;intersection est activ&eacute;e. Si elle est coch&eacute;e, seules les tessellations qui couvrent ou coupent des entit&eacute;s dans la couche de l&rsquo;&eacute;tendue sp&eacute;cifi&eacute;e seront g&eacute;n&eacute;r&eacute;es dans la couche de tessellation finale. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>D&eacute;sactiv&eacute;
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Couverture totale de l&rsquo;&eacute;tendue">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Activ&eacute;
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Couverture des entit&eacute;s">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Définir la taille du groupe en spécifiant</h2></div>
+        <hr/>
+        <div>
+            <p>Taille de chaque cellule. Il est possible de d&eacute;terminer la taille de cellule en sp&eacute;cifiant les unit&eacute;s carr&eacute;es ou une distance calcul&eacute;e au moyen des mesures suivantes dans lesquelles d = Distance&nbsp;: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Carr&eacute;
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Tessellation carr&eacute;e">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Hexagone
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Tessellation hexagonale">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Hexagone transversal
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Tessellation hexagonale transversale">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Triangle
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Tessellation triangulaire">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Losange
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Tessellation en losange">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

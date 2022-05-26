@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Hồi quy Tuyến tính Tổng quát</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Sơ đồ quy tr&igrave;nh Hồi quy Tuyến t&iacute;nh Tổng qu&aacute;t"></h2>
+        <hr/>
+    <p>Hồi quy Tuyến t&iacute;nh Tổng qu&aacute;t 
+(GLR) d&ugrave;ng để tạo dự đo&aacute;n hoặc m&ocirc; h&igrave;nh h&oacute;a một biến phụ thuộc theo mối quan hệ của n&oacute; với một tập hợp c&aacute;c biến giải th&iacute;ch.  C&oacute; thể sử dụng c&ocirc;ng cụ n&agrave;y để l&agrave;m tr&ugrave;ng khớp c&aacute;c m&ocirc; h&igrave;nh li&ecirc;n tục (Gaussian), nhị ph&acirc;n (logistic) v&agrave; số lượng (Poisson).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Loại Phân tích</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định chế độ hoạt động của c&ocirc;ng cụ. C&oacute; thể chạy c&ocirc;ng cụ n&agrave;y để đ&agrave;o tạo một m&ocirc; h&igrave;nh chỉ nhằm đ&aacute;nh gi&aacute; hiệu suất hoặc đ&agrave;o tạo một m&ocirc; h&igrave;nh v&agrave; dự đo&aacute;n c&aacute;c đối tượng. C&aacute;c kiểu dự đo&aacute;n gồm c&oacute;:
+                <ul>
+                    <li> <b>L&agrave;m tr&ugrave;ng khớp m&ocirc; h&igrave;nh để đ&aacute;nh gi&aacute; hiệu suất m&ocirc; h&igrave;nh</b>&mdash;Một m&ocirc; h&igrave;nh sẽ tr&ugrave;ng khớp v&agrave; &aacute;p dụng với dữ liệu đầu v&agrave;o. Sử dụng t&ugrave;y chọn n&agrave;y để đ&aacute;nh gi&aacute; độ ch&iacute;nh x&aacute;c của m&ocirc; h&igrave;nh trước khi tạo dự đo&aacute;n với bộ dữ liệu mới hoặc hiểu được mối quan hệ v&agrave; động lực của biến dự đo&aacute;n của bạn. Kết quả đầu ra của t&ugrave;y chọn n&agrave;y sẽ l&agrave; một dịch vụ đối tượng của dữ liệu được l&agrave;m tr&ugrave;ng khớp v&agrave; chẩn đo&aacute;n m&ocirc; h&igrave;nh.
+                    </li>
+                    <li> <b>Khớp một m&ocirc; h&igrave;nh v&agrave; dự đo&aacute;n c&aacute;c gi&aacute; trị</b>&mdash; Tạo dự đo&aacute;n v&agrave; ph&acirc;n loại cho c&aacute;c đối tượng đầu v&agrave;o v&agrave; đối tượng dự đo&aacute;n. Biến giải th&iacute;ch phải được cung cấp cho cả c&aacute;c đối tượng dự đo&aacute;n v&agrave; đối tượng được dự đo&aacute;n. Kết quả đầu ra của t&ugrave;y chọn n&agrave;y sẽ l&agrave; một dịch vụ đối tượng của m&ocirc; h&igrave;nh được khớp với dữ liệu đầu v&agrave;o của bạn, một dịch vụ đối tượng của c&aacute;c gi&aacute; trị dự đo&aacute;n v&agrave; chẩn đo&aacute;n m&ocirc; h&igrave;nh.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Làm trùng khớp mô hình để đánh giá hiệu suất mô hình</h2></div>
+        <hr/>
+        <div>
+            <p>Sử dụng chế độ n&agrave;y nếu bạn muốn khớp một m&ocirc; h&igrave;nh v&agrave; kiểm tra sự ph&ugrave; hợp.
+            </p>
+            <p>Khi chọn lựa chọn n&agrave;y, m&ocirc; h&igrave;nh sẽ được đ&agrave;o tạo bằng c&aacute;ch sử dụng một lớp đầu v&agrave;o. Sử dụng t&ugrave;y chọn n&agrave;y để đ&aacute;nh gi&aacute; độ ch&iacute;nh x&aacute;c của m&ocirc; h&igrave;nh trước khi tạo dự đo&aacute;n với bộ dữ liệu mới. T&ugrave;y chọn n&agrave;y sẽ cho ra kết quả l&agrave; chẩn đo&aacute;n m&ocirc; h&igrave;nh &aacute;p dụng m&ocirc; h&igrave;nh v&agrave;o dữ liệu đ&agrave;o tạo của bạn.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Làm trùng khớp mô hình và dự đoán giá trị</h2></div>
+        <hr/>
+        <div>
+            <p>Sử dụng chế độ n&agrave;y nếu bạn muốn l&agrave;m tr&ugrave;ng khớp m&ocirc; h&igrave;nh v&agrave; &aacute;p dụng m&ocirc; h&igrave;nh cho bộ dữ liệu để tạo ra c&aacute;c dự đo&aacute;n.
+            </p>
+            <p>Dự đo&aacute;n hoặc ph&acirc;n loại sẽ được tạo cho c&aacute;c đối tượng. Kết quả đầu ra của t&ugrave;y chọn n&agrave;y sẽ l&agrave; một dịch vụ đối tượng, chẩn đo&aacute;n m&ocirc; h&igrave;nh v&agrave; một bảng mức độ quan trọng của c&aacute;c biến t&ugrave;y chọn.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Chọn một lớp để tạo mô hình</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp chứa c&aacute;c đối tượng điểm, đường, v&ugrave;ng hoặc bảng gồm c&aacute;c biến phụ thuộc v&agrave; giải th&iacute;ch.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp dữ liệu từ bản đồ, bạn c&oacute; thể chọn mục  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới danh s&aacute;ch thả xuống để t&igrave;m đến nội dung của m&igrave;nh cho bộ dữ liệu chia sẻ tệp dữ liệu lớn hoặc lớp đối tượng.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Chọn trường để mô hình hóa</h2></div>
+        <hr/>
+        <div>
+            <p>Trường số chứa c&aacute;c gi&aacute; trị quan s&aacute;t được sẽ được m&ocirc; h&igrave;nh h&oacute;a v&agrave; loại gi&aacute; trị bạn đang m&ocirc; h&igrave;nh h&oacute;a. C&oacute; ba loại gi&aacute; trị bạn c&oacute; thể m&ocirc; h&igrave;nh h&oacute;a
+                <ul>
+                    <li>Li&ecirc;n tục&mdash;Đại diện cho c&aacute;c gi&aacute; trị li&ecirc;n tục. M&ocirc; h&igrave;nh được sử dụng l&agrave; Gaussian v&agrave; c&ocirc;ng cụ thực hiện hồi quy b&igrave;nh phương nhỏ nhất th&ocirc;ng dụng.
+                    </li>
+                    <li>Nhị ph&acirc;n&mdash;Đại diện cho c&aacute;c gi&aacute; trị c&oacute; mặt hoặc vắng mặt. Đ&oacute; phải l&agrave; 1 v&agrave; 0. M&ocirc; h&igrave;nh được sử dụng l&agrave; Hồi quy logistic.
+                    </li>
+                    <li>Số lượng&mdash;Đại diện cho biến rời rạc v&agrave; đại diện cho c&aacute;c sự kiện, như số lượng tội phạm, bệnh tật hoặc tai nạn giao th&ocirc;ng. M&ocirc; h&igrave;nh được sử dụng l&agrave; Hồi quy Poisson. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Chọn một lớp để dự đoán giá trị cho</h2></div>
+        <hr/>
+        <div>
+            <p>Một lớp c&oacute; c&aacute;c đối tượng đại diện cho c&aacute;c vị tr&iacute; thực hiện t&iacute;nh to&aacute;n ph&eacute;p ước t&iacute;nh. Mỗi đối tượng trong bộ dữ liệu n&agrave;y phải chứa c&aacute;c gi&aacute; trị cho tất cả c&aacute;c biến giải th&iacute;ch được chỉ định. Biến phụ thuộc cho c&aacute;c đối tượng n&agrave;y được ước t&iacute;nh sử dụng m&ocirc; h&igrave;nh được hiệu chỉnh cho lớp đầu v&agrave;o.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Chọn các trường giải thích</h2></div>
+        <hr/>
+        <div>
+            <p>Một hoặc nhiều trường đại diện cho c&aacute;c biến giải th&iacute;ch (c&aacute;c trường) gi&uacute;p dự đo&aacute;n gi&aacute; trị. Chỉ c&aacute;c trường số mới được hiển thị.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Chọn cách so khớp các trường giải thích</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c biến tương ứng trong lớp đầu v&agrave;o sẽ khớp với c&aacute;c biến trong lớp dự đo&aacute;n như thế n&agrave;o. Chỉ c&aacute;c biến được sử dụng trong việc tạo m&ocirc; h&igrave;nh để đưa v&agrave;o bảng. Chỉ c&oacute; thể sử dụng c&aacute;c gi&aacute; trị số. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p> T&ecirc;n lớp sẽ được tạo. Nếu bạn đang ghi v&agrave;o ArcGIS Data Store, kết quả của bạn sẽ được lưu v&agrave;o phần  <b>Nội dung của t&ocirc;i</b> v&agrave; được th&ecirc;m v&agrave;o bản đồ. Nếu bạn đang ghi v&agrave;o một phần chia sẻ tệp dữ liệu lớn, kết quả của bạn sẽ được lưu v&agrave;o phần chia sẻ tệp dữ liệu lớn v&agrave; được th&ecirc;m v&agrave;o bản k&ecirc; của n&oacute;. N&oacute; sẽ kh&ocirc;ng được th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, c&ocirc;ng cụ sẽ thất bại.
+            </p>
+            <p>Kết quả trả về sẽ phụ thuộc v&agrave;o loại ph&acirc;n t&iacute;ch. Nếu bạn đang l&agrave;m tr&ugrave;ng khớp để đ&aacute;nh gi&aacute; sự ph&ugrave; hợp của m&ocirc; h&igrave;nh, kết quả sẽ chứa một lớp dữ liệu đầu v&agrave;o tr&ugrave;ng khớp với m&ocirc; h&igrave;nh v&agrave; th&ocirc;ng tin kết quả đ&aacute;nh gi&aacute; sự ph&ugrave; hợp của m&ocirc; h&igrave;nh. Nếu bạn đang l&agrave;m tr&ugrave;ng khớp khớp v&agrave; dự đo&aacute;n, kết quả sẽ chứa một lớp dữ liệu đầu v&agrave;o tr&ugrave;ng khớp với m&ocirc; h&igrave;nh, một lớp kết quả dự đo&aacute;n v&agrave; th&ocirc;ng tin kết quả đ&aacute;nh gi&aacute; sự ph&ugrave; hợp của m&ocirc; h&igrave;nh.
+            </p>
+            <p>Khi ghi v&agrave;o  ArcGIS Data Store (kho dữ liệu lớn li&ecirc;n quan hoặc kho dữ liệu lớn kh&ocirc;ng gian thời gian) sử dụng hộp xổ xuống  <b>Lưu kết quả v&agrave;o</b>, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong mục <b>Nội dung của t&ocirc;i</b> để lưu trữ kết quả v&agrave;o.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

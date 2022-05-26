@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/fi/SummarizeCenterAndDispersion",{inputLayerLabel:"Valitse kuvailtava karttataso",summaryTypes:"Yhteenvetotyypit",centralFeature:"Keskikohde",meanCenter:"Keskim\u00e4\u00e4r\u00e4inen keskipiste",medianCenter:"Mediaanikeskipiste",ellipse:"Ellipsi",weightBy:"Painotusperuste (valinnainen)",groupBy:"Ryhmittelyperuste (valinnainen)",resultLayerName:"Tulostason nimi",outputLayerName:"Kuvaile karttatason ${layerName} jakaumaa",none:"Ei mit\u00e4\u00e4n",itemDescription:"Kohdekarttataso, joka on luotu suorittamalla Laadi yhteenveto keskikohdasta ja hajonnasta -toiminto karttatasolle ${layerName}. ",
+itemTags:"Analyysitulos, luo yhteenveto keskikohdasta ja hajonnasta, ${layerName}",itemSnippet:"Kohdekarttataso, joka on luotu Laadi yhteenveto keskikohdasta ja hajonnasta -toiminnosta"});

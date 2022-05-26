@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Resumir el ràster dins de</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Eina Resumir el r&agrave;ster dins de"></h2>
+        <hr/>
+    <p>Aquesta eina resumeix un r&agrave;ster en funci&oacute; de les &agrave;rees (zones) definides per la primera capa d'entrada.
+    </p>
+    <p>Alguns exemples d'aplicacions s&oacute;n:
+    </p>
+    <p>
+        <ul>
+            <li>Donada una capa de l&iacute;mits de conques hidrogr&agrave;fiques i una capa de l&iacute;mits d'&uacute;s del s&ograve;l per tipus d'&uacute;s, calculeu la superf&iacute;cie total del tipus d'&uacute;s del s&ograve;l per a cada conca hidrogr&agrave;fica.
+                
+
+            </li>
+            <li>Donada una capa de parcel&middot;les d'un comtat i una capa de l&iacute;mits de ciutats, resumir el valor mitj&agrave; de les parcel&middot;les buides en cada l&iacute;mit de la ciutat.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s s'analitzaran les entitats de la capa d'entrada i la capa que es resumir&agrave; que siguin visibles a l'extensi&oacute; de mapa actual. Si l'opci&oacute; est&agrave; desactivada, s'analitzaran totes les entitats de la capa d'entrada i la capa que es resumir&agrave;, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Trieu una capa d'àrea per resumir una capa de ràster dins dels límits definits</h2></div>
+        <hr/>
+        <div>
+            <p>Capa que defineix els l&iacute;mits de les &agrave;rees o zones que es resumiran.
+            </p>
+            <p>La capa pot ser de dades de r&agrave;ster o entitat. Per als r&agrave;sters, les zones es defineixen mitjan&ccedil;ant totes les ubicacions de l'entrada que tenen el mateix valor de cel&middot;la. No &eacute;s necessari que les &agrave;rees siguin contig&uuml;es.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Trieu un camp per definir els límits</h2></div>
+        <hr/>
+        <div>
+            <p>Atribut de la capa que s'utilitzar&agrave; per definir els l&iacute;mits de les &agrave;rees.
+            </p>
+            <p>Per exemple, suposem que la primera capa d'entrada defineix els l&iacute;mits de les unitats d'administraci&oacute;, amb atributs que defineixen la regi&oacute;, el districte i l'identificador de parcel&middot;la de cada unitat. Tamb&eacute; teniu una capa r&agrave;ster que defineix un &iacute;ndex de biodiversitat per a cada ubicaci&oacute;. Amb el camp que seleccioneu, podeu decidir calcular la biodiversitat mitjana als nivells local, regional o de districte.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Trieu una capa de ràster per resumir</h2></div>
+        <hr/>
+        <div>
+            <p>Les cel&middot;les de r&agrave;ster d'aquesta capa es resumiran per les &agrave;rees (zones) on es trobin.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Trieu una estadística per calcular</h2></div>
+        <hr/>
+        <div>
+            <p>Quan h&agrave;giu triat una capa per resumir-la, tindreu l'opci&oacute; de calcular les estad&iacute;stiques de qualsevol atribut num&egrave;ric dels punts, les l&iacute;nies o les &agrave;rees que estiguin dins de la capa d'&agrave;rees d'entrada.
+            </p>
+            <p>Els tipus d'estad&iacute;stiques disponibles quan el camp seleccionat &eacute;s un enter s&oacute;n Mitjana, Majoria, M&agrave;xim, Mitjana, M&iacute;nim, Minoria, Interval, Desviaci&oacute; est&agrave;ndard, Suma i Varietat.
+            </p>
+            <p>Si el camp &eacute;s un punt flotant, les opcions s&oacute;n Mitjana, M&agrave;xim, M&iacute;nim, Interval, Desviaci&oacute; est&agrave;ndard i Suma.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Ignora els valors que falten al càlcul</h2></div>
+        <hr/>
+        <div>
+            <p>Si opteu per ignorar els valors que falten, nom&eacute;s les cel&middot;les que tinguin un valor a la capa per resumir s'utilitzaran per determinar el valor de sortida de l'&agrave;rea. Altrament, si falten valors en qualsevol lloc d'una &agrave;rea, es considerar&agrave; insuficient la informaci&oacute; per realitzar c&agrave;lculs estad&iacute;stics a totes les cel&middot;les de la zona, i l'&agrave;rea rebr&agrave; un valor nul (NoData) a la sortida.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Podeu especificar el nom d'una carpeta de  <b>El meu contingut</b> on es desar&agrave; el resultat mitjan&ccedil;ant el quadre desplegable <b>Desa el resultat a</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,81 @@
+<div data-dojo-attach-point="containerNode">
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'Band',minOccurs:1,showHeader:false,label:'${i18nArcGIS.contInfo.Band.caption}'">
+    
+    <!-- sequence id and type -->
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'seqID',minOccurs:1,showHeader:false">
+      <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+        data-dojo-props="target:'aName',minOccurs:1,label:'${i18nArcGIS.contInfo.covDim.seqID}'">
+      </div>
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'attributeType',minOccurs:1,showHeader:false">
+        <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+          data-dojo-props="target:'aName',minOccurs:1,label:'${i18nArcGIS.contInfo.covDim.seqIDType}'">
+        </div>
+      </div>
+    </div>
+    
+    <!-- descriptor -->
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'dimDescrp',minOccurs:0,label:'${i18nArcGIS.contInfo.covDim.dimDescrp}'">
+    </div>
+    
+    <!-- minimum value -->
+    <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/MinNumberElement"
+      data-dojo-props="target:'minVal',minOccurs:0,label:'${i18nArcGIS.contInfo.Band.minVal}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputNumber"></div>
+    </div>
+    
+    <!-- maximum value -->
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'maxVal',minOccurs:0,label:'${i18nArcGIS.contInfo.Band.maxVal}'">
+      <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputMaxNumber"></div>
+    </div>
+    
+    <!-- units -->
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'valUnit',minOccurs:0,showHeader:false">
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'UOM',minOccurs:0,showHeader:false">
+        <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/BandUnitsElement"
+          data-dojo-props="target:'unitSymbol',minOccurs:0,label:'${i18nArcGIS.contInfo.Band.valUnit}'">
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputSelectCode"
+            data-dojo-props="codelistType:'UCUM'">
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Peak Response -->
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'pkResp',minOccurs:0,label:'${i18nArcGIS.contInfo.Band.pkResp}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputNumber"></div>
+    </div>
+    
+    <!-- Bits per Value -->
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'bitsPerVal',minOccurs:0,label:'${i18nArcGIS.contInfo.Band.bitsPerVal}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputNumber" data-dojo-props="integerOnly:true"></div>
+    </div>
+    
+    <!-- Tone Gradation -->
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'toneGrad',minOccurs:0,label:'${i18nArcGIS.contInfo.Band.toneGrad}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputNumber" data-dojo-props="integerOnly:true"></div>
+    </div>
+    
+    <!-- Scale Factor -->
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'sclFac',minOccurs:0,label:'${i18nArcGIS.contInfo.Band.sclFac}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputNumber"></div>
+    </div>
+    
+    <!-- offset -->
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'offset',minOccurs:0,label:'${i18nArcGIS.contInfo.Band.offset}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputNumber"></div>
+    </div>
+    
+  </div>
+</div>

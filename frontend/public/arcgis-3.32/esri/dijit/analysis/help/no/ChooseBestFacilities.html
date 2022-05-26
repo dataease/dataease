@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Velg beste fasiliteter</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Velg beste fasiliteter"></h2>
+        <hr/>
+    <p>Med Velg beste fasiliteter kan du velge de beste lokasjonene for fasiliteter. Verkt&oslash;yet allokerer lokasjoner som har en ettersp&oslash;rsel etter fasilitetene p&aring; en m&aring;te som oppfyller den definerte m&aring;lsettingen.
+    </p>
+    <p>Fasiliteter representerer lokasjoner der det tilbys en eller annen type tjeneste, for eksempel brannstasjoner, skoler, biblioteker, butikker eller utleveringslagre. Ettersp&oslash;rselspunkter representerer lokasjoner som har ettersp&oslash;rsel etter tjenestene som tilbys av fasilitetene, for eksempel befolkningsblokker som sammenfatter befolkningen i et gitt omr&aring;de.
+    </p>
+    <p>Med verkt&oslash;yet Velg beste fasiliteter kan du f&aring; svar p&aring; sp&oslash;rsm&aring;l som
+        <ul>
+            <li>Hvordan kan husholdninger tilordnes riktig tilfluktssenter i en krisesituasjon n&aring;r sengekapasiteten er begrenset og ikke b&oslash;r overskrides?
+            </li>
+            <li>Hvordan kan du tilordne nabolag til n&aelig;rmeste bibliotekfilial og finne antallet potensielle bes&oslash;kende som hver filial betjener? 
+            </li>
+            <li>Hvordan finner du den beste plasseringen for en distribusjonssentral for matvarer slik at reisetiden minimeres (og dermed ogs&aring; kostnadene) for levering til en matvarekjede?
+            </li>
+            <li>Hvor b&oslash;r en ny park ligge for at flest mulig av byens innbyggere skal bo innenfor fem minutters gange fra parken?
+            </li>
+            <li>Hvor b&oslash;r en kjede med dyrebutikker fordeles i et fylke for at 40 prosent av alle kj&aelig;ledyreiere i fylket ikke skal bo lenger enn en ti minutters kj&oslash;retur fra en av butikkene i kjeden?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Målsetting</h2></div>
+        <hr/>
+        <div>
+            <p>Angi m&aring;lsettingen som skal oppfylles n&aring;r du allokerer ettersp&oslash;rselspunkter til fasiliteter.
+            </p>
+            <p>Med Velg beste fasiliteter kan du angi hvilken problemstilling du l&oslash;ser &ndash; m&aring;lsettingen. Verkt&oslash;yet er optimalisert for &aring; finne en l&oslash;sning p&aring; den aktuelle m&aring;lsettingen. Uavhengig av m&aring;lsetting, er det samme underliggende metode som brukes til &aring; finne en l&oslash;sning &ndash; ettersp&oslash;rselen fra et gitt ettersp&oslash;rselspunkt allokeres til den n&aelig;rmeste fasiliteten. M&aring;lsettingene p&aring;virker hvordan samspillet mellom avstand (eller tid) og ettersp&oslash;rsel h&aring;ndteres. Verkt&oslash;yet vurderer b&aring;de reiseavstand/reisetid og hvor stor ettersp&oslash;rselen er, og i noen tilfeller ogs&aring; kapasiteten p&aring; fasilitetene. Hvis m&aring;lsettingen for eksempel er &aring; minimere reisetiden, pr&oslash;ver verkt&oslash;yet likevel sekund&aelig;rt &aring; maksimere ettersp&oslash;rselen som er allokert. Hvis m&aring;lsettingen er &aring; maksimere ettersp&oslash;rselen som allokeres, pr&oslash;ver verkt&oslash;yet p&aring; samme m&aring;te &aring; minimere reisetiden (ved &aring; tilordne ettersp&oslash;rselspunkter til den n&aelig;rmeste fasiliteten snarere enn til en hvilken som helst fasilitet).
+            </p>
+            <p>Avhengig av dataene og innstillingene du bruker, kan ulike m&aring;lsettinger gi samme eller forskjellig resultat. Du b&oslash;r imidlertid angi den m&aring;lsettingen som er best egnet til analysen.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Alloker til eksisterende fasiliteter</h2></div>
+        <hr/>
+        <div>
+            <p>Bruk denne m&aring;lsettingen hvis du ikke vil lokalisere nye fasiliteter og vil tilordne ettersp&oslash;rsel til eksisterende fasiliteter som kan ha begrenset eller ubegrenset kapasitet.    
+            </p>
+            <p>Tilordne ettersp&oslash;rselspunkter til eksisterende fasiliteter basert p&aring; fasilitetens kapasitet og ettersp&oslash;rselen i det omkringliggende omr&aring;det. Ettersp&oslash;rsel allokeres til den n&aelig;rmeste fasiliteten til den tilgjengelige kapasiteten er brukt. Hvis du angir et maksimalt reiseomr&aring;de, vil eventuelle lokasjoner som er utenfor omr&aring;det, ikke tilordnes til en fasilitet, selv om all ettersp&oslash;rsel ikke er fullstendig allokert.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Minimer reise</h2></div>
+        <hr/>
+        <div>
+            <p>Bruk denne m&aring;lsettingen hvis du vil lokalisere fasiliteter slik at den samlede reisetiden, eller reiseavstanden, mellom ettersp&oslash;rselspunktene og fasilitetene minimeres.
+            </p>
+            <p>Denne m&aring;lsettingen brukes gjerne n&aring;r det kreves regelmessige reiser mellom fasiliteten og alle ettersp&oslash;rselspunktene. Du bruker for eksempel denne m&aring;lsettingen til &aring; minimere den samlede avstanden for transport av varer fra distribusjonssentre til butikker, eller til &aring; velge et arrangementssted for en konferanse slik at reisetiden blir mist mulig for alle deltakerne.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Maksimer dekning</h2></div>
+        <hr/>
+        <div>
+            <p>Bruk denne m&aring;lsettingen hvis du vil maksimere ettersp&oslash;rselen som dekkes innenfor en angitt tid eller avstand fra fasilitetene.    
+            </p>
+            <p>Denne m&aring;lsettingen velger fasiliteter slik at den maksimale ettersp&oslash;rselen allokeres, med hele ettersp&oslash;rselen fra hvert enkelt ettersp&oslash;rselspunkt allokert til den ene fasiliteten som er n&aelig;rmest.
+            </p>
+            <p>Denne m&aring;lsettingen krever at det angis et maksimalt reiseomr&aring;de, ellers kan hele ettersp&oslash;rselen bli tilordnet en enkelt fasilitet. Ettersp&oslash;rselspunkter som er utenfor avstanden eller tiden for en av fasilitetene, allokeres ikke (dette viser deg hvor ettersp&oslash;rselen ikke dekkes, og hvor det kan v&aelig;re behov for flere fasiliteter).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Maksimer dekning med kapasitet</h2></div>
+        <hr/>
+        <div>
+            <p>Bruk denne m&aring;lsettingen hvis du vil maksimere ettersp&oslash;rselen som dekkes av fasilitetene, men fasilitetene har begrenset kapasitet.    
+            </p>
+            <p>Denne m&aring;lsettingen velger fasiliteter slik at den maksimale ettersp&oslash;rselen allokeres uten at kapasiteten for noen av fasilitetene overskrides. All ettersp&oslash;rsel fra hvert ettersp&oslash;rselspunkt allokeres til den ene fasiliteten som er n&aelig;rmest og har tilgjengelig kapasitet (det vil si at hvis tildelingen av et ettersp&oslash;rselspunkt til en fasilitet f&oslash;rer til at den tilgjengelige kapasiteten for fasiliteten overskrides, s&aring; tilordnes ikke ettersp&oslash;rselspunktet i det hele tatt, snarere enn at en del av ettersp&oslash;rselen tilordnes).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Dekk en prosentsats av etterspørselen</h2></div>
+        <hr/>
+        <div>
+            <p>Bruk denne m&aring;lsettingen hvis du vil finne minimum antall fasiliteter som kreves for &aring; dekke en gitt prosentdel av ettersp&oslash;rselen.
+            </p>
+            <p>Denne m&aring;lsettingen velger minimum antall fasiliteter som kreves for &aring; n&aring; den angitte prosentdelen av ettersp&oslash;rselen. Et ettersp&oslash;rselspunkt som er innenfor det maksimale reiseomr&aring;det for to eller flere fasiliteter f&aring;r ettersp&oslash;rselen fordelt proporsjonalt mellom fasilitetene basert p&aring; punktets avstand fra hver av fasilitetene. Denne m&aring;lsettingen brukes ofte n&aring;r mennesker har mulighet til &aring; velge hvilken fasilitet de vil bes&oslash;ke, og det antas at de som regel velger den fasiliteten som er n&aelig;rmest (hvis alle andre faktorer er identiske).
+            </p>
+            <p>I motsetning til de andre m&aring;lsettingene for valg av fasiliteter, der du angir hvor mange fasiliteter som skal velges, velger denne m&aring;lsettingen antall fasiliteter for deg basert p&aring; den prosentdelen av ettersp&oslash;rselen som du &oslash;nsker &aring; dekke. Det forutsettes at fasiliteten ikke har begrenset kapasitet.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Mål</h2></div>
+        <hr/>
+        <div>
+            <p>Som med andre verkt&oslash;y der reise er en del av analysen, kan du angi om reisen m&aring;les i avstand eller tid, og du kan velge blant ulike reisem&aring;ter som g&aring;tid, kj&oslash;retid, kj&oslash;reavstand i rurale omr&aring;der osv. Tilgjengelige reisem&aring;ter defineres av administratoren i organisasjonen. N&aring;r du bruker  <b>Kj&oslash;retid</b>, <b>Kj&oslash;retid i rurale omr&aring;der</b> eller <b>Lastebiltid</b>, kan du velge om du vil ta med trafikkforhold for en bestemt ukedag eller tidspunkt p&aring; dagen.
+            </p>
+            <p> For &aring; kunne allokere ettersp&oslash;rselspunkter til fasiliteter p&aring; en n&oslash;yaktig m&aring;te m&aring; du angi om reisen regnes fra fasiliteter til ettersp&oslash;rselspunkter (for eksempel fra brannstasjoner til hus) eller fra ettersp&oslash;rselspunkter til fasiliteter (som med bes&oslash;kende p&aring; biblioteker). Velg beste fasiliteter tar hensyn til reiseretningen p&aring; enveiskj&oslash;rte gater, om du kan svinge fra en gate til en annen, om det er forbudt &aring; svinge til venstre i kryss og s&aring; videre, avhengig av om reisen er utg&aring;ende fra fasiliteten til ettersp&oslash;rselspunktene eller inng&aring;ende fra ettersp&oslash;rselspunktene til fasilitetene.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Lag for etterspørselspunkter</h2></div>
+        <hr/>
+        <div>
+            <p>Punktgeoobjektene representerer lokasjoner med ettersp&oslash;rsel etter tjenestene som tilbys av fasilitetene. Verkt&oslash;yet tilordner disse ettersp&oslash;rselspunktene til passende fasiliteter basert p&aring; m&aring;lsettingen som er valgt.
+            </p>
+            <p>Ettersp&oslash;rselspunkter har en tilknyttet ettersp&oslash;rsel. Bruk en konstant til &aring; angi verdien hvis alle ettersp&oslash;rselspunkter har samme ettersp&oslash;rsel. Hvis ettersp&oslash;rselen varierer etter ettersp&oslash;rselspunkt, bruker du et felt i laget for ettersp&oslash;rselspunkter til &aring; angi verdien for hvert ettersp&oslash;rselspunkt.
+            </p>
+            <p>Ettersp&oslash;rselen allokeres til fasilitetene helt til all ettersp&oslash;rsel er allokert, uavhengig av hvor langt ettersp&oslash;rselspunktene er fra fasilitetene. Du kan tilordne et maksimalt reiseomr&aring;de i laget for ettersp&oslash;rselspunkter for &aring; definere yttergrensen for avstand eller tid &ndash; eventuelle ettersp&oslash;rselspunkter utenfor denne avstands- eller tidsgrensen, blir ikke allokert. Bruk en konstant til &aring; angi verdien hvis alle ettersp&oslash;rselspunkter har samme maksimale reiseomr&aring;de. Hvis det maksimale reiseomr&aring;det varierer etter ettersp&oslash;rselspunkt, bruker du et felt i laget for ettersp&oslash;rselspunkter til &aring; angi verdien for hvert ettersp&oslash;rselspunkt.
+            </p>
+            <p>Hvis m&aring;lsettingstypen er  <b>Dekk en prosentsats av ettersp&oslash;rselen</b>, m&aring; du angi den laveste prosentdelen av ettersp&oslash;rselen som fasilitetene skal dekke.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p>
+            <p>Verkt&oslash;yet st&oslash;tter opptil 10&nbsp;000 geoobjekter i laget for ettersp&oslash;rselspunkter.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Lag for påkrevde fasiliteter</h2></div>
+        <hr/>
+        <div>
+            <p>Punktgeoobjektene representerer lokasjoner som fungerer som fasiliteter ved &aring; tilby en tjeneste. P&aring;krevde fasiliteter representerer vanligvis lokasjoner som allerede eksisterer, i motsetning til potensielle fasiliteter som vanligvis representerer lokasjoner der nye fasiliteter skal bygges eller plasseres. N&aring;r du allokerer ettersp&oslash;rselspunkter, bruker verkt&oslash;yet fasilitetene i  <b>laget for p&aring;krevde fasiliteter</b> f&oslash;r eventuelle fasiliteter fra <b>laget for potensielle fasiliteter</b>.
+            </p>
+            <p>P&aring;krevde fasiliteter kan ha ubegrenset kapasitet (det vil si at de kan dekke all ettersp&oslash;rsel som tilordnes dem) eller de kan ha begrenset kapasitet. Hvis alle fasilitetene har samme begrensede kapasitet (for eksempel antall husholdninger som en brannstasjon kan betjene, for eksempel 4 000), angir du en konstant verdi. Hvis kapasiteten varierer mellom fasilitetene (for eksempel antall plasser for f&oslash;rste&aring;rsstudenter p&aring; hver utdanningsinstitusjon), angir du et felt som inneholder kapasiteten for hver fasilitet.
+            </p>
+            <p>Verkt&oslash;yet st&oslash;tter opptil 100 geoobjekter i  <b>laget for p&aring;krevde fasiliteter</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Lag for potensielle fasiliteter</h2></div>
+        <hr/>
+        <div>
+            <p>Punktgeoobjektene representerer lokasjoner som fungerer som fasiliteter ved &aring; tilby en tjeneste. Potensielle fasiliteter representerer vanligvis lokasjoner der nye fasiliteter skal bygges eller plasseres, i motsetning til p&aring;krevde fasiliteter som vanligvis representerer lokasjoner som allerede finnes.
+            </p>
+            <p>Avhengig av m&aring;lsettingen for analysen, m&aring; du angi antallet potensielle fasiliteter som kan velges fra settet med potensielle fasiliteter. Hvis du angir b&aring;de p&aring;krevde og potensielle fasiliteter, bruker verk&oslash;yet fasilitetene i  <b>laget for p&aring;krevde fasiliteter</b> f&oslash;r eventuelle fasiliteter fra <b>laget for potensielle fasiliteter</b>.
+            </p>
+            <p>Potensielle fasiliteter kan ha ubegrenset kapasitet (det vil si at de kan dekke all ettersp&oslash;rsel som tilordnes dem) eller de kan ha begrenset kapasitet. Hvis alle fasilitetene har samme begrensede kapasitet (for eksempel antall husholdninger som en brannstasjon kan betjene, for eksempel 4 000), angir du en konstant verdi. Hvis kapasiteten varierer mellom fasilitetene (for eksempel antall plasser for f&oslash;rste&aring;rsstudenter p&aring; hver utdanningsinstitusjon), angir du et felt som inneholder kapasiteten for hver fasilitet.
+            </p>
+            <p>Verkt&oslash;yet st&oslash;tter opptil 1&nbsp;000 geoobjekter i  <b>laget for potensielle fasiliteter</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Velg hindringslag</h2></div>
+        <hr/>
+        <div>
+            <p> Ett eller flere geoobjekter som fungerer som midlertidige begrensninger (hindringer) under transport p&aring; de underliggende gatene. Du kan angi hindringer ved hjelp av punkt-, linje- eller polygongeoobjekter.
+            </p>
+            <p>En punkthindring kan v&aelig;re et veltet tre, en ulykke, en kraftledning som er falt ned, eller andre ting som blokkerer trafikken helt p&aring; et bestemt sted i gaten. Gaten er ikke stengt for trafikk, men det er ikke mulig &aring; passere hindringen. Du kan angi opptil 250 geoobjekter som fungerer som punkthindringer.
+            </p>
+            <p>En linjehindring hindrer trafikk der hindringen krysser gatene. En linjehindring kan for eksempel v&aelig;re en parade eller protestmarsj som blokkerer trafikken over flere gatesegmenter. Hvis antallet gategeoobjekter som krysses av alle linjehindringene overstiger 500, returnerer verkt&oslash;yet en feil.
+            </p>
+            <p>En polygonhindring hindrer trafikk der polygonet krysser gatene. Denne typen hindring kan for eksempel brukes til &aring; modellere oversv&oslash;mte omr&aring;der som dekker deler av gatenettet og gj&oslash;r det umulig &aring; ferdes p&aring; gatene. Hvis antallet gategeoobjekter som krysses av alle polygonhindringene overstiger 2000, returnerer verkt&oslash;yet en feil.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis lagnavnet finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Resultatlaget inneholder et lag for hver av f&oslash;lgende: fasiliteter som har ettersp&oslash;rsel tilordnet, ettersp&oslash;rselspunkter som er allokert til fasiliteter, og allokeringslinjer som knytter ettersp&oslash;rselspunktene til de tilordnede fasilitetene. Allokeringslinjene tegnes som rette linjer. Reisetiden eller reiseavstanden mellom fasiliteten og ettersp&oslash;rselspunktet er imidlertid alltid basert p&aring; reisem&aring;ten du angir, og ikke avstander i luftlinje.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

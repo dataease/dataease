@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Hitta liknande platser</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Hitta liknande platser"></h2>
+        <hr/>
+    <p>Verktyget Hitta liknande platser m&auml;ter likheten mellan platser i kandidats&ouml;klagret och en eller flera referensplatser utifr&aring;n kriterier som du anger. Verktyget kan besvara fr&aring;gor som 
+        <ul>
+            <li>Vilka av dina butiker &auml;r mest lika de b&auml;st presterande i fr&aring;ga om kundprofiler?
+            </li>
+            <li>Baserat p&aring; egenskaper hos byar som drabbat h&aring;rdast av sjukdom, vilka andra byar l&ouml;per h&ouml;g risk f&ouml;r detta?
+            </li>
+        </ul>
+        F&ouml;r att besvara fr&aring;gor som dessa anger du referensplatserna, kandidats&ouml;kplatserna och de f&auml;lt som representerar de kriterier du vill matcha. Det f&ouml;rsta indatalagret ska inneh&aring;lla dina referens- eller riktlinjeplatser. Det kan exempelvis vara ett lager som inneh&aring;ller dina b&auml;st presterande butiker eller de byar som drabbats h&aring;rdast av en sjukdom. Sedan anger du det lager som inneh&aring;ller dina kandidats&ouml;kplatser. Det kan vara alla dina butiker eller alla andra byar. Slutligen identifierar du ett eller flera f&auml;lt som ska anv&auml;ndas f&ouml;r att m&auml;ta likheten. Verktyget Hitta liknande platser rangordnar sedan alla kandidats&ouml;kplatser efter hur n&auml;ra de matchar dina referensplatser &ouml;ver alla de f&auml;lt du valt.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj lager som innehåller referensplatserna</h2></div>
+        <hr/>
+        <div>
+            <p>Det lager som inneh&aring;ller referensplatserna som ska matchas. 
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Du kan använda alla platser eller göra ett urval</h2></div>
+        <hr/>
+        <div>
+            <p>Anv&auml;nd valknapparna f&ouml;r att identifiera referensplatserna om s&aring; beh&ouml;vs. Det h&auml;r alternativet finns endast tillg&auml;ngligt om geoobjekten ritas p&aring; kartan (inte tillg&auml;ngligt f&ouml;r Big Data-fildelning). Om exempelvis indatalagret inneh&aring;ller alla platserna (s&aring;v&auml;l referensplatserna som kandidats&ouml;kplatserna), m&aring;ste du anv&auml;nda n&aring;got av markeringsverktygen f&ouml;r att identifiera referensplatserna. Om du skapar tv&aring; separata lager, ett med referensplatserna och ett annat med alla kandidats&ouml;kplatser, beh&ouml;ver du inte g&ouml;ra ett urval.
+            </p>
+            <p>Om det finns mer &auml;n en referensplats skapas en enskild plats genom att ett genomsnitt r&auml;knas ut f&ouml;r v&auml;rdena f&ouml;r varje f&auml;lt som anv&auml;nds f&ouml;r att analysera likheten.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Sök efter liknande platser i</h2></div>
+        <hr/>
+        <div>
+            <p>Kandidats&ouml;kgeoobjekten i lagret rangordnas fr&aring;n mest till minst liknande. 
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Basera likheten på</h2></div>
+        <hr/>
+        <div>
+            <p>De f&auml;lt du markerar kommer att utg&ouml;ra kriterierna f&ouml;r att bed&ouml;ma likheten. Om du exempelvis v&auml;ljer ett befolknings- och inkomstf&auml;lt, s&aring; kommer kandidats&ouml;kplatserna med l&auml;gst (b&auml;st) rankningar att vara de som har befolknings- och inkomstv&auml;rden som liknar referensplatserna.
+            </p>
+        </div>
+    </div>
+    <div id="matchMethod">
+        <div><h2>Fastställ mest och minst lik med hjälp av</h2></div>
+        <hr/>
+        <div>
+            <p>Vilken metod du v&auml;ljer avg&ouml;r hur matchningen fastst&auml;lls. 
+                <ul>
+                    <li>Metoden med  <b>f&auml;ltv&auml;rden</b> anv&auml;nder skillnaderna i kvadrat f&ouml;r standardv&auml;rdena. Det h&auml;r &auml;r standardinst&auml;llningen.
+                    </li>
+                    <li>Metoden med  <b>f&auml;ltprofiler</b> anv&auml;nder matematiska utr&auml;kningar f&ouml;r cosinuslikhet f&ouml;r att j&auml;mf&ouml;ra profilen f&ouml;r standardv&auml;rdena. Anv&auml;ndning av attributprofilerna kr&auml;ver att minst tv&aring; analysf&auml;lt anv&auml;nds.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Visa mig</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan antingen visa alla kandidats&ouml;kplatser rangordnade fr&aring;n mest liknande till minst liknande, eller s&aring; kan du ange det antal resultat du vill visa. 
+                <ul>
+                    <li>Om du anger  <b>alla platser fr&aring;n mest till minst liknande</b> inkluderas alla geoobjekt i kandidats&ouml;klagret i rangordningen i resultatlagret. Maximalt 10&nbsp;000 f&auml;lt returneras.
+                    </li>
+                    <li>Om du anger  <code>antal f&ouml;r</code> <code>mest, minst eller mest och minst</code> <b>liknande platser</b>, avg&ouml;r du hur m&aring;nga av de mest, minst eller mest eller mest liknande kandidater som ska inkluderas i resultatlagret. Det maximala till&aring;tna v&auml;rdet &auml;r 10&nbsp;000.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="appendFields">
+        <div><h2>Välj fält som ska läggas till i resultaten</h2></div>
+        <hr/>
+        <div>
+            <p>Alternativt kan du l&auml;gga till f&auml;lt f&ouml;r dina data fr&aring;n s&ouml;klagret. Som standard l&auml;ggs alla f&auml;lt till.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p> Namnet p&aring; lagret som ska skapas.  Om du skriver till en ArcGIS Data Store, sparas dina resultat i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om du skriver till en big data-fildelning, lagras dina resultat i big data-fildelningen och l&auml;ggs till i dess manifest. Det l&auml;ggs inte till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns misslyckas verktyget.
+            </p>
+            <p>Resultatlagret kommer att inneh&aring;lla referensplatserna och det antal rangordnade kandidats&ouml;kgeoobjekt du angett. Om lagrets namn redan finns uppmanas du att byta namn p&aring; det.
+            </p>
+            <p>N&auml;r du skriver till   ArcGIS Data Store (relationellt eller rumstempor&auml;rt Big Data-datalager) med listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>构建多变量格网</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="&ldquo;追加数据&rdquo;工作流示意图"></h2>
+        <hr/>
+    <p>&ldquo;构建多变量格网&rdquo;工具适用于一个或多个点、线或面要素图层。该工具会生成方形和六边形条柱格网，并根据每个输入图层的邻近性计算每个条柱的值。这些值可包括以下变量： 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>与最近要素的距离</b> - 每个条柱与最近要素的距离
+            </li>
+            <li> <b>最近要素属性</b> - 距离每个条柱最近的要素的字段值
+            </li>
+            <li> <b>邻近要素汇总</b> - 距离每个条柱的某一范围内所有要素的指定统计数据
+            </li>
+            <li> <b>相交要素汇总</b> - 与每个条柱相交的所有要素的指定统计数据
+            </li>
+        </ul>
+        
+    </p>
+    <p>仅在结果图层中包含所指定的变量。这些变量可帮助您了解数据的邻近性和分布。结果可以帮助您开始回答以下问题：
+        <ul>
+            <li>已知多个公共交通基础设施图层，城市的哪个区域公共交通最不便利？
+            </li>
+            <li>已知水体（例如湖泊和河流）图层，最接近美国各区域的水体名称是什么？
+            </li>
+            <li>已知家庭收入图层，美国哪个位置周围 50 英里范围内收入差距最大？
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>选择将用于构建多变量格网的条柱类型</h2></div>
+        <hr/>
+        <div>
+             
+            <p>用于创建多变量格网的条柱类型和大小。对于 <b>方形</b>选项，由指定的数字和单位决定正方形的高度和长度。对于 <b>六边形</b>选项，由指定的数字和单位决定平行边之间的距离。
+            </p>
+            <p>该分析使用图格，并且需要投影坐标系。您可以在 <b>分析环境</b>中设置 <b>处理坐标系</b>。如果您的处理坐标系未设置为投影坐标系，则 <b>运行分析</b>时系统将提示您进行设置 。
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>选择要包含在格网中的输入图层和变量</h2></div>
+        <hr/>
+        <div>
+            <p>单击添加按钮 ( <b>+</b>) 打开 <b>添加变量</b>窗口，然后向分析添加图层。在 <b>添加变量</b>窗口中，选择输入图层，然后为该输入图层配置要计算的变量。
+            </p>
+            <p>选择并配置要计算的变量后，该图层将与任何其他所选图层一起在工具窗口中列出。针对任何图层单击&ldquo;编辑&rdquo;按钮可打开 <b>添加变量</b>窗口并查看已为该图层配置的所有变量。针对任何图层单击&ldquo;删除&rdquo;按钮可从分析中删除该图层及所有相关变量。
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>添加变量</h2></div>
+        <hr/>
+        <div>
+            <p>可在此窗口中选择输入图层并为该输入图层配置要计算的变量。首先，在 <b>选择输入图层</b>下拉菜单中选择要添加到分析中的点、面或线图层。
+            </p>
+            <p>除了从地图中选择图层外，还可以在下拉列表的底部选择 <b>选择分析图层</b>，以浏览至大数据文件共享数据集或要素图层中的内容。
+            </p>
+            <p>选择输入图层后，单击 <b>添加变量</b>按钮打开一个新变量以供编辑。必须为每个变量提供唯一名称。该名称将是在结果图层的属性表中创建的字段名称。
+            </p>
+            <p>使用下拉菜单选择要添加的变量类型。必须使用唯一的参数集配置每个变量类型，并且所有参数都是必填参数。
+            </p>
+            <p>为所选图层添加所有所需变量后，请单击 <b>添加</b>按钮保存变量。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p> 要创建的图层的名称。如果您要写入 ArcGIS Data Store，则您的结果将保存在<b>我的内容</b>并添加到地图中。如果您要写入大数据文件共享，则您的结果将存储于大数据文件共享中，并添加到其清单。结果将不会添加到地图中。默认名称基于工具名称以及输入图层名称。如果该图层已存在，将无法使用该工具。
+            </p>
+            <p>如果写入  ArcGIS Data Store（关系或时空大数据存储），可以使用<b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

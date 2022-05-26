@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Create Drive-Time Areas</h2><p/>
+        <h2><img src="./images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" alt="Create Drive-Time Areas"></h2>
+        <hr/>
+    <p>Create Drive-Time Areas creates areas that can be reached within a specified drive time, drive distance, walking distance, and so on. It measures out from one or many points (up to 1,000), along roads or walkways, to create a layer  that can help you answer questions such as:
+        <ul>
+            <li>Where can I go from here within a 30-minute drive?
+            </li>
+            <li>Where can I go from here within a 30-minute drive at 5:30 p.m. during rush hour?
+            </li>
+            <li>What is within a two-kilometer walk from my hotel?
+            </li>
+            <li>What areas of town can the fire department reach within five minutes? 
+            </li>
+            <li>How would fire-response coverage improve by building a new fire station here?
+            </li>
+            <li>What market areas does my business cover?
+            </li>
+        </ul>
+        
+    </p>
+    <p>You may be able to answer your questions solely through visualizing the output areas. Alternatively, you can perform further spatial analysis using the output areas. For instance, running Aggregate Points using drive-time areas with demographic data can help determine which potential store location would likely provide the best customer base for your type of business. 
+    </p>
+    <p>
+        <table>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        <tr><td valign="baseline"><img src="../images/tip.png"></td><td valign="baseline"><h2>Tip:&ensp;</h2></td>
+        <td valign="baseline">
+            <p>To create areas by measuring straight-line distance rather than by measuring along roads, use the Create Buffers tool instead.
+            </p>
+        </td></tr>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        </table>
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the features that are visible within the current map extent will be used to create drive-time- or drive-distance-based areas. If unchecked, all features in the input layer will be used, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose point layer to calculate drive-time areas around</h2></div>
+        <hr/>
+        <div>
+            <p>The point features around which areas will be calculated. You can choose how areas are calculated based on travel mode (driving, trucking, or walking) and measure (time or distance).
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+            <p>The tool supports up to 1,000 features in the input layer.
+
+
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Measure</h2></div>
+        <hr/>
+        <div>
+            <p>Choose your travel mode (driving, trucking, or walking) and measure (time or distance).  The available travel modes are determined by the administrator of your organization.   After choosing your mode and measure, enter a duration or distance of up to  5 hours (300 minutes) or  300 miles (482.80 kilometers). 
+            </p>
+            <p>The travel direction ( <b>Away from Facility</b> or <b>Toward Facility</b>) can influence how the areas are generated. Create Drive-Time Areas will obey one-way streets, avoid illegal turns, and follow other rules based on the direction of travel. You should select the direction of travel based on the type of input locations and the context of your analysis. For example, the drive-time area for a pizza delivery store should be created away from the facility, whereas the drive-time area for a hospital should be created toward the facility.
+            </p>
+            <p>When you choose  <b>Driving Time</b>, <b>Rural Driving Time</b>, or <b>Trucking Time</b> you have options on how to measure the drive time.
+                <ul>
+                    <li>
+                        <p>Uncheck  <b>Use Traffic</b> to create drive-time areas based on fixed speeds. This is the option to choose if you want a general drive-time area, not one that is calculated using changing traffic conditions for a specific departure time.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Check  <b>Use Traffic</b> to create drive-time areas based on a given start time and changing traffic conditions. By also choosing the <b>Live traffic</b> option, the departure time from the input points is set to the current time, and current and predicted traffic speeds are referenced from sensors and feeds to create the drive-time areas. The predicted traffic speeds are calculated by referencing live traffic speeds, historical speeds, and current events such as weather. Traffic speeds are predicted 12 hours into the future, so you can move the slider to set the departure time ahead by up to 12 hours.
+                        </p>
+                        <p>Use these live-traffic settings to find out what areas can be reached by departing now, departing in one hour from now, and so on.
+                        </p>
+                    </li>
+                    <li>
+                        <p>By checking  <b>Use Traffic</b> and choosing <b>Traffic based on typical conditions for</b> a day and time, the tool creates drive-time areas based on historical speed averages for every five-minute  interval across a routine week. The results include traffic but remove the influence of current traffic conditions and events, which may vary significantly from the norm.
+                        </p>
+                        <p>You can use these historical traffic settings to ask, for instance, &quot;What areas can I generally reach when departing at 11:30 a.m. on a Wednesday?&quot; 
+                        </p>
+                        <p>The time you set refers to the time zone in which your input points are located. So if you set the time to 8:00 a.m. and have two points, one in New York City and another in Los Angeles, the drive-time areas will be generated for 8:00 a.m. Eastern Time and 8:00 a.m. Pacific Time, respectively.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Note that as a vehicle drives outward from a point, time elapses and traffic conditions change. The Drive-Time Areas tool accounts for these variations when you choose  <b>Driving Time</b> and check <b>Use traffic</b>; however, not all regions support traffic. Click the <b>See availability</b> link on the tool to find out whether it is offered in  your study area.
+            </p>
+            <p> <b>Trucking Time</b> can use dynamic travel speeds based on traffic but only up to the legal truck speed limit. For example, if the dynamic speed for a street based on live traffic is 65 miles per hour but the truck speed limit for that street is 55 miles per hour, the calculation will use 55 miles per hour for that street.
+            </p>
+            <p> <b>Walking Time</b> and <b>Walking Distance</b> use a fixed speed of 5 kilometers per hour (3.1 miles per hour) and follow pedestrian walkways as well as designated streets (while ignoring rules that affect automobiles, such as one-way streets). </p>
+            <p> <b>Trucking Distance</b>  uses fixed speeds and follow rules that are applicable to heavy trucks whereas <b>Driving Distance</b> and <b>Rural Driving Distance</b> use fixed speeds and follow rules that are applicable for automobiles such as cars.
+            </p> 
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Select barrier layers</h2></div>
+        <hr/>
+        <div>
+            <p> One or more features that act as temporary restrictions (barriers) when traveling on the underlying streets. You can specify the barriers using point, line, or polygon features.
+            </p>
+            <p>A point barrier can model a fallen tree, an accident, a downed electrical line, or anything that completely blocks traffic at a specific position along the street. Travel is permitted on the street but not through the barrier. You can specify up to 250 features to act as point barriers.
+            </p>
+            <p>A line barrier prohibits travel anywhere the barrier intersects the streets. For example, a parade or protest that blocks traffic across several street segments can be modeled with a line barrier. If the number of street features intersected by all the line barriers exceeds 500, the tool returns an error.
+            </p>
+            <p>A polygon barrier prohibits travel anywhere the polygon intersects the streets. One use of this type of barrier is to model floods covering areas of the street network and making road travel there impossible. If the number of street features intersected by all the polygon barriers exceeds 2000, the tool returns an error.
+            </p>
+        </div>
+    </div>
+    <div id="DissolveType">
+        <div><h2>Areas from different points</h2></div>
+        <hr/>
+        <div>
+            <p>Choose how shared areas from 
+different input points are handled when they reach one another. They can:
+                <ul>
+                    <li> <b>Overlap</b>&mdash;Areas from different input points may cover the same road. This is useful when you need to know all the input points that can reach a particular location within the given time or distance.
+                    </li>
+                    <li> <b>Dissolve</b>&mdash;All areas are merged into one, and  no more than one area can cover a particular location. This is useful when all you need to know is that an area can be reached within a given time or distance, but you don't need to know which specific input points can reach the location.
+                    </li>
+                    <li> <b>Split</b>&mdash;The areas from different input locations that would overlap each other are split in the middle, so they abut one another instead. This is useful when you want to see which areas are within a given time or distance of the input points and, at the same time, determine which input point is closest to that area.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="showHoles">
+        <div><h2>Show unreachable areas as holes</h2></div>
+        <hr/>
+        <div>
+            <p>Choose whether the output areas will include holes if some streets couldn't be reached because of the  <b>Measure</b> time or distance or because of restrictions imposed by the travel mode.
+            </p>
+            <p>Drive-time areas created using this parameter have a limit of 15 minutes or 15 miles (24 kilometers).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Result Layer Name</h2></div>
+        <hr/>
+        <div>
+            <p>This is the name of the layer that will be created in  <b>My Content</b>  and added to the map.  The default  name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down menu, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+        </div>
+    </div>
+    <div id="includeReachableStreets">
+        <div><h2>Include reachable streets</h2></div>
+        <hr/>
+        <div>
+            <p>Include the streets that are
+used to create the drive-time areas as an output layer. 
+            </p>
+            <p>Create Drive-Time
+Areas measures the reach of
+a facility along the street network, then creates drive-time areas from the
+streets that were traveled. Therefore, the areas are an approximation of the
+traveled streets. If your analysis is to determine which streets
+are covered within a specific travel distance or time from a facility, generating
+reachable streets can be more accurate than using the drive-time areas to
+evaluate if a particular street was reachable.
+            </p>
+            <p>Drive-time areas created using this parameter have a limit of 15 minutes or 15 miles (24 kilometers).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,185 @@
+// Menu 
+// 
+// There are three areas of styling for the Menu:  
+//  
+// 1. The menu 
+//  There are three types of menus:
+//  i) Context Menu
+//  ii) Drop down Menu
+//  iii) Navigation Menu
+//  All three types of menus are affected by the .dijitMenu class in which you can set the background-color, padding and border
+//  .dijitMenu affects the drop down menu in TimeTextBox, Calendar, ComboBox and FilteringSelect
+//  .dijitMenuTable - for padding - also affects Select widget  
+//    
+// 2. The menu bar
+//  .dijitMenuBar - for border, margins, padding, background-color of the menu bar
+//  .dijitMenuBar .dijitMenuItem - for padding, text color of menu items in the menu bar (overrides .dijitMenuItem) 
+//  
+// 3. Menu items - items in the menu.  
+//  .dijitMenuItem - for color
+//  .dijitMenuItemHover, .dijitMenuItemSelected - for background-color, border, text color, padding of a menu item or menubar item that has been hovered over or selected 
+//  .dijitMenuItemActive - for background-color of an active (mousedown) menu item
+//  td.dijitMenuItemIconCell - for padding around a  menu item's icon
+//  td.dijitMenuItemLabel - for padding around a menu item's label  
+//  .dijitMenuSeparatorTop - for border, top border, of the separator
+//  .dijitMenuSeparatorBottom - for bottom margin of the separator
+//  
+//  Styles specific to ComboBox and FilteringSelect widgets: 
+//  .dijitComboBoxMenu .dijitMenuItem - for padding and border of a menu item in a ComboBox or FilteringSelect widget's menu
+//  .dijitComboBoxMenu .dijitMenuItemSelected- for text color, background-color and border of a menu item in a ComboBox or FilteringSelect widget's menu
+// 
+.#{$theme-name} {
+  .dijitMenu {
+    @include dropdown-outer;
+  }
+  .dijitMenuTable {
+    border-collapse: separate;
+    border-spacing: 0 0;
+  }
+  // Menu item
+  // Note: ComboBox's Menu does not have td cells
+  .dijitMenuItem {
+    padding: 0;
+    @include button-variant($btn-default-color, $btn-default-bg);
+    &,
+    &:hover,
+    &:active,
+    &:focus {
+      color: $dropdown-link-color;
+    }
+    // For menu items in Select, and ComboButton
+    td {
+      padding-top: $padding-base-vertical;
+      padding-bottom: $padding-base-vertical;
+      line-height: $line-height-base;
+      // Icons
+      &.dijitMenuItemIconCell {
+        width: $padding-base-horizontal * 2;
+        padding-left: $padding-base-horizontal;
+        padding-right: $padding-base-horizontal;
+        line-height: 1;
+      }
+      &.dijitMenuArrowCell {
+        width: $padding-base-horizontal * 2;
+        padding-left: $padding-base-horizontal - $caret-width-base * 0.5;
+        padding-right: $padding-base-horizontal - $caret-width-base * 0.5;
+        text-align: center;
+        box-sizing: border-box;
+      }
+    }
+  }
+  // For menu items in ComboBox
+  .dijitComboBoxMenu .dijitMenuItem {
+    line-height: $line-height-base;
+    line-height: $line-height-computed;
+    padding: $padding-base-vertical $padding-base-horizontal * 2;
+  }
+  // Disabled state
+  .dijitMenuItemDisabled {
+    &,
+    &:hover,
+    &:focus {
+      color: $dropdown-link-disabled-color;
+      background-color: transparent;
+    }
+  }
+  // Selected state 
+  // For Select and ComboBox
+  .dijitSelectSelectedOption,
+  .dijitSelectSelectedOption:hover td,
+  .dijitSelectSelectedOption:focus td {
+    @include button-variant-default-active;
+    color: $dropdown-link-color;
+  }
+  // Expander
+  // Same as ".dijitRightArrowButton"
+  .dijitMenuExpand {
+    &:before {
+      content: " ";
+      display: block;
+      width: 0;
+      height: 0;
+      margin: 0 auto;
+      border-left: $caret-width-base dashed;
+      border-top: $caret-width-base solid transparent;
+      border-bottom: $caret-width-base solid transparent;
+      border-right: 0;
+    }
+  }
+  // Checkbox icon
+  .dijitCheckedMenuItemIconChar {
+    display: none;
+  }
+  .dijitCheckedMenuItemIcon {
+    display: block;
+    @include dijit-icons;
+    &:before {
+      @include icon-get-content(esri-icon-checkbox-unchecked);
+    }
+  }
+  .dijitCheckedMenuItemChecked .dijitCheckedMenuItemIcon {
+    &:before {
+      @include icon-get-content(esri-icon-checkbox-checked);
+    }
+  }
+  // Radio icon
+  .dijitRadioMenuItem .dijitMenuItemIcon {
+    &:before {
+      @include icon-get-content(esri-icon-radio-unchecked);
+    }
+  }
+  .dijitRadioMenuItemChecked .dijitMenuItemIcon {
+    &:before {
+      @include icon-get-content(esri-icon-radio-checked);
+    }
+  }
+  // Separator
+  .dijitMenuSeparatorTop {
+    @include nav-divider($dropdown-divider-bg);
+    margin: 0;
+  }
+  .dijitMenuSeparatorBottom {
+    height: 0;
+  }
+  // Menu Bar
+  // --------------------------------------------------
+  .dijitMenuBar {
+    color: $navbar-default-color;
+    background-color: $navbar-default-bg;
+    border: 1px solid $navbar-default-border;
+    @include pie-clearfix;
+    .dijitMenuItem {
+      float: left;
+      color: $navbar-default-link-color;
+      background-color: transparent;
+      line-height: $line-height-base;
+      line-height: $line-height-computed;
+      padding: $navbar-link-padding;
+      &:hover,
+      &:focus {
+        color: $navbar-default-link-hover-color;
+        background-color: $navbar-default-link-hover-bg;
+        background-image: linear-gradient(to top, transparent 92%, $Calcite_Blue_a200 93%, $Calcite_Blue_a200 100%);
+        @include transition(color 150ms linear);
+      }
+      &.dijitFocused {
+        &,
+        &:hover,
+        &:focus {
+          background-color: $navbar-default-link-active-bg;
+          color: $navbar-default-link-active-color;
+        }
+      }
+      &.dijitMenuItemDisabled {
+        &,
+        &:hover,
+        &:focus {
+          color: $navbar-default-link-disabled-color;
+          background-color: $navbar-default-link-disabled-bg;
+          background-image: none;
+        }
+      }
+    }
+  }
+}
+

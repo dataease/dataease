@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="aoToolbox">
+        <p>Objektanalyse-v&aelig;rkt&oslash;jskassen indeholder en r&aelig;kke v&aelig;rkt&oslash;jer, som du kan f&aring; adgang til og bruge. Disse opgaver er struktureret kategorierne nedenfor: Kategorierne er enkle, logiske grupperinger, som ikke p&aring; nogen m&aring;de p&aring;virker din adgang til eller brugen af opgaverne.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Summér data</h2>
+        <hr/>
+        <p>Disse v&aelig;rkt&oslash;jer beregner samlet antal, l&aelig;ngde, omr&aring;de og basal beskrivende statistik for objekter og deres attributter inden for omr&aring;der eller n&aelig;r andre objekter.
+            <ul>
+                <li> <b>Aggreg&eacute;r punkter</b> beregner statistik om punkter, der falder inden for angivne omr&aring;der.
+                </li>
+                <li> <b>Forbind objekter</b> overf&oslash;rer attributter fra &eacute;t lag eller &eacute;n tabel til et andet lag eller en anden tabel p&aring; grundlag af rumlige relationer og attributrelationer.
+                </li>
+                <li> <b>Summ&eacute;r i n&aelig;rheden</b> beregner statistik for punkter og deres attributter, der er inden for en angiven afstand.
+                </li>
+                <li> <b>Summ&eacute;r inden for</b> beregner statistik for omr&aring;deobjekter og -attributter, der overlapper hinanden.
+                </li>
+                <li> <b>Summ&eacute;r center og spredning</b> beregner centrale objekter og retningsfordelinger.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Aggregér punkter</h2></td>
+                    <td>
+                    <img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" class="titleImage" alt="Aggreg&eacute;r punkter">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ved hj&aelig;lp af et lag af punktobjekter og et lag af omr&aring;deobjekter afg&oslash;r dette v&aelig;rkt&oslash;j, hvilke punkter der falder inden for hvert omr&aring;de og beregner statistik om alle punkterne inden for hvert omr&aring;de. For eksempel:
+                <ul>
+                    <li>Ved angivelse af punkt-lokationer for forbrydelser kan der f.eks. beregnes antal forbrydelser pr. amt eller andet administrativt distrikt.
+                    </li>
+                    <li>Find h&oslash;jeste og laveste indkomst for for franchise-lokationer pr. stat.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Forbind objekter</h2></td>
+                    <td>
+                    <img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" class="titleImage" alt="Forbind objekter">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Forbind objekter overf&oslash;rer attributter fra &eacute;t lag eller &eacute;n tabel til et andet lag eller en anden tabel p&aring; grundlag af rumlige relationer og attributrelationer. For eksempel:
+                <ul>
+                    <li>Knyt oplysninger om f&aelig;lles gr&aelig;nse eller demografi til dine h&aelig;ndelsesdata.
+                    </li>
+                    <li>Identific&eacute;r de n&aelig;rmeste faciliteter i forhold til et kendt sted.
+                    </li>
+                    <li>Bestem antallet af beboelsesejendomme, der ligger inden for oversv&oslash;mmelseszoner.
+                    </li>
+                    <li>Identific&eacute;r almindelige levesteder for forskellige vildtlevende dyrearter.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeNearbyTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Summér i nærheden</h2></td>
+                    <td>
+                    <img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" class="titleImage" alt="Summ&eacute;r i n&aelig;rheden">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Finder objekter, der er inden for en bestemt afstand af objekter i inputlaget. Afstanden kan m&aring;les i fugleflugtslinje eller efter rejsetilstand. Statistik beregnes derefter for objekterne i n&aelig;rheden. For eksempel:
+                <ul>
+                    <li>Beregn den samlede befolkning inden for fem minutter fra en mulig ny forretnings beliggenhed.
+                    </li>
+                    <li>Beregn antallet af motorvejsramper inden for fem minutter fra en mulig ny forretnings beliggenhed for at m&aring;le tilg&aelig;ngeligheden.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Summér inden for</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Summ&eacute;r inden for">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Finder omr&aring;der (og dele af omr&aring;der), hvor to omr&aring;der overlapper og beregner statistik om overlap-omr&aring;det. For eksempel:
+                <ul>
+                    <li>Ved angivelse af et lag med afvandingsomr&aring;der og et lag med arealanvendelsestyper beregnes f.eks. det samlede areal for anvendelsestype pr. afvandingsomr&aring;de. 
+                    </li>
+                    <li>Ved angivelse af et lag med parceller i et amt og et lag med bygr&aelig;nser opsummeres gennemsnitsv&aelig;rdien af ledige parceller i hver by.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeCenterAndDispersionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Summér center og spredning</h2></td>
+                    <td>
+                    <img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" class="titleImage" alt="Summ&eacute;r center og spredning">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Dette v&aelig;rkt&oslash;j bruger punktobjekter til at beregne det centrale objekt, middelcenter, mediancenter eller ellipse (fordeling). For eksempel:
+                <ul>
+                    <li>Via et lag af blokgruppecentroider kan det centrale objekt v&aelig;gtet efter befolkning bruges til at identificere, hvilken del af byen der er den mest tilg&aelig;ngelige for et center for scenekunst.
+                    </li>
+                    <li>Ved et lag af elg-observationer i en park over flere &aring;r, kan middelcenter bruges til at se, hvor elgene samles om sommeren og vinteren.
+                    </li>
+                    <li>Ved et lag med brande kan mediancenter bruges til at m&aring;le brandenes centrale tendens uden at blive p&aring;virket af perifere afvigelser.
+                    </li>
+                    <li>Ved et lag af grundvandsborepr&oslash;ver kan en ellipse bruges til at se, hvordan en forurenende stof spredes.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>Databerigelse</h2>
+        <hr/>
+        <p>Disse v&aelig;rkt&oslash;jer hj&aelig;lper dig med at unders&oslash;ge omr&aring;ders karakter. Detaljerede demografiske data og statistik returneres for de valgte omr&aring;der. 
+            <ul>
+                <li> <b>Enrich Layer</b> henter information om mennesker, steder og virksomheder i et bestemt omr&aring;de eller inden for en bestemt afstand eller k&oslash;retid fra et sted.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichLayerTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Enrich Layer</h2></td>
+                    <td>
+                    <img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" class="titleImage" alt="Enrich Layer">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Henter information om mennesker, steder og virksomheder i et bestemt omr&aring;de eller inden for en bestemt afstand eller k&oslash;retid fra et sted.
+
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="largesize">
+        <h2>Find steder</h2>
+        <hr/>
+        <p>Disse v&aelig;rkt&oslash;jer benyttes til at identificere eller oprette objekter, der opfylder de kriterier, som du definerer.  Typen af kriterier afh&aelig;nger af, hvilket v&aelig;rkt&oslash;j du bruger: Dine kriterier kan f.eks. v&aelig;re baseret p&aring; foresp&oslash;rgsler vedr. rumlighed eller attributter, synlige omr&aring;der fra en angivet h&oslash;jde, &quot;nedstr&oslash;msomr&aring;der&quot; i forhold til specifikke afvandingspunkter eller k&oslash;rselstid under specifikke trafikale forhold.
+            <ul>
+                <li> <b>V&aelig;lg bedste faciliteter</b> v&aelig;lger de bedste steder til faciliteter ved at allokere steder, hvor der er eftersp&oslash;rgsel efter disse faciliteter p&aring; en m&aring;de, der tilfredsstiller en given m&aring;ls&aelig;tning.
+                </li>
+                <li> <b>Opret udsigtsomr&aring;de</b> opretter omr&aring;der, der er synlige baseret p&aring; steder, som du angiver.
+                </li>
+                <li> <b>Opret vandskel</b> opretter vandopsamlingsomr&aring;der baseret p&aring; steder, som du angiver.
+                </li>
+                <li> <b>Udled nye steder</b> opretter nye omr&aring;der ud fra steder i dit unders&oslash;gelsesomr&aring;de, der opfylder en r&aelig;kke kriterier.
+                </li>
+                <li> <b>Find centroider</b> finder det repr&aelig;sentative centrum (centroid) for input-objekterne.
+                </li>
+                <li> <b>Find eksisterende steder</b> s&oslash;ger efter eksisterende omr&aring;der i et lag, der opfylder en r&aelig;kke kriterier.
+                </li>
+                <li> <b>Find lignende steder</b> finder steder, der mest ligner &eacute;t eller flere referencesteder, baseret p&aring; kriterier, som du angiver.
+                </li>
+                <li class="PortalOnly"> <b>Geokode-positioner fra tabel</b> konverterer adresser fra en tabel til koordinater. 
+                </li>
+                <li> <b>G&aring; med str&oslash;mmen</b> bestemmer vandl&oslash;bsretninger i &quot;nedstr&oslash;ms-retning&quot; fra de positioner, som du angiver.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="ChooseBestFacilitiesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Vælg bedste faciliteter</h2></td>
+                    <td>
+                    <img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" class="titleImage" alt="V&aelig;lg bedste faciliteter">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>V&aelig;lger de bedste steder til faciliteter ved at allokere steder, hvor der er eftersp&oslash;rgsel efter disse faciliteter p&aring; en m&aring;de, der tilfredsstiller en given m&aring;ls&aelig;tning.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Opret udsigtsområde</h2></td>
+                    <td>
+                    <img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" class="titleImage" alt="Opret udsigtsomr&aring;de">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Opretter omr&aring;der, der er synlige baseret p&aring; steder, som du angiver.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateWatershedsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Opret vandskel</h2></td>
+                    <td>
+                    <img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" class="titleImage" alt="Opret vandskel">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Opretter vandopsamlingsomr&aring;der baseret p&aring; steder, som du angiver.
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveNewLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Udled nye steder</h2></td>
+                    <td>
+                    <img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" class="titleImage" alt="Udled nye steder">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Opretter nye objekter i dit unders&oslash;gelsesomr&aring;de, der opfylder en r&aelig;kke kriterier, som du har angivet. Kriterierne kan v&aelig;re baseret p&aring; attribut-foresp&oslash;rgsler (f.eks. ledige parceller) og rumlige foresp&oslash;rgsler (f.eks. inden for 1 km fra en flod). 
+            </p>
+            <br/>
+        </div>
+        <div id="FindCentroidsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Find centroider</h2></td>
+                    <td>
+                    <img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" class="titleImage" alt="Find centroider">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Finder det repr&aelig;sentative centrum (centroid) for hvert input-multipunkt-, linje- eller omr&aring;deobjekt.
+            </p>
+            <br/>
+        </div>
+        <div id="FindExistingLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Find eksisterende steder</h2></td>
+                    <td>
+                    <img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" class="titleImage" alt="Find eksisterende steder">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>V&aelig;lger eksisterende objekter i dit unders&oslash;gelsesomr&aring;de, der opfylder en r&aelig;kke kriterier, som du har angivet. Kriterierne kan v&aelig;re baseret p&aring; attribut-foresp&oslash;rgsler (f.eks. ledige parceller) og rumlige foresp&oslash;rgsler (f.eks. inden for 1 km fra en flod). 
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Geokode-positioner fra tabel</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="Geokode-positioner fra tabel">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Konverterer adresser til koordinater. Brug dette v&aelig;rkt&oslash;j i forbindelse med adresser i et Excel-regneark eller en CSV-fil.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Find lignende steder</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="Find lignende steder">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Finder stederne, der mest ligner &eacute;t eller flere referencesteder, baseret p&aring; kriterier, som du angiver.
+            </p>
+            <br/>
+        </div>
+        <div id="TraceDownstreamTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Gå med strømmen</h2></td>
+                    <td>
+                    <img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" class="titleImage" alt="G&aring; med str&oslash;mmen">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Bestemmer vandl&oslash;bsretninger i &quot;nedstr&oslash;ms-retning&quot; fra de postioner, som du angiver.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>Analysér mønstre</h2>
+        <hr/>
+        <p>Disse v&aelig;rkt&oslash;jer hj&aelig;lper dig med at identificere, kvantificere og visualisere geografiske m&oslash;nstre i dine data.  
+            <ul>
+                <li> <b>Beregn t&aelig;thed</b> tager kendte kvantiteter af visse f&aelig;nomener og spreder dem p&aring; kortet.
+                </li>
+                <li> <b>Find hotspots</b> identificerer statistisk signifikante klynger i det geografiske m&oslash;nster i dine data.
+                </li>
+                <li> <b>Find afvigelser</b> bestemmer, om der er statistisk signifikante afvigelser i det rumlige m&oslash;nster for dine data.
+                </li>
+                <li> <b>Find punktklynger</b> finder klynger af punktobjekter inden for omgivende st&oslash;j baseret p&aring; deres spatiale distribution.
+                </li>
+                <li> <b>Interpol&eacute;r punkter</b> forudsiger v&aelig;rdier p&aring; nye placeringer baseret p&aring; m&aring;linger fundet i en samling af punkter.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Beregn tæthed</h2></td>
+                    <td>
+                    <img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" class="titleImage" alt="Beregn t&aelig;thed">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>T&aelig;thedsanalysen tager kendte kvantiteter af visse f&aelig;nomener og spreder dem p&aring; kortet. Du kan f.eks. bruge dette v&aelig;rkt&oslash;j til at vise koncentrationer af lynnedslag eller tornadoer, adgang til sundhedscentre og befolkningst&aelig;theder.
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Find Hot Spots</h2></td>
+                    <td>
+                    <img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" class="titleImage" alt="Find hotspots">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>V&aelig;rkt&oslash;jet opretter et kort, der viser statistisk signifikante geografiske klynger i dine data. Du kan bruge dette v&aelig;rkt&oslash;j til at finde uventede hotspots (r&oslash;d) og coldspots (bl&aring;) med h&oslash;je og lave v&aelig;rdier for f.eks. kriminalitet, trafikulykker, arbejdsl&oslash;shed eller biodiversitety.
+            </p>
+            <br/>
+        </div>
+        <div id="FindOutliersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Find afvigelser</h2></td>
+                    <td>
+                    <img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" class="titleImage" alt="Find afvigelser">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Dette v&aelig;rkt&oslash;j opretter et kort, der viser eventuelle statistisk signifikante klynger og rumlige afvigelser i dine data. Brug dette v&aelig;rkt&oslash;j til at identificere objekter, der har v&aelig;rdier, der adskiller sig betydeligt fra deres tilst&oslash;dende objekter.  Du kan f.eks. bruge dette v&aelig;rkt&oslash;j til at finde afvigende forbrugsm&oslash;nstre, til at finde frem til de skarpeste gr&aelig;nser mellem velstand og fattigdom i unders&oslash;gelsesomr&aring;det eller til at bestemme, om der er regioner i USA, hvor den forventede levealder er us&aelig;dvanligt lav i forhold til de omgivende regioner.
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Find punktklynger</h2></td>
+                    <td>
+                    <img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" class="titleImage" alt="Find punktklynger">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Dette v&aelig;rkt&oslash;j registrerer omr&aring;der, hvor punkter er koncentreret, og hvor de er adskilt af omr&aring;der der er tomme eller med lidt indhold. Punkter, der ikke er en del af en klynge, betegnes som st&oslash;j.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpolér punkter</h2></td>
+                    <td>
+                    <img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" class="titleImage" alt="Interpol&eacute;r punkter">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Dette v&aelig;rkt&oslash;j giver dig mulighed for at forudsige v&aelig;rdier p&aring; nye placeringer baseret p&aring; m&aring;linger fundet i en samling af punkter. V&aelig;rkt&oslash;jet tager punktdata med v&aelig;rdier for hvert punkt og returnerer omr&aring;der klassificeret vha. forudsagte v&aelig;rdier. Du kan f.eks. bruge dette v&aelig;rkt&oslash;j til at forudsige nedb&oslash;rsm&aelig;ngder over et afvandingsomr&aring;de baseret p&aring; m&aring;linger foretaget ved individuelle regnm&aring;lere.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>Anvend nærhed</h2>
+        <hr/>
+        <p>  Disse v&aelig;rkt&oslash;jer hj&aelig;lper dig med at besvare et af de mest almindelige sp&oslash;rgsm&aring;l i geografisk analyse: &quot;Hvad ligger i n&aelig;rheden af hvad?&quot;
+            <ul>
+                <li> <b>Forbind udgangspunkter med destinationer</b> m&aring;ler rejsetiden eller afstanden mellem parpunkter.
+                </li>
+                <li> <b>Opret buffere</b> opretter omr&aring;der med samme afstand til objekter.
+                </li>
+                <li> <b>Opret k&oslash;retidsomr&aring;der</b> finder omr&aring;der rundt om steder, der kan n&aring;s inden for en given tid.
+                </li>
+                <li> <b>Find n&aelig;rmeste</b> bruges til at identificere de steder, der er t&aelig;ttest p&aring; kendte steder.
+                </li>
+                <li> <b>Planl&aelig;g ruter</b> fastl&aelig;gger den bedste m&aring;de at dirigere en fl&aring;de af k&oslash;ret&oslash;jer, som har mange stop.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ConnectOriginsToDestinationsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Forbind udgangspunkter med destinationer</h2></td>
+                    <td>
+                    <img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" class="titleImage" alt="Forbind udgangspunkter med destinationer">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Forbind udgangspunkter til destinationer m&aring;ler rejsetiden eller afstanden mellem parpunkter. Dette v&aelig;rkt&oslash;j kan rapportere fugleflugtslinjer, k&oslash;reafstande eller rejsetider. Ved hj&aelig;lp af dette v&aelig;rkt&oslash;j kan du:
+            </p>
+            <p>
+                <ul>
+                    <li>Beregne den samlede afstand eller tid, som pendlerne rejser p&aring; deres hjem til arbejde-ture.
+                    </li>
+                    <li>M&aring;le, hvor langt kunder k&oslash;rer for at k&oslash;be ind i dine forretninger. Bruge disse oplysninger til at definere din markedsr&aelig;kkevidde, is&aelig;r i forbindelse med m&aring;lrettede reklamekampagner eller valg af placering til nye forretninger.
+                    </li>
+                    <li>Beregne det forventede antal k&oslash;rte kilometer for din fl&aring;de af k&oslash;ret&oslash;jer. Derefter skal du k&oslash;re v&aelig;rkt&oslash;jet Opsumm&eacute;r inden for, for at rapportere antal k&oslash;rte kilometer efter stat eller anden region.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du skal angive start- og slutpunkter, hvorefter laget returnerer et lag, som indeholder rutelinjer, herunder m&aring;linger, mellem parrede udgangspunkter og destinationer.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateBuffersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Opret buffere</h2></td>
+                    <td>
+                    <img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" class="titleImage" alt="Opret buffere">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>En buffer er et omr&aring;de, der d&aelig;kker en given afstand fra et punkt, en linje eller et omr&aring;deobjekt. 
+            </p>
+            <p>Buffere bruges normalt til at oprette omr&aring;der, der kan analyseres vha. andre v&aelig;rkt&oslash;jer, f.eks. Overlay af lag Hvis sp&oslash;rgsm&aring;let f.eks. lyder: &quot;Hvilke bygninger findes der inden for en kilometer fra skolen?&quot;, kan svaret findes ved at oprette en buffer p&aring; en kilometer rundt om skolen og integrere den med det lag, der indeholder aftryk af bygninger.  Det endelige resultat er et lag med de bygninger, der ligger inden for 1 km fra skolen.  
+            </p>
+            <br/>
+        </div>
+        <div id="CreateDriveTimeAreasTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Opret køretidsområder</h2></td>
+                    <td>
+                    <img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" class="titleImage" alt="Opret k&oslash;retidsomr&aring;der">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Et k&oslash;retidsomr&aring;de er det omr&aring;de, der kan n&aring;s inden for en bestemt k&oslash;retid eller k&oslash;reafstand. K&oslash;retidsomr&aring;der kan hj&aelig;lpe med at besvare sp&oslash;rgsm&aring;l som f.eks.:
+                <ul>
+                    <li>Hvor kan jeg komme hen, hvis jeg k&oslash;rer i en halv time?
+                    </li>
+                    <li>Hvor kan jeg komme hen, hvis jeg k&oslash;rer i en halv time kl. 18:00 i myldretiden?
+                    </li>
+                    <li>Hvilke omr&aring;der i byen kan brandv&aelig;senet n&aring; inden for fem minutter? Hvordan vil det p&aring;virke brandv&aelig;senets responstid at bygge en ny brandstation her?
+                    </li>
+                    <li>Hvilke markedsomr&aring;der d&aelig;kker min virksomhed? Hvilke omr&aring;der ligger inden for 10 kilometer fra mine forretninger?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindNearestTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Find nærmeste</h2></td>
+                    <td>
+                    <img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" class="titleImage" alt="Find n&aelig;rmeste">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>M&aring;ler omkostningerne ved at rejse mellem en h&aelig;ndelse og en facilitet og afg&oslash;r, hvilke der ligger t&aelig;ttest hinanden. Resultatet er et lag, der viser de bedste ruter mellem h&aelig;ndelser og faciliteter sammen med rejseomkostninger (tid og afstand) for hver rute.  Du kan f.eks. bruge dette v&aelig;rkt&oslash;j til at finde det hospital, der ligger n&aelig;rmest en ulykke, eller den h&aelig;veautomat, der er n&aelig;rmest din nuv&aelig;rende placering.
+            </p>
+            <br/>
+        </div>
+        <div id="PlanRoutesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Planlæg ruter</h2></td>
+                    <td>
+                    <img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" class="titleImage" alt="Planl&aelig;g ruter">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Du angiver en r&aelig;kke stop og antallet af tilg&aelig;ngelige k&oslash;ret&oslash;jer, som kan stoppe der, hvorefter Planl&aelig;g ruter fastl&aelig;gger, hvordan disse stop tildeles k&oslash;ret&oslash;jerne p&aring; en effektiv m&aring;de og dirigerer k&oslash;ret&oslash;jerne til de p&aring;g&aelig;ldende stop.
+            </p>
+            <p>Brug dette v&aelig;rkt&oslash;j til at planl&aelig;gge arbejdet for et mobilt hold af inspekt&oslash;rer, vurderingsm&aelig;nd, servicefolk i hjemmet og andre. Aflever eller hent varer p&aring; fjerne steder eller tilbyd transporttjenester til folk.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Håndtér data</h2>
+        <hr/>
+        <p>Disse v&aelig;rkt&oslash;jer bruges b&aring;de til den daglige h&aring;ndtering af geografiske data og til at kombinere data inden analyse.  
+            <ul>
+                <li> <b>Opl&oslash;s gr&aelig;nser</b> sammenl&aelig;gger omr&aring;der, der har f&aelig;lles gr&aelig;nse og f&aelig;lles attributv&aelig;rdi.
+                </li>
+                <li> <b>Udtr&aelig;k data</b> opretter nye datas&aelig;t ved at tr&aelig;kke objekter ud af dine eksisterende data.
+                </li>
+                <li> <b>Generer underopdelinger</b> opretter underopdelinger baseret p&aring; udstr&aelig;kningen af dine data.
+                </li>
+                <li> <b>Flet lag</b> kopierer alle objekter fra to eller flere eksisterende lag til et nyt lag.
+                </li>
+                <li> <b>Overlay af lag</b> kombinerer to eller flere lag til et enkelt lag. Man kan betragte overlay som at se gennem en stak kort og oprette et enkelt kort, der indeholder alle de oplysninger, der er i stakken af kort.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Opløs grænser</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Opl&oslash;s gr&aelig;nser">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Omr&aring;der, der overlapper eller deler en f&aelig;lles gr&aelig;nse, flettes sammen, s&aring; de udg&oslash;r &eacute;t omr&aring;de.    
+            </p>
+            <p>Du kan styre, hvilke gr&aelig;nser der skal flettes ved at angive et felt Hvis du f.eks. har et lag best&aring;ende af regioner, og hver region har en  <i>State_Name</i>-attribut, kan du opl&oslash;se gr&aelig;nserne vha. attributten <i>State_Name</i>.  Naboregioner flettes sammen, hvis de har samme v&aelig;rdi for <i>State_Name</i>.  Slutresultatet er et lag best&aring;ende af landegr&aelig;nser.
+            </p>
+            <br/>
+        </div>
+        <div id="ExtractDataTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Udtræk data</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" class="titleImage" alt="Udtr&aelig;k data">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Opretter en ZIP-, CSV- eller KMZ-fil med data ud fra dine lag og et interesseomr&aring;de, som du har angivet.
+            </p>
+            <p> 
+            </p>
+            <br/>
+        </div>
+        <div id="GenerateTessellationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Generer underopdelinger</h2></td>
+                    <td>
+                    <img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" class="titleImage" alt="Generer underopdelinger">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Genererer underopdelinger ud fra et studieomr&aring;de, der er baseret p&aring; en specificeret form og st&oslash;rrelse.
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Flet lag</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="Flet lag">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Kopierer objekter fra to eller flere eksisterende lag til et nyt lag, f.eks.:
+                <ul>
+                    <li>Jeg har tre lag for England, Wales og Skotland, og jeg vil gerne have et enkelt lag for Storbritannien. 
+                    </li>
+                    <li>Jeg har 12 lag, og hvert lag indeholder parcel-information for tilst&oslash;dende distrikter. Jeg vil gerne l&aelig;gge dem sammen til et enkelt lag og kun bevare de attributter, der har sammen navn og type i de 12 input-lag.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Overlay af lag</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" class="titleImage" alt="Overlay af lag">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Overlay kombinerer to eller flere lag til et enkelt lag. Man kan betragte overlay som at se gennem en stak kort og oprette et enkelt kort, der indeholder alle de oplysninger, der er i stakken af kort, f.eks.:
+                <ul>
+                    <li>Hvilke parceller ligger inden for den 100-&aring;rige flodslette? (Inden for er bare en anden m&aring;de at sige p&aring;)
+                          
+                    </li>
+                    <li>Hvilke veje ligger i hvilke amter?
+                    </li>
+                    <li>Hvilken slags jordbrug ligger p&aring; hvilken slags jord?
+                         
+                    </li>
+                    <li>Hvilke br&oslash;nde ligger p&aring; forladte milit&aelig;rbaser?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

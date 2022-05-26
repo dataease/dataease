@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Papildināt no režģa ar vairākiem mainīgajiem</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Papildināt no režģa ar vairākiem mainīgajiem"></h2>
+        <hr/>
+    <p>Rīks  Papildināt no režģa ar vairākiem mainīgajiem efektīvi savieno atribūtus no vairākmainīgo režģa līdz punktu slānim.
+    </p>
+    <p>Vairāku mainīgo režģis ir jebkur&scaron; slānis, kas izveidots ar rīku Build Multi-Variable Grid, kas apvieno atribūtus no vairākiem slāņiem vienā daudzstūru režģī. Vairāku mainīgo režģu izmanto&scaron;ana bagātinā&scaron;anai ļauj ātri pievienot lielas un daudzveidīgas informācijas kolekcijas, norādītu datus izmanto&scaron;anai turpmākajā telpiskā analīzē.
+    </p>
+    <p>Piemēram, pieņemsim, ka esat ieguvis virkni jaunu noziedzīgu notikumu, kas notiku&scaron;i pagāju&scaron;ajā gadā visā pilsētā. Jūs vēlaties modelēt saistību starp noziedzības biežumu un dažādiem demogrāfiskiem, ekonomiskiem un ģeogrāfiskiem faktoriem. Jums ir piekļuve datiem, kas apraksta &scaron;os faktorus, bet tie tiek glabāti piecos dažādos slāņos ar at&scaron;ķirīgiem ģeometrijas tipiem. Turklāt daži slāņi tiek saglabāti lielā datu failu koplietojumā, bet citi tiek saglabāti kā elementu servisi. Izveidojot vairāku mainīgo režģi, lai saglabātu &scaron;o informāciju un pēc tam savienotu jūsu nozieguma notikumu režģi ar  Papildināt no režģa ar vairākiem mainīgajiem rīku jūs varat efektīvi savienot dažādus atribūtus ar punktu slāni, izmantojot tikai divus rīkus. Pēc tam apvienotos atribūtus var izmantot kā skaidrojo&scaron;os mainīgos un sākt veidot nozieguma biežuma modeli ar rezultātu slāni.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Izvēlieties punkta elementus, lai papildinātu</h2></div>
+        <hr/>
+        <div>
+            <p>Punkta elementi, kas tiks papildināti ar vairāku mainīgo režģi.
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Izvēlieties vairāku mainīgo režģi, lai papildinātu no</h2></div>
+        <hr/>
+        <div>
+            <p>Vairāku mainīgo režģa slānis, kas satur atribūtus, kuri tiks pievienoti ievades punkta funkcijām. Slānim jābūt izveidotam, izmantojot rīku Build Multi-Variable Grid, un tam jābūt viesotam elementa slānim. Vairākmainīgo režģa slāņi, kas saglabāti lielā datu failā Kopīgo&scaron;ana, netiek atbalstīti kā ievade &scaron;ajā rīkā.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Izvēlieties mainīgos, ko pievienot</h2></div>
+        <hr/>
+        <div>
+            <p>Atribūti vairāku mainīgo režģa slānī, kas tiks pievienots ievades punkta funkcijām, kad punkta elementi krustosies režģī.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p> Slāņa nosaukums, kas tiks izveidots. Ja rakstāt uz ArcGIS Data Store, rezultāti tiks saglabāti mapē  <b>Mans saturs</b> un pievienoti kartei. Ja rakstā uz lielu datu failu koplietojumu,, rezultāti tiks saglabāti lielajā datu failu koplietojumā un pievienot  tā sarakstam. Tas netiks pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja slānis jau pastāv, rīks nedarbosies.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

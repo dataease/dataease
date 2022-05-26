@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Vælg bedste faciliteter</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="V&aelig;lg bedste faciliteter"></h2>
+        <hr/>
+    <p>Med V&aelig;lg bedste faciliteter kan du v&aelig;lge de bedste steder til faciliteter. V&aelig;rkt&oslash;jet allokerer steder, hvor der er eftersp&oslash;rgsel efter faciliteterne p&aring; en m&aring;de, der tilfredsstiller den angivne m&aring;ls&aelig;tning.
+    </p>
+    <p>Faciliteterne repr&aelig;senterer steder, der tilbyder en eller anden form for service, s&aring;som brandstationer, skoler, biblioteker, butikker eller distributionscentre. Eftersp&oslash;rgselspositioner repr&aelig;senterer steder, hvor der er eftersp&oslash;rgsel efter de tjenester, som tilbydes af faciliteterne, s&aring;som opt&aelig;llingsblokpunkter, der giver en oversigt over befolkningen i et bestemt omr&aring;de.
+    </p>
+    <p>V&aelig;rkt&oslash;jet V&aelig;lg bedste faciliteter kan hj&aelig;lpe dig med at besvare sp&oslash;rgsm&aring;l, s&aring;som
+        <ul>
+            <li>Hvordan kan husholdninger &ndash; i tilf&aelig;lde af en n&oslash;dsituation &ndash; knyttes til det korrekte n&oslash;dhj&aelig;lpscenter, n&aring;r sengekapaciteten er begr&aelig;nset og ikke b&oslash;r overskrides?
+            </li>
+            <li>Hvordan kan jeg knytte lokalomr&aring;der til det n&aelig;rmeste bibliotek og finde frem til antallet af potentielle l&aring;nere, som hvert bibliotek kan betjene? 
+            </li>
+            <li>Hvordan kan jeg finde frem til det bedste sted til et distributionscenter for dagligvarer, som minimerer den overordnede rejsetid (og dermed transportomkostningerne) med henblik p&aring; levering til en dagligvarek&aelig;de?
+            </li>
+            <li>Hvor skal eventuel ny park placeres, hvis det skal sikres, at det st&oslash;rst mulige antal af byens indbyggere bor inden for en g&aring;tur p&aring; fem minutter fra parken?
+            </li>
+            <li>Hvor er de bedste placeringer for k&aelig;ledyrsbutikker i et omr&aring;de, hvis det skal sikres, at 40 % af omr&aring;dets k&aelig;ledyrsejere f&aring;r en k&oslash;retur p&aring; h&oslash;jst ti minutter til en af butikkerne?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Mål</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv den m&aring;ls&aelig;tning, der skal opfyldes, n&aring;r eftersp&oslash;rgselspositionerne skal allokeres til faciliteterne.
+            </p>
+            <p>Med V&aelig;lg bedste faciliteter kan du angive den problemtype, som du gerne vil l&oslash;se &ndash; M&aring;let. V&aelig;rkt&oslash;jet er optimeret til at finde frem til en l&oslash;sning p&aring; netop dette specifikke m&aring;l. Uanset hvad m&aring;let er s&aring; benyttes grundl&aelig;ggende den samme underliggende metode til at n&aring; frem til en l&oslash;sning &ndash; eftersp&oslash;rgslen fra en given eftersp&oslash;rgselsposition allokeres til den n&aelig;rmeste facilitet. M&aring;lene kan have varierende indflydelse p&aring; h&aring;ndteringen af samspillet mellem afstanden (eller tiden) og eftersp&oslash;rgslen. V&aelig;rkt&oslash;jet inddrager b&aring;de rejseafstand/-tid og st&oslash;rrelsen p&aring; eftersp&oslash;rgslen samt &ndash; i nogle tilf&aelig;lde &ndash; faciliteternes kapacitet. Hvis et m&aring;l f.eks. favoriserer en minimering af rejsetiden, vil v&aelig;rkt&oslash;jet alligevel i anden omgang fors&oslash;ge at maksimere den eftersp&oslash;rgsel, der allokeres. P&aring; samme m&aring;de vil v&aelig;rkt&oslash;jet &ndash; hvis m&aring;let er at maksimere den allokerede eftersp&oslash;rgsel &ndash; g&oslash;re dette ved at minimere rejsetiden (ved at knytte eftersp&oslash;rgselspositioner til den n&aelig;rmeste facilitet frem for bare til en vilk&aring;rlig facilitet).
+            </p>
+            <p>Afh&aelig;ngigt af de anvendte data og indstillinger kan forskellige m&aring;l f&oslash;re frem til de samme resultater eller forskellige resultater. Du b&oslash;r dog angive det m&aring;l, der er det mest hensigtsm&aelig;ssige ud fra din analyse.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Allokér eksisterende faciliteter</h2></div>
+        <hr/>
+        <div>
+            <p>Brug dette m&aring;l, hvis du ikke &oslash;nsker at finde nye faciliteter, men i stedet &oslash;nsker at allokere eftersp&oslash;rgslen til eksisterende faciliteter, der kan have begr&aelig;nset eller ubegr&aelig;nset kapacitet.    
+            </p>
+            <p>Dette m&aring;l knytter eftersp&oslash;rgslen til faciliteter baseret p&aring; faciliteternes kapacitet og eftersp&oslash;rgslens st&oslash;rrelse i det omgivende omr&aring;de. Eftersp&oslash;rgslen allokeres til den n&aelig;rmeste facilitet, indtil den tilg&aelig;ngelige kapacitet bliver opfyldt. Hvis du angiver et maksimalt rejseomr&aring;de, vil eventuelle eftersp&oslash;rgselspositioner, der ligger uden for dette omr&aring;de, ikke blive knyttet til nogen facilitet, heller ikke selvom al eftersp&oslash;rgslen ikke er blevet fuldt ud allokeret.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Minimér rejse</h2></div>
+        <hr/>
+        <div>
+            <p>Brug dette m&aring;l til at finde frem til faciliteter, s&aring; den overordnede rejsetid eller rejseafstand mellem eftersp&oslash;rgselspositionerne og faciliteterne minimeres.
+            </p>
+            <p>Dette m&aring;l kan ofte anvendes, n&aring;r der forekommer regelm&aelig;ssig rejsetid mellem faciliteten og alle eftersp&oslash;rgselspositionerne. Du kan f.eks. bruge dette m&aring;l, hvis du &oslash;nsker at minimere den overordnede afstand, som varer skal flyttes fra distributionscentre til butikker, eller hvis du skal v&aelig;lge et konferencecenter p&aring; en m&aring;de, s&aring; rejsetiden minimeres for alle konferencedeltagere.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Maksimér dækning</h2></div>
+        <hr/>
+        <div>
+            <p>Brug dette m&aring;l, hvis du &oslash;nsker at maksimere den eftersp&oslash;rgsel, der d&aelig;kkes inden for en bestemt tidsramme eller afstand fra faciliteterne.    
+            </p>
+            <p>Dette m&aring;l v&aelig;lger faciliteter p&aring; en s&aring;dan m&aring;de, at den maksimale eftersp&oslash;rgsel allokeres, med al eftersp&oslash;rgslen fra den enkelte eftersp&oslash;rgselsposition allokeret til den facilitet, der ligger n&aelig;rmest eftersp&oslash;rgselspositionen.
+            </p>
+            <p>Der kr&aelig;ves et afgr&aelig;nset rejseomr&aring;de i forbindelse med dette m&aring;l. Ellers vil al eftersp&oslash;rgslen m&aring;ske blive knyttet til en enkelt facilitet. Eftersp&oslash;rgselspositioner, der er placeret ud over afstanden og rejsetiden til nogle af faciliteterne, vil ikke blive allokeret (dette vil vise dig, hvor eftersp&oslash;rgslen ikke bliver opfyldt, og hvor der kan v&aelig;re behov for flere faciliteter).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Maksimér dækning med kapacitet</h2></div>
+        <hr/>
+        <div>
+            <p>Brug dette m&aring;l, hvis du &oslash;nsker at maksimere den eftersp&oslash;rgsel, der er d&aelig;kket af faciliteter, men hvor faciliteterne har begr&aelig;nset kapacitet.    
+            </p>
+            <p>Dette m&aring;l v&aelig;lger faciliteter p&aring; en s&aring;dan m&aring;de, at den maksimale eftersp&oslash;rgsel allokeres uden at overskride nogen faciliteters kapacitet overhovedet. Al eftersp&oslash;rgslen fra hver eftersp&oslash;rgselsposition allokeres til den enkelte facilitet, der ligger t&aelig;ttest p&aring; eftersp&oslash;rgselspositionen, og som har ledig kapacitet (det vil sige, at hvis tilknytning af en eftersp&oslash;rgselsposition til en facilitet vil medf&oslash;re en overskridelse af facilitetens ledige kapacitet, s&aring; vil eftersp&oslash;rgselspositionen ikke blive tilknyttet, frem for at en del af eftersp&oslash;rgslen tildeles).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Dæk én procents efterspørgsel</h2></div>
+        <hr/>
+        <div>
+            <p>Brug dette m&aring;l, hvis du &oslash;nsker at finde frem til det mindst mulige antal faciliteter, som du har brug for til at d&aelig;kke en given procent af eftersp&oslash;rgslen.
+            </p>
+            <p>Dette m&aring;l v&aelig;lger det mindst mulige antal faciliteter, der beh&oslash;ves for at n&aring; den givne procent af eftersp&oslash;rgslen. En eftersp&oslash;rgselsposition, der ligger inden for det maksimale rejseomr&aring;de i forhold til to eller flere faciliteter, vil f&aring; sin eftersp&oslash;rgsel delt forholdsm&aelig;ssigt mellem faciliteterne p&aring; grundlag af afstanden fra hver facilitet. Dette m&aring;l anvendes ofte, n&aring;r folk har mulighed for at v&aelig;lge, hvilken facilitet de vil bes&oslash;ge, og det generelt antages, at de (alt andet lige) vil bes&oslash;ge den n&aelig;rmeste facilitet.
+            </p>
+            <p>Til forskel fra de andre m&aring;l, som v&aelig;lger faciliteter, hvor du angiver, hvor mange faciliteter, der skal v&aelig;lges, v&aelig;lger dette m&aring;l antallet af faciliteter for dig p&aring; grundlag af den procent af eftersp&oslash;rgslen, som du vil opfylde. Det antages, at faciliteterne ikke har begr&aelig;nset kapacitet.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Opmål</h2></div>
+        <hr/>
+        <div>
+            <p>Som med andre v&aelig;rkt&oslash;jer, der involverer rejse i analysen, kan du angive, om rejsevarigheden skal m&aring;les ved hj&aelig;lp af afstand eller tid, og du kan v&aelig;lge mellem forskellige rejsetilstande, s&aring;som g&aring;tid, k&oslash;rselstid, k&oslash;rselsafstand i landlige omgivelser osv. De tilg&aelig;ngelige rejsetilstande fasts&aelig;ttes af administratoren for din organisation. N&aring;r du bruger  <b>K&oslash;retid</b>, <b>K&oslash;retid i landlige omgivelser</b> eller <b>Lastbilsk&oslash;retid</b>, kan du v&aelig;lge at medtage trafik for en bestemt ugedag samt tidspunkt p&aring; dagen.
+            </p>
+            <p> For n&oslash;jagtigt at kunne allokere eftersp&oslash;rgselspositioner til faciliteter skal du angive, om rejsen foreg&aring;r fra faciliteterne til eftersp&oslash;rgselspositionerne (f.eks. fra brandstationer til huse) eller fra eftersp&oslash;rgselspositionerne til faciliteterne (som i tilf&aelig;ldet med l&aring;nere til biblioteker). V&aelig;lg bedste faciliteter tager h&oslash;jde for trafikretningen i ensrettede gader, om du kan dreje fra &eacute;n gade til en anden, om der er venstresving forbudt i vejkryds osv., afh&aelig;ngigt af om rejseretningen g&aring;r fra faciliteten til eftersp&oslash;rgselspositionerne eller fra eftersp&oslash;rgselspositionerne til faciliteterne.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Lag med efterspørgselspositioner</h2></div>
+        <hr/>
+        <div>
+            <p>Punktobjekter repr&aelig;senterer de steder, hvor der er eftersp&oslash;rgsel efter de tjenester, der tilbydes af faciliteterne. V&aelig;rkt&oslash;jet knytter disse eftersp&oslash;rgselspositioner til de relevante faciliteter p&aring; grundlag af det valgte m&aring;l.
+            </p>
+            <p>Eftersp&oslash;rgselspositionerne har en tilknyttet eftersp&oslash;rgselsm&aelig;ngde. Brug en konstant til at angive v&aelig;rdien, hvis alle eftersp&oslash;rgselspositioner har den samme eftersp&oslash;rgsel. Hvis eftersp&oslash;rgslen varierer efter eftersp&oslash;rgselspositionen, skal du bruge et felt i laget med eftersp&oslash;rgselspositioner til at angive v&aelig;rdien for hver eftersp&oslash;rgselsposition.
+            </p>
+            <p>Eftersp&oslash;rgslen knyttes til faciliteter, indtil al eftersp&oslash;rgslen er blevet allokeret, uanset hvor langt eftersp&oslash;rgselspositionernene befinder sig fra faciliteterne. Du kan knytte et maksimalt rejseomr&aring;de til laget med eftersp&oslash;rgselspositioner med henblik p&aring; at oprette en gr&aelig;nseafstand eller -tid &ndash; alle eftersp&oslash;rgselspositioner, der ligger ud over gr&aelig;nsev&aelig;rdien, vil ikke blive allokeret. Brug en konstant til at angive v&aelig;rdien, hvis alle eftersp&oslash;rgselspositioner har det samme maksimale rejseomr&aring;de. Hvis det maksimale rejseomr&aring;de varierer efter eftersp&oslash;rgselspositionen, skal du bruge et felt i laget med eftersp&oslash;rgselspositioner til at angive v&aelig;rdien for hver eftersp&oslash;rgselsposition.
+            </p>
+            <p>Hvis m&aring;ltypen er  <b>D&aelig;k &eacute;n procents eftersp&oslash;rgsel</b>, skal du angive den mindst mulige procent af den eftersp&oslash;rgsel, som du &oslash;nsker at faciliteterne skal d&aelig;kke.
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+            <p>V&aelig;rkt&oslash;jet underst&oslash;tter op til 10.000 objekter i laget med eftersp&oslash;rgselspositioner.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Påkrævet facilitetslag</h2></div>
+        <hr/>
+        <div>
+            <p>Punktobjekter, der repr&aelig;senterer steder, der fungerer som faciliteter ved at levere en eller anden form for service. P&aring;kr&aelig;vede faciliteter repr&aelig;senterer normalt steder, der allerede findes, til forskel fra potentielle faciliteter, som normalt repr&aelig;senterer steder, hvor nye faciliteter skal bygges eller placeres. Ved allokering af eftersp&oslash;rgselspositioner bruger v&aelig;rkt&oslash;jet faciliteterne i  <b>laget med p&aring;kr&aelig;vede faciliteter</b>, inden nogen af faciliteterne i <b>laget med potentielle faciliteter</b> tages i brug.
+            </p>
+            <p>P&aring;kr&aelig;vede faciliteter kan have ubegr&aelig;nset kapacitet (det betyder, at de kan opfylde al den eftersp&oslash;rgsel, der er knyttet til dem), eller de kan have begr&aelig;nset kapacitet. Hvis alle faciliteter har den samme begr&aelig;nsede kapacitet (s&aring;som det antal husholdninger, som en brandstation kan servicere, f.eks. 4.000), skal der angives en konstant v&aelig;rdi. Hvis kapaciteten varierer mellem faciliteterne (f.eks. antallet af tilg&aelig;ngelige pladser for 1. &aring;rs-elever p&aring; hvert gymnasium), skal der angives et felt med kapacitetsv&aelig;rdien for hver facilitet.
+            </p>
+            <p>V&aelig;rkt&oslash;jet underst&oslash;tter op til 100 objekter i  <b>laget med p&aring;kr&aelig;vede faciliteter</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Potentielt facilitetslag</h2></div>
+        <hr/>
+        <div>
+            <p>Punktobjekter, der repr&aelig;senterer steder, der fungerer som faciliteter ved at levere en eller anden form for service. Potentielle faciliteter repr&aelig;senterer normalt steder, hvor nye faciliteter skal bygges eller placeres, til forskel fra p&aring;kr&aelig;vede faciliteter, der normalt repr&aelig;senterer steder, der allerede findes.
+            </p>
+            <p>Afh&aelig;ngigt af dit analysem&aring;l skal du angive det antal potentielle faciliteter, der kan v&aelig;lges fra s&aelig;ttet af potentielle faciliteter. Hvis du angiver b&aring;de p&aring;kr&aelig;vede og potentielle faciliteter, benytter v&aelig;rkt&oslash;jet faciliteterne i  <b>laget med p&aring;kr&aelig;vede faciliteter</b>, inden nogen af faciliteterne i <b>laget med potentielle faciliteter</b> tages i brug.
+            </p>
+            <p>Potentielle faciliteter kan have ubegr&aelig;nset kapacitet (det betyder, at de kan opfylde al den eftersp&oslash;rgsel, der er knyttet til dem), eller de kan have begr&aelig;nset kapacitet. Hvis alle faciliteter har den samme begr&aelig;nsede kapacitet (s&aring;som det antal husholdninger, som en brandstation kan servicere, f.eks. 4.000), skal der angives en konstant v&aelig;rdi. Hvis kapaciteten varierer mellem faciliteterne (f.eks. antallet af tilg&aelig;ngelige pladser for 1. &aring;rs-elever p&aring; hvert gymnasium), skal der angives et felt med kapacitetsv&aelig;rdien for hver facilitet.
+            </p>
+            <p>V&aelig;rkt&oslash;jet underst&oslash;tter op til 1.000 objekter i  <b>laget med potentielle faciliteter</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Vælg grænselag</h2></div>
+        <hr/>
+        <div>
+            <p> Et eller flere objekter, der fungerer som midlertidige begr&aelig;nsninger (barrierer) under transport p&aring; de underliggende gader. Du kan angive gr&aelig;nser vha. punkt-, linje- eller polygonobjekter.
+            </p>
+            <p>En punktgr&aelig;nse kan modellere et f&aelig;ldet tr&aelig;, en ulykke, en nedfalden elektrisk ledning eller andet, der blokerer helt for trafikken p&aring; en specifik position p&aring; gaden. Transport er tilladt p&aring; gaden, men ikke gennem gr&aelig;nsen (barrieren). Du kan angive op til 250 objekter, der kan fungere som punktgr&aelig;nser.
+            </p>
+            <p>En linjegr&aelig;nse forhindrer transport alle steder, hvor gr&aelig;nsen gennemsk&aelig;rer gaderne. En linjegr&aelig;nse kan f.eks. bruges til at modellere en parade eller en demonstration, der blokerer trafikken p&aring; tv&aelig;rs af flere gadesegmenter. Hvis det antal gadesegmenter, der gennemsk&aelig;res af linjegr&aelig;nserne, overskrider 500, returnerer v&aelig;rkt&oslash;jet en fejl.
+            </p>
+            <p>En polygongr&aelig;nse forhindrer transport alle steder, hvor polygonen gennemsk&aelig;rer gaderne. &Eacute;n m&aring;de at benytte denne type gr&aelig;nse p&aring; er at modellere oversv&oslash;mmelser, der d&aelig;kker s&aring; store dele af vejnettet, at vejtransport bliver umulig. Hvis det antal gadesegmenter, der gennemsk&aelig;res af polygongr&aelig;nserne, overskrider 2000, returnerer v&aelig;rkt&oslash;jet en fejl.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Resultatlaget vil indeholde et lag for hver af f&oslash;lgende: faciliteter, der har eftersp&oslash;rgsel tilknyttet, eftersp&oslash;rgselspositioner, der er allokeret til faciliteter, og allokeringslinjer, der forbinder eftersp&oslash;rgselspositonerne med deres tilknyttede faciliteter. Allokeringslinjerne tegnes som lige linjer. Dog er rejsetiden eller rejseafstanden mellem faciliteten og eftersp&oslash;rgselspositionen altid baseret p&aring; den rejsetilstand, som du angiver, og der benyttes ikke afstande i lige linje.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

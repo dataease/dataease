@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Summarize Center and Dispersion</h2><p/>
+        <h2><img src="./images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Summarize Center and Dispersion"></h2>
+        <hr/>
+    <p>This 
+tool finds central features and directional distributions.
+
+It can be used to answer questions such as:
+        <ul>
+            <li>Where is the center?
+            </li>
+            <li>Which feature is the most accessible from all other features?
+            </li>
+            <li>How dispersed, compact, or integrated are the features?
+            </li>
+            <li>Are there directional trends?
+            </li>
+        </ul>
+        
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the features in the input layer visible within the current map extent will be analyzed.  If unchecked, all features in the input layer will be analyzed, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Choose a layer to be described</h2></div>
+        <hr/>
+        <div>
+            <p>The point, line, or area layer that will be used to find central features and directional distributions.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Summary types</h2></div>
+        <hr/>
+        <div>
+            <p>The method of summarizing center and dispersion.
+
+            </p>
+            <ul>
+                <li>Central feature - Identifies the most centrally located feature in a dataset.
+                </li>
+                <li>Mean center - Identifies the geographic center (or the center of concentration) for a set of features.
+                </li>
+                <li>Median center - Identifies the location that minimizes overall Euclidean distance to the features in a dataset.
+                </li>
+                <li>Ellipse - Creates standard deviational ellipses to summarize the spatial characteristics of geographic features: central tendency, dispersion, and directional trends. The ellipses can be sized as 1, 2, or 3 standard deviations.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Weight by (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>The field used to weight locations according to their relative importance.
+
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Group by (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>The field used to group features for separate computations of central features or dispersion.
+
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>This is the name of the layer that will be created in  <b>My Content</b>  and added to the map.  The default  name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down menu, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

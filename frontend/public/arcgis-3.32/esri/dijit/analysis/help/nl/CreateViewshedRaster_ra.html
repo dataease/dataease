@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Viewshed maken</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Tool Viewshed maken"></h2>
+        <hr/>
+    <p>Deze tool identificeert de gebieden die een waarnemer kan zien, met inachtname van de oppervlaktetopografie. De invoerpuntlocaties kunnen ofwel waarnemers vertegenwoordigen (zoals mensen op de grond of controleurs in een brandtoren), of geobserveerde objecten (zoals windturbines, watertorens, voertuigen of andere mensen). De resultaten bepalen de gebieden die gezien kunnen worden vanaf de waarneemlocaties.
+    </p>
+    <p>Zowel de waarnemers als de waargenomen objecten kunnen een hoogte boven de grond hebben en deze hoogten worden gebruikt bij het bepalen van de zichtbaarheid. Bijvoorbeeld, een viewshed die is berekend voor windturbines van 120 meter en mensen van 1.80 m. die op de grond staan is meestal groter dan een viewshed die is berekend voor turbines van 100 meter en mensen van 1.70 meter.
+    </p>
+    <p>De resultaatlaag registreert het aantal keer dat elke cellocatie in het invoeroppervlakraster kunnen worden gezien door de invoer van waarnemerpunten. De niet-zichtbare cellen krijgen NoData-waarden.
+    </p>
+    <p>Als  <b>Huidige kaartextent gebruiken</b> is geselecteerd, worden alleen het rastergebied en de waarnemerpunten geanalyseerd die zichtbaar zijn in het huidige kaartextent. Als de optie niet is aangevinkt, worden alle waarnemerpunten in de invoerlaag geanalyseerd, zelfs als deze zich buiten het huidige extent van de kaart bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Hoogteoppervlak</h2></div>
+        <hr/>
+        <div>
+            <p>Het hoogte-oppervlak om te gebruiken voor het berekenen van de viewshed.
+            </p>
+            <p>Indien de verticale eenheid van het invoeroppervlak verschilt van de horizontale eenheid, zoals wanneer de hoogtewaarden worden weergegeven in voet maar het co&ouml;rdinatensysteem is in meter, moet het oppervlak een gedefinieerd verticaal co&ouml;rdinaatsysteem hebben. De reden hiervoor is dat de tool de verticale (Z) en horizontale (XY) eenheden gebruikt om een ​​Z-factor te berekenen voor de viewshedanalyse. Zonder een verticaal co&ouml;rdinaatsysteem, waardoor dus geen Z-eenheidinformatie beschikbaar is, zal de tool aannemen dat de Z eenheid gelijk is aan de XY eenheid. Het resultaat hiervan is dat een interne Z-factor van 1.0 wordt gebruikt voor de analyse, dat onverwachte resultaten kan geven.
+            </p>
+            <p>Het hoogte-oppervlak kan integer of floating-point zijn.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Puntobjecten die waarnemerlocaties vertegenwoordigen</h2></div>
+        <hr/>
+        <div>
+            <p>De puntobjecten die de waarnemerlocaties vertegenwoordigen bij de berekening van viewsheds.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimaliseer voor</h2></div>
+        <hr/>
+        <div>
+            <p>De optimalisatiemethode om te gebruiken voor het berekenen van de viewshed.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Deze methode optimaliseert de verwerkingssnelheid en wisselt nauwkeurigheid in het resultaat uit voor hogere prestaties. Dit is de standaardinstelling.
+
+                </li>
+                <li>Accuracy &mdash; 
+Deze methode is geoptimaliseerd voor nauwkeurigheid in de resultaten, ten koste van een langere verwerkingstijd.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maximale kijkafstand</h2></div>
+        <hr/>
+        <div>
+            <p>Voer een cut-offafstand in waar de berekening van de zichtbare gebieden moet stoppen. Verder dan deze afstand is het niet bepaald of de waarnemerpunten en de andere objecten elkaar kunnen zien.
+            </p>
+            <p>U kunt ofwel een numerieke waarde opgeven die een lineaire afstand vertegenwoordigt of een numeriek veld selecteren van de invoerwaarnemerobjecten. Als een veld wordt opgegeven, moeten de waarden in het veld in dezelfde eenheid zijn als de xy-eenheid van het invoerhoogte-oppervlak.
+            </p>
+            <p>Merk op dat grote waarden de rekentijd laten toenemen. Tenzij anders vermeld, wordt een standaard maximale afstand berekend op basis van de resolutie en de omvang van het invoerhoogte-oppervlak.
+            </p>
+            <p>Deze parameter is handig voor het modelleren van bepaalde verschijnselen. Bijvoorbeeld door het beperken van de mate van zichtbaarheid, kunt u weersomstandigheden zoals een lichte mist modelleren. Ook kan het beperken van de zichtbaarheid u enige controle geven over de tijd van de dag om het effect van de schemering te benaderen.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Maximale kijkafstand</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Minimale kijkafstand</h2></div>
+        <hr/>
+        <div>
+            <p>Voer een afstand in waar de berekening van de zichtbare gebieden moet beginnen. Cellen op het oppervlak dichterbij dan deze afstand zijn niet zichtbaar in de uitvoer maar kunnen nog steeds de zichtbaarheid van de cellen blokkeren tussen de minimale en de maximale kijkafstand.
+            </p>
+            <p>U kunt ofwel een numerieke waarde opgeven die een lineaire afstand vertegenwoordigt of een numeriek veld selecteren van de invoerwaarnemerobjecten. Als een veld wordt opgegeven, moeten de waarden in het veld in dezelfde eenheid zijn als de xy-eenheid van het invoerhoogte-oppervlak.
+            </p>
+            <p>Deze parameter wordt gebruikt voor het regelen van het analysegebied van de viewshed op een bepaalde afstand van de waarnemer. Bijvoorbeeld, als u de zichtbaarheid evalueert vanaf de top van een gebouw tot een verderop gelegen park, dan kunt u een minimale kijkafstand instellen en gebieden uitsluiten die dichtbij liggen en niet belangrijk zijn om een betere verwerkingssnelheid te krijgen.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Minimale kijkafstand</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>Afstand is 3D</h2></div>
+        <hr/>
+        <div>
+            <p>Geef aan of de minimale en maximale kijkafstandparameters worden gemeten in een driedimensionale manier of een eenvoudigere, twee-dimensionale manier. Als de optie is ingeschakeld, worden de kijkafstanden behandeld als een 3D-afstand. Als ze niet zijn aangevinkt, worden ze behandeld als 2D-afstanden.
+            </p> 
+            <p>Een 2D-afstand is de eenvoudige lineaire afstand gemeten tussen een waarnemer en het doel met behulp van hun geprojecteerde locaties op zeeniveau. Een 3D-afstand geeft een meer realistische waarde door hun relatieve hoogten in overweging te nemen.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Hoogte van waarnemerlocaties</h2></div>
+        <hr/>
+        <div>
+            <p>Voer de hoogte van uw waarnemerlocaties in.
+            </p>
+            <p>U kunt een numerieke waarde specificeren die de hoogte van alle waarnemers vertegenwoordigen of als een veld dat de hoogte van elke waarnemer vertegenwoordigt. Als een veld wordt opgegeven, moet de waarde in het veld in dezelfde eenheid zijn als de Z-eenheid van het invoerhoogte-oppervlak.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Hoogte van waarnemerlocaties</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Hoogte van de waarnemers</h2></div>
+        <hr/>
+        <div>
+            <p>Voer de hoogte boven de grond in voor uw waarnemerlocaties.
+            </p> 
+            <p>U kunt een numerieke waarde opgeven voor de hoogte of een veld van de invoerwaarnemerobjecten. Als een veld wordt opgegeven, moet de waarde in het veld in dezelfde eenheid zijn als de z-eenheid van het invoerhoogte-oppervlak.
+            </p>
+            <p>De standaard is 6 voet. Als u kijkt vanaf een hooggelegen locatie, zoals een uitkijktoren of een hoog gebouw, gebruik dan die hoogte. Tijdens de viewshedberekening wordt deze waarde toegevoegd aan de waarnemerhoogte als dit is gespecificeerd; anders wordt het toegevoegd aan de ge&iuml;nterpoleerde oppervlak z-waarde.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Hoogte van de waarnemers</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Hoogte van het doel</h2></div>
+        <hr/>
+        <div>
+            <p>Voer de hoogte in van structuren of mensen op de grond gebruikt om de zichtbaarheid vast te stellen.
+            </p>
+            <p>U kunt een numerieke waarde opgeven voor de hoogte of een veld van de invoerwaarnemerobjecten. Als een veld wordt opgegeven, moet de waarde in het veld in dezelfde eenheid zijn als de z-eenheid van het invoerhoogte-oppervlak.
+            </p>
+            <p>De resulterende viewshed identificeert gebieden waar een waarnemerpunt deze andere objecten op de grond kan zien. Het omgekeerde is ook waar; de objecten op de grond kunnen een waarnemerpunt zien. 
+            </p>
+            <p>Hier volgen enkele voorbeelden van doelhoogte-instellingen:
+            </p>
+            <ul>
+                <li>Als uw invoerpunten windturbines vertegenwoordigen u wilt bepalen waar mensen vanaf de grond de turbines kunnen zien, voer dan de gemiddelde lengte van een persoon in (ongeveer 1.80 meter).
+                    
+
+                </li>
+                <li>Als uw invoerpunten brandtorens zijn en u wilt bepalen welke uitkijktorens een rookpluim kunnen zien van 7 meter of hoger, voer dan 7 meter in voor de doelhoogte.
+                    
+
+                </li>
+                <li>Als uw invoerpunten uitkijkpunten zijn langs wegen en paden en u wilt bepalen waar windturbines van 120 meter hoog of hoger kunnen worden gezien, voer dan 120 meter in voor de hoogte.
+                    
+
+                </li>
+                <li>Als uw invoerpunten uitkijkpunten zijn en u wilt weten hoe groot het gebied is dat mensen vanaf de grond kunnen zien vanaf het uitkijkpunt, voer dan nul in voor de doelhoogte. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Hoogte van de waarnemers</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Uitvoerhoogte wordt zichtbaar</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de uitvoer boven grondniveau (AGL) resultaat. Het AGL-resultaat is een raster waarbij elke celwaarde de minimale hoogte is die moet worden toegevoegd aan een andere onzichtbare cel om de cel zichtbaar te maken voor ten minste &eacute;&eacute;n waarnemer. Cellen die al zichtbaar waren, krijgen een 0 toegewezen in dit uitvoerraster.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>U kunt de naam van een map opgeven in  <b>Mijn Content</b>, waar het resultaat wordt opgeslagen met het vervolgkeuzemenu <b>Resultaat opslaan in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

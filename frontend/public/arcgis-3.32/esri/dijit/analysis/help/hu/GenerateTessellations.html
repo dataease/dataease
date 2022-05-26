@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Tesszellációk létrehozása</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Tesszell&aacute;ci&oacute;k l&eacute;trehoz&aacute;sa"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z meghat&aacute;rozott alakzatok &eacute;s m&eacute;retek alapj&aacute;n tesszell&aacute;ci&oacute;kat hoz l&eacute;tre egy vizsg&aacute;lt ter&uuml;letre.
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;s haszn&aacute;lata</b> jel&ouml;lőn&eacute;gyzet enn&eacute;l az eszk&ouml;zn&eacute;l le van tiltva, mert a <b>Kiterjed&eacute;s meghat&aacute;roz&aacute;sa</b> param&eacute;ter szab&aacute;lyozza a tesszell&aacute;ci&oacute;k l&eacute;trehoz&aacute;s&aacute;hoz alkalmazott kiterjed&eacute;st.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Alakzat választása</h2></div>
+        <hr/>
+        <div>
+            <p>A l&eacute;trehozand&oacute; tesszell&aacute;ci&oacute; alakzata vagy geometri&aacute;ja.  Rendelkez&eacute;sre &aacute;ll&oacute; alakzatok:  <code>n&eacute;gyzet</code>, <code>hatsz&ouml;g</code>, <code>transzverz&aacute;lis hatsz&ouml;g</code>, <code>h&aacute;romsz&ouml;g</code> vagy <code>rombusz</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Vizsgált terület meghatározása</h2></div>
+        <hr/>
+        <div>
+            <p>A tesszell&aacute;ci&oacute;k &aacute;ltal lefedendő kiterjed&eacute;s vagy ter&uuml;let.  A kiterjed&eacute;s meghat&aacute;rozhat&oacute; az aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;s vagy egy megl&eacute;vő r&eacute;teg kiterjed&eacute;s&eacute;nek alkalmaz&aacute;s&aacute;val, vagy interakt&iacute;v m&oacute;don megrajzolva a kiterjed&eacute;sk&eacute;nt alkalmazni k&iacute;v&aacute;nt ter&uuml;letet.
+            </p>
+            <p>Ha egy vektoros r&eacute;teg van kiv&aacute;lasztva a kiterjed&eacute;s meghat&aacute;roz&aacute;s&aacute;ra, akkor enged&eacute;lyezve lesz a Csak az &aacute;tfed&eacute;sben l&eacute;vő tesszell&aacute;ci&oacute;k megtart&aacute;sa opci&oacute;.  Ha az opci&oacute;t kijel&ouml;lik, akkor a program csak azokat a tesszell&aacute;ci&oacute;kat hozza l&eacute;tre a l&eacute;trehozott tesszell&aacute;ci&oacute;s r&eacute;tegben, amelyek fedik vagy metszik a meghat&aacute;rozott kiterjed&eacute;si r&eacute;tegben l&eacute;vő vektoros elemeket. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Nincs kijel&ouml;lve
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Teljes kiterjed&eacute;s fedv&eacute;ny">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Kijel&ouml;lve
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Vektoros fedv&eacute;ny">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Gyűjtő méretének meghatározása a következő megadásával:</h2></div>
+        <hr/>
+        <div>
+            <p>Az egyes cell&aacute;k m&eacute;rete.  A cellam&eacute;ret ter&uuml;let-m&eacute;rt&eacute;kegys&eacute;gek megad&aacute;s&aacute;val vagy egy t&aacute;vols&aacute;g megad&aacute;s&aacute;val hat&aacute;rozhat&oacute; meg, amely t&aacute;vols&aacute;got a k&ouml;vetkezők&eacute;ppen kell kisz&aacute;molni, ahol d= t&aacute;vols&aacute;g: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>N&eacute;gyzet
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="N&eacute;gyzet tesszell&aacute;ci&oacute;">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Hatsz&ouml;g
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Hatsz&ouml;g tesszell&aacute;ci&oacute;">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Transzverz&aacute;lis hatsz&ouml;g
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Transzverz&aacute;lis hatsz&ouml;g tesszell&aacute;ci&oacute;">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>H&aacute;romsz&ouml;g
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="H&aacute;romsz&ouml;g tesszell&aacute;ci&oacute;">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Rombusz
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Rombusz tesszell&aacute;ci&oacute;">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Eredményréteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

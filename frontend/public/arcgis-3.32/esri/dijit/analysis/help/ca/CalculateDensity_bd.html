@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calcula la densitat</h2><p/>
+        <h2><img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" alt="Calcula la densitat"></h2>
+        <hr/>
+    <p>L'eina Calcula la densitat crea un mapa de densitat a partir de les entitats de punts mitjan&ccedil;ant la difusi&oacute; de quantitats conegudes del mateix fenomen (que es representen com a atributs dels punts) al mapa. El resultat &eacute;s una capa d'&agrave;rees classificades de menor a major densitat.   
+
+    </p>
+    <p>En una entrada de punts, cada punt hauria de representar la ubicaci&oacute; d'algun esdeveniment o incident; la capa de resultats representa un recompte d'incidents per &agrave;rea d'unitat.  Un valor de densitat m&eacute;s alt en una ubicaci&oacute; nova significa que hi ha m&eacute;s punts a prop d'aquesta ubicaci&oacute;.  En molts casos, la capa de resultats es pot interpretar com a una superf&iacute;cie de risc per a esdeveniments futurs. Per exemple, si els punts d'entrada representen ubicacions on hi ha caigut un llamp, la capa de resultats es pot interpretar com una superf&iacute;cie de risc per a la caiguda de llamps en el futur.
+    </p>
+    <p>Altres casos d'&uacute;s d'aquesta eina inclouen els seg&uuml;ents:
+        <ul>
+            <li>Creaci&oacute; de mapes de densitat de delinq&uuml;&egrave;ncia perqu&egrave; els departaments de policia puguin assignar els recursos adequats a les zones amb un alt nivell de delinq&uuml;&egrave;ncia.
+            </li>
+            <li>C&agrave;lcul de les densitats d'hospitals en un comtat.  La capa de resultats mostrar&agrave; les &agrave;rees amb una accessibilitat alta i baixa als hospitals. Aquesta informaci&oacute; es pot utilitzar per decidir on s'haurien de construir hospitals nous.
+            </li>
+            <li>Identificaci&oacute; d'&agrave;rees amb un alt risc d'incendi forestal en funci&oacute; de l'historial d'ubicacions d'aquests incendis.
+            </li>
+            <li>Localitzaci&oacute; de comunitats allunyades de les carreteres principals per planificar on s'haurien de construir carreteres noves.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu una capa de punts a partir de la qual es calcularà la densitat</h2></div>
+        <hr/>
+        <div>
+            <p>Capa de punts sobre la qual es calcular&agrave; la densitat.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Trieu un o diversos camps sobre els quals es calcularà la densitat (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Proporcioneu un o diversos camps que especifiquin el nombre d'incidents de cada ubicaci&oacute;.  Per exemple, si teniu punts que representen ciutats, podeu fer servir un camp que representi la poblaci&oacute; de la ciutat com a camp de recompte. La capa de densitat de poblaci&oacute; resultant calcular&agrave; les densitats de poblaci&oacute; m&eacute;s altes a prop de les ciutats amb m&eacute;s poblaci&oacute;.
+            </p>
+            <p>La densitat del recompte de punts es calcular&agrave; sempre.   Si no se selecciona cap punt, es pressuposar&agrave; que cada ubicaci&oacute; representa un sol recompte.
+            </p>
+        </div>
+    </div>
+    <div id="binType">
+        <div><h2>Trieu una forma de bin</h2></div>
+        <hr/>
+        <div>
+            <p>Forma dels bins on es consoliden els punts i que s'utilitzen per al c&agrave;lcul de la densitat.
+            </p>
+            <p>Per a l'an&agrave;lisi amb bins de tipus  <b>Quadrat</b> o <b>Hex&agrave;gon</b> es necessita un sistema de coordenades projectades. Podeu definir l'opci&oacute; de <b>Sistema de coordenades de processament</b> a <b>Entorns d'an&agrave;lisi</b>. Si el sistema de coordenades de processament no est&agrave; definit en un sistema de coordenades projectades, se us demanar&agrave; que el definiu quan utilitzeu <b>Executa l'an&agrave;lisi</b> .
+            </p>
+        </div>
+    </div>
+    <div id="binSizing">
+        <div><h2>Seleccioneu la mida dels bins per a l'agregació</h2></div>
+        <hr/>
+        <div>
+            <p>Mida dels bins que s'han generat. Per a un bin quadrat, la mida representa l'altura del quadrat. Per a l'hex&agrave;gon, la mida representa l'altura de l'hex&agrave;gon (dels costats paral&middot;lels).
+            </p>
+        </div>
+    </div>
+    <div id="weight">
+        <div><h2>Seleccioneu la ponderació de densitat que s'aplicarà</h2></div>
+        <hr/>
+        <div>
+            <p>Tipus de ponderaci&oacute; aplicada al c&agrave;lcul de la densitat. Hi ha dues opcions:
+                <ul>
+                    <li> <b>Uniforme</b>: calcula una magnitud per &agrave;rea.
+                    </li>
+                    <li> <b>Nucli</b>: aplica una funci&oacute; de nucli per adaptar una superf&iacute;cie suaument estreta a cada punt.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Seleccioneu la mida del veïnat</h2></div>
+        <hr/>
+        <div>
+            <p>Mida de l'&agrave;rea utilitzada per calcular la densitat. La mida del ve&iuml;nat ha de ser m&eacute;s gran que la del bin.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Trieu les unitats de sortida per a la densitat</h2></div>
+        <hr/>
+        <div>
+            <p>Unitats de sortida desitjades dels valors de densitat. Per defecte, es defineix en quil&ograve;metres quadrats o milles quadrades segons les unitats per defecte que tingueu especificades al perfil. Si els valors de densitat s&oacute;n molt baixos, podeu augmentar la mida de les unitats d'&agrave;rea (per exemple, de metres quadrats a quil&ograve;metres quadrats) perqu&egrave; es retornin valors m&eacute;s alts. Els valors nom&eacute;s escalen el resultat.  
+
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Calcula la densitat mitjançant intervals de temps (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Si el temps est&agrave; habilitat a la capa de punts d'entrada i &eacute;s de tipus instant, podeu fer l'an&agrave;lisi amb per&iacute;odes de temps.  Hi ha tres par&agrave;metres que podeu establir quan utilitzeu el temps:
+                <ul>
+                    <li> <b>Interval de per&iacute;ode de temps</b>
+                    </li>
+                    <li> <b>Freq&uuml;&egrave;ncia de repetici&oacute; de l'interval de temps</b>
+                    </li>
+                    <li> <b>Temps amb el qual s'alinearan els per&iacute;odes de temps</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Per exemple, si teniu dades que representen un any i voleu analitzar-les amb per&iacute;odes setmanals, definiu  <b>Interval de per&iacute;ode de temps</b> en <code>1 setmana</code>. 
+            </p>
+            <p>Per exemple, si teniu dades que representen un any i voleu analitzar-les amb la primera setmana del mes, definiu  <b>Interval de per&iacute;ode de temps</b> en <code>1 setmana</code>, <b>Freq&uuml;&egrave;ncia de repetici&oacute; de l'interval de temps</b> en <code>1 mes</code> i <b>Temps amb el qual s'alinearan els per&iacute;odes de temps</b> en <code>1 de gener, a les 12:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Interval de període de temps</h2></div>
+        <hr/>
+        <div>
+            <p>Interval de temps utilitzat per generar per&iacute;odes de temps.  <b>Interval de per&iacute;ode de temps</b> es pot utilitzar sol o amb el par&agrave;metre <b>Freq&uuml;&egrave;ncia de repetici&oacute; de l'interval de temps</b> o <b>Temps amb el qual s'alinearan els per&iacute;odes de temps</b>.
+            </p>
+            <p>Per exemple, si voleu crear per&iacute;odes de temps que tinguin lloc cada dilluns de 9:00 a 10:00, definiu  <b>Interval de per&iacute;ode de temps</b> en <code>1 hora</code>, <b>Freq&uuml;&egrave;ncia de repetici&oacute; del per&iacute;ode de temps</b> en <code>1 setmana</code> i <b>Temps amb el qual s'alinearan els per&iacute;odes de temps</b> en <code>9:00:00 els dilluns</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Freqüència de repetició del període de temps</h2></div>
+        <hr/>
+        <div>
+            <p> Per&iacute;ode utilitzat per calcular un per&iacute;ode de temps. <b>Freq&uuml;&egrave;ncia de repetici&oacute; de l'interval de temps</b> es pot utilitzar sol o  amb el par&agrave;metre <b>Interval de per&iacute;ode de temps</b>, o amb <b>Temps de refer&egrave;ncia</b> o b&eacute; amb la combinaci&oacute; d' <b>Interval de per&iacute;ode de temps</b> i <b>Temps amb el qual s'alinearan els per&iacute;odes de temps</b>.
+            </p>
+            <p> Per exemple, si voleu crear per&iacute;odes de temps quetinguin lloc cada dilluns de 9:00 a 10:00, definiu <b>Interval de per&iacute;ode de temps</b> es <code>1 hora</code>, <b>Freq&uuml;&egrave;ncia de repetici&oacute; del per&iacute;ode de temps</b> en <code>1 setmana</code>, i <b>Temps amb el qual s'alinearan els per&iacute;odes de temps</b> en <code>9:00:00 els dilluns</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Temps per alinear períodes de temps amb</h2></div>
+        <hr/>
+        <div>
+            <p>Data i hora utilitzades per alinear l'interval de temps. Els per&iacute;odes de temps comen&ccedil;aran a partir d'aqu&iacute; i continuaran enrere en el temps. Si no se selecciona cap temps de refer&egrave;ncia, els per&iacute;odes de temps s'alinearan amb l'1 de gener de 1970. 
+            </p>
+            <p> Per exemple, si voleu crear per&iacute;odes de temps que tinguin lloc cada dilluns de 9:00 a 10:00, definiu <b>Interval de per&iacute;ode de temps</b> en <code>1 hora</code>, <b>Freq&uuml;&egrave;ncia de repetici&oacute; del per&iacute;ode de temps</b> en <code>1 setmana</code> i <b>Temps amb el qual s'alinearan els per&iacute;odes de temps</b> en <code>9:00:00 els dilluns</code>.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>&Eacute;s un par&agrave;metre temporal de versi&oacute; preliminar per definir la refer&egrave;ncia espacial de processament. Moltes eines de dades massives necessiten que s'utilitzi un sistema de coordenades projectades com a refer&egrave;ncia espacial per al processament. Per defecte, l'eina utilitzar&agrave; el sistema de coordenades d'entrada, per&ograve; no funcionar&agrave; correctament si es tracta d'un sistema de coordenades geogr&agrave;fiques. Per definir un sistema de coordenades projectades, introdu&iuml;u el WKID. Per exemple,  <b>Web Mercator</b> s'introduiria com a <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Trieu el magatzem de dades</h2></div>
+        <hr/>
+        <div>
+            <p>Els resultats del GeoAnalytics s'emmagatzemen en un magatzem de dades i s'exposen com una capa d'entitats al  Portal for ArcGIS. En la majoria dels casos, conv&eacute; emmagatzemar els resultats en un magatzem de dades espaciotemporal, que &eacute;s l'opci&oacute; per defecte. En alguns casos, desar els resultats al magatzem de dades relacional &eacute;s una bona opci&oacute;. A continuaci&oacute; teniu alguns motius pels quals &eacute;s bona idea desar els resultats al magatzem de dades relacional: 
+                <ul>
+                    <li>Podeu utilitzar els resultats en la col&middot;laboraci&oacute; de portal a portal.
+                    </li>
+                    <li>Podeu habilitar les funcions de sincronitzaci&oacute; amb els vostres resultats.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>No &eacute;s recomanable fer servir un magatzem de dades relacionals si espereu que els resultats del GeoAnalytics augmentin i necessiteu utilitzar les funcions del magatzem de dades massives espaciotemporals per gestionar grans quantitats de dades.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la capa que es crear&agrave;.  Si esteu escrivint en un ArcGIS Data Store, els resultats es desaran a  <b>El meu contingut</b> i s'afegiran al mapa. Si esteu escrivint en un recurs compartit de fitxers de dades massives, els resultats s'emmagatzemaran en aquest recurs i s'afegiran al seu manifest. No s'afegiran al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, l'eina no funcionar&agrave;.
+            </p>
+            <p>Si escriviu a l' ArcGIS Data Store (magatzem de dades massives relacional o espaciotemporal) mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta a <b>El meu contingut</b>, on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

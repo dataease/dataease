@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="aoToolbox">
+        <p>[フィーチャ解析] ツールボックスには、アクセスして使用できるツールが多数用意されています。これらのタスクは次のカテゴリに分類されています。これらのカテゴリは単なる論理的なグループ化であるため、タスクへのアクセス方法やタスクの使用方法にはまったく影響しません。
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="regularsize">
+        <h2>データの集約</h2>
+        <hr/>
+        <p>これらのツールは、範囲内または他のフィーチャの近くにおいて、フィーチャおよびそれらの属性の合計の数、長さ、面積、および基本的な説明的統計解析を計算します。
+            <ul>
+                <li> <b>[ポイントの集約]</b> は、指定されたエリア内にあるポイントに関する統計情報を計算します。
+                </li>
+                <li> <b>[フィーチャの結合]</b> は、空間および属性リレーションシップに基づいて、一方のレイヤーまたはテーブルから他方のレイヤーまたはテーブルに属性を追加します。
+                </li>
+                <li> <b>[近接範囲内での集計]</b> は、指定された距離内にあるフィーチャとその属性の統計情報を計算します。
+                </li>
+                <li> <b>[エリア内での集計]</b> では、互いにオーバーラップしているエリア フィーチャとその属性の統計情報を計算します。
+                </li>
+                <li> <b>[中心と分散の集計]</b> は、中心フィーチャおよび分布指向性を計算します。
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>ポイントの集約</h2></td>
+                    <td>
+                    <img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" class="titleImage" alt="ポイントの集約">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>このツールは、ポイント フィーチャとエリア フィーチャ レイヤーを使用して、どのポイントがどのエリア内に含まれるのかを特定し、各エリア内の全ポイントの統計情報を算出します。たとえば、次のように指定します。
+                <ul>
+                    <li>犯罪事件のポイント位置を基に、国やその他の行政区域別に犯罪数をカウントします。
+                    </li>
+                    <li>フランチャイズ場所の最も高い/低い収益を州別に検索します。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>フィーチャの結合 (Join Features)</h2></td>
+                    <td>
+                    <img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" class="titleImage" alt="フィーチャの結合">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>[フィーチャの結合] は、空間および属性リレーションシップに基づいて、一方のレイヤーまたはテーブルから他方のレイヤーまたはテーブルに属性を追加します。たとえば、次のように指定します。
+                <ul>
+                    <li>共通の境界または人口統計情報をインシデント データに追加します。
+                    </li>
+                    <li>既知の場所に最も近い施設を特定します。
+                    </li>
+                    <li>洪水地域内にある住宅の数を決定します。
+                    </li>
+                    <li>さまざまな野生生物の一般的な生息地を特定します。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeNearbyTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>近接範囲内での集計</h2></td>
+                    <td>
+                    <img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" class="titleImage" alt="近接範囲内での集計">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>入力レイヤーのフィーチャから指定された距離内にあるフィーチャを検索します。距離は、直線または移動モードの実行可能なパスに沿って計測することができます。統計情報は、近傍フィーチャに対して計算されます。たとえば、次のように指定します。
+                <ul>
+                    <li>提案されている新しい店舗の場所から 5 分以内の総人口を計算します。
+                    </li>
+                    <li>店舗へのアクセス性の尺度として使用するために、提案されている新しい店舗の場所から 5 分以内にある高速道路のアクセス ランプの数を計算します。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>エリア内での集計</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="エリア内での集計">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>2 つのレイヤーで重なり合うエリア (とエリアの部分) を検索し、重複部分の統計情報を計算します。たとえば、次のように指定します。
+                <ul>
+                    <li>集水域のレイヤーと、土地利用タイプ別土地利用エリアのレイヤーを基に、各集水域の土地利用タイプの総面積を計算します。
+                    </li>
+                    <li>郡の土地区画のレイヤーと都市の境界線のレイヤーを基に、各都市内にある空の土地区画の平均値のサマリーを作成します。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeCenterAndDispersionTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>中心と分散の集計</h2></td>
+                    <td>
+                    <img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" class="titleImage" alt="中心と分散の集計">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>このツールは、ポイント フィーチャを使用して中心フィーチャ、地理的中心、地理的中間地点、または楕円 (分布) を計算します。たとえば、次のように指定します。
+                <ul>
+                    <li>ブロック グループの重心のレイヤーを前提とすると、人口によって重み付けされた中心フィーチャを使用して、街のどの部分が舞台芸術センターに最もアクセスしやすいかを識別することができます。
+                    </li>
+                    <li>数年にわたる公園内のヘラジカ観察のレイヤーを前提とすると、地理的中心を使用して、夏と冬にヘラジカが集まる場所を表示することができます。
+                    </li>
+                    <li>火災インシデントのレイヤーを前提とすると、地理的中間地点を使用して、周辺の外れ値による影響を受けずに、火災の中心傾向を計測することができます。
+                    </li>
+                    <li>井戸の地下水サンプルのレイヤーを前提とすると、楕円を使用して、汚染物質がどのように拡散しているかを確認することができます。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>データへの情報付加</h2>
+        <hr/>
+        <p>これらのツールを使用すると、エリアの特性を調査できます。選択したエリアに関する詳細な人口統計データと統計情報が返されます。
+            <ul>
+                <li> <b>[レイヤーへの情報付加]</b> は、特定のエリア内か、ある場所から一定の移動時間または距離内にある人、場所、およびビジネスに関する情報を取得します。
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichLayerTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>レイヤーへの情報付加</h2></td>
+                    <td>
+                    <img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" class="titleImage" alt="レイヤーへの情報付加">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>特定のエリア内か、ある場所から一定の移動時間または距離内にある人、場所、およびビジネスに関する情報を取得します。
+
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="largesize">
+        <h2>場所検索</h2>
+        <hr/>
+        <p>次のツールを使用すると、指定した基準を満たすフィーチャを特定または作成できます。基準のタイプは使用するツールによって異なります。たとえば、空間または属性検索、指定した高さから表示されるエリア、特定の排流点の下流域、または特定の交通状況での運転時間などに基づく基準が考えられます。
+            <ul>
+                <li> <b>[最適な施設の選択]</b> は、施設に対する需要のある位置を、特定の目的を満たすように割り当てることによって、施設の最適な位置を選択します。
+                </li>
+                <li> <b>[可視領域の作成]</b> は、指定した位置に基づいて表示可能なエリアを作成します。
+                </li>
+                <li> <b>[集水域の作成]</b> は、指定した位置に基づいて集水域を作成します。
+                </li>
+                <li> <b>[新規フィーチャの作成]</b> は、一連の条件を満たす分析範囲内の場所から、新しいエリアを作成します。
+                </li>
+                <li> <b>[重心の検出]</b> は、入力フィーチャの表示上の中心 (重心) を検出します。
+                </li>
+                <li> <b>[既存フィーチャの検索]</b> は、一連の条件を満たすレイヤー内の既存のエリアを検索します。
+                </li>
+                <li> <b>[類似フィーチャの検索]</b> は、指定した条件に基づいて、1 つ以上の参照場所に最も類似している場所を検索します。
+                </li>
+                <li class="PortalOnly"> <b>[テーブルから場所をジオコーディング]</b> は、テーブルの住所を座標に変換します。 
+                </li>
+                <li> <b>[下流解析]</b> は、指定した位置から下流方向に向かうフロー パスを決定します。
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="ChooseBestFacilitiesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>最適な施設の選択 (Choose Best Facilities)</h2></td>
+                    <td>
+                    <img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" class="titleImage" alt="最適な施設の選択">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>施設に対する需要のある位置を、特定の目的を満たすように割り当てることによって、施設の最適な位置を選択します。
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>可視領域の作成</h2></td>
+                    <td>
+                    <img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" class="titleImage" alt="可視領域の作成">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>指定した場所に基づいて、表示されるエリアを作成します。
+            </p>
+            <br/>
+        </div>
+        <div id="CreateWatershedsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>集水域の作成</h2></td>
+                    <td>
+                    <img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" class="titleImage" alt="集水域の作成">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>指定した位置に基づいて集水域を作成します。
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveNewLocationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>新規フィーチャの作成</h2></td>
+                    <td>
+                    <img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" class="titleImage" alt="新規フィーチャの作成">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>指定した一連の条件を満たす分析範囲内で、新しいフィーチャを作成します。これらの条件は、属性検索 (空き地など) と空間検索 (河川から 1 マイル以内など) に基づきます。
+            </p>
+            <br/>
+        </div>
+        <div id="FindCentroidsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>重心の検索</h2></td>
+                    <td>
+                    <img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" class="titleImage" alt="重心の検索">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>各入力マルチポイント、ライン、またはエリア フィーチャの表示上の中心 (重心) を検出します。
+            </p>
+            <br/>
+        </div>
+        <div id="FindExistingLocationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>既存フィーチャの検索</h2></td>
+                    <td>
+                    <img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" class="titleImage" alt="既存フィーチャの検索">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>指定した一連の条件を満たす、分析範囲内の既存のフィーチャを選択します。これらの条件は、属性検索 (空き地など) と空間検索 (河川から 1 マイル以内など) に基づきます。
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>テーブルから場所をジオコーディング</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="テーブルから場所をジオコーディング">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>住所を座標に変換します。このツールは Excel スプレッドシートまたは CSV ファイルの住所に使用します。
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>類似フィーチャの検索</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="類似フィーチャの検索">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>指定した条件に基づいて、1 つ以上の参照場所に最も類似している場所を検索します。
+            </p>
+            <br/>
+        </div>
+        <div id="TraceDownstreamTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>下流解析</h2></td>
+                    <td>
+                    <img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" class="titleImage" alt="下流解析">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>指定した場所から下流方向へのフロー パスを決定します。
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>パターンの分析</h2>
+        <hr/>
+        <p>これらのツールを使用すると、データ内の空間パターンを識別、定量化、および視覚化できます。
+            <ul>
+                <li> <b>[密度の計算]</b> では、ある現象の既知の数量を取得してマップ上に展開します
+                </li>
+                <li> <b>[ホット スポット分析]</b> では、データの空間パターンから統計的に有意なクラスターを識別します。
+                </li>
+                <li> <b>[外れ値の検索]</b> は、データの空間パターンに、統計的に有意な外れ値が存在するかどうかを判定します。
+                </li>
+                <li> <b>[ポイント クラスターの検索]</b> は、空間分布に基づき周辺ノイズ内でポイント フィーチャのクラスターを検索します。
+                </li>
+                <li> <b>[ポイントの内挿]</b> は、一連のポイントでの計測値に基づいて、新しい場所の値を推定します。
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>密度の計算</h2></td>
+                    <td>
+                    <img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" class="titleImage" alt="密度の計算">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>密度分析では、ある現象の既知の数量を取得して、これらの数量をマップ上に分布します。このツールを使用すると、たとえば、落雷や竜巻の集中する場所、健康管理施設へのアクセス、人口密度などを表示できます。
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>ホット スポット分析</h2></td>
+                    <td>
+                    <img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" class="titleImage" alt="ホット スポット分析">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>このツールは、データ内に存在する統計的に有意な空間クラスターを表示するマップを作成します。このツールを使用すると、家の価格、犯罪密度、交通事故死亡者数、失業率、生物多様性などについて、高い値と低い値の想定外のホット スポット (赤色) とコールド スポット (青色) を発見できます。
+            </p>
+            <br/>
+        </div>
+        <div id="FindOutliersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>外れ値の検索</h2></td>
+                    <td>
+                    <img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" class="titleImage" alt="外れ値の検索">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>このツールは、データ内に存在する統計的に有意なクラスターと空間的な外れ値を表示するマップを作成します。このツールを使用すると、近傍と大幅に異なる値を含むフィーチャを識別できます。このツールを使用して、変則的な消費パターンの検索、分析範囲における裕福層と貧困層の間の最も明確な境界の特定、または米国内で近傍と比較して異常に低い平均寿命の郡が存在するかどうかの確認などを行うことができます。
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>ポイント クラスターの検索</h2></td>
+                    <td>
+                    <img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" class="titleImage" alt="ポイント クラスターの検索">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>このツールは、ポイントが集中しているエリアおよび空または疎なエリアによって分離されているエリアを検出します。クラスターに含まれないポイントには、ノイズとしてラベルが付けられます。
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>ポイントの内挿</h2></td>
+                    <td>
+                    <img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" class="titleImage" alt="ポイントの内挿">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>このツールを使用すると、一連のポイントでの計測値に基づいて、新しい場所の値を推定できます。このツールは、各ポイントの値を持つポイント データを取得して、推定値で分類したエリアを返します。このツールを使用すると、たとえば、個々の雨量計で計測した値に基づいて、集水域全体の雨量を推定できます。
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>近接エリアの分析</h2>
+        <hr/>
+        <p>  以下に挙げるツールを使用すると、「近くにあるのは何か」という空間解析で最も一般的な質問の 1 つに答えることができます。
+            <ul>
+                <li> <b>[起点から終点の計測]</b> は、ペアとなるポイント間の移動時間または距離を測定します。
+                </li>
+                <li> <b>[バッファの作成]</b> は、フィーチャから等距離にあるエリアを作成します。
+                </li>
+                <li> <b>[到達圏レイヤの作成]</b> は、一定時間内に到達できる場所のエリアを検索します。
+                </li>
+                <li> <b>[最寄りの検索]</b> は、既知の場所から最も近いパーセルを識別します。
+                </li>
+                <li> <b>[ルートの計画]</b> は、多数の訪問先を訪問する保有車のルートを作成する最適な方法を決定します。
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ConnectOriginsToDestinationsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>起点から終点の計測</h2></td>
+                    <td>
+                    <img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" class="titleImage" alt="起点から終点の計測">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>[起点から終点の計測] は、ペアとなるポイント間の移動時間または距離を測定します。このツールでは、直線距離、道路距離、または移動時間を算出することができます。このツールを使用して以下のことが行えます。
+            </p>
+            <p>
+                <ul>
+                    <li>自宅から職場までの通勤にかかる合計距離または時間を計算します。
+                        
+
+                    </li>
+                    <li>お客様が来店するまでの移動距離を測定します。特に広告キャンペーンの対象を決めたり、新しい店舗の場所を選択する際に、この情報を使用して市場範囲を定義します。
+                        
+
+                    </li>
+                    <li>保有する車の推定燃費を計算します。その後、[エリア内での集計] ツールを実行して、州または地域別の燃費を算出します。
+                        
+                  
+                    </li>
+                </ul>
+                
+            </p>
+            <p>起点と終点を指定すると、ツールは、ペアとなった起点と終点の間の測定値およびルートを含むレイヤを返します。
+            </p>
+            <br/>
+        </div>
+        <div id="CreateBuffersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>バッファーの作成</h2></td>
+                    <td>
+                    <img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" class="titleImage" alt="バッファーの作成">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>バッファとは、ポイント、ライン、またはエリア フィーチャから特定の距離をカバーするエリアです。 
+            </p>
+            <p>バッファは通常、[オーバーレイ] など、その他のツールを使用して詳細に分析できるエリアを作成するために使用されます。たとえば、「学校から 1 マイル以内にある建物」という質問に答える場合、学校の周囲 1 マイルのバッファを作成し、建物を含むレイヤとバッファをオーバーレイします。最終結果は、学校から 1 マイル以内にある建物のレイヤになります。  
+            </p>
+            <br/>
+        </div>
+        <div id="CreateDriveTimeAreasTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>到達圏レイヤーの作成</h2></td>
+                    <td>
+                    <img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" class="titleImage" alt="到達圏レイヤーの作成">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>運転時間エリアは、指定した運転時間または走行距離内に到達できるエリアです。運転時間エリアは、次のような質問に答えるのに役立ちます。
+                <ul>
+                    <li>ここから 30 分走行すると、どこまで行けるか。
+                    </li>
+                    <li>午後 6 時にここから 30 分走行し、ラッシュアワー中にどこまで行けるか。
+                    </li>
+                    <li>消防署から 5 分以内の町のエリアはどこか。ここに新しい消防署を作ると、火災対応範囲はどれだけ向上するか。
+                    </li>
+                    <li>自社のビジネスはどの商圏をカバーしているか。私の店舗から 10 マイル以内のエリアはどこか。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindNearestTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>最寄りの検索</h2></td>
+                    <td>
+                    <img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" class="titleImage" alt="最寄りの検索">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>インシデントと施設間を移動するコストを計測し、最も近い場所を判定します。結果は、インシデントと施設間で、各ルートの移動コスト（時間と距離）を考慮すると最適なルートを示すレイヤです。たとえば、このツールを使用して、事故から最も近い病院や、現在の場所から最も近い ATM を検索できます。
+            </p>
+            <br/>
+        </div>
+        <div id="PlanRoutesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>ルートの計画 (Plan Routes)</h2></td>
+                    <td>
+                    <img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" class="titleImage" alt="ルートの計画">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>訪問先のセットおよび訪問先を訪問するために利用できる車両数を指定すると、[ルートの計画] は、車両に訪問先を効果的に割り当てたり、訪問先までの車両のルートを作成する方法を決定します。
+            </p>
+            <p>このツールを使用すると、調査員、査定官、在宅サポート プロバイダなどの移動チームの作業を計画したり、離れた場所にアイテムを配送したり集荷したり、消費者に交通サービスを提供したりすることができます。
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>データの管理</h2>
+        <hr/>
+        <p>これらのツールは、地理データの日常的な管理と、解析前のデータの結合のために使用されます。
+            <ul>
+                <li> <b>[境界線のディゾルブ (Dissolve Boundaries)]</b> は、共通の境界線と共通の属性値を共有するエリアをマージします。
+                </li>
+                <li> <b>[データの抽出 (Extract Data)]</b> は、既存のデータからフィーチャを抽出して、新しいデータセットを作成します。
+                </li>
+                <li> <b>[テッセレーションの生成 (Generate Tessellation)]</b> は、データの範囲に基づいてテッセレーションを作成します。
+                </li>
+                <li> <b>[レイヤーのマージ (Merge Layers)]</b> は、複数の既存のレイヤーから新しいレイヤーにすべてのフィーチャをコピーします。
+                </li>
+                <li> <b>[オーバーレイ (Overlay Layers)]</b> は、複数のレイヤーを 1 つのレイヤーに結合します。オーバーレイは、積み重ねたマップを透過して、中にあるすべての情報を含む 1 つのマップを作成することと考えることができます。
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>境界のディゾルブ</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="境界のディゾルブ">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>重なり合うエリアや共通の境界を共有するエリアはマージされ、1 つのエリアが形成されます。
+            </p>
+            <p>フィールドを指定して、どの境界線をマージするか設定できます。たとえば、郡のレイヤーがあり、各郡に  <i>State_Name</i> 属性がある場合、 <i>State_Name</i> 属性を使用して境界をディゾルブできます。隣接する郡は、 <i>State_Name</i> の値が同じ場合にマージされます。最終結果は、州の境界線のレイヤーです。
+            </p>
+            <br/>
+        </div>
+        <div id="ExtractDataTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>データの抽出</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" class="titleImage" alt="データの抽出">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>レイヤーおよび指定した対象エリアから、レイヤー データの Zip ファイル、CSV、KMZ のいずれかを作成します。
+            </p>
+            <p> 
+            </p>
+            <br/>
+        </div>
+        <div id="GenerateTessellationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>テッセレーションの生成</h2></td>
+                    <td>
+                    <img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" class="titleImage" alt="テッセレーションの生成">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>指定した形状およびサイズに基づいて分析範囲上にテッセレーションを生成します。
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>レイヤーのマージ</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="レイヤーのマージ">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>複数の既存のレイヤーから新しいレイヤーにフィーチャをコピーします。たとえば、次のような場合です。
+                <ul>
+                    <li>イングランド、ウェールズ、スコットランドの 3 つのレイヤーから、1 つのイギリスのレイヤーを作成する。
+                    </li>
+                    <li>12 のレイヤーがあり、それぞれに隣接するタウンシップの土地区画情報が含まれている。これらを 1 つのレイヤーに結合し、12 の入力レイヤーで同じ名前とタイプを持つ属性だけを保持します。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>オーバーレイ</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" class="titleImage" alt="オーバーレイ">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>オーバーレイは、複数のレイヤーを 1 つのレイヤーに結合します。オーバーレイは、積み重ねたマップを透過して、中にあるすべての情報を含む 1 つのマップを作成することと考えることができます。たとえば、次のような場合です。
+                <ul>
+                    <li>100 年の氾濫原内にどのような土地区画があるか (ここでいう「内」は「上」と同じ意味です)。
+                          
+                    </li>
+                    <li>どの郡にどのような道路があるか？
+                    </li>
+                    <li>どのような土壌タイプの上にどのような土地利用があるか？
+                         
+                    </li>
+                    <li>軍用基地の跡地にどのような井戸があるか？
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Povzemi atribute</h2><p/>
+        <h2><img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" alt="Diagram Povzemi atribute"></h2>
+        <hr/>
+    <p> To orodje povzema vse ujemajoče se vrednosti v enem ali več poljih in izračuna njihovo statistiko. Najosnovnej&scaron;a statistika je &scaron;tetje geoobjektov, ki so bili povzeti skupaj, vendar pa lahko izračunate tudi naprednej&scaron;o statistiko.
+    </p>
+    <p>Na primer, predpostavimo, da imate točkovne geoobjekte lokacij trgovin s poljem, ki predstavlja  <i>DISTRICT_MANAGER_NAME</i>, želite pa povzeti prodajo kave po vodji. Lahko navedete polje <i>DISTRICT_MANAGER_NAME</i> kot polje za razgraditev, povzete pa bodo vse vrstice podatkov, ki predstavljajo posamezne vodje. To pomeni, da bodo vse lokacije trgovin, ki jih vodi <pre>Manager1</pre>, povzete v eno vrstico z izračunano statistiko povzetka. V tem primeru bodo izračunane statistike, kot sta &scaron;tetje &scaron;tevila trgovin in vsota <i>TOTAL_SALES</i> za vse trgovine, ki jih upravlja <pre>Manager1</pre>, prav tako bodo izračunane, za katerega koli drugega vodjo, navedenega v polju <i>DISTRICT_MANAGER_NAME</i>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi vnos za povzemanje</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj, ki vsebuje polja, ki bodo povzeta.  
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Izberite, kako boste povzeli svoje podatke</h2></div>
+        <hr/>
+        <div>
+            <p>Svoje podatke lahko povzamete na dva načina:
+                <ul>
+                    <li> <b>Vsi geoobjekti v enojen geoobjekt</b> &ndash; izračuna statistiko za vse geoobjekte.
+                    </li>
+                    <li> <b>Po poljih</b> &ndash; skupini geoobjekte po podobnih vrednostih v določenih poljih.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Na primer, predpostavimo, da imate sklop podatkov o drevesih, ki vključuje polje  <i>treetype</i> z vrednostmi <code>javor</code>, <code>jelka</code> in <code>bor</code> ter polje <i>treeheight</i>, vas pa zanima srednja vrednost za <i>treeheight</i>. Če povzamete vse geoobjekte v enojen geoobjekt, boste dobili srednjo vrednost vi&scaron;ine drevesa za vsa drevesa, kar bo dalo rezultat ene srednje vrednosti. Če ste povzemali po polju <i>treeheight</i>, boste dobili srednjo vrednost za javorje, srednjo vrednost za jelke in srednjo vrednost za bore.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Dodaj statistiko (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p> Statistiko lahko izračunate na povzetih geoobjektih.Na &scaron;tevilskih poljih lahko izračunate naslednje:
+                <ul>
+                    <li>&Scaron;tetje &ndash; Izračuna &scaron;tevilo nepraznih vrednosti. Uporabljeno je lahko za  &scaron;tevilska ali besedilna polja. &Scaron;tetje za [null, 0, 2] je 2.
+                    </li>
+                    <li>Vsota &ndash; vsota &scaron;tevilskih vrednosti v polju. Vsota [null, null, 3] je 3.
+                    </li>
+                    <li>Srednja vrednost &ndash; srednja vrednost &scaron;tevilčnih vrednosti. Srednja vrednost za [0, 2, null] je 1.
+                    </li>
+                    <li>Minimum &ndash; minimalna vrednost &scaron;tevilskega polja. Minimum za [0, 2, null] je 0. 
+                    </li>
+                    <li>Maksimum &ndash; maksimalna vrednost &scaron;tevilskega polja. Maksimalna vrednost za [0, 2, null] je 2.
+                    </li>
+                    <li>Razpon &ndash; razpon &scaron;tevilskega polja. Izračuna se tako, da se minimalne vrednosti od&scaron;tejejo od maksimalne vrednosti. Razpon za [0, null, 1] je 1. Razpon za [null, 4] je 0.
+                    </li>
+                    <li>Varianca &ndash; varianca &scaron;tevilskega polja v sledi. Varianca za [1] je brez vrednosti. Varianca za [null, 1,0,1,1] je 0,25.
+                    </li>
+                    <li>Standardni odklon &ndash; standardni odklon &scaron;tevilskega polja. Standardni odklon za [1] je brez vrednosti. Standardni odklon [brez vrednosti, 1,0,1,1] je 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Na &scaron;tevilskih polji lahko izračunate naslednje:
+                <ul>
+                    <li>&Scaron;tetje &ndash; &scaron;tevilo nizov, ki imajo neničelno vrednost.
+                    </li>
+                    <li>Kateri koli &ndash; ta statistika je naključni vzorec besedilne vrednosti v navedenem polju.
+                    </li>
+                </ul>
+                Vsa statistika bo izračunana na neničelnih vrednostih. Sloj z rezultati bo vseboval nova polja za vsako izračunano statistiko. Z izbiro atributov in statistik je mogoče dodati katerokoli statistiko. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Izberite shrambo podatkov</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultati GeoAnalytics so shranjeni v shrambo podatkov in prikazani kot geoobjektni sloj v  Portal for ArcGIS. V večini primerov je treba rezultate shraniti v prostorsko-časovno shrambo podatkov, kar je privzeto. V nekaterih primerih je dobra možnost hramba podatkov v relacijskih shrambi podatkov. V nadaljevanju so navedeni razlogi, zakaj bi morda želeli shraniti rezultate v relacijsko shrambo podatkov: 
+                <ul>
+                    <li>Rezultate lahko uporabite za sodelovanjeprekportala.
+                    </li>
+                    <li>Pri rezultatih lahkoomogočite možnosti sinhronizacije.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen. Če zapisujete v ArcGIS Data Store, bodo va&scaron;i rezultati shranjeni v  <b>Moji vsebini</b> in dodani na karto. Če zapisujete v delitev datotek velikih podatkov, bodo va&scaron;i rezultati shranjeni v delitev datotek velikih podatkov in dodani v njen manifest. Ne bodo dodani v skupino. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, orodje ne bo uspe&scaron;no.
+            </p>
+            <p>Ko zapisujete v  ArcGIS Data Store (relacijsko ali prostorsko-časovno shrambo velikih podatkov) s pomočjo spustnega menija  <b>Shrani rezultat v</b>, lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

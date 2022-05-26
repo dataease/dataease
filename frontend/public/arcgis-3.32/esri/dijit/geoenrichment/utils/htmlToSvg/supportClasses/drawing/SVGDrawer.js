@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/utils/htmlToSvg/supportClasses/drawing/SVGDrawer",["./_TextDrawer","./_ImageDrawer","./_RectDrawer","./_SVGDrawer"],function(f,d,e,g){return{drawRect:function(a,b){return e.drawRect(a,b)},drawBorder:function(a,b){return e.drawBorder(a,b)},drawText:function(a,b,c,d){return f.drawText(a,b,c,d)},drawSVG:function(a,b,c){return g.drawSVG(a,b,c)},drawBackgroundImage:function(a,b){return d.drawBackgroundImage(a,b)},drawImage:function(a,b,c){return d.drawImage(a,b,c)}}});

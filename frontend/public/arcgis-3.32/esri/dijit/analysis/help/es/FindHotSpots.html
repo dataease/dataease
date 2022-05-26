@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Buscar puntos calientes</h2><p/>
+        <h2><img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" alt="Buscar puntos calientes"></h2>
+        <hr/>
+    <p> La herramienta Buscar puntos calientes determinar&aacute; si hay alg&uacute;n clustering estad&iacute;sticamente significativo en el patr&oacute;n espacial de tus datos.
+        <ul>
+            <li>&iquest;Est&aacute;n realmente agrupados sus puntos (incidentes criminales, &aacute;rboles, accidentes de tr&aacute;fico)? &iquest;C&oacute;mo puede estar seguro?
+            </li>
+            <li>&iquest;Ha descubierto de verdad un punto caliente estad&iacute;sticamente significativo (para el gasto, la mortalidad infantil, notas de examen sistem&aacute;ticamente altas) o contar&iacute;a su mapa una historia diferente si cambiara sus s&iacute;mbolos?
+            </li>
+        </ul>
+        La herramienta Buscar puntos calientes le ayudar&aacute; a responder a estas preguntas con confianza.
+    </p>
+    <p>Incluso los patrones espaciales aleatorios presentan cierto grado de clustering. Adem&aacute;s, nuestros ojos y nuestros cerebros intentan, de forma natural, encontrar patrones aunque no exista ninguno. En consecuencia, puede ser dif&iacute;cil saber si los patrones de los datos son el resultado de procesos espaciales reales en acci&oacute;n o de una simple casualidad aleatoria. Esta es la raz&oacute;n por la que los investigadores y analistas utilizan m&eacute;todos estad&iacute;sticos como Buscar puntos calientes (Getis-Ord Gi*) para cuantificar los patrones espaciales. Cuando encuentras un clustering estad&iacute;sticamente significativo en tus datos, dispones de una informaci&oacute;n valiosa. Saber d&oacute;nde y cu&aacute;ndo se produce el clustering puede proporcionar pistas importantes sobre los procesos que producen los patrones que se est&aacute;n viendo. Saber que los robos residenciales, por ejemplo, son por sistema m&aacute;s frecuentes en ciertas vecindades, es una informaci&oacute;n vital si se tienen que dise&ntilde;ar estrategias de prevenci&oacute;n eficaces, asignar recursos policiales limitados, iniciar programas de vigilancia vecinal, autorizar investigaciones criminales en profundidad o identificar sospechosos potenciales.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Elegir la capa cuyos puntos calientes se van a calcular</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de puntos o de &aacute;reas donde se buscar&aacute;n cuyos puntos calientes y fr&iacute;os se van a encontrar. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Buscar clusters de concentraciones altas y bajas de puntos</h2></div>
+        <hr/>
+        <div>
+            <p>Este an&aacute;lisis responde a la pregunta: &iquest;D&oacute;nde se agrupan espacialmente los valores altos y bajos?
+            </p>
+            <p>Si tus datos son puntos y eliges  <b>Recuento de puntos</b>, esta herramienta evaluar&aacute; la distribuci&oacute;n espacial de las entidades de puntos para responder a la pregunta: &iquest;D&oacute;nde se agrupan o se dispersan inesperadamente los puntos?
+            </p>
+            <p>Si eliges un campo, esta herramienta evaluar&aacute; la distribuci&oacute;n espacial de los valores asociados con cada entidad para responder a la pregunta: &iquest;D&oacute;nde se agrupan los valores altos y bajos?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Recuentos de puntos</h2></div>
+        <hr/>
+        <div>
+            <p>El ajuste predeterminado es contar puntos dentro de una malla creada por la herramienta a partir de los datos de puntos. Si lo prefiere, puede optar por contar los puntos que hay en una cuadr&iacute;cula hexagonal o proporcionar una capa de &aacute;reas (normalmente se reflejar&aacute;n los distritos de informes administrativos, tales como distritos censales, l&iacute;mites municipales o condados) para responder a la pregunta: Dado el n&uacute;mero de puntos contados dentro de cada entidad de &aacute;rea, &iquest;existen ubicaciones con clustering espacial estad&iacute;sticamente significativo de recuentos de puntos altos o bajos?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Definir ubicación posible de puntos</h2></div>
+        <hr/>
+        <div>
+            <p>Dibuje o proporcione una capa que defina d&oacute;nde se pueden dar los incidentes para responder a la pregunta: Dentro de las &aacute;reas, &iquest;hay alguna ubicaci&oacute;n con concentraciones de puntos inesperadamente altas o bajas?   
+            </p>
+            <p>Las entidades de &aacute;rea que se dibujan o las entidades de la capa de &aacute;rea especificada deben definir d&oacute;nde se pueden encontrar los puntos.
+ Para dibujar estas &aacute;reas, haga clic en el bot&oacute;n  <b>Dibujar</b> y, a continuaci&oacute;n, haga clic en una ubicaci&oacute;n del mapa para crear la forma de un &aacute;rea.  Para dibujar otras &aacute;reas, haga clic de nuevo en el bot&oacute;n Dibujar y, a continuaci&oacute;n, haga clic en una ubicaci&oacute;n del mapa y contin&uacute;e.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Dividido por</h2></div>
+        <hr/>
+        <div>
+            <p>En ocasiones, se desea analizar patrones que tienen en cuenta las distribuciones subyacentes. Por ejemplo, si los puntos representan cr&iacute;menes, al dividir por la poblaci&oacute;n total se obtendr&aacute; un an&aacute;lisis de los cr&iacute;menes per c&aacute;pita y no un recuento de cr&iacute;menes.  La elecci&oacute;n de un atributo para dividir por &eacute;l se denomina en muchos casosa menudo normalizaci&oacute;n.
+            </p>
+            <p>Al elegir  <i>Esri Population</i>, se enriquecer&aacute; cada entidad de &aacute;rea con valores de poblaci&oacute;n que despu&eacute;s se usar&aacute;n como atributo por el que se va a dividir.  Esta opci&oacute;n usar&aacute; cr&eacute;ditos.
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Opciones de invalidación</h2></div>
+        <hr/>
+        <div>
+            <p> La herramienta buscar&aacute; la configuraci&oacute;n &oacute;ptima para las opciones predeterminadas <b>Tama&ntilde;o de celda</b> y <b>Banda de distancia</b> seg&uacute;n las caracter&iacute;sticas de los datos. No obstante, si tiene un determinado <b>Tama&ntilde;o de celda</b> o <b>Banda de distancia</b> que tiene sentido para su an&aacute;lisis, se pueden utilizar las <b>Opciones de invalidaci&oacute;n</b> para definir esos valores.
+            </p>
+            <p>Las  <b>Opciones de invalidaci&oacute;n</b> tambi&eacute;n son &uacute;tiles para ejecutar an&aacute;lisis en distintos datasets, porque le permiten mantener la <b>Banda de distancia</b> y el <b>Tama&ntilde;o de celda</b> coherentes en varios datasets.  Despu&eacute;s podr&aacute; comparar apropiadamente los resultados, por ejemplo, los &iacute;ndices de obesidad y diabetes o incluso las tasas delictivas de dos a&ntilde;os diferentes.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Tamaño de Celda</h2></div>
+        <hr/>
+        <div>
+            <p>El tama&ntilde;o de las celdas de cuadr&iacute;cula utilizado para contar los puntos dentro.  
+            </p>
+            <p>Cuando se utiliza una cuadr&iacute;cula hexagonal para contar los puntos dentro, se utiliza la distancia como altura de los hex&aacute;gonos.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Banda de distancia</h2></div>
+        <hr/>
+        <div>
+            <p>Cada entidad se analiza dentro del contexto de las entidades vecinas ubicadas dentro de la distancia especificada.  La herramienta calcular&aacute; una distancia predeterminada o puede utilizar esta opci&oacute;n para definir una distancia concreta que tenga sentido para su an&aacute;lisis. 
+            </p>
+            <p>Por ejemplo, si est&aacute; estudiando patrones de desplazamientos al trabajo y sabe que la distancia media al trabajo es de 15 millas, quiz&aacute;s desee utilizar una banda de distancia de 15 millas para el an&aacute;lisis.
+            </p>
+        </div>
+    </div>
+    <div id="hotSpotsResultLayer">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Proporciona un nombre para la capa que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa.  
+Esta capa de resultados te mostrar&aacute; los clusters estad&iacute;sticamente significativos de valores o recuentos de puntos altos y bajos.
+ Si el nombre de la capa de resultados ya existe, se le pedir&aacute; que le cambie el nombre.
+            </p>
+            <p>En el cuadro desplegable  <b>Guardar el resultado en</b>, puedes especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

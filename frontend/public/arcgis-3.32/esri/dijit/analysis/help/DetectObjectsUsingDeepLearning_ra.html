@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Detect Objects Using Deep Learning</h2><p/>
+        <h2><img src="./images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="Detect Objects Using Deep Learning"></h2>
+        <hr/>
+    <p>This tool runs a trained deep learning model on an input raster to produce a feature class containing the objects it finds. The features can be bounding boxes or polygons around the objects found, or points at the centers of the objects.
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the raster area that is visible within the current map extent will be analyzed. If unchecked, the whole raster will be analyzed, even if it is outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Choose image used to detect objects</h2></div>
+        <hr/>
+        <div>
+            <p>The input image used to detect objects.
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Choose deep learning model used to detect objects</h2></div>
+        <hr/>
+        <div>
+            <p>The input deep learning package ( <code>.dlpk</code>) item.
+            </p>
+            <p>The deep learning package is composed of the Esri model definition JSON file ( <code>.emd</code>), the deep learning binary model file, and optionally, the Python raster function to be used.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Specify deep learning model arguments</h2></div>
+        <hr/>
+        <div>
+            <p>The function arguments are defined in the Python raster function class referenced by the input model. This is where you list additional deep learning parameters and arguments for experiments and refinement, such as a confidence threshold for adjusting the sensitivity.
+            </p>
+            <p>The names of the arguments are populated by the tool from reading the Python module on the raster analysis server.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>Remove duplicate features from the output (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Performs non-maximum suppression, where duplicate objects are identified and the duplicate feature with a lower confidence value is removed.
+
+                <ul>
+                    <li>Unchecked&mdash;All objects that are detected will be in the output feature class. This is the default.
+                        
+
+                    </li>
+                    <li>Checked&mdash;Removes duplicate objects that are detected.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>Confidence score field</h2></div>
+        <hr/>
+        <div>
+            <p>The field in the feature service that contains the confidence scores as output by the object detection method.
+            </p>
+            <p>This parameter is required when you check the  <b>Non Maximum Suppression</b> parameter.
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>Class value field</h2></div>
+        <hr/>
+        <div>
+            <p>The class value field in the output feature service. If not specified, the tool will use the standard class value fields  <i>Classvalue</i> and <i>Value</i>. If these fields do not exist, all features will be treated as the same object class.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>Maximum overlap ratio</h2></div>
+        <hr/>
+        <div>
+            <p>The maximum overlap ratio for two overlapping features, which is defined as the ratio of intersection area over union area. The default is 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map. The default name is based on the tool name and the input layer name. If the layer already exists, you will be prompted to provide another name.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

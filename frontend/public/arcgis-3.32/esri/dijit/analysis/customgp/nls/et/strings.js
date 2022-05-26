@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/customgp/nls/et/strings",{_widgetLabel:"Geot\u00f6\u00f6tlus",_featureAction_ReceiveFeatureSet:"M\u00e4\u00e4ra j\u00e4rgmise sisendina ",requiredInfo:"on n\u00f5utav.",drawnOnMap:"Tulemus joonistatakse kaardile.",noToolConfig:"Eelkonfigureeritud geot\u00f6\u00f6tluse toimingud ei ole saadaval.",useUrlForGPInput:"universaalne ressursiidentifikaator, URL",useUploadForGPInput:"Faili \u00fcleslaadimine",useImageServiceLayer:"Pilditeenuse kiht",useBrowseLayerPortal:"Sirvi / vali portaalist",
+selectFileToUpload:"Vali fail...",rasterFormat:"Rasterandmete formaat",noFileSelected:"\u00dchtegi faili pole valitud!",uploadSuccess:"Faili \u00fcleslaadimine oli edukas!",showLayerContent:"Kuva kihi sisu",invalidUrl:"Kehtetu objektiteenuse URL",urlPlaceholder:"objektikomplekti URL",addShapefile:"Lisa Shape-fail",generateShapefileError:"Genereerige Shape-faili viga, kontrollige: ",cleared:"Tulemus on kustutatud.",enlargeView:"Suurenda vaadet",exportOutput:"Ekspordi",emptyResult:"Tulemus on t\u00fchi.",
+useSelectedFeatureset:"Kasutage tulemusena saadud objekti (objekte).",closeSelectedFeatureset:"Kustutage ja kasutage konfigureeritud sisendivalikut."});

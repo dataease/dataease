@@ -1,0 +1,61 @@
+<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="row: 0" class="Wizard_TopPane">
+    <div class="DataBrowser_Title">${nls.mainTitle}</div>
+    <table class="InfographicsMainPage_CountryAndTheme">
+        <tr>
+            <td>
+                <div class="configureInfographicsStep configureInfographicsStepOne"></div>
+            </td>
+            <td class="Wizard_AlignRight">${nls.chooseCountry}</td>
+            <td>
+                <select data-dojo-type="dijit/form/Select"
+                        data-dojo-attach-point="countrySelect"
+                        data-dojo-props="maxHeight: 151"
+                        data-dojo-attach-event="onChange: _onCountryChanged"></select>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" class="Wizard_AlignRight">${nls.chooseTheme}</td>
+            <td>
+                <select data-dojo-attach-point="themeSelect" data-dojo-type="dijit/form/Select" data-dojo-attach-event="onChange: _onThemeChange">
+                    <option value="common">${nls.dark}</option>
+                    <option value="light">${nls.light}</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-top: 6px;">
+                <div class="configureInfographicsStep configureInfographicsStepTwo"></div>
+            </td>
+            <td colspan="2">
+                <div class="InfographicsMainPage_ChooseDataCollection">${nls.chooseDataCollection}</div>
+            </td>
+        </tr>
+    </table>
+</div>
+<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="row: 1" class="InfographicsMainPage_VarListsPane">
+    <div data-dojo-attach-point="varListNode"></div>
+    <div data-dojo-attach-point="progressDiv" class="Wizard_Progress"></div>
+</div>
+<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="row: 2" class="Wizard_BottomPane">
+    <span data-dojo-attach-point="addMoreNode" class="InfographicsMainPage_AddVariables Wizard_Link" data-dojo-attach-event="click: _onAddVariables" style="display: none;">${nls.addVariables}</span>
+
+    <table class="InfographicsMainPage_Step3">
+        <tr>
+            <td style="vertical-align: top; padding: 10px 0 0 0;">
+                <div class="configureInfographicsStep configureInfographicsStepThree"></div>
+            </td>
+            <td style="padding: 0;">
+                <div data-dojo-type="esri/dijit/geoenrichment/BufferOptions"
+                     data-dojo-attach-point="bufferOptions"
+                     data-dojo-attach-event="onChange: _onBufferChange"
+                     class="InfographicsMainPage_BufferOptions">
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <div class="Wizard_Buttons">
+        <button class="Wizard_Button" data-dojo-attach-point="okButton" data-dojo-attach-event="click: _onOK" disabled="disabled">${nls.ok}</button>
+        <button class="Wizard_Button" data-dojo-attach-event="click: _onCancel">${nls.cancel}</button>
+    </div>
+</div>

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/vi/ClipLayer",{inputLayerLabel:"Ch\u1ecdn \u0111\u1ed1i t\u01b0\u1ee3ng \u0111\u1ec3 c\u1eaft",filterSelectLabel:"C\u1eaft t\u1ea5t c\u1ea3 \u0111\u1ed1i t\u01b0\u1ee3ng ho\u1eb7c x\u00e1c \u0111\u1ecbnh m\u1ed9t t\u1eadp h\u1ee3p con (t\u00f9y ch\u1ecdn)",targetArea:"Ch\u1ecdn v\u00f9ng \u0111\u1ec3 c\u1eaft",outputLayerName:"C\u1eaft ${inputLayerName} th\u00e0nh ${clipLayerName}",itemDescription:"L\u1edbp \u0111\u1ed1i t\u01b0\u1ee3ng \u0111\u01b0\u1ee3c t\u1ea1o ra t\u1eeb vi\u1ec7c ch\u1ea1y gi\u1ea3i ph\u00e1p C\u1eaft. \u0110\u1ed1i t\u01b0\u1ee3ng t\u1eeb ${inputLayerName} \u0111\u01b0\u1ee3c c\u1eaft th\u00e0nh ${clipLayerName}.",
+itemTags:"K\u1ebft qu\u1ea3 ph\u00e2n t\u00edch, ClipLayer, ${inputLayerName}, ${clipLayerName}, ${outputLayerGeometry}",itemSnippet:"L\u1edbp \u0111\u1ed1i t\u01b0\u1ee3ng \u0111\u01b0\u1ee3c t\u1ea1o ra t\u1eeb Clip Layer"});

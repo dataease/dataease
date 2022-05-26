@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Reconstruir Trilhos</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="Reconstruir Trilhos"></h2>
+        <hr/>
+    <p> Esta ferramenta funciona com uma camada com componente temporal ativa, quer de elementos de ponto ou &aacute;rea, que representam um <code>instante</code> no tempo.   Primeiro, determina que elementos pertencem a um trilho utilizando um identificador. Utilizando o tempo em cada localiza&ccedil;&atilde;o, os trilhos s&atilde;o ordenados sequencialmente e transformados numa linha ou &aacute;rea representando o percurso do movimento ao longo do tempo. Opcionalmente, a entrada pode ser colocada em mem&oacute;ria interm&eacute;dia por um campo, o que criar&aacute; uma &aacute;rea em cada local. Estes pontos ou &aacute;reas de entrada colocados em mem&oacute;ria interm&eacute;dia, s&atilde;o, ent&atilde;o, ligados sequencialmente para criar um trilho como uma &aacute;rea em que a largura &eacute; representativa do atributo de interesse. Os trilhos resultantes t&ecirc;m uma hora de in&iacute;cio e de fim, que representam, em termos temporais, o primeiro e o &uacute;ltimo elemento num dado trilho. Quando os trilhos s&atilde;o criados, s&atilde;o calculadas estat&iacute;sticas sobre os elementos de entrada, e atribu&iacute;das ao trilho de sa&iacute;da. A estat&iacute;stica mais b&aacute;sica &eacute; a contagem do n&uacute;mero de pontos dentro da &aacute;rea, mas tamb&eacute;m pode calcular outras estat&iacute;sticas.
+    </p>
+    <p>Os elementos, em camadas com componente temporal ativa, podem ser representados de duas formas:
+        <ul>
+            <li>Instante&mdash;um momento &uacute;nico no tempo
+            </li>
+            <li>Intervalo&mdash;Uma hora de in&iacute;cio e de fim
+            </li>
+        </ul>
+        
+    </p>
+    <p>Por exemplo, suponha que tem medi&ccedil;&otilde;es de GPS de furac&otilde;es a cada 10 minutos. Cada medi&ccedil;&atilde;o de GPS regista o nome e localiza&ccedil;&atilde;o do furac&atilde;o, hora da grava&ccedil;&atilde;o e a velocidade do vento. Com estas informa&ccedil;&otilde;es, poderia criar trilhos para cada furac&atilde;o, utilizando o nome para identifica&ccedil;&atilde;o de trilho, e seriam gerados trilhos para cada furac&atilde;o. Adicionalmente, poderia calcular estat&iacute;sticas, tais como a velocidade do vento m&eacute;dia, m&aacute;xima e m&iacute;nima de cada furac&atilde;o, bem como a contagem de medi&ccedil;&otilde;es inclu&iacute;das em cada trilho.
+    </p>
+    <p>Utilizando os mesmos exemplos, poderia aplicar buffer aos seus trilhos com base na velocidade do vento. Isto iria colocar em mem&oacute;ria interm&eacute;dia cada medi&ccedil;&atilde;o, com base no campo velocidade do vento nessa localiza&ccedil;&atilde;o, e juntar as &aacute;reas colocadas na mem&oacute;ria interm&eacute;dia, criando uma &aacute;rea representativa do percurso do trilho, bem como as altera&ccedil;&otilde;es &agrave; velocidade do vento, &agrave; medida que os furac&otilde;es progridem.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Selecionar elementos  a partir dos quais reconstruir trilhos</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de pontos ou &aacute;reas que ser&aacute; reconstru&iacute;da em trilhos. A camada de entrada tem de ter a componente temporal ativa com elementos que representam um momento no tempo. A camada tem de encontrar-se num sistema de coordenadas projetado ou a refer&ecirc;ncia espacial de processamento tem de ser definida para um sistema de coordenadas projetado que utilize os  <b>Ambientes de An&aacute;lise</b> no caso de ser aplicado um buffer.
+            </p>
+            <p>Para al&eacute;m de escolher uma camada do seu mapa, pode escolher  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista pendente para navegar at&eacute; aos seus conte&uacute;dos de um conjunto de dados de partilha de ficheiros de big data ou camada de elementos.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Selecionar um ou mais campos nos quais identificar trilhos</h2></div>
+        <hr/>
+        <div>
+            <p>Os campos que representam o identificador de trilhos. 
+            </p>
+            <p>Como exemplo, caso estivesse a reconstruir trilhos de furac&otilde;es, poderia utilizar os nomes dos furac&otilde;es como campo de trilho.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Selecionar método utilizado para reconstruir trilhos</h2></div>
+        <hr/>
+        <div>
+            <p>M&eacute;todo utilizado para ligar trilhos e aplicar buffer (se aplic&aacute;vel). O m&eacute;todo  <b>Planar</b> pode calcular os resultados mais rapidamente, mas n&atilde;o ir&aacute; associar os trilhos &agrave; linha de data internacional, ou considerar o verdadeiro formato da Terra, ao aplicar buffers. O m&eacute;todo <b>Geod&eacute;sico</b> ir&aacute; associar os trilhos &agrave; linha de data internacional, se necess&aacute;rio, e aplicar um buffer geod&eacute;sico para considerar o formato da Terra.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Criar uma expressão para criar buffer de elementos de entrada (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Equa&ccedil;&atilde;o utilizada para calcular a dist&acirc;ncia de buffer em torno de elementos de entrada. Esta equa&ccedil;&atilde;o pode ser gerada utilizando a calculadora de buffer e opera&ccedil;&otilde;es b&aacute;sicas, como adicionar, subtrair, multiplicar e dividir s&atilde;o suportadas. Os valores s&atilde;o calculados utilizando o sistema de coordenadas da an&aacute;lise. A camada tem de encontrar-se num sistema de coordenadas projetado ou a refer&ecirc;ncia espacial de processamento tem de ser definida para um sistema de coordenadas projetado que utilize os  <b>Ambientes de An&aacute;lise</b> no caso de ser aplicado um buffer.
+            </p>
+            <p>Uma equa&ccedil;&atilde;o como  <code>$feature.windspeed * 1000</code> aplicariaia um buffer de 1000 multiplicado pelo campo <i>windspeed</i>. Pode utilizar mais do que um campo na calculadora de buffer.
+            </p>
+            <p> Tamb&eacute;m pode especificar uma express&atilde;o com a fun&ccedil;&atilde;o de trilhos ativada. Por exemplo, pode calcular a soma do valor de campo <i>windspeed</i> para o atual elemento e os dois ateriores elementos com uma equa&ccedil;&atilde;o como <code>$track.field(windspeed).history(-3)</code>. Em cada local, a soma de <i>windspeed</i>atual, e as duas medi&ccedil;&otilde;es anteriores seria calculada e ser-lhe-ia aplicado um buffer.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Selecionar um tempo pelo qual dividir trilhos (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Hora utilizada para dividir trilhos. Se pontos ou &aacute;reas de entrada tiverem uma dura&ccedil;&atilde;o mais longa entre eles do que a divis&atilde;o de tempo, ent&atilde;o, ser&atilde;o separados para trilhos diferentes.
+            </p>
+            <p>Caso especifique uma divis&atilde;o temporal e uma divis&atilde;o de dist&acirc;ncia, os trilhos ser&atilde;o divididos quando uma ou ambas as condi&ccedil;&otilde;es forem correspondidas. 
+            </p>
+            <p>Imagine que tem elementos de ponto que representam voos de avi&otilde;es, em que o campo do trilho &eacute; a ID do avi&atilde;o. Este avi&atilde;o poderia efetuar v&aacute;rias viagens e seria representado como um trilho.  Caso soubesse que existe uma pausa de de 1 hora entre os voos, poderia utilizar  <code>1 hora</code> como a sua divis&atilde;o de trilhos, e cada voo seria atribu&iacute;do ao seu respetivo trilho.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Divisão de Trilhos (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>&Eacute; poss&iacute;vel dividir os trilhos utilizando tr&ecirc;s m&eacute;todos diferentes. Pode usar-se uma combina&ccedil;&atilde;o de nenhum, todos ou alguns m&eacute;todos de divis&atilde;o. 
+            </p>
+            <p>As divis&otilde;es podem ser criadas das seguintes maneiras:
+                <ul>
+                    <li> <b>Baseado na dist&acirc;ncia entre entradas</b> &ndash; Se existir uma dist&acirc;ncia maior entre pontos ou &aacute;reas de entrada do que a dist&acirc;ncia especificada, ent&atilde;o, estes ser&atilde;o divididos em trilhos diferentes. Por exemplo, se especificou uma dist&acirc;ncia de 10 quil&oacute;metros, pontos sequenciais maiores do que 10 quil&oacute;metros estariam em trilhos separados.
+                    </li>
+                    <li> <b>Baseado no tempo entre entradas</b> - Se pontos ou &aacute;reas de entrada tiverem uma dura&ccedil;&atilde;o mais elevada entre eles do que a separa&ccedil;&atilde;o temporal, ent&atilde;o, ser&atilde;o separados para trilhos diferentes. Por exemplo, se tiver elementos de ponto que representem voos de avi&otilde;es, em que o campo do trilho &eacute; o ID do avi&atilde;o. Este avi&atilde;o poderia efetuar v&aacute;rias viagens e seria representado como um trilho.  Caso soubesse que existe uma pausa de de 1 hora entre os voos, poderia utilizar <code>1 hora</code> como a sua divis&atilde;o de trilhos, e cada voo seria atribu&iacute;do ao seu respetivo trilho.
+                    </li>
+                    <li> <b>Em tempos de intervalo definidos</b>&ndash; Separa&ccedil;&atilde;o utilizando intervalos regulares, especificados por um intervalo de tempo e um tempo de refer&ecirc;ncia. Se n&atilde;o especificar um momento de refer&ecirc;ncia, ser&aacute; utilizado 1 de janeiro de 1970. Por exemplo, se especificou 1 ano com um momento de refer&ecirc;ncia de 2 de fevereiro de 1990 &agrave;s 10:00, ent&atilde;o dividir&aacute; trilhos em 2 de fevereiro de 1990 &agrave;s 10:00, 2 de fevereiro de 1991 &agrave;s 10:00 e continuar&aacute; em intervalos anuais.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Se especificar m&uacute;ltiplas op&ccedil;&otilde;es de separa&ccedil;&atilde;o, os trilhos ser&atilde;o divididos quando uma ou mais condi&ccedil;&otilde;es forem satisfeitas. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Selecionar uma distância pela qual dividir trilhos (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Utilizar a dist&acirc;ncia para dividir trilhos. Se existir uma dist&acirc;ncia maior entre pontos ou &aacute;reas de entrada do que a separa&ccedil;&atilde;o da dist&acirc;ncia, ent&atilde;o, estes ser&atilde;o divididos para trilhos diferentes.
+            </p>
+            <p>Caso especifique uma divis&atilde;o temporal e uma divis&atilde;o de dist&acirc;ncia, os trilhos ser&atilde;o divididos quando uma ou ambas as condi&ccedil;&otilde;es forem correspondidas. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Adicionar estatísticas (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p> Pode calcular estat&iacute;sticas em elementos que se encontram resumidos. Pode calcular os seguintes em campos num&eacute;ricos:
+                <ul>
+                    <li>Contagem&mdash;Calcula o n&uacute;mero de valores n&atilde;o-nulos. Pode ser utilizado em campos num&eacute;ricos ou em strings. A contagem de [null, 0, 2] &eacute; 2.
+                    </li>
+                    <li>Soma&mdash;A soma dos valores num&eacute;ricos num campo. A soma de [null, null, 3] &eacute; 3.
+                    </li>
+                    <li>M&eacute;dia&mdash;A m&eacute;dia de valores num&eacute;ricos. A m&eacute;dia de [0, 2, null] &eacute; 1.
+                    </li>
+                    <li>M&iacute;n&mdash;o valor m&iacute;nimo de um campo num&eacute;rico. O m&iacute;nimo de [0, 2, null] &eacute; 0. 
+                    </li>
+                    <li>M&aacute;x&mdash;o valor m&aacute;ximo de um campo num&eacute;rico. O valor m&aacute;ximo de [0, 2, null] &eacute; 2.
+                    </li>
+                    <li>Intervalo&mdash;o intervalo de um campo num&eacute;rico. Este &eacute; calculado subtraindo os valores m&iacute;nimos ao valor m&aacute;ximo. O intervalo de [0, null, 1] &eacute; 1. O intervalo de [null, 4] &eacute; 0.
+                    </li>
+                    <li>Vari&acirc;ncia&mdash;a vari&acirc;ncia de um campo num&eacute;rico num trilho. A vari&acirc;ncia de [1] &eacute; null. A vari&acirc;ncia de [null, 1,0,1] &eacute; 0.25.
+                    </li>
+                    <li>Desvio padr&atilde;o&mdash;O desvio padr&atilde;o de um campo num&eacute;rico. O desvio padr&atilde;o de [1] &eacute; null. O desvio padr&atilde;o de [null, 1,0,1,1] &eacute; 0.5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Pode calcular os seguintes em campos de string:
+                <ul>
+                    <li>Contagem&mdash;O n&uacute;mero de strings n&atilde;o-nulas.
+                    </li>
+                    <li>Qualquer&mdash;Esta estat&iacute;stica &eacute; uma amostra aleat&oacute;ria de um valor de string no campo especificado.
+                    </li>
+                </ul>
+                Todas as estat&iacute;sticas s&atilde;o calculadas em campos que n&atilde;o s&atilde;o nulos. A camada resultante ir&aacute; conter um novo campo por cada estat&iacute;stica calculada. &Eacute; poss&iacute;vel adicionar qualquer n&uacute;mero de estat&iacute;sticas, selecionando um atributo e uma estat&iacute;stica. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Selecionar um ArcGIS Data Store no qual guardar os resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Os resultados de GeoAnalytics s&atilde;o guardados num armazenamento de dados e expostos como uma camada de elementos em   Portal for ArcGIS. Na maioria dos casos, os resultados dever&atilde;o ser armazenados num armazenamento de dados espaciotemporal, sendo este o comportamento predefinido. Em alguns casos, ser&aacute; uma boa op&ccedil;&atilde;o guardar os resultados no armazenamento de dados relacional. As seguintes s&atilde;o raz&otilde;es que justificam o armazenamento de resultados no armazenamento de dados relacional. 
+                <ul>
+                    <li>Pode utilizar resultados em colabora&ccedil;&atilde;o portal-to-portal.
+                    </li>
+                    <li>Pode ativar funcionalidades de sincroniza&ccedil;&atilde;o com os seus resultados
+                    </li>
+                </ul>
+                
+            </p>
+            <p>N&atilde;o dever&aacute; utilizar o armazenamento de dados relacional caso antecipe um aumento dos seus resultados de GeoAnalytics e necessite de tirar partido das funcionalidades de armazenamento de big data espaciotemporais para gerir grandes quantidades de dados.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se estiver a escrever para ArcGIS Data Store, os seus resultados ser&atilde;o gravados em  <b>O Meu Conte&uacute;do</b> e adicionados ao mapa. Se estiver a escrever para uma partilha de ficheiros big data, os seus resultados ser&atilde;o guardados numa partilha de ficheiros big data e adicionados ao seu manifesto. N&atilde;o ser&atilde;o adicionados ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Caso a camada j&aacute; existe, a ferramenta ir&aacute; falhar.
+            </p>
+            <p>Ao escrever para   ArcGIS Data Store  (armazenamento relacional ou espaciotemporal de dados big data) utilizando a caixa suspensa  <b>Guardar resultado em</b> pode especificar o nome de uma pasta em <b>O Meu Conte&uacute;do</b>, onde ser&aacute; armazenado o resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

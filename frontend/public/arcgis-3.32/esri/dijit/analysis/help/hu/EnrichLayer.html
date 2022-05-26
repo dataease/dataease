@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rétegbővítés</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="R&eacute;tegbőv&iacute;t&eacute;s"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z az adatok hely&eacute;t k&ouml;r&uuml;lvevő emberekre, helyekre &eacute;s &uuml;zleti v&aacute;llalkoz&aacute;sokra vonatkoz&oacute; t&eacute;nyekkel bőv&iacute;ti az adatokat, &eacute;s seg&iacute;ts&eacute;g&eacute;vel megv&aacute;laszolhat a helyekre vonatkoz&oacute; &uacute;j k&eacute;rd&eacute;seket, amelyek puszt&aacute;n t&eacute;rk&eacute;pek seg&iacute;ts&eacute;g&eacute;vel nem v&aacute;laszolhat&oacute;k meg. P&eacute;ld&aacute;ul: milyenek az itt &eacute;lő emberek? Mivel foglalkoznak sz&iacute;vesen az emberek ezen a ter&uuml;leten? Milyen szok&aacute;sok &eacute;s &eacute;letst&iacute;lusok jellemzők r&aacute;juk? Milyen &uuml;zleti v&aacute;llalkoz&aacute;sok tal&aacute;lhat&oacute;k a ter&uuml;leten?
+    </p>
+    <p>Az eredm&eacute;ny egy &uacute;j r&eacute;teg lesz, amely tartalmazza az adott adatgyűjtem&eacute;nyekből sz&aacute;rmaz&oacute; &ouml;sszes demogr&aacute;fiai &eacute;s f&ouml;ldrajzi inform&aacute;ci&oacute;t.  Az &uacute;j inform&aacute;ci&oacute; mezők&eacute;nt ad&oacute;dik hozz&aacute; a t&aacute;bl&aacute;zathoz.
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;s haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel a program csak a bemenő r&eacute;tegnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen l&aacute;that&oacute; vektoros elemeit bőv&iacute;ti.  Ha nincs bejel&ouml;lve, akkor a bemenő r&eacute;teg &ouml;sszes vektoros elem&eacute;t bőv&iacute;ti, akkor is, ha azok k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Új adatokkal bővíteni kívánt réteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>A pont, vonal, vagy ter&uuml;let r&eacute;teg, amely &uacute;j attrib&uacute;tumadatokkal bőv&uuml;l. 
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Bővítési változók</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Kattintson a  <b>V&aacute;ltoz&oacute;k kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;gre az <b>Adatb&ouml;ng&eacute;sző</b> megnyit&aacute;s&aacute;hoz.  Az <b>Adatb&ouml;ng&eacute;sző</b> seg&iacute;t egyes&eacute;vel vagy gyűjtem&eacute;nyenk&eacute;nt megkeresni &eacute;s kiv&aacute;lasztani a bőv&iacute;t&eacute;si v&aacute;ltoz&oacute;kat.
+            </p>
+            <p>Az eszk&ouml;z a r&eacute;gi&oacute;t mag&aacute;t&oacute;l kiv&aacute;lasztja az &Ouml;n adatai alapj&aacute;n. T&ouml;bb orsz&aacute;got lefedő adatok eset&eacute;n kiv&aacute;laszthat egy elt&eacute;rő r&eacute;gi&oacute;t. 
+            </p>
+            <p>A bőv&iacute;t&eacute;si v&aacute;ltoz&oacute;k adatgyűjtem&eacute;nyekbe vannak szervezve a k&ouml;nnyű el&eacute;rhetős&eacute;g &eacute;rdek&eacute;ben.   Adatgyűjtem&eacute;ny kiv&aacute;laszt&aacute;sakor a b&ouml;ng&eacute;sző megjelen&iacute;ti a gyűjtem&eacute;ny bőv&iacute;t&eacute;si v&aacute;ltoz&oacute;i k&ouml;z&uuml;l a n&eacute;h&aacute;ny legn&eacute;pszerűbbet.  A  <b>B&ouml;ng&eacute;sz&eacute;s folytat&aacute;sa</b> alatt a gyűjtem&eacute;ny kateg&oacute;ri&aacute;i is megjelennek. Az egyes kiv&aacute;lasztott kateg&oacute;ri&aacute;kon bel&uuml;l kiv&aacute;laszthat teljes alkateg&oacute;ri&aacute;kat, vagy r&eacute;szletes keres&eacute;st folytathat az alkateg&oacute;ri&aacute;n bel&uuml;l, &eacute;s kiv&aacute;laszthat egyedi bőv&iacute;t&eacute;si v&aacute;ltoz&oacute;kat. A keresőmező seg&iacute;ts&eacute;g&eacute;vel r&aacute;kereshet egy konkr&eacute;t v&aacute;ltoz&oacute;ra egy kateg&oacute;ri&aacute;n bel&uuml;l.
+            </p>
+            <p>A bőv&iacute;t&eacute;sbe bevonni k&iacute;v&aacute;nt v&aacute;ltoz&oacute;k a kiv&aacute;laszt&aacute;s ut&aacute;n az  <b>Adatb&ouml;ng&eacute;sző</b> sark&aacute;ban tal&aacute;lhat&oacute; kos&aacute;rba ker&uuml;lnek. A kos&aacute;r seg&iacute;ts&eacute;g&eacute;vel figyelemmel k&iacute;s&eacute;rheti a kiv&aacute;lasztott v&aacute;ltoz&oacute;k sz&aacute;m&aacute;t.
+            </p>
+            <p>Az egyes kiv&aacute;lasztott v&aacute;ltoz&oacute;k mezők&eacute;nt hozz&aacute;ad&oacute;dnak az eredm&eacute;ny r&eacute;teghez.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Bővítendő területek meghatározása</h2></div>
+        <hr/>
+        <div>
+            <p>Hat&aacute;rozza meg a bemenő pontok vagy vonalak k&ouml;r&uuml;l a bőv&iacute;tendő ter&uuml;letet a l&eacute;gvonalbeli t&aacute;vols&aacute;g m&eacute;r&eacute;s&eacute;vel vagy a kiv&aacute;lasztott utaz&aacute;si m&oacute;d haszn&aacute;lat&aacute;val. L&eacute;gvonalbeli t&aacute;vols&aacute;g eset&eacute;n legfeljebb 1000 m&eacute;rf&ouml;ld (1609 kilom&eacute;ter) &eacute;rt&eacute;ket adjon meg. Az utaz&aacute;si m&oacute;dok csak akkor enged&eacute;lyezettek, ha az első bemenő r&eacute;teg pontokat tartalmaz. Az el&eacute;rhető utaz&aacute;si m&oacute;dokat a szervezet rendszergazd&aacute;ja hat&aacute;rozza meg. Az utaz&aacute;si m&oacute;dok egyik&eacute;nek haszn&aacute;latakor az eszk&ouml;z utak vagy gyalogutak ment&eacute;n, a vonatkoz&oacute; szab&aacute;lyok, mint p&eacute;ld&aacute;ul egyir&aacute;ny&uacute; utak, megfordul&aacute;si tilalom stb. betart&aacute;s&aacute;val v&eacute;gzi a m&eacute;r&eacute;seket. Miut&aacute;n kiv&aacute;lasztotta az utaz&aacute;si m&oacute;dot &eacute;s a m&eacute;r&eacute;s m&oacute;dszert (idő vagy t&aacute;vols&aacute;g), adjon meg egy időtartamot vagy t&aacute;vols&aacute;got: legfeljebb 5 &oacute;r&aacute;t (300 percet) vagy 300 m&eacute;rf&ouml;ldet (482,8 kilom&eacute;tert).
+            </p>
+            <p>Ha az  <b>Eredm&eacute;ny hat&aacute;rol&oacute; ter&uuml;letk&eacute;nt</b> lehetős&eacute;g be van jel&ouml;lve, akkor a művelet a fenti idő- vagy t&aacute;vols&aacute;g&eacute;rt&eacute;kek alapj&aacute;n meghat&aacute;rozott  vektoros elemeket adja vissza eredm&eacute;nyk&eacute;nt.  Ha nincs bejel&ouml;lve, akkor pontszerű vektor elemeket ad vissza eredm&eacute;nyk&eacute;nt.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

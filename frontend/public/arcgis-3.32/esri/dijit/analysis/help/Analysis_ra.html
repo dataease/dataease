@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="raToolbox">
+        <p>Raster analysis allows you to perform analysis of large raster datasets using   ArcGIS Image Server. This allows you to analyze more data faster by harnessing the power of the server. The toolsets currently available through the  Portal for ArcGIS web user experience are  <b>Summarize Data</b>, <b>Analyze Patterns</b>, <b>Use Proximity</b>, <b>Analyze Image</b>, <b>Analyze Terrain</b>, <b>Manage Data</b>, <b>Deep Learning</b>, and <b>Multidimensional Analysis</b>.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="smallsize">
+        <h2>Summarize Data</h2>
+        <hr/>
+        <p>This toolset contains a tool for calculating some statistics for a raster layer within area boundaries that you define.
+
+            <ul>
+                <li> <b>Summarize Raster Within</b> calculates statistics for raster cells that fall within defined area boundaries.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="SummarizeRasterWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Summarize Raster Within</h2></td>
+                    <td>
+                    <img src="./images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" class="titleImage" alt="Summarize Raster Within tool">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Calculates some summary statistics for raster cells within defined areas.
+            </p>
+            <p>Some example applications are the following: 
+
+                <ul>
+                    <li>Given a layer of watershed areas and an elevation raster layer, calculate the range of elevations within each watershed in order to determine which ones will have the highest energy streamflow.
+                        
+
+                    </li>
+                    <li>Given a layer of administrative management units and a raster layer of land-use categories, calculate the variety of land-use values within each management area to identify which ones require the most work to determine a management plan.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="smallsize">
+        <h2>Analyze Patterns</h2>
+        <hr/>
+        <p>These tools help you identify, quantify, and visualize spatial patterns in your data. 
+
+            <ul>
+                <li> <b>Calculate Density</b> takes known quantities of some phenomenon and creates a density map by spreading these quantities across the map.
+                    
+
+                </li>
+                <li> <b>Interpolate Points</b> predicts values at new locations based on measurements found in a collection of points.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calculate Density</h2></td>
+                    <td>
+                    <img src="./images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" class="titleImage" alt="Calculate Density tool">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Density analysis takes known quantities of some phenomenon and creates a density map by spreading these quantities across the map. You can use this tool, for example, to show concentrations of lightning strikes or tornadoes, access to health care facilities, and population densities.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsEBKTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpolate Points</h2></td>
+                    <td>
+                    <img src="./images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" class="titleImage" alt="Interpolate Points tool">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>This tool allows you to predict values at new locations based on measurements found in a collection of points. The tool takes point data with values at each point and returns areas classified by predicted values. You can use this tool, for example, to predict rainfall levels across a watershed based on measurements taken at individual rain gauges.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>Use Proximity</h2>
+        <hr/>
+        <p>These tools help you answer one of the most common questions posed in spatial analysis: &quot;What is near what?&quot;
+
+            <ul>
+                <li> <b>Calculate Distance</b> calculates the Euclidean distance, direction and allocation from a single or set of sources.
+                    
+
+                </li>
+                <li> <b>Determine Optimum Travel Cost Network</b> calculates the optimum cost network from a set of input regions.
+                    
+
+                </li>
+                <li> <b>Determine Travel Cost Path As Polyline</b> calculates the least cost polyline path between sources and known destinations.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDistanceTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calculate Distance</h2></td>
+                    <td>
+                    <img src="./images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" class="titleImage" alt="Calculate Distance">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Calculates the Euclidean distance, direction and allocation from a single or set of sources. You can use this tool to determine how far a location is to a road, a building or a park. You can also determine which direction you must travel from a location to return back to a source in the most direct way. You can see for every location in your study area which is the closest source.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineOptimumTravelCostNetworkTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Determine Optimum Travel Cost Network</h2></td>
+                    <td>
+                    <img src="./images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" class="titleImage" alt="Determine Optimum Travel Cost Network tool illustration">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Calculates the optimum cost network from a set of input regions.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineTravelCostPathAsPolylineTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Determine Travel Cost Path As Polyline</h2></td>
+                    <td>
+                    <img src="./images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" class="titleImage" alt="Determine Travel Cost Path as Polyline tool illustration">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Calculates the least cost polyline path between sources and known destinations.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeImageCategory" class="smallsize">
+        <h2>Analyze Image</h2>
+        <hr/>
+        <p>The following tool helps you analyze images.
+
+            <ul>
+                <li> <b>Apply Raster Function Template</b> processes your imagery with the chain of functions, as specified by the raster function template.
+                </li>
+                <li> <b>Monitor Vegetation</b> detects vegetation within an image, based on arithmetic operations on the bands.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ApplyRFxTemplateTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Apply Raster Function Template</h2></td>
+                    <td>
+                    <img src="./images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" class="titleImage" alt="Apply Raster Function Template">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Processes your imagery with the chain of functions, as specified by the raster function template.
+            </p>
+            <br/>
+        </div>
+        <div id="MonitorVegetationTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Monitor Vegetation</h2></td>
+                    <td>
+                    <img src="./images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" class="titleImage" alt="Monitor Vegetation tool for Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Performs an arithmetic operation on the bands of a multiband raster layer to reveal vegetation coverage information of the study area.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeTerrainCategory" class="regularsize">
+        <h2>Analyze Terrain</h2>
+        <hr/>
+        <p>These tools help you analyze raster surfaces.
+
+            <ul>
+                <li> <b>Calculate Slope</b> calculates the steepness of terrain.
+                    
+
+                </li>
+                <li> <b>Derive Aspect</b> calculates the direction of steepest slope for each location.
+                    
+
+                </li>
+                <li> <b>Create Viewshed</b> identifies what can be seen from any point on the landscape.
+                    
+
+                </li>
+                <li> <b>Watershed</b> calculates the contributing area above identified location(s) on a surface.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateSlopeTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calculate Slope</h2></td>
+                    <td>
+                    <img src="./images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" class="titleImage" alt="Calculate Slope tool for Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Identifies a surface that shows the slope of the input elevation data. Slope represents the rate of change of elevation for each digital elevation model (DEM) cell.
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveAspectTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Derive Aspect</h2></td>
+                    <td>
+                    <img src="./images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" class="titleImage" alt="Derive Aspect tool for Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Identifies the downslope direction of the maximum rate of change in value from each cell to its neighbors. Aspect can be thought of as the slope direction.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Create Viewshed</h2></td>
+                    <td>
+                    <img src="./images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" class="titleImage" alt="Create Viewshed tool">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Determines the locations on a raster surface that are visible to a set of observers.
+            </p>
+            <br/>
+        </div>
+        <div id="WatershedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Watershed</h2></td>
+                    <td>
+                    <img src="./images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" class="titleImage" alt="Watershed task">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Determines the contributing area above a set of cells in a raster.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>Manage Data</h2>
+        <hr/>
+        <p>These tools are used for both the day-to-day management of geographic data and for combining data prior to analysis.
+
+            <ul>
+                <li> <b>Extract Raster</b> clips out portions from a raster dataset for further analysis.
+                    
+
+                </li>
+                <li> <b>Remap Values</b> assigns different values to raster cells.
+                    
+
+                </li>
+                <li> <b>Convert Feature to Raster</b> rasterizes vector data.
+                    
+
+                </li>
+                <li> <b>Convert Raster to Feature</b> vectorizes raster data.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ExtractRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Extract Raster</h2></td>
+                    <td>
+                    <img src="./images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" class="titleImage" alt="Extract Raster tool for Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Extract cells from a raster based on value, shape, or the extent of a different dataset.
+            </p>
+            <br/>
+        </div>
+        <div id="RemapValuesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Remap Values</h2></td>
+                    <td>
+                    <img src="./images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" class="titleImage" alt="Remap Values tool for Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Change the individual or ranges of cell values to new values.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertFeatureToRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Convert Feature to  Raster</h2></td>
+                    <td>
+                    <img src="./images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" class="titleImage" alt="Convert Feature to Raster tool">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Create a new raster dataset from an existing feature dataset.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertRasterToFeatureTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Convert Raster to Feature</h2></td>
+                    <td>
+                    <img src="./images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" class="titleImage" alt="Convert Raster to Feature tool">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Create a new feature dataset from an existing raster dataset.
+            </p>
+            <br/>
+        </div>
+    <div id="DeepLearningCategory" class="largesize">
+        <h2>Deep Learning</h2>
+        <hr/>
+        <p>These tools 	are used to detect or classify specific features in an image or to classify pixels in a raster dataset. Deep learning is a type of artificial intelligence machine learning   method that detects features in imagery using multiple layers in neural networks where each layer is capable of extracting one or more unique features in the image. These  tools consume the  models that have been trained to detect specific features in third-party deep learning frameworks&mdash;such as TensorFlow, CNTK and Keras&mdash;and output features or class maps.
+            <ul>
+                <li> <b>Classify Pixels Using Deep Learning</b> produces a  classified raster using a trained deep learning model.
+                </li>
+                <li> <b>Detect Objects Using Deep Learning</b> produces a feature class containing objects it finds in an input raster using a trained deep learning model.
+                </li>
+                <li> <b>Classify Objects Using Deep Learning</b> produce a feature class or table in which each input object in an input raster is assigned with a class label using a trained deep learning model.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ClassifyPixelsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Classify Pixels Using Deep Learning</h2></td>
+                    <td>
+                    <img src="./images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" class="titleImage" alt="Classify Pixels Using Deep Learning">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>This tool runs a trained deep learning model on an input raster to produce a classified raster, and each valid pixel has an assigned class label.
+            </p>
+            <br/>
+        </div>
+        <div id="DetectObjectsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Detect Objects Using Deep Learning</h2></td>
+                    <td>
+                    <img src="./images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="Detect Objects Using Deep Learning">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>This tool runs a trained deep learning model on an input raster to produce a feature class containing the objects it finds. The features can be bounding boxes or polygons around the objects found, or points at the centers of the objects.
+            </p>
+            <br/>
+        </div>
+        <div id="ClassifyObjectsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Classify Objects Using Deep Learning</h2></td>
+                    <td>
+                    <img src="./images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="Classify Objects Using Deep Learning">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>This tool runs a trained deep learning model on an input raster and an optional feature class to produce a feature class or table in which each input object has an assigned class label.
+            </p>
+            <br/>
+        </div>
+    <div id="MultidimensionalAnalysisCategory" class="largesize">
+        <h2>Multidimensional Analysis</h2>
+        <hr/>
+        <p>The tools in the Multidimensional Analysis toolset allow you to perform analysis on scientific data across multiple variables and dimensions.
+        </p>
+        <p>Multidimensional data represents data captured at
+multiple times, depths, and heights. This type of data is commonly
+used in atmospheric, oceanographic, and earth sciences.
+With this toolset, you can analyze
+multidimensional raster data in multiple formats, including netCDF,
+HDF, GRIB, the multidimensional mosaic dataset, and Esri's Cloud
+Raster Format (CRF).
+        </p>
+        <p>The following table lists the multidimensional analysis tools and provides a brief description of each.
+            <ul>
+                <li> <b>Aggregate Multidimensional Raster</b>  generates a multidimensional raster dataset by aggregating existing multidimensional raster variables along a dimension.
+                </li>
+                <li> <b>Generate Multidimensional Anomaly</b> computes the anomaly for each slice in a multidimensional raster to generate a multidimensional raster.
+                </li>
+                <li> <b>Generate Trend Raster</b>  estimates the trend for each pixel along a dimension for one or more variables in a multidimensional raster.
+                </li>
+                <li> <b>Predict Using Trend Raster</b>  computes a forecasted multidimensional raster using the output trend raster from the <b>Generate Trend Raster</b> tool.
+                </li>
+                <li> <b>Find Argument Statistics</b>   extracts the dimension value or band index at which a given statistic is attained for each pixel in a multidimensional or multiband raster.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="AggregateMultidimensionalRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Aggregate Multidimensional Raster</h2></td>
+                    <td>
+                    <img src="./images/GUID-2C2320A3-EC6E-4FFC-B59B-9551BB02C545-web.png" class="titleImage" alt="Aggregate Multidimensional Raster">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>This tool generates a multidimensional raster dataset by aggregating existing multidimensional raster variables along a dimension.
+            </p>
+            <br/>
+        </div>
+        <div id="FindArgumentStatisticsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Find Argument Statistics</h2></td>
+                    <td>
+                    <img src="./images/GUID-2C2320A3-EC6E-4FFC-B59B-9551BB02C545-web.png" class="titleImage" alt="Find Argument Statistics">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>This tool extracts the dimension value or band index at which a given statistic is attained for each pixel in a multidimensional or multiband raster.
+            </p>
+            <br/>
+        </div>
+        <div id="GenerateMultidimensionalAnomalyTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Generate Multidimensional Anomaly</h2></td>
+                    <td>
+                    <img src="./images/GUID-8D54C66F-5C16-4EE5-93E9-80722D10AF12-web.png" class="titleImage" alt="Generate Multidimensional Anomaly">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>This tool computes the anomaly for each slice in a multidimensional raster to generate a multidimensional raster.
+            </p>
+            <br/>
+        </div>
+        <div id="GenerateTrendRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Generate Trend Raster</h2></td>
+                    <td>
+                    <img src="./images/GUID-2C2320A3-EC6E-4FFC-B59B-9551BB02C545-web.png" class="titleImage" alt="Generate Trend Raster">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>This tool estimates the trend for each pixel along a dimension for one or more variables in a multidimensional raster.
+            </p>
+            <br/>
+        </div>
+        <div id="PredictUsingTrendRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Predict Using Trend Raster</h2></td>
+                    <td>
+                    <img src="./images/GUID-2C2320A3-EC6E-4FFC-B59B-9551BB02C545-web.png" class="titleImage" alt="Generate Trend Raster">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>This tool computes a forecasted multidimensional raster using the output trend raster from the  <b>Generate Trend Raster</b> tool.
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

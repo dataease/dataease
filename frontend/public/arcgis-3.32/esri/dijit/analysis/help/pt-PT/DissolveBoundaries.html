@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Dissolver Limites</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Dissolver Limites"></h2>
+        <hr/>
+    <p>&Aacute;reas que se sobrep&otilde;em ou partilham um limite s&atilde;o fundidas de forma a formar uma &uacute;nica &aacute;rea.    
+    </p>
+    <p>Pode controlar quais os limites a serem fundidos, especificando um campo Por exemplo, se tiver uma camada de concelhos e cada concelho tiver um atributo  <i>State_Name</i>, pode dissolver limites utilizando o atributo <i>State_Name</i>. Concelhos adjacentes ser&atilde;o combinados se tiverem o mesmo valor de <i>State_Name</i>. O resultado final &eacute; uma camada com todos os limites fundidos.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolher camada de área cujos limites se dissolverão</h2></div>
+        <hr/>
+        <div>
+            <p>A camada contendo elementos de &aacute;rea que ser&aacute; disolvida. 
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, pode selecionar  <b>Escolher Camada de An&aacute;lise</b> que se encontra na parte inferior da lista pendente. Esta op&ccedil;&atilde;o abre uma galeria, na qual pode navegar e selecionar conjuntos de dados de v&aacute;rias fontes para utilizar na sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Escolher método Dissolver</h2></div>
+        <hr/>
+        <div>
+            <p>Pode escolher um dos dois m&eacute;todos para fundir a &aacute;rea dos elementos:
+                <ul>
+                    <li> <b>&Aacute;reas que se sobrepoem ou s&atilde;o adjacentes</b>&mdash;Duas ou mais &aacute;reas cujos limites sobrep&otilde;em uns aos outros ser&atilde;o fundidas numa &aacute;rea.  Al&eacute;m disso, as &aacute;reas que s&atilde;o adjacentes (isto &eacute;, que partilham um limite) ser&atilde;o fundidos apenas numa &aacute;rea.
+                    </li>
+                    <li> <b>&Aacute;reas com o mesmo campo de valor</b>&mdash;&Aacute;reas que se sobrepoem ou partilham uma fronteira comum ser&atilde;o fundidas numa &aacute;rea se tiverem o mesmo valor do campo.
+                        <p>Por exemplo, se tiver uma camada de concelhos, e cada concelho tiver um campo  <i>State_Name</i> pode dissolver limites utilizando o campo <i>State_Name</i> . Concelhos adjacentes ser&atilde;o combinados se tiverem o mesmo valor de <i>State_Name</i>. O resultado final &eacute; uma camada com todos os limites fundidos.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Se a op&ccedil;&atilde;o  <b>Utilizar a extens&atilde;o atual do mapa</b> estiver selecionada, ser&atilde;o dissolvidos apenas os elementos da camada de entrada que sejam vis&iacute;veis na atual extens&atilde;o de mapa. Se n&atilde;o estiver validado, todos os elementos na camada de entrada ser&atilde;o disolvidas, mesmo que estejam fora da extens&atilde;o de mapa actual.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Criar Elementos de Várias Partes</h2></div>
+        <hr/>
+        <div>
+            <p>Em ArcGIS, uma representa&ccedil;&atilde;o digital de um local ou coisa que tem mais do que uma parte, mas &eacute; definida como um elemento porque referencia um conjunto de atributos. Numa camada de estados, por exemplo, o estado do Havai poderia ser considerado um elemento de v&aacute;rias partes porque as respetivas partes geom&eacute;tricas separadas s&atilde;o classificadas como um &uacute;nico estado. Este par&acirc;metro booleano oferece duas op&ccedil;&otilde;es:
+                <ul>
+                    <li>Verdadeiro (marcado): o servi&ccedil;o de sa&iacute;da pode conter elementos de v&aacute;rias partes.
+                    </li>
+                    <li>Falso (n&atilde;o marcado): o servi&ccedil;o de sa&iacute;da apenas conter&aacute; elementos &uacute;nicos, e ser&atilde;o criados elementos individuais para cada parte.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Adicionar estatística</h2></div>
+        <hr/>
+        <div>
+            <p>Quando as &aacute;reas s&atilde;o fundidas, &eacute; poss&iacute;vel resumir os respectivos atributos. Por exemplo, se estiver a dissolver o limite entre concelhos com base em  <i>State_Name</i>, e cada concelho tiver um campo <i>Population</i> , pode calcular a soma de <i>Population</i> do estado.
+            </p>
+            <p>Tipos de estat&iacute;stica dispon&iacute;veis:
+            </p>
+            <ul>
+                <li> <b>Soma</b>&mdash;Adiciona o valor total para o campo especificado
+                    
+
+                </li>
+                <li> <b>M&eacute;dia</b>&mdash;Calcula a m&eacute;dia para o campo especificado
+                    
+
+                </li>
+                <li> <b>Min&iacute;mo</b>&mdash;Localiza o menor valor para todos os registros do campo especificado
+                    
+
+                </li>
+                <li> <b>M&aacute;ximo</b>&mdash;Encontra o valor maior para todos os registros do campo especificado
+                    
+
+                </li>
+                <li> <b>Desvio -padr&atilde;o</b>-Encontra o desvio-padr&atilde;o dos valores do campo especificado
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se o nome da camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Guardar resultado em</b> pode definir o nome da pasta em <b>O Meu Conte&uacute;do</b> onde o resultado ser&aacute; guardado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,37 @@
+<div style="display: inline-block;">
+    <table class="Browser_Table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td class="Browser_BackTd">
+                <div class="Browser_Back" data-dojo-attach-point="_browseBackDiv" data-dojo-attach-event="click: _slideBack"></div>
+            </td>
+            <td align="center">
+                <div data-dojo-attach-point="_container" class="Browser_HostBorder">
+                    <div data-dojo-attach-point="_titlePane" class="Browser_TitlePane" style="visibility: hidden;">
+                        <div data-dojo-attach-point="_singleSelect"></div>
+                        <select data-dojo-type="dijit/form/Select"
+                            data-dojo-attach-point="_select"
+                            data-dojo-props="maxHeight: 151"
+                            data-dojo-attach-event="onChange: _onSelectChange">
+                        </select>
+                    </div>
+                    <div class="Browser_ContentPane">
+                        <div data-dojo-type="esri/dijit/geoenrichment/Infographic"
+                            data-dojo-attach-point="_infographic"
+                            data-dojo-props="title: ''"
+                            data-dojo-attach-event="onDataRequest: _showProgress, onDataLoad: _onDataLoad, onDataReady: _onDataReady, onDataError: _onDataError"
+                            style="position: absolute; width: 100%; height: 100%; top: 0; left: 0;">
+                        </div>
+                    </div>
+                    <div data-dojo-attach-point="_updateProgress" class="Browser_UpdateProgress" style="display: none;"></div>
+                </div>
+            </td>
+            <td class="Browser_ForwardTd">
+                <div class="Browser_Forward" data-dojo-attach-point="_browseForwardDiv" data-dojo-attach-event="click: _slideForward"></div>
+            </td>
+        </tr>
+    </table>
+    <div data-dojo-attach-point="_reloadProgress">
+        <div class="Browser_ReloadProgressBack"></div>
+        <div class="Browser_ReloadProgress"></div>
+    </div>
+</div>

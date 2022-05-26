@@ -1,0 +1,43 @@
+-------------------------------------------------------------------------------
+dojox.geo
+-------------------------------------------------------------------------------
+Version 0.100
+Release date: 04/04/2010
+-------------------------------------------------------------------------------
+Project state:
+alpha
+-------------------------------------------------------------------------------
+Credits
+	dojox.geo.charting:
+		Dean Williams (deanw@ca.ibm.com)
+		Qi Ruan (ruanqi@cn.ibm.com)
+		Wei CDL Huang (hwcdl@cn.ibm.com)
+    Erwan Aullas (eaullas+dojo@gmail.com)
+    Marc Durocher (durocher.marc@gmail.com)
+    
+  dojox.geo.openlayers
+    Marc Durocher (durocher.marc@gmail.com)
+    Erwan Aullas (eaullas+dojo@gmail.com)
+    
+	Tom Trenka (ttrenka@gmail.com)
+-------------------------------------------------------------------------------
+Project description
+
+Project to house any geographical-related code.  First project is 
+dojox.geo.charting, contributed to DTK by IBM (CCLA on file).
+-------------------------------------------------------------------------------
+Dependencies:
+
+Dojo Core, dojox.gfx, dojox.lang, Dijit.
+-------------------------------------------------------------------------------
+Documentation
+
+Not ready yet.
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/src/dojox/trunk/geo
+
+You will need dojox.gfx, dojox.lang, and the Dijit core + Tooltip.
+-------------------------------------------------------------------------------

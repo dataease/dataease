@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Sovrapponi layer</h2><p/>
+        <h2><img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" alt="Sovrapponi layer"></h2>
+        <hr/>
+    <p>Consente di combinare due o pi&ugrave; layer in un unico layer. La sovrapposizione &egrave; un processo analogo all'analisi di un insieme di mappe ed alla creazione di un unica mappa contenente tutte le informazioni trovate nel gruppo. La sovrapposizione non &egrave; una semplice unione di linee; nel prodotto finale vengono infatti inclusi tutti gli attributi delle feature coinvolte nella sovrapposizione. La sovrapposizione costituisce la risposta ad una delle pi&ugrave; elementari domande di geografia, ovvero &quot;Cosa sta sopra e cosa sta sotto?&quot;Ad esempio:
+        <ul>
+            <li>Quali lotti sono compresi nella pianura alluvionaleda 100 anni?
+                  
+            </li>
+            <li>Quali strade sono comprese in determinate regioni?
+            </li>
+            <li>Quale uso del suolo si fa di un determinato tipo di terreno?
+                 
+            </li>
+            <li>Quali pozzi si trovano in basi militari abbandonate?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se l'opzione  <b>Usa estensione mappa corrente</b> &egrave; selezionata, verranno sovrapposte solo le feature nel layer di input e di sovrapposizione visibili nell'estensione mappa corrente.  Se &egrave; deselezionata, verranno sovrapposte tutte le feature sia nel layer di input che in quello di sovrapposizione, anche se esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegli il layer di input</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer di punti, linea o area che verr&agrave; sovrascritto.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+        </div>
+    </div>
+    <div id="OverlayLayer">
+        <div><h2>Scegliere il layer per la sovrapposizione</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer da sovrapporre sul layer di input.  
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p> 
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Scegliere il metodo di sovrapposizione</h2></div>
+        <hr/>
+        <div>
+            <p>Il metodo di sovrapposizione definisce in che modo vengono combinati il layer di input e quello di sovrapposizione.  
+
+                <ul>
+                    <li> <b>Incrocia</b>: il risultato conterr&agrave; solo le feature o le parti di feature del layer di sovrapposizione che risultano sovrapposte a feature del layer di input. Quando si intersecano feature lineari o di area, &egrave; possibile specificare il tipo di feature di output.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Punti con punti
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Input di punti e punti">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Punti e punti con output di punti">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Punti e linee
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-F1E6C6C8-4F51-4063-984D-0FC8D08EB2D2-web.png" alt="Input di punti e linee">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-02CFAFDC-1B3C-4C4B-A58C-7B0B78BA0B56-web.png" alt="Punti e linee con output di punti">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Punti con linee
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-5EE90BD6-CC3D-4E2F-A5D0-DC57298E8416-web.png" alt="Input di punti e aree">
+                                </p>
+                            </td>
+                            <td> <img src="../images/GUID-5CCA360F-D4C9-43AB-8FB2-E6E62DE93BD4-web.png" alt="Punti e aree con output di punti">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Linee con linee 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Input di linee e linee">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-DDCCB226-6490-4914-B87C-299125466256-web.png" alt="Linee e linee con output di punti">
+                                </p>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Linee e linee con output di linee ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Linee con aree
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-E38EB7D6-9D35-4E0D-937A-9FEC4144AF2E-web.png" alt="Input di linee e aree">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-639F492C-BEE7-4A5F-AEBC-325B74FEC766-web.png" alt="Linee e aree con output di punti">
+                                </p>
+                                <p> <img src="../images/GUID-58DF5CF6-0A56-4717-AD9C-C3BEC8EA6906-web.png" alt="Linee e aree con output di linee">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Aree con aree
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Input di aree e aree">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-3F71AD46-A6A2-436D-8BBA-13E014BB94D0-web.png" alt="Aree e aree con output di punti">
+                                </p>
+                                <p> <img src="../images/GUID-6AF62F09-6D32-4212-97C6-844580E34A22-web.png" alt="Aree e aree con output di linee">
+                                </p>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="Aree e aree con output di aree">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Unione</b>: il risultato conterr&agrave; feature sia del layer di input che di quello di sovrapposizione. Questa opzione &egrave; disponibile solo se il layer di input e quello di sovrapposizione contengono entrambi feature di area.
+                    </li>
+                    <li> <b>Cancella</b>: il risultato conterr&agrave; le feature o le parti di feature del layer di sovrapposizione che non risultano sovrapposte ad aree del layer di input.  Il layer di sovrapposizione pu&ograve; contenere feature area, linea o punto.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Se l'opzione  <b>Usa estensione mappa corrente</b> &egrave; selezionata, verranno sovrapposte solo le feature nel layer di input e di sovrapposizione visibili nell'estensione mappa corrente.  Se &egrave; deselezionata, verranno sovrapposte tutte le feature sia nel layer di input che in quello di sovrapposizione, anche se esterne all'estensione mappa corrente.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nome layer risultati</h2></div>
+        <hr/>
+        <div>
+            <p> Questo &egrave; il nome del layer che verr&agrave; creato in <b>I miei contenuti</b> e aggiunto alla mappa.  Il tipo di feature del layer, ovvero area, linea o punto, &egrave; uguale a quello di sovrapposizione. Il nome predefinito &egrave; basato sul metodo di sovrapposizione e sul nome del layer di input. Se il layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare la casella a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella di <b>I miei contenuti</b> in cui salvare il risultato.
+            </p> 
+        </div>
+    </div>
+</div>
+</html>

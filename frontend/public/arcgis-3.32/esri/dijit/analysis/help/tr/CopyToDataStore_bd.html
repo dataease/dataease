@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Veri Deposuna Kopyalama</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="Veri Deposuna Kopyala"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, bir girdi katmanını alarak bunu bir veri deposuna kopyalar. Sonu&ccedil;ları  ArcGIS Data Store&rsquo;a kopyalayabilirsiniz (ilişkisel ya da mekan-zamansal b&uuml;y&uuml;k veri deposu) ve portalınızda bir katman oluşturulur ya da sonu&ccedil;ları bir b&uuml;y&uuml;k veri dosya paylaşımına kopyalayabilirsiniz. 
+    </p>
+    <p>&Ouml;rneğin,  <code>b&uuml;y&uuml;k veri dosya paylaşımında</code> saklanan detayları bir <code>ilişkisel veri deposuna</code> kopyalayabilir ve yalnızca ge&ccedil;erli harita yayılımındaki detayların kopyalanmasını belirtebilirsiniz. Bu, yalnızca belirtilen harita yayılımındaki detaylara sahip barındırılan bir detay servisi oluşturur.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kopyalanacak katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Kopyalanacak katman veya tablo. 
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>Tüm detayları kullanabilir veya bir seçim yapabilirsiniz (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>İsteğe bağlı olarak, kopyalanacak yerleri tanımlama i&ccedil;in se&ccedil;im d&uuml;ğmesini kullanın.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Kopyalayacağınız veri deposunu seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Katmanın kopyalanacağı veri deposu. Bu parametre  <b>Analiz Ortamları</b> i&ccedil;indeki se&ccedil;eneği ge&ccedil;ersiz kılar. Se&ccedil;enekler aşağıda belirtilmiştir:
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>Spatiotemporal</b>; bu varsayılan se&ccedil;enektir.
+                            </li>
+                            <li> <b>İlişkisel</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>B&uuml;y&uuml;k Veri Dosya Paylaşım &Ccedil;ıktı Şablonları</b>
+                        <ul>
+                            <li> <b>bigDataFileShareName-templateName</b> formatındaki kullanılabilir b&uuml;y&uuml;k veri dosya paylaşım şablonları listesi. Aracı &ccedil;alıştırmadan &ouml;nce b&uuml;y&uuml;k veri dosya paylaşım şablonları yapılandırılmalıdır.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> Oluşturulacak katmanın adı. Bir ArcGIS Data Store&lsquo;a yazdığınızda, sonu&ccedil;larınız  <b>İ&ccedil;eriğime</b> kaydedilir ve haritaya eklenir. Bir b&uuml;y&uuml;k veri dosya paylaşımına yazdığınızda,  sonu&ccedil;larınız b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;ine kaydedilir ve   manifestosuna eklenir.  haritaya eklenmez. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Detay katmanı zaten varsa ara&ccedil; &ccedil;alışmaz.
+            </p>
+            <p> ArcGIS Data Store&lsquo;a yazarken (ilişkisel ya da mekan-zamansal b&uuml;y&uuml;k veri deposu)  <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

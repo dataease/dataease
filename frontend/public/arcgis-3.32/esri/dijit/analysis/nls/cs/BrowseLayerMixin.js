@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/cs/BrowseLayerMixin",{defaultAnaysisLayerTitle:"Vyberte vrstvu anal\u00fdzy Living Atlas",customAnalysisLayerTitle:"Zvolte vrstvu anal\u00fdzy",searchPlaceholderText:"Prohledat vrstvy anal\u00fdzy Living Atlas",searchCustomPlaceholderText:"Prohledat vrstvy anal\u00fdzy",mainActionTitle:"Vybrat",customActionName:"Vybrat a p\u0159idat do mapy",customeSectionName:"Vrstvy anal\u00fdzy Living Atlas",Categories:"Kategorie",boundaries:"Hranice",places:"M\u00edsta",boundariesAndPlaces:"Hranice a lokality sv\u011bta",
+hexbins:"\u0160estn\u00e1ctkov\u00e9 p\u0159ihr\u00e1dky",transportation:"Doprava",point:"Bodov\u00e9 vrstvy",line:"Liniov\u00e9 vrstvy",polygon:"Polygonov\u00e9 vrstvy",pointFilterName:"Bod",lineFilterName:"Polylinie",polygonFilterName:"Polygon",multiPointFilterName:"V\u00edcen\u00e1sobn\u00e9 body",geometryFilterName:"Geometrie",featureLayerName:"Vrstva prvk\u016f",tableLayerName:"Tabulka",itemTypeFilterName:"Typ polo\u017eky",instantFilterName:"Okam\u017eik",intervalFilterName:"Interval",timeFilterName:"\u010cas",
+edit:"Upravit",boundaryLayers:"Vrstva hranic Esri",customAnalysisGroupName:"Skupina organizace pro anal\u00fdzu"});

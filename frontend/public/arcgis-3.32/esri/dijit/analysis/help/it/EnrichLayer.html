@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Aggiungi dati al layer</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Aggiungi dati al layer"></h2>
+        <hr/>
+    <p>Questo strumento consente di aggiungere dati ottenendo informazioni relative a persone, luoghi e aziende attorno alle posizioni dei dati; consente inoltre di rispondere a nuove domande sulle posizioni alle quali non &egrave; possibile dare risposta con le sole mappe. Ad esempio, consente di rispondere a domande quali: che tipi di persone vivono qui? Quali sono le attivit&agrave; preferite dalle persone che vivono in questa area? Quali sono le loro abitudini ed i loro stili di vita? Quali tipi di aziende sono presenti in quest'area?
+    </p>
+    <p>Il risultato sar&agrave; un nuovo layer contenente tutte le informazioni demografiche e geografiche provenienti da specifiche raccolte di dati. Le nuove informazioni vengono aggiunte come campi della tabella.
+    </p>
+    <p>Se l'opzione  <b>Usa estensione mappa corrente</b> &egrave; selezionata, verranno aggiunti dati solo alle feature nel layer di input visibili all'interno dell'estensione mappa corrente.  Se &egrave; deselezionata, verranno aggiunti dati a tutte le feature del layer di input, anche se esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegli il layer a cui aggiungere nuovi dati</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer di punti, linea o area a cui verranno aggiunti nuovi dati con i nuovi dati di attributi. 
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Variabili di aggiunta dati</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Fare clic su  <b>Seleziona variabili</b> per aprire <b>Esplorazione dati</b>. <b>Esplorazione dati</b> consente di individuare e selezionare le variabili di aggiunta dati sia singolarmente che in gruppi.
+            </p>
+            <p>Sulla base dei dati viene selezionata automaticamente una regione. Se i dati riguardano pi&ugrave; paesi, &egrave; possibile scegliere una regione diversa. 
+            </p>
+            <p>Le variabili di aggiunta dati sono organizzate in raccolte dati per consentire un pi&ugrave; agevole accesso. Quando si seleziona una raccolta dati, vengono visualizzate alcune delle variabili di aggiunta dati pi&ugrave; comuni nella raccolta. In  <b>Continua esplorazione</b> vengono inoltre visualizzate le categorie presenti nella raccolta. In ogni categoria &egrave; possibile selezionare intere sottocategorie oppure scendere in dettaglio in una sottocategoria e selezionare singole variabili di aggiunta dati. &Egrave; anche possibile utilizzare la casella di ricerca per individuare una variabile specifica in una categoria.
+            </p>
+            <p>Le variabili selezionate da includere per l'aggiunta dati vengono aggiunte al carrello visualizzato nell'angolo di  <b>Esplorazione dati</b>. Utilizzarlo per tenere traccia del numero di variabili selezionate.
+            </p>
+            <p>Ogni variabile selezionata verr&agrave; aggiunta come campo nel layer dei risultati.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Definisci aree per cui aggiungere dati</h2></div>
+        <hr/>
+        <div>
+            <p>Definire l'area creata attorno ai punti o alle linee di input che verranno migliorate utilizzando una distanza in linea retta o una modalit&agrave; di viaggio selezionata. Per una distanza in linea retta, immettere un valore fino a 1000 miglia (1609 chilometri). Le modalit&agrave; di viaggio possono essere usate solo quando il layer di input contiene dei punti. Le modalit&agrave; di viaggio disponibili sono determinate dall'amministratore dell'organizzazione. Quando si usa una delle modalit&agrave; di viaggio, le misurazioni vengono effettuate su strade o passaggi pedonali, rispettando le norme stradali vigenti come, ad esempio, le strade a senso unico, le svolte non consentite e cos&igrave; via. Dopo aver selezionato modalit&agrave; e tipo di misurazione, immettere una durata o una distanza pari a un massimo di 5 ore (300 minuti) o 300 miglia (482,8 chilometri).
+            </p>
+            <p>Se si seleziona  <b>Restituisci risultato come aree di confine</b>, il risultato restituito saranno feature area come definito dai valori di tempo e distanza precedenti.  Se l'opzione &egrave; deselezionata, il risultato restituito saranno feature puntuali.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nome layer risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

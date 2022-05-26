@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Xác định Đường dẫn Chi phí Đi lại dưới dạng Đa tuyến</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="H&igrave;nh minh họa c&ocirc;ng cụ X&aacute;c định Đường dẫn Chi ph&iacute; Đi lại dưới dạng Đa tuyến"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y t&iacute;nh to&aacute;n đường dẫn đa tuyến tối ưu giữa c&aacute;c điểm nguồn v&agrave; điểm đ&iacute;ch đ&atilde; biết.
+    </p>
+    <p>C&aacute;c ứng dụng mẫu bao gồm:
+        <ul>
+            <li>T&igrave;m tuyến đường tốt nhất cho một con đường mới về mặt chi ph&iacute; x&acirc;y dựng.
+                
+
+            </li>
+            <li>X&aacute;c định đường cần đi từ một số địa điểm ngoại th&agrave;nh (nguồn) đến trung t&acirc;m mua sắm gần nhất (đ&iacute;ch).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Nếu  <b>Sử dụng phạm vi bản đồ hiện tại</b> được chọn, th&igrave; chỉ c&aacute;c vị tr&iacute; nh&igrave;n thấy được trong lớp đầu v&agrave;o v&agrave; trong phạm vi bản đồ hiện tại mới được ph&acirc;n t&iacute;ch. Nếu bỏ chọn, tất cả vị tr&iacute; trong cả hai lớp đầu v&agrave;o sẽ được ph&acirc;n t&iacute;ch, ngay cả khi ch&uacute;ng ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Chọn raster hoặc lớp nguồn đối tượng để xác định các đường dẫn từ</h2></div>
+        <hr/>
+        <div>
+            <p>Một dịch vụ h&igrave;nh ảnh hoặc dịch vụ đối tượng x&aacute;c định c&aacute;c &ocirc; m&agrave; từ đ&oacute; đường đi tối ưu được x&aacute;c định đến điểm đ&iacute;ch &iacute;t tốn k&eacute;m chi ph&iacute; nhất.
+            </p>
+            <p>Nếu đầu v&agrave;o l&agrave; một dịch vụ h&igrave;nh ảnh, đầu v&agrave;o bao gồm c&aacute;c &ocirc; c&oacute; gi&aacute; trị hợp lệ (kh&ocirc;ng l&agrave; một gi&aacute; trị hợp lệ)v&agrave; c&aacute;c &ocirc; c&ograve;n lại phải được g&aacute;n l&agrave; NoData.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Chọn lớp raster chi phí đi lại</h2></div>
+        <hr/>
+        <div>
+            <p>Một raster x&aacute;c định trở kh&aacute;ng hoặc chi ph&iacute; để di chuyển diện t&iacute;ch qua từng cell.
+            </p>
+            <p>Gi&aacute; trị ở mỗi vị tr&iacute; cell đại diện cho khoảng c&aacute;ch chi ph&iacute; tr&ecirc;n đơn vị để di chuyển qua &ocirc;. Mỗi gi&aacute; trị vị tr&iacute; cell được nh&acirc;n với độ ph&acirc;n giải cell trong khi cũng b&ugrave; trừ cho chuyển động ch&eacute;o để c&oacute; được tổng chi ph&iacute; đi qua cell.
+            </p>
+            <p>Gi&aacute; trị của raster chi ph&iacute; c&oacute; thể l&agrave; số nguy&ecirc;n hoặc điểm nổi, nhưng ch&uacute;ng kh&ocirc;ng được l&agrave; số &acirc;m hoặc bằng kh&ocirc;ng (bạn kh&ocirc;ng thể c&oacute; chi ph&iacute; &acirc;m hoặc bằng kh&ocirc;ng).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Raster Đích Đầu vào hoặc Đối tượng</h2></div>
+        <hr/>
+        <div>
+            <p>Một đầu v&agrave;o x&aacute;c định c&aacute;c điểm đ&iacute;ch được sử dụng để t&iacute;nh khoảng c&aacute;ch. Lớp c&oacute; thể l&agrave; raster hoặc đối tượng.
+            </p>
+            <p>Nếu đầu v&agrave;o l&agrave; một dịch vụ h&igrave;nh ảnh, đầu v&agrave;o bao gồm c&aacute;c &ocirc; c&oacute; gi&aacute; trị hợp lệ (kh&ocirc;ng l&agrave; một gi&aacute; trị hợp lệ)v&agrave; c&aacute;c &ocirc; c&ograve;n lại phải được g&aacute;n l&agrave; NoData.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Tên lớp đa tuyến kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Bạn c&oacute; thể chỉ định t&ecirc;n của một thư mục trong  <b>Nội dung của t&ocirc;i</b> m&agrave; tại đ&oacute; kết quả sẽ được lưu bằng c&aacute;ch sử dụng hộp xổ xuống <b>Lưu kết quả v&agrave;o</b>.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Chọn loại đường đi cần xác định</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định c&aacute;ch thức diễn giải c&aacute;c gi&aacute; trị v&agrave; khu vực tr&ecirc;n dữ liệu đ&iacute;ch đầu v&agrave;o trong c&aacute;c ph&eacute;p t&iacute;nh to&aacute;n đường đi chi ph&iacute;.
+            </p>
+            <ul>
+                <li>Đơn Tốt nhất&mdash;Đối với tất cả c&aacute;c &ocirc; hoặc vị tr&iacute; tr&ecirc;n dữ liệu đ&iacute;ch đầu v&agrave;o, đường đi tối ưu xuất ph&aacute;t từ vị tr&iacute; c&oacute; số đường đi tối ưu đến vị tr&iacute; nguồn &iacute;t nhất. Điều n&agrave;y l&agrave; mặc định
+                    
+
+                </li>
+                <li>Tới Mỗi &Ocirc;&mdash;Đối với mỗi &ocirc; hoặc vị tr&iacute; c&oacute; gi&aacute; trị hợp lệ tr&ecirc;n dữ liệu đ&iacute;ch đầu v&agrave;o, đường đi tối ưu được x&aacute;c định v&agrave; lưu tr&ecirc;n dịch vụ đối tượng đầu ra. Với t&ugrave;y chọn n&agrave;y, mỗi &ocirc; của dữ liệu đ&iacute;ch đầu v&agrave;o được xử l&yacute; ri&ecirc;ng biệt, v&agrave; đường đi tối ưu được x&aacute;c định từ từng &ocirc;.
+                    
+
+                </li>
+                <li>Tới Mỗi Khu vực&mdash;Đối với mỗi khu vực tr&ecirc;n dữ liệu đ&iacute;ch đầu v&agrave;o, đường đi tối ưu được x&aacute;c định v&agrave; lưu tr&ecirc;n dịch vụ đối tượng đầu ra. Với t&ugrave;y chọn n&agrave;y, đường đi tối ưu cho mỗi khu vực bắt đầu ở &ocirc; hoặc vị tr&iacute; c&oacute; trọng số khoảng c&aacute;ch chi ph&iacute; thấp nhất trong khu vực.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

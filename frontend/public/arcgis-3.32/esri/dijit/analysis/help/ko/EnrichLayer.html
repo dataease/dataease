@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>레이어 보강(Enrich Layer)</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="레이어 보강"></h2>
+        <hr/>
+    <p>이 도구는 데이터 위치 주변의 인구, 장소 및 비즈니스에 대한 사실을 확인하여 데이터를 보강하며, 맵만으로는 확인할 수 없는 위치에 대한 새로운 질문의 답을 찾을 수 있도록 해줍니다. 예: 여기에 어떤 사람들이 살고 있습니까? 이 지역의 사람들이 즐기는 일은 무엇입니까? 이들의 취미와 생활 방식은 어떻습니까? 이 영역에는 어떤 종류의 비즈니스가 있습니까?
+    </p>
+    <p>이 도구에서는 지정된 데이터 컬렉션으로부터 모든 인구 통계 및 지리 정보가 포함된 새 레이어가 결과로 생성됩니다.  이 새 정보는 테이블의 필드로 추가됩니다.
+    </p>
+    <p> <b>현재 맵 범위 사용</b>을 선택한 경우 현재 맵 범위 내에 보이는 입력 레이어의 피처만 보강됩니다.  선택하지 않으면 현재 맵 범위 외부에 있는 피처를 포함하여 입력 레이어에 있는 모든 피처가 보강됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>새 데이터로 보강할 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>포인트, 라인, 영역 레이어가 새로운 속성 데이터로 보강됩니다. 
+            </p>
+            <p>맵에서 레이어를 선택하는 것 외에도 드롭다운 목록 하단에서  <b>분석 레이어를 선택</b>할 수 있습니다. 해당 옵션을 사용하면 다양한 원본에서 분석에 사용할 데이터셋을 검색하고 선택할 수 있는 갤러리가 열립니다. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>보강 변수</h2></div>
+        <hr/>
+        <div>
+            
+            <p> <b>변수 선택</b>을 클릭하여 <b>데이터 브라우저</b>를 엽니다. <b>데이터 브라우저</b>를 통해 개별적 또는 통합적으로 보강 변수를 찾고 선택할 수 있습니다.
+            </p>
+            <p>지역은 데이터를 기반으로 자동 선택됩니다. 데이터에 국가가 두 개 이상 포함된 경우 다른 지역을 선택할 수 있습니다. 
+            </p>
+            <p>보강 변수는 쉽게 접근할 수 있도록 데이터 컬렉션으로 구성되어 있습니다.   데이터 컬렉션을 선택하면 브라우저에는 해당 컬렉션에서 가장 인기 있는 보강 변수 일부가 보여집니다.   <b>계속 찾아보기</b>에서도 컬렉션 내의 범주를 보여 줍니다. 각 범주 내에서 전체 하위 범주를 선택하거나 하위 범주로 개별 보강 변수를 선택할 수 있습니다. 또한 검색 상자를 사용하여 범주 내에서 특정 변수를 찾을 수도 있습니다.
+            </p>
+            <p>보강에 포함할 변수를 선택하면  <b>데이터 브라우저</b>의 모서리에 있는 장바구니에 추가됩니다. 이 장바구니를 사용하여 선택한 변수의 개수를 추적합니다.
+            </p>
+            <p>선택한 각 변수는 결과 레이어에 필드로 추가됩니다.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>보강할 영역 정의</h2></div>
+        <hr/>
+        <div>
+            <p>직선 거리 또는 선택한 이동 모드를 사용하여 보강할 입력 포인트 또는 라인 주변 영역을 정의합니다. 직선 거리의 경우 최대 1,609km(1,000마일)의 값을 입력합니다. 이동 모드는 입력 레이어에 포인트가 포함된 경우에만 사용할 수 있습니다. 사용 가능한 이동 모드는 내 기관의 관리자가 결정합니다. 이동 모드 중 하나를 사용하면 도로 또는 인도를 따라 측정되며 일방 통행, 불법 유턴 등 적용 가능한 규칙이 적용됩니다. 모드와 측정을 선택한 다음 최대 5시간(300분) 또는 300마일(482.8km)의 기간이나 거리를 입력합니다.
+            </p>
+            <p> <b>결과를 경계 영역으로 반환</b> 체크 박스를 선택하면 반환된 결과는 위 시간 또는 거리 값으로 정의한 영역 피처가 됩니다.  선택하지 않으면 결과가 포인트 피처로 반환됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에서 생성되어 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어 이름이 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 메뉴를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Kurti upių baseinus</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Kurti upių baseinus"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis nustato upių baseiną arba kiekvieno ta&scaron;ko, esančio įvesties sluoksnyje, vandens papildymo plotą auk&scaron;tupio link. 
+    </p>
+    <p>Pavyzdžiui, įsivaizduokite, kad turite ta&scaron;kus, kuriuose fiksuota vandens tar&scaron;a ir jūs norite surasti tikėtinus tar&scaron;os &scaron;altinius. Tar&scaron;os &scaron;altinis turi būti kažkurioje upės baseino vietoje, esančioje nuo fiksuoto ta&scaron;ko auk&scaron;tupio link, todėl naudosite &scaron;į įrankį, kad nustatytumėte upių baseinus, kuriuose yra tar&scaron;os &scaron;altiniai.
+    </p>
+    <p>Vieta, kurioje yra įvesties ta&scaron;kai, yra svarbi.  Jei jie nėra tiksliai i&scaron;dėlioti ant tėkmės linijos, gaunami upių baseinai gali būti labai maži ir netinkami analizei. Funkcija  <b>Paie&scaron;kos atstumas iki artimiausios tėkmės</b> gali būti naudojama koreguojant įvesties ta&scaron;kų vietą, kad jie būtų tiksliai ant tėkmės linijos ir būtų galima nustatyti upės baseiną, kurio vanduo atiteka į nurodytą ta&scaron;ką.  Pakoreguotos vietos, naudojamos upių baseinams rasti, įra&scaron;omos i&scaron;vesties sluoksnyje. Jūsų įvesties ta&scaron;kai nekeičiami.
+    </p>
+    <p>Rezultatas bus grupinis sluoksnis, sudarytas i&scaron; dviejų sluoksnių: upių baseinų ir koreguotų ta&scaron;kų, naudotų tiems upių baseinams apskaičiuoti.     
+    </p>
+    <p>Gauti upių baseinai turės visus įvesties ta&scaron;kų atributus ir papildomus atributus:     
+        <ul>
+            <li>Lauke  <i>PourPtID</i> nurodoma ID reik&scaron;mė i&scaron; įvesties ta&scaron;ko
+            </li>
+            <li>Lauke  <i>Area Square Kilometers</i> nurodomas upės baseino (auk&scaron;tupio link) plotas kvadratiniais kilometrais
+            </li>
+            <li>Laukuose  <i>Description</i> ir <i>DataResolution</i> nurodoma informacija, susijusi su hidrologiniais duomenimis, kurie naudoti skaičiuojant tėkmę
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jei  <b>Naudoti esamą žemėlapio aprėptį</b> pažymėtas, skaičiuojant vandens baseinus bus naudojamos tik esamos žemėlapio aprėpties ypatybės. Jei nepažymėta, bus analizuojami visi įvesties sluoksnio elementai, net jei jie nepatenka į esamą žemėlapio aprėptį.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Taškų ypatybės, naudojamos apskaičiuoti baseinus</h2></div>
+        <hr/>
+        <div>
+            <p>Upės baseinas (vandens papildymo plotas auk&scaron;tupio link) apskaičiuojamas pagal kiekvieną ta&scaron;ką.  
+            </p>
+            <p>Pasirinkę sluoksnį žemėlapyje, galite pasirinkti  <b>Pasirinkite analizės sluoksnį</b>, kurį rasite i&scaron;plečiamo sąra&scaron;o apačioje. &Scaron;i parinktis atidaro galeriją, kurioje galite ie&scaron;koti duomenų rinkinių i&scaron; įvairių &scaron;altinių ir juos pasirinkti naudoti savo analizėje. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Paieškos atstumas iki artimiausios tėkmės</h2></div>
+        <hr/>
+        <div>
+            <p>Jei jūsų įvesties ta&scaron;kai nepatenka ant tėkmės linijos, tikėtina, kad gaunami upių baseinai bus labai maži ir nelabai naudingi analizei, pavyzdžiui, nustatant prie&scaron; srovę esantį tar&scaron;os &scaron;altinį.  Daugeliu atvejų norite, kad įvesties ta&scaron;kas būtų pritrauktas prie artimiausios tėkmės linijos tam, kad surastumėte upių baseinus, tekančius pro upės tėkmėje esantį ta&scaron;ką.  Norėdami rasti artimiausią upės tėkmę, nustatykite paie&scaron;kos atstumą. Jei nenustatysite paie&scaron;kos atstumo, įrankis skaičiuos ir naudos pastovų paie&scaron;kos atstumą.  
+            </p>
+            <p>Norėdami naudoti tikslią įvesties ta&scaron;ko vietą, ie&scaron;kos atstumą nurodykite kaip nulį.  
+            </p>
+            <p>Analizės tikslais Esri, naudodama standartinius hidrologinius modelius, i&scaron; anksto apskaičiavo upių tėkmes. Jei paie&scaron;kos atstumu nėra upių tėkmių, naudodama ta paie&scaron;kos atstumo vieta, kurioje sukauptas kiekis yra didžiausias.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Tai sluoksnio, kuris bus sukurtas ir patalpintas  <b>Turinyje</b> ir pridėtas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnio pavadinimas jau egzistuoja, jūsų papra&scaron;ys pateikti kitą pavadinimą.
+            </p>
+            <p>I&scaron;plečiamajame meniu pasirinkę  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+            <p> Naudojant &scaron;į įrankį kreditai nenaudojami.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

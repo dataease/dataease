@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Find punktklynger</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="Find punktklynger"></h2>
+        <hr/>
+    <p>V&aelig;rkt&oslash;jet  Find punktklynger finder klynger af punktobjekter inden for omgivende st&oslash;j baseret p&aring; deres spatiale distribution.
+    </p>
+    <p>Et eksempel kunne v&aelig;re en ikke-statslig organisation, der studerer en s&aelig;rlig sygdom, der spredes via skadedyr. De har et datas&aelig;t, der repr&aelig;senterer husholdninger i et unders&oslash;gelsesomr&aring;de, hvoraf nogle er inficerede, og andre ikke er. Ved hj&aelig;lp af v&aelig;rkt&oslash;jet  Find punktklynger kan en analytiker finde klynger af inficerede husstande, s&aring; man kan lokalisere et omr&aring;de, hvor man kan begynde behandling og udryddelse af skadedyr.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg det lag, som der skal findes klynger for.</h2></div>
+        <hr/>
+        <div>
+            <p>Det punktlag, som klynger findes i. Lagene skal findes i en projiceret spatial reference eller have en spatial reference til behandling, der er indstillet til et projiceret koordinatsystem ved brug af  <b>Analysemilj&oslash;er</b>.
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Vælg den metode til klyngedannelse, der skal anvendes</h2></div>
+        <hr/>
+        <div>
+            <p>Klyngedannelse, som vil blive brugt til at skelne mellem klynger af punktobjekter fra omgivende st&oslash;j. Du kan v&aelig;lge at bruge en defineret afstand eller en selvjusterende klyngealgoritme.
+            </p>
+            <p>Defineret afstand (DBSCAN) bruger et specificeret s&oslash;geomr&aring;de til at adskille t&aelig;tte klynger fra mere spredt st&oslash;j. Defineret afstand (DBSCAN) er hurtigere, men er kun hensigtsm&aelig;ssig, hvis der er et meget klart s&oslash;geomr&aring;de, som er velegnet til at definere alle de klynger, der kan v&aelig;re til stede. Defineret afstand (DBSCAN) finder klynger med ensartede t&aelig;theder.
+            </p>
+            <p>Selvjusterende (HDBSCAN) kr&aelig;ver ikke, at s&oslash;geomr&aring;det angives, men det er en mere tidskr&aelig;vende metode. Selvjusterende (HDBSCAN) finder klynger af punkter svarende til defineret afstand (DBSCAN), men bruger forskellige s&oslash;geomr&aring;der, der tillader klynger med varierende t&aelig;theder. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimalt antal punkter for at blive anset for at være en klynge</h2></div>
+        <hr/>
+        <div>
+            <p>Denne parameter anvendes forskelligt afh&aelig;ngig af den valgte metode til klyngedannelse:
+            </p>
+            <p>
+                <ul>
+                    <li>Defineret afstand (DBSCAN) &ndash; angiver antallet af objekter, der skal findes inden for en bestemt afstand af et punkt, for at det punkt kan begynde at danne en klynge. Afstanden r defineres ved hj&aelig;lp af parameteren  <b>Begr&aelig;ns s&oslash;geomr&aring;det til</b>.
+                    </li>
+                    <li>Selvjusterende (HDBSCAN) &ndash; angiver antallet af objekter i n&aelig;rheden af ​​hvert punkt (herunder selve punktet), der vil blive taget i betragtning ved estimering af t&aelig;thed. Dette tal er ogs&aring; den mindste klyngest&oslash;rrelse, der er tilladt, n&aring;r der uddrages klynger.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Begræns søgeområdet til</h2></div>
+        <hr/>
+        <div>
+            <p>N&aring;r du bruger defineret afstand (DBSCAN), er denne parameter den afstand, inden for hvilken  <b>Det mindste antal objekter, der kan betragtes som en klynge.</b>, skal findes. Denne parameter bruges ikke, n&aring;r selvjusterende (HDBSCAN) v&aelig;lges som den metode til klyngedannelse, der skal bruges.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; det lag, som oprettes. Hvis du skriver til et ArcGIS Data Store, bliver  dine resultater gemt i  <b>Mit indhold</b> og f&oslash;jet til kortet. Hvis du skriver til en big data-fildeling, bliver dine resultater gemt i big data-fildelingen og f&oslash;jet til dens manifest. De bliver ikke f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil v&aelig;rkt&oslash;jet ikke fungere.
+            </p>
+            <p>N&aring;r du skriver til   ArcGIS Data Store  (relationelt eller spatiotemporalt big data-lager) ved hj&aelig;lp af rullelisten  <b>Gem resultat i </b>, kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

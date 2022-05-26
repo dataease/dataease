@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Loopkostenpad bepalen als polylijn</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Illustratie van loop voor het bepalen  van loopkostenpad bepalen als polylijn"></h2>
+        <hr/>
+    <p>Deze tool berekent het goedkoopste polylijnpad tussen bronnen en bekende bestemmingen.
+    </p>
+    <p>Voorbeelden van de toepassingen zijn onder meer het volgende:
+        <ul>
+            <li>Zoek de beste route voor een nieuwe weg in termen van aanlegkosten.
+                
+
+            </li>
+            <li>Identificeer het pad dat u moet volgen vanaf verschillende voorstedelijke locaties (bronnen) naar het dichtstbijzijnde winkelcentrum (bestemming).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Als  <b>Huidig extent van de kaart gebruiken</b> is aangevinkt, worden alleen die locaties in de invoerlagen die binnen het huidige extent van de kaart zichtbaar zijn, geanalyseerd. Als de optie niet is aangevinkt, worden alle locaties in de beide invoerlagen geanalyseerd, zelfs als deze zich buiten het huidige extent van de kaart bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Kies het raster of de objectbronlaag voor de bepaling van de paden van</h2></div>
+        <hr/>
+        <div>
+            <p>Een imageservice of featureservice die de cellen identificeert van waaruit het goedkoopste pad naar de goedkoopste bestemming wordt bepaald.
+            </p>
+            <p>Als de invoer een imageservice is, bestaat de invoer uit cellen die geldige waarden hebben (nul is een geldige waarde) en aan de resterende cellen moeten NoData worden toegewezen.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Kies de loopkosten van de rasterlaag</h2></div>
+        <hr/>
+        <div>
+            <p>Een raster dat de impedantie of de kosten definieert om planimetrisch door elke cel te bewegen.
+            </p>
+            <p>De waarde op elke cellocatie vertegenwoordigt de kosten per eenheid afstand voor het verplaatsen door de cel. Elke cellocatiewaarde wordt vermenigvuldigd met de celresolutie, terwijl ook de diagonale beweging wordt gecompenseerd om de totale kosten van het passeren door de cel te verkrijgen.
+            </p>
+            <p>De waarden van het kostenraster kunnen gehele getallen of zwevendekommagetallen zijn, maar ze kunnen niet negatief of nul zijn (u kunt geen negatieve of nulkosten hebben).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Invoer bestemmingsraster of -kenmerken</h2></div>
+        <hr/>
+        <div>
+            <p>Een invoer die de bestemmingen definieert die worden gebruikt om de afstand te berekenen. De laag kan raster of functie.De laag kan een raster of object zijn.
+            </p>
+            <p>Als de invoer een imageservice is, bestaat de invoer uit cellen die geldige waarden hebben (nul is een geldige waarde) en aan de resterende cellen moeten NoData worden toegewezen.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Resultaat polylijnlaagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>U kunt de naam van een map opgeven in  <b>Mijn Content</b>, waar het resultaat wordt opgeslagen met het vervolgkeuzemenu <b>Resultaat opslaan in</b>.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Kies het type paden voor de bepaling</h2></div>
+        <hr/>
+        <div>
+            <p>Bepaalt de manier waarop de waarden en zones op de invoerbestemmingsgegevens worden ge&iuml;nterpreteerd in de kostenpadberekeningen.
+            </p>
+            <ul>
+                <li>Beste enkel&mdash;Voor alle cellen of locaties op de invoergegevens van de bestemming wordt het pad met de laagste kosten afgeleid van de locatie met het minimum van de goedkoopste paden naar de bronlocatie. Dit is de standaard
+                    
+
+                </li>
+                <li>Naar elke cel&mdash;Voor elke cel of locatie met geldige waarden op de bestemmingsgegevens van de invoer wordt een pad met de laagste kosten bepaald en opgeslagen op de uitvoerfeatureservice. Met deze optie wordt elke cel van de invoerbestemmingsdata afzonderlijk behandeld en wordt voor elke cel een pad met de laagste kosten bepaald.
+                    
+
+                </li>
+                <li>Naar elke zone&mdash;Voor elke zone op de bestemmingsgegevens van de invoer wordt een pad met de laagste kosten bepaald en opgeslagen op de uitvoerfeatureservice. Met deze optie begint het pad met de laagste kosten voor elke zone op de cel of locatie met de weging van de laagste kostenafstand in de zone.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

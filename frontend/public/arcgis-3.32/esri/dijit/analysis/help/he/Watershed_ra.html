@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Watershed</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="משימת קו פרשת מים"></h2>
+        <hr/>
+    <p>כלי זה קובע את האזור הרלוונטי מעל לסט תאים ברסטר.
+    </p>
+    <p>קו פרשת מים הוא האזור במעלה השיפוע אשר תורם זרימה - בדרך כלל מים - למוצא משותף כשפך מרוכז. הוא יכול להיות חלק מקו פרשת מים גדול יותר וכן להכיל קווי פרשת מים קטנים יותר, שנקראים אגני משנה.
+    </p>
+    <p>הערך של כל קו פרשת מים יילקח מהערך של המקור ברסטר הקלט או ישות הקלט בשכבת נקודת השפיכה. כאשר נקודת השפיכה היא סט נתוני רסטר, ערכי התא משמשים כברירת מחדל. כאשר נקודת השפיכה היא סט נתוני ישות נקודה, הערכים יגיעו מהשדה שצוין.
+    </p>
+    <p>כלי קו פרשת המים תומך רק בשכבת רסטר כיון זרימת קלט D8.
+    </p>
+    <p>בעת ציון מיקומי נקודת השפיכה של הקלט כנתוני ישות, שדה ברירת המחדל יהיה שדה הזמין הראשון. אם לא קיימים שדות חוקיים, יעשה שימוש כברירת מחדל בשדה ObjectID (לדוגמה, OID או FID).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>בחר שכבת כיווני זרימה</h2></div>
+        <hr/>
+        <div>
+            <p>רסטר הקלט שמראה את כיוון הזרימה החוצה מכל תא.
+            </p>
+            <p>ניתן ליצור רסטר כיוון זרימה באמצעות הכלי 'כיוון זרימה' או המשימה FlowDirection בשירות RasterAnalysisTools, שמופעל באמצעות סוג כיון הזרימה שמוגדרת כברירת מחדל  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>ציין קלט יקומי נקודת שפיכה</h2></div>
+        <hr/>
+        <div>
+            <p>המיקומים של נקודת השפיכה של הקלט.
+            </p>
+            <p>עבור רסטר, זה מייצג תאים שמעליהם האזור התורם, או המאגר, ייקבע. כל התאים שהם NoData ישמש כתאי מקור. עבור קלט נקודה, זה מייצג תאים שמעליהם האזור התורם, או המאגר, ייקבע.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>בחר שדה נקודות שפך</h2></div>
+        <hr/>
+        <div>
+            <p>השדה אשר משמש להקצאת ערכים למיקומי נקודת השפיכה.
+            </p>
+            <p>אם שכבת נקודת השפיכה של הקלט היא רסטר, נעשה שימוש ב'ערך'. אם היא ישות, נעשה שימוש בשדה מספרי. אם השדה מכיל ערכי נקודה צפה, הם יקוצצו למספרים שלמים.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>שם שכבת התוצאה</h2></div>
+        <hr/>
+        <div>
+            <p>השם של השכבה שתיווצר ב <b>התוכן שלי</b> ותתווסף למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם שם השכבה כבר קיים, תתבקש לספק שם אחר.
+            </p>
+            <p>באפשרותך לציין את השם של תיקייה ב- <b>התוכן שלי</b> שבה התוצאה תישמר באמצעות התיבה הנפתחת <b>שמור תוצאה ב</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

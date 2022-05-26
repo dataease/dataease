@@ -1,0 +1,35 @@
+@mixin slider-variant($background, $thumb-color) {
+  .dijitSliderProgressBar,
+  .dijitSliderLeftBumper,
+  .dijitSliderBottomBumper {
+    background-color: $background;
+  }
+  &.dijitSliderHover {
+    .dijitSliderProgressBar,
+    .dijitSliderLeftBumper,
+    .dijitSliderBottomBumper {
+      background-color: darken($background, 5%);
+    }
+  }
+  &.dijitSliderFocused {
+    .dijitSliderProgressBar,
+    .dijitSliderLeftBumper,
+    .dijitSliderBottomBumper {
+      background-color: darken($background, 5%);
+    }
+  }
+  .dijitSliderImageHandle {
+    background-color: $thumb-color;
+  }
+  .dijitSliderImageHandleH {
+    &:after {
+      border-top-color: $thumb-color;
+    }
+  }
+  .dijitSliderImageHandleV {
+    &:after {
+      border-left-color: $thumb-color;
+    }
+  }
+}
+

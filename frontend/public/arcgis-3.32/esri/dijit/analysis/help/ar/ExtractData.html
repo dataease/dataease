@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>استخراج البيانات</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="استخراج البيانات"></h2>
+        <hr/>
+    <p>يمكنك باستخدام هذه الأداة تحديد وتنزيل البيانات من منطقة اهتمام محددة. سيتم إضافة الطبقات التي تقوم بتحديدها إلى ملف ZIP، أو CSV، أو KMZ.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>الطبقات المطلوب استخراجها</h2></div>
+        <hr/>
+        <div>
+            <p>تعتبر طبقات في جدول المحتويات هي التي يمكن استخراج المعالم منها. يتم استخراج الطبقات التي يتم تحديدها وتضمينها في ملف ZIP الناتج أو ملف CSV.
+            </p>
+            <p>لظهور طبقة ما في قائمة الطبقات المراد استخراجها، يجب أن تكون البيانات خاصة بك أو أن يقوم مالك البيانات بتمكين تصدير البيانات. لتمكين تصدير البيانات إلى البيانات الخاصة بك: 
+                <ul>
+                    <li>فتح تفاصيل عناصر البيانات.
+                    </li>
+                    <li>انقر على علامة تبويب  <b>إعدادات</b>.
+                    </li>
+                    <li>قم بالتمرير إلى الأسفل إلى جزء  <b>تصدير البيانات</b>.
+                    </li>
+                    <li>قم بالتأشير على  <b>السماح للآخرين بالتصدير إلى تنسيقات مختلفة.</b>.  انقر فوق <b>حفظ</b> عند الانتهاء.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>إذا تضمنت طبقة التحليل مرفقات، لاحظ أنه سيتم استخراج المرفقات فقط إذا كان تنسيق البيانات الناتج هو قاعدة بيانات جغرافية ملفية وسيتم إلغاء التحقق من  <b>قص المعالم</b>.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>منطقة الدراسة</h2></div>
+        <hr/>
+        <div>
+            <p>المنطقة التي تقوم بتعريف المعالم التي سيتم تضمينها في ملف ZIP الناتج أو ملف CSV. يمكن الاختيار مما يلي:
+                <ul>
+                    <li>مدى الخريطة الحالي المرئي ( <b>مثلما هو معروض</b>).
+                    </li>
+                    <li>إحدى طبقات جدول المحتويات. إذا كانت الطبقة المحددة هي معالم خط أو نقطة، فسيستخدم مدى الطبقة كمنقطة دراسة.
+                    </li>
+                    <li>ارسم منطقة لتعريف منطقة الدراسة.
+                    </li>
+                </ul>
+                 سيتم استخراج جميع المعالم التي توجد ضمن مدى الخريطة بالكامل. لديك خياران للمعالم التي تخترق أو تتقاطع مع حدود مدى الخريطة، إلا أنها لا تكون ضمن المدى بالكامل، وهما:
+                <ul>
+                    <li> <b>تحديد معالم</b>&mdash;سيتم استخراج المعالم التي تخترق حدود منطقة الدراسة بالكامل.
+                    </li>
+                    <li> <b>قص معالم</b>&mdash;لا يتم استخراج إلا تلك الأجزاء من المعالم التي تقع ضمن منطقة الدراسة.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>تنسيق البيانات الناتجة</h2></div>
+        <hr/>
+        <div>
+            <p>تنسيق البيانات التي سيتم استخراجها. عند تصدير معالك خط أو منطقة إلى ملفات CSV، يتم فقط تصدير البيانات الجدولية غير المكانية. عند تصدير معالم نقطية، يتم تصدير كلاً من البيانات الجدولية المكانية وغير المكانية على حد سواء.  
+            </p>
+            <p>البيانات التي تم استخراجها سوف تستخدم إسقاط Web Mercator 1984. بالنسبة لملفات CSV، سيتم إلحاق حقل  <i>Lat</i> و <i>Long</i> بالبيانات مع الإحداثيات في Web Mercator 1984.
+            </p> 
+            <p>يتم دعم تنسيقات الإخراج التالية:
+                <ul>
+                    <li>(قيم مفصولة بفواصل (csv)&mdash; <code>.csv</code> أو <code>.zip</code>
+                    </li>
+                    <li>قاعدة بيانات جغرافية ملفية&mdash; <code>.zip</code>
+                    </li>
+                    <li>لغة تمييز Keyhole (KML) &mdash; <code>.kmz</code>أو <code>.zip</code>
+                    </li>
+                    <li>ملف شكل&mdash; <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>اسم ملف الإخراج</h2></div>
+        <hr/>
+        <div>
+            <p>هذا هو اسم العنصر الذي سيتم إضافته إلى  <b>المحتوى الخاص بي</b>.  يتوقف اسم العنصر على <b>تنسيق البيانات الناتج</b> المُحدد.     إذا وُجد العنصر بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>عند استخدام مربع السهم المنسدل  <b>حفظ النتائج في</b> يمكن تحديد اسم المجلد في <b>المحتويات</b> حيث يتم حفظ النتائج.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

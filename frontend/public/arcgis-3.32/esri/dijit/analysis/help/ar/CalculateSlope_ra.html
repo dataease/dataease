@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>حساب الانحدار</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="حساب أداة الانحدار للبوابة الإلكترونية"></h2>
+        <hr/>
+    <p>تقوم هذه الأداة بإنشاء سطح يعرض منحدر بيانات الارتفاع المدخلة. يُمثل المنحدر معدل تغيير الارتفاع لكل خلية من نموذج الارتفاع الرقمي.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>اختر البيانات المُدخلة لحساب الانحدار</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم احتساب طبقة الارتفاع من المنحدر الذي يتم احتسابه.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>حدد عامل قياس المسقط الرأسي</h2></div>
+        <hr/>
+        <div>
+            <p>إدخال عامل Z:
+            </p>
+            <p>عامل Z هو عامل تغيير الحجم المستخدم لتحويل قيم الارتفاع لغرضين.
+ 
+                <ul>
+                    <li>لتحويل وحدات الارتفاع (مثل الأمتار أو القدم) إلى وحدات الإحداثيات الأفقية للطبقة، التي قد تكون بالقدم، أو الأمتار، أو الدرجات
+                        
+  
+                    </li>
+                    <li>لإضافة المبالغة الرأسية للتأثير البصري
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>من قدم
+                    </p>
+                </td>
+                <td>
+                    <p>من متر
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>من قدم
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0.3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>من متر
+                    </p>
+                </td>
+                <td>
+                    <p>3.28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم إنشاء اسم الطبقة في  <b>المحتوى</b> وسيتم إضافته إلى الخريطة. يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجدت الطبقة بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>يمكنك تحديد اسم مجلد في  <b>محتواي</b> حيث سيتم حفظ النتيجة باستخدام المربع المنسدل <b>حفظ النتيجة في</b>
+            </p>
+        </div>
+    </div>
+</div>
+</html>

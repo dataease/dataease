@@ -1,0 +1,827 @@
+// You can customize this theme by changing lightColor/darkColor and run the 'compile' script in ../utils.
+// See ../utils/README for more informations on compiling themes.
+
+@lightColor: #FFFFFF; // The base color of the theme
+@darkColor: #000000;  // Mainly used for text and some borders
+
+// Selected button gradient colors
+@lightColor02: darken(@lightColor, 40%);
+@lightColor03: darken(@lightColor, 26.5%);
+
+// Background color of form controls, TabBar(segmented), dijit Calendar thread and year label
+@lightColor04: darken(@lightColor, 11.5%);
+
+// Button background color
+@lightColor05: darken(@lightColor, 35.5%);
+
+// Background color of Heading, Overlay, bubble Tooltip and Calendar day label
+@lightColor06: darken(@lightColor, 3.5%);
+
+// Background color of Heading and bubble Tooltip
+@lightColor07: darken(@lightColor, 13%);
+
+// Background colors of ValuePicker slot
+@lightColor08: darken(@lightColor, 26%);
+@lightColor09: darken(@lightColor, 3%);
+@lightColor10: darken(@lightColor, 16%);
+
+// Background colors of ValuePicker input area
+@lightColor11: darken(@lightColor, 2%);
+
+// Border color of Button (bottom), Toolbar button (top left right), Toolbar button arrow, Switch, Slider handle,
+// standard and segmented TabBar buttons, Tooltip arrow, Accordion, IconMenu (compat), dijit Calendar increase/decrease buttons
+@lightColor12: darken(@lightColor, 39.2%);
+
+// Background color of View, Switch (left part), Accordion's title, SearchBox's cancel button,
+// Border color of Button (top, left, right), Heading (top, bottom), RoundRect, ListItem, RadioButton, Slider,
+// Accordion's selected title (bottom), SimpleDialog's title (bottom), dijit Calendar.
+@lightColor13: darken(@lightColor, 24.8%);
+
+// Background color of dijit Calendar month menu label.
+@lightColor14: darken(@lightColor, 5%);
+
+// Color of ListItem subtext, TabBar background gradient (barType=tabBar, tallBar)
+@darkColor02: lighten(@darkColor, 17.5%);
+
+// Background color of TabBar's button (barType=tabBar).
+@darkColor03: lighten(@darkColor, 28.2%);
+
+// Background color of TabBar's selected button (barType=tabBar).
+@darkColor04: lighten(@darkColor, 14%);
+
+// Text color of checked ListItem. Background color of TabBar's button (barType=tabBar).
+@darkColor05: lighten(@darkColor, 25%);
+
+// Border color of ToolBar's body (bottom), ToolBar's button arrow (right and bottom), Switch knob (bottom).
+@darkColor06: lighten(@darkColor, 46.2%);
+
+// Blue and red colors
+@blueColor: #048bf4;
+@blueColor02: lighten(@blueColor, 15%);
+@redColor: #ee4115;
+@redColor02: #fa9d58;
+
+
+
+@import "../common/css3.less";
+
+@default-blue-button-color: @lightColor;
+@default-blue-button-background-color: @blueColor;
+.default-blue-button-background-image () { .background-image-linear-gradient-top-bottom(@blueColor02, @blueColor); }
+@default-blue-button-background-image-gecko: -moz-linear-gradient(top, @blueColor02 0%, @blueColor 100%);
+
+.mbl-color-blue-45 () { .background-image-linear-gradient-top-left-bottom-right(@blueColor, @blueColor02); }
+.mbl-color-default-45 () { .background-image-linear-gradient-top-left-bottom-right(@lightColor04, @lightColor05); }
+.mbl-color-default-sel-45 () { .background-image-linear-gradient-top-left-bottom-right(@lightColor03, @lightColor02); }
+
+@mbl-color-blue-45-gecko: -moz-linear-gradient(top left, @blueColor 0%, @blueColor02 100%);
+@mbl-color-default-45-gecko: -moz-linear-gradient(top left, @lightColor04 0%, @lightColor05 100%);
+@mbl-color-default-sel-45-gecko: -moz-linear-gradient(top left, @lightColor03 0%, @lightColor02 100%);
+
+@default-button-color: @darkColor;
+@default-button-background-color: @lightColor05;
+.default-button-background-image () { .background-image-linear-gradient-top-bottom(@lightColor04, @lightColor05); }
+@default-button-background-image-gecko: -moz-linear-gradient(top, @lightColor04 0%, @lightColor05 100%);
+@default-button-border-radius: 0;
+
+@default-button-selected-color: @lightColor;
+@default-button-selected-background-color: @lightColor02;
+.default-button-selected-background-image () { .background-image-linear-gradient-top-bottom(@lightColor03, @lightColor02); }
+@default-button-selected-background-image-gecko: -moz-linear-gradient(top, @lightColor03 0%, @lightColor02 100%);
+
+@default-selected-color: @lightColor;
+@default-selected-background-color: @default-button-selected-background-color;
+.default-selected-background-image () { .default-button-selected-background-image(); }
+@default-selected-background-image-gecko: @default-button-selected-background-image-gecko;
+
+@heading-background-color: @lightColor07;
+.heading-background-image () { .background-image-linear-gradient-top-bottom(@lightColor06, @lightColor07); }
+@heading-background-image-gecko: -moz-linear-gradient(top, @lightColor06 0%, @lightColor07 100%);
+@heading-border-top-color: @lightColor13;
+@heading-border-bottom-color: @lightColor13;
+
+.default-button-border-styles () {
+	border: 1px solid @lightColor13;
+	border-bottom-color: @lightColor12;
+	border-radius: @default-button-border-radius;
+}
+
+.mblToolBarButtonBodyInLeftArrow-styles () {
+  border-left-width: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.mblToolBarButtonBodyInRightArrow-styles () {
+  border-right-width: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+// background styles of form controls
+.mbl-button-background-image () { .background-image-linear-gradient-top-bottom(@lightColor, @lightColor04); }
+.mbl-button-selected-background-image () { .default-selected-background-image(); }
+.mbl-blue-button-background-image () { .default-blue-button-background-image(); }
+.mbl-blue-button-selected-background-image () { .default-selected-background-image(); }
+.mbl-red-button-background-image () { .background-image-linear-gradient-top-bottom(@redColor02, @redColor); }
+.mbl-red-button-selected-background-image () { .default-selected-background-image(); }
+.mbl-button-checked-background-image () { .mbl-button-background-image(); }
+
+// background styles of form controls (for gecko)
+@mbl-button-background-image-gecko: -moz-linear-gradient(top, @lightColor 0%, @lightColor04 100%);
+@mbl-button-selected-background-image-gecko: @default-selected-background-image-gecko;
+@mbl-blue-button-background-image-gecko: @default-blue-button-background-image-gecko;
+@mbl-blue-button-selected-background-image-gecko: @default-selected-background-image-gecko;
+@mbl-red-button-background-image-gecko: -moz-linear-gradient(top, @redColor02 0%, @redColor 100%);
+@mbl-red-button-selected-background-image-gecko: @default-selected-background-image-gecko;
+@mbl-button-checked-background-image-gecko: @mbl-button-background-image-gecko;
+
+// common.less
+.mobile-body-styles () {
+	font-family: Helvetica;
+	font-size: 17px;
+	color: @darkColor;
+}
+
+.mblBackground-styles () {
+	background-color: @lightColor13;
+}
+
+.mblView-styles () {
+	color: @darkColor;
+}
+
+.mblColorBlue-styles () {
+	color: @default-blue-button-color;
+	background-color: @default-blue-button-background-color;
+	.default-blue-button-background-image();
+}
+.mblColorDefault-styles () {
+	color: @default-button-color;
+	background-color: @default-button-background-color;
+	.default-button-background-image();
+}
+.mblColorDefaultSel-styles () {
+	color: @default-button-selected-color;
+	background-color: @default-button-selected-background-color;
+	.default-button-selected-background-image();
+}
+
+// Heading.less
+.mblHeading-styles () {
+	.heading-background-image();
+	border-top: 1px solid @heading-border-top-color;
+	border-bottom: 1px solid @heading-border-bottom-color;
+	color: @darkColor;
+	text-shadow: rgba(255,255,255,0.5) 0 1px 0;
+}
+
+// ToolBarButton.less
+@mbl-tool-bar-button-body-border-radius: 0;
+//
+.mblToolBarButton-styles () {
+	text-shadow: none;
+}
+.mblToolBarButtonArrow-styles () {
+	border-radius: 1px;
+  .transform(scale(0.7, 1.05) rotate(45deg));
+	border: 1px solid @lightColor12;
+	border-right-color: @darkColor06;
+	border-bottom-color: @darkColor06;
+}
+.mblToolBarButtonArrowInHeading-styles () {
+}
+.mblToolBarButtonHasLeftArrowInHeading-styles () {
+}
+.mblToolBarButtonHasLeftArrowInHeading-compat-gecko () {
+}
+.mblToolBarButtonHasRightArrowInHeading-styles () {
+}
+.mblToolBarButtonHasRightArrowInHeading-compat-gecko () {
+}
+.mblToolBarButtonArrowInLeftArrow-styles () {
+  left: -1px;
+}
+.mblToolBarButtonArrowInRightArrow-styles () {
+  right: -1px;
+}
+.mblToolBarButtonBody-styles () {
+	border: 1px solid @lightColor12;
+	border-bottom-color: @darkColor06;
+	text-shadow: rgba(255,255,255,0.5) 0 1px 0;
+}
+.mblToolBarButtonBodyInHeading-styles () {
+}
+.mblToolBarButtonBodyInHeading-compat-gecko () {
+}
+
+// RoundRect.less & RoundRectList.less
+@mbl-round-rect-border-color: @lightColor13;
+@mbl-round-rect-border-radius: 8px;
+@mbl-round-rect-background-color: @lightColor;
+@mbl-round-rect-box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
+//
+.mblRoundRect-styles () {
+	color: @darkColor;
+}
+
+// EdgeToEdgeCategory.less
+.mblEdgeToEdgeCategory-styles () {
+	height: 22px;
+	background-color: @heading-background-color;
+	.heading-background-image();
+	border-bottom: 1px solid @heading-border-bottom-color;
+	color: @darkColor;
+	text-shadow: rgba(255,255,255,0.5) 0 1px 0;
+	line-height: 22px;
+}
+
+// RoundRectCategory.less
+.mblRoundRectCategory-styles () {
+	color: @darkColor;
+}
+
+// EdgeToEdgeList.less
+.mblEdgeToEdgeList-styles () {
+	background-color: @darkColor;
+}
+.mblEdgeToEdgeList-LastListItem-styles () {
+	border-bottom-color: @lightColor13;
+}
+
+// ListItem.less
+@mbl-list-item-height: 43px;
+//
+.mblListItem-styles () {
+	border-bottom: 1px solid @lightColor13;
+	background-color: @lightColor;
+	color: @darkColor;
+	font-weight: bold;
+}
+.mblListItemSelected-styles () {
+	color: @default-selected-color;
+	.heading-background-image();
+}
+.mblListItemLabelSelected-styles () {
+	background-color: @lightColor;
+}
+.mblListItemChecked-styles () {
+	color: @darkColor05;
+}
+.mblListItemRightText-styles () {
+	color: @darkColor;
+	margin-top: 12px;
+}
+.mblListItemSubText-styles () {
+	font-size: 14px;
+	color: @darkColor02;
+}
+
+// Switch.less
+@mbl-switch-bg-left-background-color: @lightColor13;
+.mbl-switch-bg-left-background-image () { .default-button-selected-background-image(); }
+@mbl-switch-bg-right-background-color: @lightColor04;
+.mbl-switch-bg-right-background-image () { .mbl-button-background-image(); }
+.mbl-switch-knob-background-image () { .default-button-background-image(); }
+//
+@mbl-switch-bg-left-background-image-gecko: @default-button-selected-background-image-gecko;
+@mbl-switch-bg-right-background-image-gecko: @mbl-button-background-image-gecko;
+@mbl-switch-knob-background-image-gecko: @default-button-background-image-gecko;
+@mbl-switch-square-border-radius: 2px;
+//
+.mblSwitchBg-styles () {
+	border: 1px solid @lightColor13;
+	border-bottom-color: @lightColor12;
+}
+.mblSwitchKnob-styles () {
+	border: 1px solid @lightColor12;
+	border-bottom-color: @darkColor06;
+}
+
+// Button.less
+.mblButton-styles () {
+	.default-button-border-styles;
+	color: @darkColor;
+	font-size: 13px;
+}
+.mblButtonSelected-styles () {
+	color: @lightColor;
+}
+.mblButton-mblBlueButton-styles () {
+	color: @lightColor;
+}
+.mblButton-mblRedButton-styles () {
+	color: @lightColor;
+}
+
+// CheckBox.less
+.mblCheckBox-styles () {
+	.default-button-border-styles;
+}
+.mblCheckBoxChecked-after-styles () {
+	border-color: @darkColor;
+}
+.mblCheckBoxChecked-mblCheckBoxSelected-after-styles () {
+	border-color: @lightColor;
+}
+
+// ComboBox.less
+@mbl-combo-box-popup-box-shadow: none;
+//
+.dijitPopup-styles () {
+	border-radius: 0;
+}
+.mblComboBoxMenu-styles () {
+	border-color: @darkColor;
+	border-radius: 0;
+	background-color: @lightColor;
+	color: @darkColor;
+}
+.mblComboBoxMenuItem-styles () {
+	border-color: @lightColor;
+	color: inherit;
+}
+.mblComboBoxMenuItemSelected-styles () {
+	.default-selected-background-image();
+	color: @lightColor;
+}
+
+// IconContainer.less
+.mblIconItemSub-styles () {
+	background-color: @lightColor;
+	color: @darkColor;
+}
+.mblIconArea-styles () {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	width: 74px;
+	color: @darkColor;
+}
+.mblIconItemDeleteIcon-styles () {
+	top: -4px;
+	left: -2px;
+}
+
+// RadioButton.less
+.mblRadioButton-styles () {
+	border-style: solid;
+	border-color: @lightColor13;
+}
+.mblRadioButtonChecked-after-styles () {
+	border-color: @darkColor;
+}
+.mblRadioButtonChecked-Selected-after-styles () {
+	border-color: @lightColor;
+}
+
+// Slider.less
+@mbl-slider-bar-border-radius: 0;
+@mbl-slider-knob-border-radius: 0;
+//
+.mblSlider-styles () {
+	border: 1px solid @lightColor13;
+	border-bottom-color: @lightColor12;
+}
+.mblSliderHandle-styles () {
+	border: 1px solid @lightColor12;
+	border-bottom-color: @darkColor06;
+}
+
+// TabBar.less
+.mblTabBar-styles () {
+	text-shadow: none;
+}
+
+// barType="tabBar"
+.mblTabBarTabBar-styles () {
+	.background-image-linear-gradient-top-bottom(@darkColor02, @darkColor);
+}
+.mblTabBarTabBar-compat () {
+	background-color: @darkColor;
+}
+.mblTabBarTabBarButton-styles () {
+
+}
+.mblTabBarTabBarButtonIconArea-styles () {
+}
+.mblTabBarTabBarButtonLabel-styles () {
+	color: @lightColor;
+}
+.mblTabBarTabBarButtonSelected-styles () {
+	background-color: @darkColor05;
+	.background-image-linear-gradient-top-bottom(@darkColor03, @darkColor04);
+}
+.mblTabBarTabBarButtonLabelSelected-styles () {
+	color: @lightColor;
+}
+
+// barType="segmentedControl"
+@mbl-tab-bar-segmented-control-border-radius: 5px;
+//
+.mblTabBarSegmentedControl-styles () {
+}
+.mblTabBarSegmentedControlButton-styles () {
+	border-style: solid;
+	border-color: @lightColor12 @lightColor12 @lightColor12 @lightColor12;
+	color: @darkColor;
+	.mbl-button-background-image();
+	text-shadow: rgba(255,255,255,0.5) 0 1px 0;
+}
+.mblTabBarSegmentedControlButton-compat-gecko () {
+}
+.mblTabBarSegmentedControlButtonSelected-styles () {
+	color: @default-button-color;
+	.default-button-background-image();
+	text-shadow: rgba(255,255,255,0.5) 0 1px 0;
+}
+
+// barType="standardTab"
+.mblTabBarStandardTab-styles () {
+	border-top: none;
+	border-bottom: none;
+}
+.mblTabBarStandardTabButton-styles () {
+	color: @darkColor;
+	border-color: @lightColor12;
+	.heading-background-image();
+}
+.mblTabBarStandardTabButtonIconArea-styles () {
+}
+.mblTabBarStandardTabButtonLabel-styles () {
+}
+.mblTabBarStandardTabButtonSelected-styles () {
+	.default-button-background-image();
+}
+.mblTabBarStandardTabButtonLabelSelected-styles () {
+}
+
+// barType="tallTab"
+.mblTabBarTallTab-styles () {
+	.background-image-linear-gradient-top-bottom(@darkColor02, @darkColor);
+}
+.mblTabBarTallTabButton-styles () {
+}
+.mblTabBarTallTabButton-FirstChild-styles () {
+}
+.mblTabBarTallTabButton-LastChild-styles () {
+}
+.mblTabBarTallTabButtonIconArea-styles () {
+}
+.mblTabBarTallTabButtonLabel-styles () {
+}
+.mblTabBarTallTabButtonSelected-styles () {
+}
+.mblTabBarTallTabButtonLabelSelected-styles () {
+}
+
+// TextArea.less
+.mblTextArea-styles () {
+	.default-button-border-styles;
+}
+
+// TextBox.less
+.mblTextBox-styles () {
+	.default-button-border-styles;
+}
+
+// ToggleButton.less
+.mblToggleButton-styles () {
+	.default-button-border-styles;
+	font-size: 13px;
+	color: @darkColor;
+}
+.mblToggleButtonSelected-styles () {
+	color: @lightColor;
+}
+.mblToggleButtonChecked-styles () {
+	color: @darkColor;
+}
+.mblToggleButtonChecked-after-styles () {
+	border-color: @darkColor;
+}
+.mblToggleButtonCheckedSelected-styles () {
+	color: @lightColor;
+}
+.mblToggleButtonCheckedSelected-after-styles () {
+	border-color: @lightColor;
+}
+
+// Overlay.less
+.mblOverlay-styles () {
+	background-color: @lightColor06;
+	background-image: none;
+}
+.mblOverlay-compat () {
+}
+.mblOverlay-compat-gecko () {
+}
+
+// Tooltip.less
+@mbl-tooltip-border-radius: 3px;
+//
+.mblTooltip-styles () {
+	border-color: @darkColor;
+	border-radius: @mbl-tooltip-border-radius;
+	background-color: @lightColor07;
+	background-image: none;
+}
+.mblTooltipBubble-styles () {
+	background-color: @lightColor06;
+	background-image: none;
+	color: @darkColor;
+}
+.mblTooltipInnerArrow-Bubble-Above-styles () {
+	border-bottom-color: @lightColor06;
+}
+.mblTooltipInnerArrow-Bubble-Below-styles () {
+	border-top-color: @lightColor06;
+}
+.mblTooltipInnerArrow-Bubble-After-styles () {
+	border-left-color: @lightColor06;
+}
+.mblTooltipInnerArrow-Bubble-Before-styles () {
+	border-right-color: @lightColor06;
+}
+.mblTooltipArrow-Before-styles () {
+	border-left-width: 0;
+	border-right-color: @lightColor12;
+}
+.mblTooltipArrow-After-styles () {
+	border-right-width: 0;
+	border-left-color: @lightColor12;
+}
+.mblTooltipArrow-Above-styles () {
+	border-top-width: 0;
+	border-bottom-color: @lightColor12;
+}
+.mblTooltipArrow-Below-styles () {
+	border-bottom-width: 0;
+	border-top-color: @lightColor12;
+}
+.mblTooltipInnerArrow-Before-styles () {
+	border-left-width: 0;
+	border-right-color: @lightColor07;
+}
+.mblTooltipInnerArrow-After-styles () {
+	border-right-width: 0;
+	border-left-color: @lightColor07;
+}
+.mblTooltipInnerArrow-Above-styles () {
+	border-top-width: 0;
+	border-bottom-color: @lightColor07;
+}
+.mblTooltipInnerArrow-Below-styles () {
+	border-bottom-width: 0;
+	border-top-color: @lightColor07;
+}
+.mblTooltip-Heading-styles () {
+	padding-bottom: 3px;
+	border-top: 1px solid transparent;
+	border-bottom: 1px solid transparent;
+	background-color: transparent;
+	background-image: none;
+}
+.mblTooltip-Heading-compat () {
+}
+.mblTooltip-Heading-ToolbarButton-styles () {
+}
+.mblTooltip-Heading-ToolbarButton-compat () {
+}
+
+// Accordion.less
+.mblAccordion-styles () {
+	border-color: @lightColor12;
+}
+.mblAccordionTitle-styles () {
+	border-top: 1px solid @lightColor12;
+	background-color: @lightColor13;
+	background-image: none;
+	font-weight: normal;
+}
+.mblAccordionTitle-compat () {
+}
+.mblAccordionTitle-compat-gecko () {
+}
+.mblAccordionTitleSelected-styles () {
+	border-bottom: 1px solid @lightColor13;
+	.mbl-button-checked-background-image();
+	font-weight: bold;
+}
+.mblAccordionTitleSelected-compat () {
+	background-color: @lightColor04;
+}
+.mblAccordionTitleSelected-compat-gecko () {
+	background-image: @mbl-button-checked-background-image-gecko;
+}
+.mblAccordionTitleAnchor-styles () {
+	color: @darkColor;
+}
+.mblAccordionTitleAnchorSelected-styles () {
+}
+
+// SimpleDialog.less
+@mbl-simple-dialog-border-radius: 0;
+//
+.mblSimpleDialog-styles () {
+	padding: 5px;
+	width: 262px;
+}
+.mblSimpleDialogDecoration-styles () {
+	background-color: @lightColor;
+	border: 1px solid @darkColor;
+	color: @darkColor;
+}
+.mblSimpleDialogDecoration-compat () {
+}
+.mblSimpleDialogDecoration-compat-gecko () {
+}
+.mblSimpleDialogTitle-styles () {
+	margin: 7px 0 7px -5px;
+	padding: 0 14px 7px;
+	width: 244px;
+	border-bottom: 1px solid @lightColor13;
+	font-size: 20px;
+	font-weight: bold;
+	text-align: left;
+}
+.mblSimpleDialogText-styles () {
+	margin: 14px 9px;
+	width: 244px;
+	text-align: left;
+}
+
+// IconMenu.less
+@mbl-icon-menu-border-radius: 3px;
+@mbl-icon-menu-item-border-radius: 3px;
+//
+.mblIconMenu-styles () {
+	padding: 0;
+	background-color: rgba(160, 160, 160, 0.85);
+	border: 1px solid @darkColor;
+}
+.mblIconMenu-compat () {
+	background-color: @lightColor12;
+}
+.mblIconMenu-compat-gecko () {
+	background-color: rgba(160, 160, 160, 0.85);
+}
+.mblIconMenuItem-styles () {
+	border-left: 1px solid rgba(192, 192, 192, 0.85);
+	border-bottom: 1px solid rgba(192, 192, 192, 0.85);
+}
+.mblIconMenuItemAnchor-styles () {
+	font-size: 13px;
+	color: @lightColor;
+}
+.mblIconMenuItemSel-styles () {
+	.default-selected-background-image();
+}
+.mblIconMenuItemSel-compat () {
+	background-color: @default-selected-background-color;
+}
+.mblIconMenuItemSel-compat-gecko () {
+	background-image: @default-selected-background-image-gecko;
+}
+
+// dijit.Calendar
+.dijitCalendar-styles () {
+	border: 1px solid @lightColor13;
+}
+.dijitCalendar-thead-styles () {
+	.mbl-button-background-image();
+}
+.dijitCalendar-thead-compat () {
+	background-image: url(compat/calendar-month-bg.png);
+}
+.dijitCalendar-thead-compat-gecko () {
+	background-image: @mbl-button-background-image-gecko;
+}
+.dijitCalendarMonthLabel-styles () {
+	color: @darkColor;
+	font-size: 16px;
+}
+.dijitCalendarMonthMenu-styles () {
+}
+.dijitCalendarMonthMenu-compat-ff3 () {
+}
+.dijitCalendarMonthMenu-Label-styles () {
+	background-color: @lightColor14;
+	color: @darkColor;
+}
+.dijitCalendarDecrease-styles () {
+	border-right: 6px solid @lightColor12 !important;
+}
+.dijitCalendarIncrease-styles () {
+	border-left: 6px solid @lightColor12 !important;
+}
+.dijitCalendarDayLabelTemplate-styles () {
+	background-color: @lightColor06;
+	font-size: 12px;
+	color: @darkColor;
+}
+.dijitCalendarDateTemplate-styles () {
+	border: none;
+	background-color: @lightColor;
+	color: @darkColor;
+}
+.dijitCalendarDateTemplate-LastChild-styles () {
+	border-right: none;
+}
+.dijitCalendarDateLabel-DateTemplate-styles () {
+	border: none;
+}
+.dijitCalendarDateLabel-PrevMonth-styles () {
+	color: lightGrey;
+}
+.dijitCalendarDateLabel-Hovered-styles () {
+	color: grey;
+}
+.dijitCalendarDateLabel-Selected-styles () {
+	.default-button-background-image();
+	color: @darkColor;
+	text-shadow: rgba(0,0,0,0.4) 0 1px 0;
+}
+.dijitCalendarDateLabel-Selected-compat () {
+	background-image: url(compat/calendar-datelabel-sel-bg.png);
+}
+.dijitCalendarDateLabel-Selected-compat-gecko () {
+	background-image: @default-button-background-image-gecko;
+}
+.dijitCalendarDateLabel-Active-styles () {
+	.default-selected-background-image();
+}
+.dijitCalendarDateLabel-Active-compat () {
+	background-image: url(compat/calendar-datelabel-act-bg.png);
+}
+.dijitCalendarDateLabel-Active-compat-gecko () {
+	background-image: @default-selected-background-image-gecko;
+}
+.dijitCalendarYearLabel-styles () {
+	padding: 0;
+	.mbl-button-background-image();
+}
+.dijitCalendarYearLabel-compat () {
+	background-image: url(compat/calendar-year-bg.png);
+}
+.dijitCalendarYearLabel-compat-gecko () {
+	background-image: @mbl-button-background-image-gecko;
+}
+.dijitCalendarSelectedYear-styles () {
+	color: @darkColor;
+	font-size: 16px;
+}
+.dijitCalendarNextYear-styles () {
+	padding: 1px 6px 3px 6px;
+	color: @darkColor;
+	font-size: 12px;
+}
+
+// SearchBox.less
+@mbl-searchbox-cancel-button-color: @lightColor;
+@mbl-searchbox-cancel-button-bg-color: @lightColor13;
+.mblSearchBox-Cancel-Button-styles () {
+	border-radius: 1em;
+}
+@mbl-searchbox-results-decoration-color: @lightColor13;
+
+// ProgressBar.less
+.mblProgressBar-styles () {
+	height: 13px;
+	background-color: @lightColor;
+	border: 1px solid @blueColor;
+}
+.mblProgressBarProgress-styles () {
+	height: 13px;
+	.background-image-linear-gradient-top-bottom-1-stop(@blueColor, @blueColor02, 0.5, @blueColor);
+	border-right: 1px solid @blueColor;
+}
+.mblProgressBarComplete-styles () {
+}
+.mblProgressBarNotStarted-styles () {
+}
+.mblProgressBarMsg-styles () {
+	top: -1px;
+}
+.mblProgressBar-compat () {
+}
+.mblProgressBarProgress-compat () {
+	background-color: @blueColor;
+}
+.mblProgressBar-compat-gecko () {
+}
+.mblProgressBarProgress-compat-gecko () {
+	background-image: -moz-linear-gradient(top, @blueColor 0%, @blueColor 50%, @blueColor02 100%);
+}
+
+// ValuePicker.less
+.mbl-value-picker-slot-button-background-image () { .background-image-linear-gradient-top-bottom-2-stops(@lightColor09, @lightColor10, 0.5, @lightColor10, 0.9, @lightColor08); }
+@mbl-value-picker-slot-button-background-image-gecko: -moz-linear-gradient(top, @lightColor09 0%, @lightColor10 50%, @lightColor08 90%, @lightColor10 100%);
+@mbl-value-picker-slot-button-radius: 5px;
+.mbl-value-picker-slot-input-area-background-image () { .background-image-linear-gradient-top-bottom-4-stops-no-from-to(0.1, @lightColor11, 0.2, @lightColor11, 0.5, @lightColor, 0.9, @lightColor); }
+@mbl-value-picker-slot-input-area-background-image-gecko: -moz-linear-gradient(top, @lightColor11 10%, @lightColor11 20%, @lightColor 50%, @lightColor 90%);
+.mblValuePickerSlot-style () {
+  margin:  0 5px;
+}
+.mblValuePickerSlot-input-style () {
+	font-size: 28px;
+}

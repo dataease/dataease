@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Generalisierte lineare Regression</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Diagramm des Workflows &quot;GeneralizedLinearRegression&quot;"></h2>
+        <hr/>
+    <p>F&uuml;hrt eine generalisierte lineare Regression (GLR) aus, um Vorhersagen zu generieren oder eine abh&auml;ngige Variable in Hinsicht auf ihre Beziehung zu einem Satz erkl&auml;render Variablen zu modellieren. Dieses Werkzeug kann f&uuml;r kontinuierliche (Gau&szlig;) und bin&auml;re (logistische) Modelle sowie f&uuml;r Anzahlmodelle (Poisson) verwendet werden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analysetyp</h2></div>
+        <hr/>
+        <div>
+            <p>Gibt den Operationsmodus des Werkzeugs an. Das Werkzeug kann ausgef&uuml;hrt werden, um ein Modell nur f&uuml;r die Bewertung der Performance zu trainieren oder um ein Modell zu trainieren und Features vorherzusagen. Die folgenden Vorhersagetypen sind verf&uuml;gbar:
+                <ul>
+                    <li> <b>Modell f&uuml;r die Bewertung der Modell-Performance anpassen</b>: Ein Modell wird angepasst und auf die Eingabedaten angewendet. Verwenden Sie diese Option, um die Genauigkeit des Modells zu pr&uuml;fen, bevor Sie Vorhersagen f&uuml;r ein neues Dataset generieren, oder um Beziehungen und Einflussfaktoren Ihrer vorhergesagten Variable zu verstehen. Die Ausgaben dieser Option sind ein Feature-Service Ihrer angepassten Daten und Modelldiagnosen.
+                    </li>
+                    <li> <b>Modell trainieren und Werte vorhersagen</b>: Vorhersagen oder Klassifikationen werden f&uuml;r Eingabe-Features und Vorhersage-Features generiert. Sowohl f&uuml;r die Vorhersage-Features als auch f&uuml;r die vorherzusagenden Features m&uuml;ssen erkl&auml;rende Variablen angegeben werden. Die Ausgaben dieser Option sind ein Feature-Service Ihres an die Eingabedaten angepassten Modells, ein Feature-Service von vorhergesagten Werten und Modelldiagnosen.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Ein Modell anpassen, um die Modell-Performance zu bewerten</h2></div>
+        <hr/>
+        <div>
+            <p>Verwenden Sie diesen Modus, wenn Sie ein Modell anpassen und die Anpassung untersuchen m&ouml;chten.
+            </p>
+            <p>Mit dieser Auswahl wird das Modell mithilfe eines Eingabe-Layers trainiert. Pr&uuml;fen Sie die Genauigkeit des Modells mit dieser Option, bevor Sie Vorhersagen f&uuml;r ein neues Dataset generieren. Mit dieser Option werden Modelldiagnosen ausgegeben, die sich durch die Anwendung auf Ihre Trainingsdaten ergeben.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Ein Modell anpassen und Werte vorhersagen</h2></div>
+        <hr/>
+        <div>
+            <p>Verwenden Sie diesen Modus, wenn Sie ein Modell anpassen m&ouml;chten, und wenden Sie das Modell auf das Dataset an, um Vorhersagen zu generieren.
+            </p>
+            <p>Es werden Vorhersagen oder Klassifizierungen f&uuml;r Features generiert. Die Ausgaben dieser Option sind ein Feature-Service, Modelldiagnosen und optional eine Tabelle der Variablenbedeutung.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Wählen Sie einen Layer aus, aus dem ein Modell generiert werden soll</h2></div>
+        <hr/>
+        <div>
+            <p>Der Layer mit Punkt-, Linien-, Fl&auml;chen- oder tabellarischen Features, die die abh&auml;ngigen und erkl&auml;renden Variablen enthalten.
+            </p>
+            <p>Sie k&ouml;nnen nicht nur einen Layer aus der Karte ausw&auml;hlen, sondern auch unten in der Dropdown-Liste die Option  <b>Analyse-Layer ausw&auml;hlen</b> ausw&auml;hlen, um zu Ihren Inhalten f&uuml;r ein Big-Data-Dateifreigabe-Dataset bzw. -Feature-Layer zu navigieren.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Wählen Sie das zu modellierende Feld aus</h2></div>
+        <hr/>
+        <div>
+            <p>Das numerische Feld, das die beobachteten Werte, die modelliert werden sollen, und den Wertetyp enth&auml;lt, den Sie modellieren. Sie k&ouml;nnen drei Wertetypen modellieren:
+                <ul>
+                    <li>Kontinuierlich: Stellt kontinuierliche Werte dar. Das Gau&szlig;'sche Modell wird verwendet, und das Werkzeug f&uuml;hrt eine Regression des Typs &quot;Kleinste Quadrate&quot; durch.
+                    </li>
+                    <li>Bin&auml;r: Stellt das Vorhandensein oder Fehlen von Werten dar. Diese m&uuml;ssen '1' und '0' lauten. Das logistische Regressionsmodell wird verwendet.
+                    </li>
+                    <li>Anzahl: Ist diskontinuierlich und stellt Ereignisse wie die Anzahl von Straftaten, Krankheiten oder Verkehrsunf&auml;lle dar. Das Poisson-Regressionsmodell wird verwendet. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Wählen Sie einen Layer aus, für den Werte vorhergesagt werden sollen</h2></div>
+        <hr/>
+        <div>
+            <p>Eine Layer mit Features, die Positionen darstellen, an denen Sch&auml;tzungen berechnet werden sollen. Jedes Feature im Dataset sollte Werte f&uuml;r alle angegebenen erkl&auml;renden Variablen enthalten. Die abh&auml;ngige Variable f&uuml;r diese Features wird anhand des Modells gesch&auml;tzt, das f&uuml;r die Eingabe-Layer kalibriert wurde.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Wählen Sie die erklärenden Felder aus.</h2></div>
+        <hr/>
+        <div>
+            <p>Ein oder mehrere Felder, die erkl&auml;rende Variablen (Felder) darstellen und die Vorhersage des Wertes unterst&uuml;tzen. Es werden nur numerische Felder angezeigt.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Wählen Sie aus, wie erklärende Felder zugeordnet werden</h2></div>
+        <hr/>
+        <div>
+            <p>Auf welche Weise die entsprechenden Variablen im Eingabe-Layer mit den Variablen im Vorhersage-Layer &uuml;bereinstimmen. Es werden nur die beim Generieren des Modells verwendeten Variablen in die Tabelle einbezogen. Es werden nur numerische Werte verwendet. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p> Der Name des Layers, der erstellt wird.  Wenn Sie in einen ArcGIS Data Store schreiben, werden Ihre Ergebnisse in  <b>Eigene Inhalte</b> gespeichert und der Karte hinzugef&uuml;gt. Wenn Sie in eine Big-Data-Dateifreigabe schreiben, werden Ihre Ergebnisse in der Big-Data-Dateifreigabe gespeichert und  ihrem Manifest hinzugef&uuml;gt. Sie werden nicht der Karte hinzugef&uuml;gt. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, kann das Werkzeug nicht ausgef&uuml;hrt werden.
+            </p>
+            <p>Die zur&uuml;ckgegebenen Ergebnisse sind vom jeweiligen Analysetyp abh&auml;ngig. Wenn Sie eine Anpassung zum Bewerten der Modellanpassung durchf&uuml;hren, enthalten die Ergebnisse einen an das Modell angepassten Layer mit Eingabedaten und Ergebnisinformationen mit einer Bewertung der Modellanpassung. Wenn Sie Anpassungen und Vorhersagen durchf&uuml;hren, enthalten die Ergebnisse einen Layer mit den an das Modell angepassten Eingabe-Daten, einen Layer mit vorhergesagten Ergebnissen und Ergebnisinformationen mit einer Bewertung der Modellanpassung.
+            </p>
+            <p>Wenn Sie &uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> in ArcGIS Data Store (Big Data Store vom Typ &quot;relational&quot; oder &quot;spatiotemporal&quot;) schreiben, k&ouml;nnen Sie den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>بحث عن مجموعات النقاط</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="بحث عن تجميعات النقاط"></h2>
+        <hr/>
+    <p>تبحث هذه الأداة عن تجمعيات المعالم النقطية ضمن الضوضاء المحيطة بناءً على توزيعها المكاني.
+    </p>
+    <p>إذا تم التأشير على  <b>استخدام نطاق الخريطة الحالي</b>، فسيتم تحليل المعالم الموجودة فقط في طبقة النقاط المدخلة ضمن نطاق الخريطة الحالي. إذا لم يتم التأشير عليها، فسيتم تحليل جميع المعالم في طبقة النقاط المدخلة في الاعتبار، حتى إذا كانت خارج نطاق الخريطة الحالي.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>اختر الطبقة التي سيتم العثور على مجموعاتها</h2></div>
+        <hr/>
+        <div>
+            <p>الطبقة النقطية حيث سيتم العثور فيها على تجميعات. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>أدنى عدد من النقاط يجب أخذه في الاعتبار على أنه مجموعة</h2></div>
+        <hr/>
+        <div>
+            <p>أدنى عدد من المعالم المطلوب اعتبارها كتجميع. سيتم اعتبار أي تجميع بعدد معالم أقل من العدد المتوفر على أنها ضوضاء. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>تقييد نطاق البحث إلى (اختياري)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>أقصى مسافة لأخذ المعالم في الاعتبار كجزء من نفس التجميع. ستقوم الأداة، إذا تركت فارغة، بتشغيل HDBSCAN، الذي يستخدم مسافات متباعدة لفصل العناقيد بكثافات متفاوتة عن الضوضاء المتناثر. ستقوم الأداة، إذا أدخلت قيمة، بتشغيل DBSCAN، الذي يستخدم مسافة محددة لفصل العناقيد الكثيفة عن الضوضاء المتناثر.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p>هذا هو اسم الطبقة الذي سيتم إنشاؤه في  <b>محتوياتي</b> وإضافتها للخريطة.  يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجدت الطبقة بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>عند استخدام القائمة المنسدلة  <b>حفظ النتائج في </b> يمكن تحديد اسم المجلد في <b>المحتويات </b> حيث يتم حفظ النتائج.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

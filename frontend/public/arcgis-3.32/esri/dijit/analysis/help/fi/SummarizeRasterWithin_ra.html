@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Koosta rasteri sijainnissa</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Koosta rasteri sijainnissa -ty&ouml;kalu"></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu koostaa rasterin ensimm&auml;isess&auml; l&auml;ht&ouml;aineiston karttatasossa m&auml;&auml;ritettyjen alueiden (vy&ouml;hykkeiden) perusteella.
+    </p>
+    <p>Seuraavassa on luettelo joistakin sovelluksista:
+    </p>
+    <p>
+        <ul>
+            <li>Jos k&auml;yt&ouml;ss&auml; ovat vesijakoalueiden rajojen karttataso ja maank&auml;ytt&ouml;tyypin mukaisten kaavoitusrajojen karttataso, ty&ouml;kalu laskee tietyn maank&auml;ytt&ouml;aluetyypin kokonaispinta-alan eekkerein&auml; kullekin vesijakoalueelle.
+                
+
+            </li>
+            <li>Jos k&auml;yt&ouml;ss&auml; ovat piirikunnan kiinteist&ouml;jen karttataso ja kaupunkien rajojen karttataso, ty&ouml;kalu tekee yhteenvedon siit&auml;, mik&auml; on kunkin kaupungin rajojen sis&auml;ll&auml; olevien vapaiden kiinteist&ouml;jen keskim&auml;&auml;r&auml;inen arvo.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jos  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> -toiminto on valittuna, vain l&auml;ht&ouml;karttatason ja yhteenvetokarttatason nykyisess&auml; karttalaajuudessa n&auml;kyv&auml;t kohteet analysoidaan. Jos toimintoa ei ole valittu, analyysiin sis&auml;llytet&auml;&auml;n kaikki l&auml;ht&ouml;- ja yhteenvetokarttatason kohteet, vaikka ne eiv&auml;t sijaitsisikaan nykyisen karttalaajuuden alueella.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Valitse aluekarttataso, jonka rajojen sisällä olevasta rasterikarttatasosta haluat laatia yhteenvedon</h2></div>
+        <hr/>
+        <div>
+            <p>Yhteenveto laaditaan karttatasosta, joka m&auml;&auml;ritt&auml;&auml; alueiden (tai vy&ouml;hykkeiden) rajat.
+            </p>
+            <p>Karttataso voi olla rasteri- tai kohdeaineistoryhm&auml;. Rastereissa vy&ouml;hykkeet m&auml;&auml;r&auml;ytyv&auml;t kaikkien niiden l&auml;ht&ouml;aineiston sijaintien mukaan, joilla on sama soluarvo. Alueiden ei tarvitse olla vierekk&auml;isi&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Määritä rajat valitsemalla kenttä</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml; on sen karttatason ominaisuustieto, jota k&auml;ytet&auml;&auml;n alueiden rajojen m&auml;&auml;ritt&auml;miseen.
+            </p>
+            <p>Oletetaan esimerkiksi, ett&auml; ensimm&auml;inen l&auml;ht&ouml;aineiston karttataso m&auml;&auml;ritt&auml;&auml; hallintoyksik&ouml;n rajat ominaisuustiedoilla, jotka m&auml;&auml;ritt&auml;v&auml;t kunkin yksik&ouml;n alueen, piirin ja kiinteist&ouml;n tunnuksen. Sinulla on my&ouml;s rasterikarttataso, joka m&auml;&auml;ritt&auml;&auml; kunkin sijainnin biodiversiteetti-indeksin. Valitsemasi kent&auml;n mukaan voit laskea keskim&auml;&auml;r&auml;isen biodiversiteetin paikallis-, piiri- tai aluetasolla.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Valitse rasterikarttataso, josta haluat laatia yhteenvedon</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml;n karttatason rasterisoluista laaditaan yhteenveto niiden alueiden (vy&ouml;hykkeiden) mukaan, joiden sis&auml;ll&auml; solut ovat.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Valitse laskettava tilastotieto</h2></div>
+        <hr/>
+        <div>
+            <p>Valittuasi tason, josta yhteenveto laaditaan, voit vaihtoehtoisesti laskea tilastotietoja l&auml;ht&ouml;aineiston aluekarttatason pisteiden, viivojen tai alueiden kaikille numeromuotoisille ominaisuustiedoille.
+            </p>
+            <p>Kun valittu kentt&auml; on kokonaisluku, k&auml;ytett&auml;viss&auml; ovat seuraavat tilastotietojen tyypit: Keskiarvo, Enemmist&ouml;, Maksimi, Mediaani, Minimi, V&auml;hemmist&ouml;, Vaihteluv&auml;li, Keskihajonta, Summa ja Diversiteetti.
+            </p>
+            <p>Jos kentt&auml; on liukuluku, k&auml;ytett&auml;viss&auml; ovat seuraavat tyypit: Keskiarvo, Maksimi, Minimi, Vaihteluv&auml;li, Keskihajonta ja Summa.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Ohita puuttuvat arvot laskelmassa</h2></div>
+        <hr/>
+        <div>
+            <p>Jos valitset arvojen ohittamisen, kyseisen alueen tulosaineiston arvon m&auml;&auml;ritt&auml;miseen k&auml;ytet&auml;&auml;n vain soluja, joilla on arvo karttatasossa yhteenvedon laatimista varten. Muutoin jos arvoja puuttuu mist&auml; tahansa alueelta tulosaineistossa, kyseisen vy&ouml;hykkeen kaikkien solujen tilastotietojen laskemiseen on liian v&auml;h&auml;n tietoja, ja tulosaineistossa kyseisen alueen arvoksi m&auml;&auml;ritet&auml;&auml;n NoData.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen karttatason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -kohtaan ja lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos taso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; kansion nimen  <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan avattavan <b>Tallenna tulos kohteeseen</b> -valikon avulla.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Convert Raster to Feature</h2><p/>
+        <h2><img src="./images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Convert Raster to Feature tool"></h2>
+        <hr/>
+    <p>This tool converts a raster to a feature dataset, as points, lines, or polygons.
+    </p>
+    <p>The  <b>Choose field</b> parameter allows you to choose which attribute field of the input raster dataset will become an attribute in the output feature class. This parameter is only available for integer rasters that have additional attributes in the associated table.
+    </p>
+    <p>The input raster can have any cell size.
+    </p>
+    <p>Integer rasters can be converted to point, line, or polygon features; however, floating-point rasters can only be converted to point features.
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the raster cells that are visible within the current map extent will be converted. If unchecked, all cells in the raster layer will be converted, even if they are outside the current map extent. Take note of this if the raster layer is large or has a very high resolution.
+    </p>
+    <p>Use cases for this tool include the following:
+ 
+        <ul>
+            <li>Create polygon features from a land-use classification raster.
+                
+ 
+            </li>
+            <li>Streams identified in a DEM can be converted to line features.
+                
+
+            </li>
+            <li>A DEM can be converted to point features that can be used in a nonraster-based workflow.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose raster layer to convert</h2></div>
+        <hr/>
+        <div>
+            <p>The input raster layer that will be converted to feature layers.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Choose field</h2></div>
+        <hr/>
+        <div>
+            <p>Provide a field that specifies which value will be used for the conversion.
+            </p>
+            <p>It can be any integer or text value.
+            </p>
+            <p>A field containing floating-point values can only be used if the output is to a point dataset.
+            </p>
+            <p>The default choice is to use the  <i>Value</i> field, which contains the value in each raster cell.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Choose output type</h2></div>
+        <hr/>
+        <div>
+            <p>Choose the output type between point, line, or polygon.
+            </p>
+            <ul>
+                <li>Point&mdash;The raster will be converted to a point dataset.
+                    
+ 
+                </li>
+                <li>Line&mdash;The raster will be converted to a line feature dataset.
+                    
+ 
+                </li>
+                <li>Polygon&mdash;The raster will be converted to a polygon feature dataset.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Simplify lines or polygons</h2></div>
+        <hr/>
+        <div>
+            <p>Specify if the features should be simplified.
+            </p>
+            <p>If checked (the default), the line or polygon features will be smoothed out to produce a more generalized result. If this option is unchecked, the linear features will follow the cell boundaries of the raster dataset.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map. The default name is based on the tool name and the input layer name. If the layer already exists, you will be prompted to provide another name.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Atrast centrus</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Atrast centrus"></h2>
+        <hr/>
+    <p>&Scaron;is rīks darbojas ar vairākpunktu, līniju vai teritorijas elementiem, lai noteiktu katra elementa reprezentatīvo centru.
+    </p>
+    <p>Ja atzīmēsiet izvēles rūtiņu  <b>Izmantot eso&scaron;o kartes pārklājumu</b>, elementi tiks analizēti tikai ievades vairākpunktu, līniju vai teritorijas slānī, kas redzams pa&scaron;reizējā kartes pārklājuma ietvaros.  Ja noņemsiet atzīmi no izvēles rūtiņas, tiks analizēti visi ievades slāņa elementi&nbsp;&mdash; arī tie, kas atrodas ārpus pa&scaron;reizējā kartes pārklājuma.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlieties slāni, kura elementi tiks izmantoti centru ģenerēšanai</h2></div>
+        <hr/>
+        <div>
+            <p> Vairākpunktu, līniju vai teritorijas slānis, kas tiks izmantots centru meklē&scaron;anai.
+            </p>
+            <p>Papildus slāņa izvēlei no kartes varat atlasīt opciju  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta lejasdaļā. &Scaron;ī opcija atver galeriju, kurā varēsiet pārlūkot un atlasīt datu kopas no dažādiem avotiem un izmantot savā analīzē. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Rādīt izvades vietu rezultātus</h2></div>
+        <hr/>
+        <div>
+            <p> Ja atzīmēsiet izvēles rūtiņu <b>Faktiskajā centrā</b> (noklusējums), izvade atgriezīs katra ievades elementa faktisko novietojumu. Centri tiks novietoti, kā parādīts tālāk.
+                <ul>
+                    <li>Vairākpunktu elementi&nbsp;&mdash; izvades centrs atradīsies visu vairākpunktu elementa punktu vidējās x un y koordinātās.
+                    </li>
+                    <li>Līniju elementi&nbsp;&mdash; izvades centrs atradīsies visu līniju elementa līniju segmentu viduspunktu svērtajās vidējās x un y koordinātās. Svarīguma pamatā ir segmenta garums.
+                    </li>
+                    <li>Teritorijas elementi&nbsp;&mdash; izvades centrs atradīsies teritorijas centrā.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ja atzīmēsiet izvēles rūtiņu  <b>Ietver ievades elementi</b>, izvades punktu elementi tiks ietverti katrā ievades elementā. Tālāk aprakstīts iegūto punktu elementu izskats.
+                <ul>
+                    <li>Vairākpunktu elementi&nbsp;&mdash; izvades centrs sakritīs ar vienu no punktiem vairākpunktu grupā.
+                    </li>
+                    <li>Līniju elementi&nbsp;&mdash; izvades centrs atradīsies uz līnijas.  Ja līnija ir izliekta, izvade atradīsies līnijas viduspunktā. 
+                    </li>
+                    <li>Teritorijas elementi&nbsp;&mdash; izvades punkts būs ietverts teritorijas elementā.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slāņa nosaukums jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta izvēlnē, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

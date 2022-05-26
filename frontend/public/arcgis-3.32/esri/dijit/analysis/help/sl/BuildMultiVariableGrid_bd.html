@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Izdelava mreže z več spremenljivkami</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Pridruži podatkovni graf delovnega postopka"></h2>
+        <hr/>
+    <p>Orodje Izdelava mreže z več spremenljivkami deluje z enim ali več sloji točkovnih, linijskih ali poligonskih geoobjektov. Orodje ustvari &scaron;tirikotne ali &scaron;estkotne celice in izračuna vrednosti za vsako celico glede na bližino posameznega vhodnega sloja. Te vrednosti lahko vsebujejo naslednje spremenljivke: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Razdalja do najbližjega</b> &ndash; razdalja od posamezne celice do najbližjega geoobjekta
+            </li>
+            <li> <b>Atribut najbližjega</b> &ndash; vrednost polja geoobjekta, najbližjega posamezni celici
+            </li>
+            <li> <b>Povzetek najbližjega</b> &ndash; Posebna statistika vseh geoobjektov na določeni razdalji od posamezne celice
+            </li>
+            <li> <b>Povzetek v preseku</b> &ndash; Posebna statistika vseh geoobjektov, ki sekajo posamezno celico
+            </li>
+        </ul>
+        
+    </p>
+    <p>V sloj z rezultati bodo vključene samo spremenljivke, ki jih navedete sami. Te spremenljivke vam lahko pomagajo razumeti bližino in porazdelitev va&scaron;ih podatkov. Z rezultati lahko začnete odgovarjati na vpra&scaron;anja, kot so:
+        <ul>
+            <li>Kateri del mesta je najmanj dostopen z javnim prevozom, upo&scaron;tevaje več slojev javne transportne infrastrukture?
+            </li>
+            <li>Kako se imenuje vodna povr&scaron;ina, najbližja posamezni lokaciji v ZDA, upo&scaron;tevaje sloje vodotokov, kot so jezera in reke?
+            </li>
+            <li>Kje v ZDA je na razdalji 50 milj razlika med prihodki največja, upo&scaron;tevaje sloj prihodkov gospodinjstva?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Izberite tip celic, ki se bo uporabljal za izdelavo mreže z več spremenljivkami</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Izberite tip in velikost celic, ki bodo uporabljene za izdelavo mreže z več spremenljivkami. Pri možnosti  <b>&scaron;tirikotnik</b> navedena &scaron;tevila in enote določajo vi&scaron;ino in dolžino &scaron;tirikotnika. Pri možnosti <b>&scaron;estkotnik</b> navedena &scaron;tevila in enote določajo razdaljo med vzporednimi stranicami.
+            </p>
+            <p>Analiza uporablja celice in zahteva projiciran koordinatni sistem.  <b>Procesni koordinatni sistem</b> lahko nastavite v <b>okoljih analize</b>. Če va&scaron; delovni koordinatni sistem ni nastavljen na projiciran koordinatni sistem, bo to od vas zahtevano, ko boste <b>Zagnali analizo</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Izberite vhodne sloje in spremenljivke, ki jih želite vključiti v mrežo</h2></div>
+        <hr/>
+        <div>
+            <p>Kliknite Dodaj gumb ( <b>+</b>), da odprete okno <b>Dodaj spremenljivke</b> in svoji analizi dodate sloj. V oknu <b>Dodaj spremenljivke</b> izberite vhodni sloj in konfigurirajte spremenljivke, ki jih želite izračunati za ta vhodni sloj.
+            </p>
+            <p>Ko ste izbrali in konfigurirali spremenljivke, ki jih želite izračunati, bo sloj naveden v orodju okna z vsemi drugimi izbranimi sloji. Kliknite gumb za urejanja katerega koli sloja, da odprete okno  <b>Dodaj spremenljivke</b> in si ogledate vse spremenljivke, konfigurirane za ta sloj. Kliknite gumb za brisanje katerega koli sloja, da odstranite ta sloj in vse povezane spremenljivke iz analize.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Dodaj spremenljivke</h2></div>
+        <hr/>
+        <div>
+            <p>To okno vam omogoča, da izberete vhodni sloj in konfigurirate spremenljivke, ki jih želite izračunati za ta vhodni sloj. Za začetek uporabite spustni meni  <b>Izberi vhodni sloj</b>, da izberete točkovni, poligonski ali linijski sloj, ki ga želite dodati svoji analizi.
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+            <p>Ko ste izbrali vhodni sloj, kliknite gumb  <b>Dodaj spremenljivko</b>, da za urejanje odprete novo spremenljivko. Za vsako spremenljivko morate navesti enolično ime. To bo ime polja, ki je ustvarjeno v tabeli z atributi v sloju z rezultati.
+            </p>
+            <p>Uporabite spustni meni, da izberete tip spremenljivke za dodajanje. Tip vsake spremenljivke je treba konfigurirati z enoličnim sklopom parametrov. Vsi parametri so obvezni.
+            </p>
+            <p>Ko ste dodali vse želene spremenljivke za izbrani sloj, kliknite gumb  <b>Dodaj</b>, da jih shranite.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen. Če zapisujete v ArcGIS Data Store, bodo va&scaron;i rezultati shranjeni v  <b>Moji vsebini</b> in dodani na karto. Če zapisujete v delitev datotek velikih podatkov, bodo va&scaron;i rezultati shranjeni v delitev datotek velikih podatkov in dodani v njen manifest. Ne bodo dodani v skupino. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, orodje ne bo uspe&scaron;no.
+            </p>
+            <p>Ko zapisujete v  ArcGIS Data Store (relacijsko ali prostorsko-časovno shrambo velikih podatkov) s pomočjo spustnega menija  <b>Shrani rezultat v</b>, lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

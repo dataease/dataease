@@ -1,0 +1,62 @@
+<div data-dojo-attach-point="containerNode">
+  <div data-dojo-type="esri/dijit/metadata/form/Tabs">
+  
+    <!-- source description -->
+    <div data-dojo-type="esri/dijit/metadata/form/Section"
+      data-dojo-props="showHeader:false,label:'${i18nArcGIS.dqInfo.dataLineage.dataSource.section.description}'">          
+      <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+        data-dojo-props="target:'srcDesc',minOccurs:1,label:'${i18nArcGIS.dqInfo.dataLineage.dataSource.srcDesc}'">
+        <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+      </div>
+      <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+        data-dojo-props="target:'srcMedName',minOccurs:0,label:'${i18nArcGIS.codelist.MD_MediumNameCode}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'MedNameCd',minOccurs:0,showHeader:false">
+          <div data-dojo-type="esri/dijit/metadata/form/Attribute"
+            data-dojo-props="target:'value',minOccurs:0,showHeader:false">
+            <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputSelectCode"
+              data-dojo-props="codelistType:'MD_MediumNameCode'">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'srcScale',minOccurs:0,showHeader:false">
+        <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+          data-dojo-props="target:'rfDenom',minOccurs:0,label:'${i18nArcGIS.dqInfo.dataLineage.dataSource.srcScale.rfDenom}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputNumber"
+            data-dojo-props="minValue:0.0,minValueIsExclusive:true,hint:'${i18nBase.hints.numberGreaterThanZero}'">
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- source citation -->
+    <div data-dojo-type="esri/dijit/metadata/form/Section"
+      data-dojo-props="showHeader:false,label:'${i18nArcGIS.dqInfo.dataLineage.dataSource.section.srcCitatn}'">
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'srcCitatn',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.dqInfo.dataLineage.dataSource.srcCitatn}'">
+        <div data-dojo-type="esri/dijit/metadata/types/arcgis/citation/CitationElements"></div>
+      </div>
+    </div>
+    
+    <!-- source extent -->
+    <div data-dojo-type="esri/dijit/metadata/form/Section"
+      data-dojo-props="showHeader:false,label:'${i18nArcGIS.dqInfo.dataLineage.dataSource.section.srcExt}'">
+      <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/ExtentElement"
+        data-dojo-props="target:'srcExt',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.dqInfo.dataLineage.dataSource.srcExt}'">
+        <div data-dojo-type="esri/dijit/metadata/types/arcgis/extent/ExtentElements"></div>
+      </div>
+    </div>
+    
+    <!-- source reference system -->
+    <div data-dojo-type="esri/dijit/metadata/form/Section"
+      data-dojo-props="showHeader:false,label:'${i18nArcGIS.dqInfo.dataLineage.dataSource.section.srcRefSys}'">
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'srcRefSys',minOccurs:0,label:'${i18nArcGIS.dqInfo.dataLineage.dataSource.srcRefSys}'">
+        <div data-dojo-type="esri/dijit/metadata/types/arcgis/citation/CodeRefElements"></div>
+      </div>
+    </div>
+    
+  </div>
+</div>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Détecter des objets à l’aide de l’apprentissage en profondeur</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="D&eacute;tecter des objets &agrave; l&rsquo;aide de l&rsquo;apprentissage profond"></h2>
+        <hr/>
+    <p>Cet outil ex&eacute;cute un mod&egrave;le d&rsquo;apprentissage profond entra&icirc;n&eacute; sur un raster en entr&eacute;e afin de g&eacute;n&eacute;rer une classe d&rsquo;entit&eacute;s contenant les objets qu&rsquo;il trouve. Les entit&eacute;s peuvent correspondre &agrave; des emprises ou des polygones autour des objets trouv&eacute;s ou encore des points situ&eacute;s aux centres des objets.
+    </p>
+    <p>Si l&rsquo;option  <b>Use current map extent (Utiliser l&rsquo;&eacute;tendue courante de la carte)</b> est s&eacute;lectionn&eacute;e, seule la surface raster qui est visible au sein de l&rsquo;&eacute;tendue actuelle de la carte est analys&eacute;e. Si l&rsquo;option n&rsquo;est pas s&eacute;lectionn&eacute;e, l&rsquo;ensemble du raster sera analys&eacute;, m&ecirc;me s&rsquo;il se trouve en dehors de l&rsquo;&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Choisir l’image utilisée pour détecter des objets</h2></div>
+        <hr/>
+        <div>
+            <p>Image en entr&eacute;e utilis&eacute;e pour d&eacute;tecter des objets.
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Choisir le modèle d’apprentissage profond utilisé pour détecter des objets</h2></div>
+        <hr/>
+        <div>
+            <p>L&rsquo;entr&eacute;e est l&rsquo;URL d&rsquo;un &eacute;l&eacute;ment de paquetage d&rsquo;apprentissage profond ( <code>.dlpk</code>).
+            </p>
+            <p>Le paquetage d&rsquo;apprentissage profond se compose du fichier JSON d&eacute;finition du mod&egrave;le ESRI ( <code>.emd</code>), du fichier de mod&egrave;le binaire d&rsquo;apprentissage profond et, &eacute;ventuellement, de la fonction raster Python &agrave; utiliser.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Spécifier les arguments du modèle d’apprentissage profond</h2></div>
+        <hr/>
+        <div>
+            <p>Les arguments de la fonction sont d&eacute;finis dans la classe de fonction raster Python r&eacute;f&eacute;renc&eacute;e par le mod&egrave;le en entr&eacute;e. C&rsquo;est l&agrave; que vous r&eacute;pertoriez les param&egrave;tres et arguments d&rsquo;apprentissage profond suppl&eacute;mentaires &agrave; tester et affiner, par exemple un seuil de confiance pour ajuster la sensibilit&eacute;.
+            </p>
+            <p>Les noms des arguments sont renseign&eacute;s par l&rsquo;outil apr&egrave;s lecture du module Python dans le serveur d&rsquo;analyse raster.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>Supprimer les entités dupliquées de la sortie (facultatif)</h2></div>
+        <hr/>
+        <div>
+            <p>Effectue la suppression non maximale (les objets dupliqu&eacute;s sont identifi&eacute;s et l&rsquo;entit&eacute; dupliqu&eacute;e dont la valeur de confiance est la plus faible est supprim&eacute;e). 
+                <ul>
+                    <li>D&eacute;sactiv&eacute;&nbsp;: tous les objets d&eacute;tect&eacute;s seront int&eacute;gr&eacute;s dans la classe d&rsquo;entit&eacute;s en sortie. Il s&rsquo;agit de l&rsquo;option par d&eacute;faut.
+                        
+
+                    </li>
+                    <li>Activ&eacute;&nbsp;: les objets dupliqu&eacute;s d&eacute;tect&eacute;s seront supprim&eacute;s.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>Champ de score de confiance</h2></div>
+        <hr/>
+        <div>
+            <p>Champ dans le service d&rsquo;entit&eacute;s qui contient les scores de confiance utilis&eacute;s en sortie par la m&eacute;thode de d&eacute;tection d&rsquo;objets.
+            </p>
+            <p>Ce param&egrave;tre est obligatoire lorsque vous cochez le param&egrave;tre  <b>Non Maximum Suppression (Suppression non maximale)</b>.
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>Champ de valeur de classe</h2></div>
+        <hr/>
+        <div>
+            <p>Champ de valeur de classe dans le service d&rsquo;entit&eacute;s. S&rsquo;il n&rsquo;est pas sp&eacute;cifi&eacute;, l&rsquo;outil utilise les champs de valeur de classe standard  <i>Classvalue</i> et <i>Value</i>. Si ces champs n&rsquo;existent pas, toutes les entit&eacute;s seront trait&eacute;es comme la m&ecirc;me classe d&rsquo;objets.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>Ratio de superposition maximale</h2></div>
+        <hr/>
+        <div>
+            <p>Ratio de superposition maximale de deux entit&eacute;s se chevauchant, d&eacute;fini comme le rapport entre la zone d&rsquo;intersection et la zone d&rsquo;union. La valeur par d&eacute;faut est 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Konvertér raster til objekt</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Konvert&eacute;r raster til objekt-v&aelig;rkt&oslash;jet"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j konverterer raster til et objektdatas&aelig;t som punkter, linjer eller polygoner.
+    </p>
+    <p>Med parameteren  <b>V&aelig;lg felt</b> kan du v&aelig;lge, hvilket attributfelt i input-rasterdatas&aelig;ttet, der skal blive til en attribut i output-objektklassen. Denne parameter er kun tilg&aelig;ngelig for heltalsrastere, der har flere attributter i den tilknyttede tabel.
+    </p>
+    <p>Input-rasterdataene kan have en hvilken som helst cellest&oslash;rrelse.
+    </p>
+    <p>Heltalsrastere kan konverteres til punkt-, linje- eller polygonobjekter. Men flydende punkt-rastere kan kun konverteres til punktobjekter.
+    </p>
+    <p>Hvis feltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, er det kun de rasterceller, der er synlige inden for den aktuelle kortudstr&aelig;kning, der konverteres. Hvis markeringen fjernes, konverteres alle cellerne i rasterlaget, ogs&aring; dem, der ligger uden for den aktuelle kortudstr&aelig;kning. L&aelig;g m&aelig;rke til dette, hvis rasterlaget er stort eller har en meget h&oslash;j opl&oslash;sning.
+    </p>
+    <p>Eksempelanvendelser for dette v&aelig;rkt&oslash;j omfatter f&oslash;lgende:
+ 
+        <ul>
+            <li>Oprettelse af polygonobjekter ud fra rasterdata med klassifikationer for arealanvendelse.
+                
+ 
+            </li>
+            <li>Vandl&oslash;b, der identificeres i en digital elevationsmodel (DEM), kan konverteres til linjeobjekter.
+                
+
+            </li>
+            <li>En DEM kan konverteres til punktobjekter, der kan bruges i en ikke-raster-baseret arbejdsgang.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg det rasterlag, der skal konverteres</h2></div>
+        <hr/>
+        <div>
+            <p>Det input-rasterlag, der konverteres til vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Vælg felt</h2></div>
+        <hr/>
+        <div>
+            <p>Opret et felt, der angiver, hvilken v&aelig;rdi der skal bruges til konverteringen.
+            </p>
+            <p>Det kan v&aelig;re en hvilken som helst heltals- eller tekstv&aelig;rdi.
+            </p>
+            <p>Et felt, der indeholder flydende punkt-v&aelig;rdier, kan kun bruges, hvis outputtet er et punktdatas&aelig;t.
+            </p>
+            <p>Standardvalget er at bruge  <i>Value</i>-feltet, som indeholder v&aelig;rdien i hver rastercelle.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Vælg outputtype</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg outputtypen blandt punkt, linje eller polygon.
+            </p>
+            <ul>
+                <li>Punkt &ndash; Raster konverteres til et datas&aelig;t med punkter.
+                    
+ 
+                </li>
+                <li>Linje &ndash; Raster konverteres til et datas&aelig;t med linjeobjekter.
+                    
+ 
+                </li>
+                <li>Polygon &ndash; Raster konverteres til et datas&aelig;t med polygonobjekter.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Gør linjer eller polygoner enklere</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv, om objekterne skal forenkles.
+            </p>
+            <p>Hvis feltet er markeret (standard), udj&aelig;vnes linje- eller polygonobjekterne, s&aring; der fremkommer et mere generelt resultat. Hvis denne indstilling ikke er markeret, vil de line&aelig;re objekter f&oslash;lge rasterdatas&aelig;ttets cellegr&aelig;nser.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; det lag, som oprettes under  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Du kan angive navnet p&aring; en mappe i  <b>Mit indhold</b>, hvor resultatet bliver gemt ved at benytte rullelisten <b>Gem resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

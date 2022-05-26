@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Sumuj wyśrodkowanie i rozproszenie</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Sumuj wyśrodkowanie i rozproszenie"></h2>
+        <hr/>
+    <p>To narzędzie znajduje obiekty centralne i rozkłady kierunkowe.
+Może być użyte do znalezienia odpowiedzi na następujące pytania:
+        <ul>
+            <li>Gdzie znajduje się środek?
+            </li>
+            <li>Kt&oacute;ry obiekt jest najbardziej dostępny ze wszystkich pozostałych obiekt&oacute;w?
+            </li>
+            <li>Jaki jest stopień rozproszenia, sp&oacute;jności lub integracji obiekt&oacute;w?
+            </li>
+            <li>Czy występują trendy kierunkowe?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jeśli opcja  <b>Użyj bieżącego zasięgu mapy</b> jest zaznaczona, przeanalizowane zostaną tylko obiekty w&nbsp;warstwie wejściowej widoczne w zasięgu bieżącej mapy. Jeśli opcja ta nie jest zaznaczona, przeanalizowane zostaną wszystkie obiekty w&nbsp;warstwie wejściowej, nawet jeśli znajdują się one poza zasięgiem bieżącej mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Wybierz warstwę, która ma zostać opisana</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa punktowa, liniowa lub powierzchniowa, kt&oacute;ra będzie używana przy wyszukiwaniu obiekt&oacute;w centralnych i rozkład&oacute;w kierunkowych.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Typy podsumowań</h2></div>
+        <hr/>
+        <div>
+            <p>Metoda sumowania wyśrodkowania i rozproszenia. 
+            </p>
+            <ul>
+                <li>Obiekt centralny &mdash; identyfikuje najbardziej centralnie położony obiekt w zestawie danych.
+                </li>
+                <li>Średni środek &mdash; identyfikuje geograficzny środek (lub środek koncentracji) dla zestawu obiekt&oacute;w.
+                </li>
+                <li>Środek mediany &mdash; identyfikuje lokalizację, kt&oacute;ra minimalizuje całkowitą odległość euklidesową do obiekt&oacute;w w zestawie danych.
+                </li>
+                <li>Elipsa &mdash; tworzy elipsy odchylenia standardowego w celu podsumowania charakterystyk przestrzennych obiekt&oacute;w geograficznych: tendencji centralnej, rozproszenia i trend&oacute;w kierunkowych. Rozmiary elips mogą odpowiadać 1, 2 lub 3 odchyleniom standardowym.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Waga wg (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p>Pole używane do określenia wagi lokalizacji ze względu na ich względną ważność. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Grupuj wg (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p>Pole używane do grupowania obiekt&oacute;w w celu przeprowadzenia oddzielnych obliczeń obiekt&oacute;w centralnych i rozproszenia. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli ta nazwa warstwy już istnieje, wyświetlona zostanie prośba o podanie innej nazwy.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+require({cache:{"url:esri/dijit/RasterFunctionEditor/templates/RFxCellSizeInput.html":'\x3cdiv\x3e\r\n    \x3cinput type\x3d"text" data-dojo-type\x3d"dijit/form/NumberTextBox" data-dojo-attach-point\x3d"cellSize" data-dojo-attach-event\x3d"onChange: _onCellSizeChange" /\x3e\r\n\x3c/div\x3e\r\n  '}});
+define("esri/dijit/RasterFunctionEditor/RFxCellSizeInput","dojo/_base/declare ../../lang dijit/_WidgetBase dijit/_TemplatedMixin dijit/_WidgetsInTemplateMixin dojo/_base/lang dojo/text!./templates/RFxCellSizeInput.html".split(" "),function(b,c,d,e,f,g,h){return b("RFxCellSizeInput",[d,e,f],{templateString:h,value:{x:0,y:0},postCreate:function(){this.inherited(arguments);this._readValues()},_readValues:function(){var a=this.value;a?this.cellSize.set("value",a.x||a.y?a.x:0):this.cellSize.set("value",
+0)},_onCellSizeChange:function(a){c.isDefined(a)&&isNaN(a)||(this.value={x:a,y:a},this.emit("change",g.clone(this.value)))}})});

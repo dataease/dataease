@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Conectar Origens aos Destinos</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="Conectar Origens aos Destinos"></h2>
+        <hr/>
+    <p>Conectar Origens aos Destinos mede o tempo de percurso ou dist&acirc;ncia entre os pares de pontos. A ferramenta pode reportar dist&acirc;ncias de linha reta; dist&acirc;ncias baseadas em um modo de viagem, tal como, caminhar ou dirigir; ou dura&ccedil;&otilde;es de viagens baseado no modo de viagem. Utilizando esta ferramenta, &eacute; poss&iacute;vel:
+    </p>
+    <p>
+        <ul>
+            <li>Calcule a dist&acirc;ncia total ou comutadores de tempo do percurso em suas viagens do trabalho para casa.
+            </li>
+            <li>Medir a que dist&acirc;ncia os clientes est&atilde;o viajando para fazer compras em suas lojas. Utilize estas informa&ccedil;&otilde;es para definir o alcance do seu mercado, especialmente ao definir o alvo dos an&uacute;ncios das campanhas ou escolher novos locais de lojas.
+            </li>
+            <li>Calcule a milhagem de viagem esperada para sua frota de ve&iacute;culos. Posteriormente, execute a ferramenta Resumir Dentro para reportar a milhagem por estado ou outra regi&atilde;o.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Voc&ecirc; fornece os pontos iniciais e finais e a ferramenta retorna uma camada contendo linhas de rotas, inclusive medidas, entre origens e destinos. 
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente as fei&ccedil;&otilde;es que s&atilde;o vis&iacute;veis dentro da extens&atilde;o de mapa atual ser&atilde;o consideradas na an&aacute;lise.  Se n&atilde;o selecionada, todas as fei&ccedil;&otilde;es na camada de entrada ser&atilde;o consideradas, mesmo que estiverem fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Escolha a camada de ponto que representa os locais de origem</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha a camada de ponto que representa a origem ou origens.  A ferramenta suporta at&eacute;  5.000 origens e  5.000 destinos. </p>
+            <p>Se voc&ecirc; escolher uma camada que tenha exatamente uma origem, ela ir&aacute; conectar a todos os destinos.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> localizado na parte inferior da lista suspensa. Esta op&ccedil;&atilde;o abre uma galeria onde voc&ecirc; pode procurar e selecionar conjunto de dados de v&aacute;rias fontes para utilizar em sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Escolher a camada de destino</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha a camada representando o destino ou destinos nos quais as origens devem se conectar. A ferramenta suporta at&eacute;  5.000 origens e  5.000 destinos. </p>
+            <p>Se voc&ecirc; escolher uma camada que tem exatamente um destino, todas as origens se conectar&atilde;o neste destino. 
+            </p>
+            <p>Se houver uma origem e muitos destinos, a ferramenta conecta a origem para cada um dos destinos.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> localizado na parte inferior da lista suspensa. Esta op&ccedil;&atilde;o abre uma galeria onde voc&ecirc; pode procurar e selecionar conjunto de dados de v&aacute;rias fontes para utilizar em sua an&aacute;lise. 
+            </p>
+            <p> Se houver muitas origens e muitos destinos, voc&ecirc; precisar&aacute; ter dois campos que descrevam os pares de origem-destino: <b>O campo ID nas origens</b> e <b>Campo ID correspondente nos destinos</b>. A ferramenta conecta os pares de destino e origem durante a an&aacute;lise. Por exemplo, imagine que voc&ecirc; tem duas origens com valores do campo ID de <code>Rosie</code> e <code>Harold</code> e os dois destinos com os mesmos valores de ID. A origem <code>Rosie</code> conectar&aacute; ao destino <code>Rosie</code> e <code>Harold</code> conectar&aacute; &agrave; <code>Harold</code>. Nenhuma outra conex&atilde;o ou medida &eacute; realizada.
+            </p>
+            <p>Se houver n&uacute;meros iguais de origens e destinos, os valores ID devem ser &uacute;nicos dentro de cada camada; por exemplo, a camada de destino n&atilde;o pode ter dois valores de   <code>Rosie</code>. Os valores na camadas de origem e destino devem corresponder exatamente para criar pares; <code>Harold</code> n&atilde;o conectar&aacute; ao valor incorreto, <code>Harodl</code>. 
+            </p>
+            <p>A ferramenta tamb&eacute;m suporta conex&atilde;o de cada origem para mais de um destino ou cada destino para mais de uma origem. Em tais casos,  voc&ecirc; precisar&aacute; ter dois campos que descrevam os pares de origem-destino. Entretanto, somente uma das camadas (de origem ou de destino) precisam ter valores de ID &uacute;nico.
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Medir</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Escolha se deseja conectar as origens aos destinos utilizando dist&acirc;ncia de linha reta ou um modo de viagem. As rotas de sa&iacute;da seguir&atilde;o estradas ou trilhas e honrar&atilde;o as regras aplic&aacute;veis, como ruas de m&atilde;o &uacute;nica e convers&otilde;es ilegais para transporte e caminh&atilde;o. Os modos de viagens dispon&iacute;veis s&atilde;o determinados pelo administrador da sua organiza&ccedil;&atilde;o.  
+            </p>
+            <p>Quando voc&ecirc; escolher  <b>Tempo do Percurso</b>, <b>Tempo de Percurso em &Aacute;rea Rural</b>, ou <b>Tempo de Caminh&atilde;o</b> voc&ecirc; tem op&ccedil;&otilde;es sobre como medir o tempo do percurso.
+                <ul>
+                    <li>
+                        <p>Desmarque  <b>Utilizar Tr&aacute;fego</b> para localizar as rotas mais r&aacute;pidas com base nas velocidades fixas.
+                        </p>
+                        <p>Esta &eacute; a op&ccedil;&atilde;o para escolher se voc&ecirc; desejar uma medi&ccedil;&atilde;o de tempo do percurso geral, n&atilde;o uma que &eacute; calculada utilizando as mudan&ccedil;as de condi&ccedil;&otilde;es do tr&aacute;fego para um tempo de partida espec&iacute;fico.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Marque  <b>Utilizar Tr&aacute;fego</b> para localizar as rotas mais r&aacute;pidas com base em um tempo inicial fornecido e condi&ccedil;&otilde;es de mudan&ccedil;a do tr&aacute;fego. Al&eacute;m de escolher a op&ccedil;&atilde;o <b>Tr&aacute;fego Real</b>, o tempo de partida das origens &eacute; configurado para o tempo atual e as velocidades de tr&aacute;fego previstas e atuais s&atilde;o referenciadas a partir de sensores e feeds para criar as rotas. As velocidades de tr&aacute;fego previstas s&atilde;o calculadas ao referenciar a velocidades de tr&aacute;fego real, hist&oacute;rico das velocidades e eventos atuais como clima. As velocidades de tr&aacute;fego s&atilde;o previstas 12 horas no futuro, ent&atilde;o voc&ecirc; pode mover o controle deslizante para configurar o tempo de partida adiante por at&eacute;  12 horas. </p>
+                        <p>Utilize estas configura&ccedil;&otilde;es de tr&aacute;fego real para localizar os tempos de percurso para partir agora, partir em uma hora e assim por diante.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Ao selecionar  <b>Utilizar Tr&aacute;fego</b> e escolher <b>Tr&aacute;fico com base em condi&ccedil;&otilde;es t&iacute;picas</b> e especificar um dia e hora, a ferramenta localiza as fei&ccedil;&otilde;es mais pr&oacute;ximas no hist&oacute;rico das m&eacute;dias de velocidade para cada intervalo de cinco minutos durante uma semana de rotina. Os resultados incluem tr&aacute;fego, mas removem a influ&ecirc;ncia das condi&ccedil;&otilde;es de tr&aacute;fego e eventos atuais, que podem variar significativamente da norma.
+                        </p>
+                        <p>Voc&ecirc; pode utilizar estas configura&ccedil;&otilde;es de hist&oacute;rico do tr&aacute;fego para perguntar, por exemplo, &quot;Quanto tempo geralmente tomaria para alcan&ccedil;ar estes destinos ao partir &agrave;s 11:30 da manh&atilde; em uma quarta-feira?&quot;
+                        </p>
+                        <p>O tempo que voc&ecirc; configura &eacute; referente ao fuso hor&aacute;rio em que suas origens est&atilde;o localizadas. Ent&atilde;o se voc&ecirc; configurar a hora para 8:00 a.m e tiver duas origens, uma na Cidade de Nova Iorque e outra em Los Angeles, as rotas ser&atilde;o geradas para a hora de partida &agrave;s 8:00 a.m. Hor&aacute;rio do Leste e 8:00 a.m. Hora do Pac&iacute;fico, respectivamente.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Observe que conforme um ve&iacute;culo se distancia de uma origem, o tempo decorre e muda as condi&ccedil;&otilde;es de tr&aacute;fego. A ferramenta Conectar Origens aos Destinos responde por estas varia&ccedil;&otilde;es quando voc&ecirc; seleciona a op&ccedil;&atilde;o  <b>Utilizar tr&aacute;fego</b>; por&eacute;m, nem todas as regi&otilde;es suportam o tr&aacute;fego. Clique no link <b>Visualizar disponibilidade</b> na ferramenta para descobrir se a op&ccedil;&atilde;o est&aacute; dispon&iacute;vel na sua &aacute;rea de estudo.
+            </p>
+            <p> <b>Tempo de Caminh&atilde;o</b> pode utilizar velocidades de viagem din&acirc;micas baseado em tr&aacute;fego mas somente at&eacute; o limite de velocidade legal de caminh&atilde;o. Por exemplo, se a velocidade din&acirc;mica para uma rua baseada em tr&aacute;fego em tempo real for 65 milhas por hora mas o limite de velocidade de caminh&atilde;o para esta rua for 55 milhas por hora, o c&aacute;lculo utilizar&aacute; 55 milhas por hora para esta rua.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Selecionar camadas de barreira</h2></div>
+        <hr/>
+        <div>
+            <p> Uma ou mais fei&ccedil;&otilde;es que atuam como restri&ccedil;&otilde;es tempor&aacute;rias (barreiras) ao viajar nas ruas subjacentes. Voc&ecirc; pode especificar as barreiras utilizando fei&ccedil;&otilde;es de ponto, linha ou pol&iacute;gono.
+            </p>
+            <p>Uma barreira de ponto pode modelar uma &aacute;rvore ca&iacute;da, um acidente, uma linha el&eacute;trica ca&iacute;da ou qualquer coisa que bloqueie completamente o tr&aacute;fego em uma posi&ccedil;&atilde;o espec&iacute;fica da rua. A viagem &eacute; permitida na rua mas n&atilde;o pela barreira. Voc&ecirc; pode especificar at&eacute; 250 fei&ccedil;&otilde;es para atuar como barreiras de ponto.
+            </p>
+            <p>Uma barreira de linha pro&iacute;be a viaje em qualquer lugar que a barreira interseccionar as ruas. Por exemplo, uma parada ou protesto que bloqueia o tr&aacute;fego atrav&eacute;s de diversos segmentos de rua podem ser modelados com uma barreira de linha. Se o n&uacute;mero de fei&ccedil;&otilde;es de rua interseccionadas por todas as barreiras de linha exceder 500, a ferramenta retornar&aacute; um erro.
+            </p>
+            <p>Uma barreira de pol&iacute;gono pro&iacute;be a viaje em qualquer pol&iacute;gono que interseccionar as ruas. Um uso deste tipo de barreira &eacute; a modelagem de inunda&ccedil;&otilde;es que cobrem &aacute;reas da rede de ruas que impossibilitam a viagem nestas ruas. Se o n&uacute;mero de fei&ccedil;&otilde;es de rua interseccionadas por todas as barreiras de pol&iacute;gono exceder 2000, a ferramenta retornar&aacute; um erro.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Forma da rota</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha a forma da rota que conecta cada origem ao seu destino ao utilizar um modo de viagem:
+            </p>
+            <ul>
+                <li> <b>Seguir ruas</b> - A forma &eacute; baseada na rede de rua subjacente. Esta op&ccedil;&atilde;o &eacute; melhor quando voc&ecirc; desejar gerar as rotas entre origens e destinos.
+                </li>
+                <li> <b>Linha reta</b> - A forma &eacute; uma linha reta conectando o par de destino-origem. Esta op&ccedil;&atilde;o &eacute; melhor quando voc&ecirc; desejar para gerar diagramas de aranha ou linhas desejadas (por exemplo, para mostrar quais lojas os clientes est&atilde;o visitando).
+                </li>
+            </ul>
+            
+            <p>A melhor rota entre uma origem e seu destino correspondente &eacute; sempre calculada baseado no modo de viagem, n&atilde;o importando qual forma de rota &eacute; escolhida.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada de fei&ccedil;&atilde;o que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa. Se a camada de fei&ccedil;&atilde;o j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome. A camada de fei&ccedil;&atilde;o resultante conter&aacute; uma camada para cada um dos seguintes: rotas, origens e destinos n&atilde;o atribu&iacute;dos quando algumas origens n&atilde;o podem ser conectadas a seus destinos.
+            </p>
+            <p>Se voc&ecirc; selecionar  <b>Incluir camadas de rota</b>, cada rota do resultado tamb&eacute;m ser&aacute; salva como uma camada de rota. Uma camada de rota inclui todas as informa&ccedil;&otilde;es para uma rota em particular, como as paradas atribu&iacute;das &agrave; rota, como tamb&eacute;m, as dire&ccedil;&otilde;es do percurso. A cria&ccedil;&atilde;o de camadas de rota &eacute; &uacute;til se voc&ecirc; deseja compartilhar as rotas individuais com outros membros na sua organiza&ccedil;&atilde;o ou para modificar ainda mais as rotas utilizando o bot&atilde;o <b>Dire&ccedil;&otilde;es</b> no visualizador de mapa. As camadas de rota utilizam o nome fornecido para a camada de fei&ccedil;&atilde;o como um prefixo e o nome da rota gerado como parte da an&aacute;lise, que &eacute; adicionado para criar um nome &uacute;nico para cada camada de rota.
+            </p>
+            <p>O n&uacute;mero m&aacute;ximo de camadas de rota que pode ser criado &eacute;  1.000. Se o resultado contiver mais que  1.000 rotas e a op&ccedil;&atilde;o  <b>Incluir camadas de rota</b> estiver marcada, a ferramenta somente criar&aacute; o servi&ccedil;o de fei&ccedil;&atilde;o de sa&iacute;da.
+            </p>
+            <p>Com a utiliza&ccedil;&atilde;o do menu suspenso  <b>Salvar resultado em</b>, voc&ecirc; pode especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde a camada de fei&ccedil;&atilde;o e as camadas de rota, se criadas, ser&atilde;o salvas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

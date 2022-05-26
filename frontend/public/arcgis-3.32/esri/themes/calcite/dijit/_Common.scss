@@ -1,0 +1,128 @@
+.#{$theme-name} {
+  .dijitDisabled {
+    @include opacity($disabled-opacity);
+  }
+  .dijitPopup {
+    box-shadow: none;
+  }
+  .dijitTooltipDialogPopup {
+    box-shadow: none;
+  }
+  .dijitComboBoxHighlightMatch {
+    background-color: $Calcite_Highlight_Blue_200;
+  }
+  // Drag and Drop
+  // --------------------------------------------------
+  .dojoDndItem {
+    padding: 0;
+    border: 1px solid transparent;
+    -webkit-touch-callout: none;
+    @include user-select(none);
+    &:hover,
+    &:focus,
+    &.dojoDndItemOver {
+      background-color: $dnd-hover-bg;
+    }
+  }
+  .dojoDndItemOver {
+    cursor: pointer;
+  }
+  .dojoDndItemBefore {
+    background: transparent;
+    border-top: 1px solid $dnd-drop-indicator-color;
+  }
+  .dojoDndItemAfter {
+    background: transparent;
+    border-bottom: 1px solid $dnd-drop-indicator-color;
+  }
+  .dojoDndHorizontal {
+    .dojoDndItem {
+      display: inline-block;
+    }
+    .dojoDndItemBefore {
+      border-left: 1px solid $dnd-drop-indicator-color;
+    }
+    .dojoDndItemAfter {
+      border-right: 1px solid $dnd-drop-indicator-color;
+    }
+  }
+  .dojoDndItemAnchor,
+  .dojoDndItemSelected {
+    &,
+    &:hover,
+    &:focus,
+    &.dojoDndItemOver {
+      background-color: $dnd-anchor-selected-bg;
+    }
+  }
+  .dojoDndAvatar {
+    border-collapse: collapse;
+    border: 1px solid $dnd-avatar-default-border;
+    background-color: $dnd-avatar-default-bg;
+    @include calcite-box-shadow-dnd;
+    .dojoDndAvatarItem {
+      td {
+        padding: $padding-base-vertical $padding-base-horizontal;
+        .dojoDndItem {
+          background-color: $dnd-avatar-item-default-bg;
+          padding: $padding-base-vertical $padding-base-horizontal;
+          list-style-type: none;
+          @include opacity(1);
+        }
+      }
+    }
+  }
+  .dojoDndAvatarHeader {
+    color: $dnd-avatar-header-default-color;
+    background-color: $dnd-avatar-header-default-bg;
+    border-bottom: 1px solid $dnd-avatar-header-default-border;
+    padding: $padding-base-vertical $padding-base-horizontal;
+    td span {
+      display: block;
+      padding: $padding-base-vertical $padding-base-horizontal;
+      &:before {
+        display: block;
+        float: left;
+        margin-right: $padding-base-horizontal;
+        @include dijit-icons(esri-icon-deny);
+        font-size: 14px;
+        line-height: $line-height-base;
+        vertical-align: middle;
+        text-align: center;
+      }
+    }
+  }
+  .dojoDndAvatarCanDrop {
+    border: 1px solid $dnd-avatar-can-drop-border;
+    .dojoDndAvatarHeader {
+      color: $dnd-avatar-header-can-drop-color;
+      background-color: $dnd-avatar-header-can-drop-bg;
+      border-bottom: 1px solid $dnd-avatar-header-can-drop-border;
+      td span {
+        &:before {
+          @include icon-get-content(esri-icon-left-arrow);
+        }
+      }
+    }
+  }
+  &.dojoDndMove,
+  &.dojoDndCopy {
+    .dojoDndItem {
+      &,
+      &:hover,
+      &:focus {
+        background-color: transparent;
+      }
+    }
+    .dojoDndItemAnchor,
+    .dojoDndItemSelected {
+      &,
+      &:hover,
+      &:focus,
+      &.dojoDndItemOver {
+        background-color: $dnd-anchor-hover-bg;
+      }
+    }
+  }
+}
+

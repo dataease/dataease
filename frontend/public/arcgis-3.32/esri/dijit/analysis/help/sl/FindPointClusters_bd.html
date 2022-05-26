@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Najdi gruče točk</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="Najdi gruče točk"></h2>
+        <hr/>
+    <p>Orodje  Najdi gruče točk poi&scaron;če gruče točk znotraj okoli&scaron;kih celic glede na njihovo prostorsko razporeditev.
+    </p>
+    <p>Na primer, nevladna organizacija preučuje določeno bolezen, ki jo prena&scaron;ajo &scaron;kodljivci. Na voljo ima sklop točkovnih podatkov, ki predstavljajo gospodinjstva na preučevanem območju, od katerih so nekatera okužena, druga pa ne. Z uporabo orodja  Najdi gruče točk lahko analitik določi gruče okuženih gospodinjstev, ki bodo pomagale natančno določiti območje, kjer se bo začelo zdravljenje in iztrebljanje &scaron;kodljivcev.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi sloj, za katerega bodo najdene gruče</h2></div>
+        <hr/>
+        <div>
+            <p>Točkovni sloj, v katerem bodo najdene gruče. Sloji morajo biti v projiciranem koordinatnem sistemu ali imeti procesni delovni koordinatni sistem nastavljen na projiciran koordinatni sistem z uporabo  <b>Analiz okolij</b>.
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Izberi metodo gručenja za uporabo</h2></div>
+        <hr/>
+        <div>
+            <p>Metoda gručenja, ki se bo uporabljala za ločevanje gruč točkovnih geoobjektov od okoli&scaron;kih celic. Lahko se odločite za uporabo določene razdalje ali samoprilagoditvenega algoritma za gručenje.
+            </p>
+            <p>Določena razdalja (DBSCAN) uporablja določen iskalni doseg za ločevanje gostih gruč od manj gostih celic. Določena razdalja (DBSCAN) je hitrej&scaron;a, vendar je primerna le, če obstaja zelo jasen iskalni doseg, ki je uspe&scaron;en pri opredeljevanju vseh gruč, ki so morda prisotne. Določena razdalja (DBSCAN) poi&scaron;če gruče s podobnimi gostotami.
+            </p>
+            <p>Samoprilagajanje (HDBSCAN) ne zahteva, da je iskalni doseg določen, gre pa za dolgotrajnej&scaron;o metodo. Samoprilagajanje (HDBSCAN) poi&scaron;če gruče točk, ki so podobne določeni razdalji (DBSCAN), vendar uporablja različne iskalne dosege, ki omogočajo gruče z različnimi gostotami. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimalno število točk, ki jih je treba obravnavati kot gručo</h2></div>
+        <hr/>
+        <div>
+            <p>Ta parameter se različno uporablja, odvisno od izbrane metode gručenja:
+            </p>
+            <p>
+                <ul>
+                    <li>Določena razdalja (DBSCAN) &ndash; določa &scaron;tevilo geoobjektov, ki jih je treba najti znotraj določene razdalje od točke, da se za to točko lahko začne oblikovati gruča. Razdalja je določena s parametrom  <b>Omejite iskalni doseg na</b>.
+                    </li>
+                    <li>Samoprilagajanje (HDBSCAN) &ndash; določa &scaron;tevilo geoobjektov, ki so sosednji vsaki točki (vključno s točko samo) in ki bodo upo&scaron;tevani pri ocenjevanju gostote. To &scaron;tevilo je tudi minimalna velikost gruče, ki je dovoljena pri ekstrahiranju gruč.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Omejite iskalni doseg na</h2></div>
+        <hr/>
+        <div>
+            <p>Ko uporabljate določeno razdaljo (DBSCAN), je ta parameter razdalja, znotraj katere je treba najti  <b>Minimalno &scaron;tevilo točk, ki jih je treba obravnavati kot gručo</b>. Ta parameter se ne uporablja, če je kot metoda gručenja izbrano samoprilagajanje (HDBSCAN).
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen. Če zapisujete v ArcGIS Data Store, bodo va&scaron;i rezultati shranjeni v  <b>Moji vsebini</b> in dodani na karto. Če zapisujete v delitev datotek velikih podatkov, bodo va&scaron;i rezultati shranjeni v delitev datotek velikih podatkov in dodani v njen manifest. Ne bodo dodani v skupino. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, orodje ne bo uspe&scaron;no.
+            </p>
+            <p>Ko zapisujete v  ArcGIS Data Store (relacijsko ali prostorsko-časovno shrambo velikih podatkov) s pomočjo spustnega menija  <b>Shrani rezultat v</b>, lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Crear cuadrícula multivariable</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Diagrama de flujo de trabajo de Incorporar datos"></h2>
+        <hr/>
+    <p>La herramienta Crear cuadr&iacute;cula multivariable funciona con una o varias capas de entidades de punto, l&iacute;nea o pol&iacute;gono. La herramienta genera una cuadr&iacute;cula de bins cuadrados o hexagonales y calcula valores para cada bin bas&aacute;ndose en la proximidad de cada capa de entrada. Estos valores pueden contener las siguientes variables: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Distancia hasta M&aacute;s cercana</b>: la distancia desde cada bin hasta la entidad m&aacute;s cercana
+            </li>
+            <li> <b>Atributo de M&aacute;s cercana</b>: un valor de campo de la entidad m&aacute;s cercana a cada bin
+            </li>
+            <li> <b>Resumen de Vecina</b>: una estad&iacute;stica especificada de todas las entidades situadas dentro de una distancia respecto de cada bin
+            </li>
+            <li> <b>Resumen de De intersecci&oacute;n</b>: una estad&iacute;stica especificada de todas las entidades que se intersecan cada bin
+            </li>
+        </ul>
+        
+    </p>
+    <p>Solo las variables que especifique se incluyen en la capa de resultados. Estas variables pueden ayudarle a comprender la proximidad y distribuci&oacute;n de sus datos. Los resultados pueden ayudarle a empezar a responder a preguntas tales como las siguientes:
+        <ul>
+            <li>Considerando varias capas de infraestructuras de transporte p&uacute;blico, &iquest;qu&eacute; parte de la ciudad es la menos accesible mediante transporte p&uacute;blico?
+            </li>
+            <li>Considerando capas de v&iacute;as acu&aacute;ticas, tales como lagos y r&iacute;os, &iquest;cu&aacute;l es el nombre de la masa de agua m&aacute;s cercana a cada ubicaci&oacute;n en los EE.&nbsp;UU.?
+            </li>
+            <li>Considerando una capa de ingresos por hogar, &iquest;en qu&eacute; parte de los EE.&nbsp;UU. es mayor la variaci&oacute;n entre los ingresos de 50 millas a la redonda?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Elija el tipo de bin que se utilizará para crear la cuadrícula multivariable</h2></div>
+        <hr/>
+        <div>
+             
+            <p>El tipo y tama&ntilde;o de bin que se utilizar&aacute; para crear la cuadr&iacute;cula multivariable. Para la opci&oacute;n  <b>Cuadrado</b>, el n&uacute;mero y las unidades especificados determinan la altura y la longitud del cuadrado. Para la opci&oacute;n <b>Hex&aacute;gono</b>, son el n&uacute;mero y las unidades especificados los que determinan la distancia entre los lados paralelos.
+            </p>
+            <p>Este an&aacute;lisis utiliza bins y requiere un sistema de coordenadas proyectadas. Puede definir el  <b>Sistema de coordenadas de procesamiento</b> en <b>Entornos de an&aacute;lisis</b>. Si el sistema de coordenadas de procesamiento no se ha definido en un sistema de coordenadas proyectadas, se le pedir&aacute; que lo defina cuando use <b>Ejecutar an&aacute;lisis</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Elija las capas y variables de entrada que desee incluir en la cuadrícula</h2></div>
+        <hr/>
+        <div>
+            <p>Haga clic en el bot&oacute;n de adici&oacute;n ( <b>+</b>) para abrir la ventana <b>Agregar variables</b> y agregar una capa a su an&aacute;lisis. En la ventana <b>Agregar variables</b>, elija una capa de entrada y configure las variables que desee calcular para esa capa de entrada.
+            </p>
+            <p>Una vez haya elegido y configurado las variables que desea calcular, la capa se enumerar&aacute; en la ventana de herramientas junto con las dem&aacute;s capas seleccionadas. Haga clic en el bot&oacute;n de edici&oacute;n de cualquier capa para abrir la ventana  <b>Agregar variables</b> y ver todas las variables que est&aacute;n configuradas para esa capa. Haga clic en el bot&oacute;n de eliminaci&oacute;n de cualquier capa para eliminar del an&aacute;lisis esa capa y todas las variables relacionadas.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Agregar variables</h2></div>
+        <hr/>
+        <div>
+            <p>Esta ventana le permite elegir una capa de entrada y configurar las variables que desee calcular para esa capa de entrada. Para comenzar, use el men&uacute; desplegable  <b>Elegir una capa de entrada</b> para seleccionar la capa de puntos, pol&iacute;gonos o l&iacute;neas que desea agregar a su an&aacute;lisis.
+            </p>
+            <p>Adem&aacute;s de elegir una capa en el mapa, puede elegir  <b>Elegir capa de an&aacute;lisis</b> en la parte inferior de la lista desplegable para examinar el contenido del dataset o la capa de entidades de un recurso compartido de archivos de big data.
+            </p>
+            <p>Despu&eacute;s de elegir una capa de entrada, haga clic en el bot&oacute;n  <b>Agregar una variable</b> para abrir una nueva variable y editarla. Debe proporcionar un nombre &uacute;nico para cada variable. Ser&aacute; el nombre del campo que se crea en la tabla de atributos de la capa de resultados.
+            </p>
+            <p>Utilice el men&uacute; desplegable para seleccionar el tipo de variable que desea agregar. Cada tipo de variable se debe configurar con un conjunto &uacute;nico de par&aacute;metros y todos los par&aacute;metros son obligatorios.
+            </p>
+            <p>Una vez a&ntilde;adidas todas las variables deseadas para la capa elegida, haga clic en el bot&oacute;n  <b>Agregar</b> para guardar las variables.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p> El nombre de la capa que se crear&aacute;.  Si escribe en un ArcGIS Data Store, sus resultados se guardar&aacute;n en  <b>Mi contenido</b> y se agregar&aacute;n al mapa. Si escribe en un recurso compartido de archivos de big data, sus resultados se almacenar&aacute;n en el recurso compartido de archivos de big data y se agregar&aacute;n a su manifiesto. No se agregar&aacute;n al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, la herramienta fallar&aacute;.
+            </p>
+            <p>Cuando escriba en  ArcGIS Data Store (big data store espaciotemporal o relacional) con el cuadro desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

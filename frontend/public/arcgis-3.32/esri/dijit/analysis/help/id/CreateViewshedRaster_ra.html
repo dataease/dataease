@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Buat Jarak Pandang</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Alat Buat Jarak Pandang"></h2>
+        <hr/>
+    <p>Alat ini mengidentifikasi area yang dapat dilihat pengamat, memperhitungkan topografi permukaan. Lokasi titik input dapat mewakili pengamat (misalnya orang yang berada di tanah atau pengawas suatu menara pemadam kebakaran) atau objek yang diamati (misalnya turbin angin, menara air, kendaraan, atau orang lain). Hasilnya menentukan area yang dapat dilihat dari lokasi pengamat.
+    </p>
+    <p>Baik pengamat maupun objek yang diamati dapat memiliki ketinggian di atas tanah, dan ketinggian ini digunakan untuk menentukan visibilitas. Contohnya, jarak pandang yang dihitung untuk turbin angin 300 kaki dan orang setinggi 6 kaki berdiri di atas tanah umumnya akan lebih besar dari jarak pandang yang dihitung untuk turbin 200 kaki dan orang setinggi 5 kaki.
+    </p>
+    <p>Layer hasil mencatat berapa kali setiap lokasi sel di permukaan raster input dapat terlihat dari titik pengamatan input. Sel yang tidak terlihat diberikan nilai NoData.
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya area raster dan titik pengamat yang terlihat dalam jangkauan peta saat ini yang akan dianalisis. Jika tidak dicentang, seluruh titik pengamat pada layer input akan dianalisis, meskipun berada di luar jangkauan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Permukaan elevasi</h2></div>
+        <hr/>
+        <div>
+            <p>Permukaan elevasi yang digunakan untuk menghitung jarak pandang
+            </p>
+            <p>Jika satuan vertikal dari permukaan input berbeda dari satuan horizontal, seperti yaitu ketika nilai elevasi diwakili dalam kaki, tetapi sistem koordinat dalam meter, permukaan harus memiliki sistem koordinat vertikal yang terdefinisikan. Alasannya adalah alat menggunakan satuan vertikal (Z) dan horizontal (XY) untuk menghitung faktor Z untuk analisis jarak pandang. Tanpa sistem koordinat vertikal, dan karena tidak tersedianya informasi unit Z, alat akan mengasumsikan bahwa unit Z sama dengan unit XY. Akibatnya adalah faktor Z internal 1.0 akan digunakan untuk analisis, yang mungkin memberikan hasl yang tidak terduga.
+            </p>
+            <p>Permukaan elevasi dapat berupa bilangan bulat atau bilangan titik mengambang.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Fitur titik yang mewakili lokasi pengamat</h2></div>
+        <hr/>
+        <div>
+            <p>Fitur titik yang mewakili lokasi pengamat ketika menghitung jarak pandang.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimalkan untuk</h2></div>
+        <hr/>
+        <div>
+            <p>Metode optimisasi yang digunakan untuk menghitung jarak pandang.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Metode ini mengoptimalkan kecepatan pemrosesan, mempertukarkan keakuratan pada hasil dengan kinerja yang lebih tinggi. Ini adalah default.
+
+                </li>
+                <li>Accuracy &mdash; 
+Metode ini dioptimalkan untuk memberikan keakuratan pada hasil, tetapi dengan waktu pemrosesan yang lebih panjang.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Jarak pandang maksimum</h2></div>
+        <hr/>
+        <div>
+            <p>Masukkan jarak henti dimana perhitungan area yang terlihat akan berhenti. Di luar jarak ini, tidak dapat ditentukan apakah titik pengamat dan objek lain dapat saling melihat.
+            </p>
+            <p>Anda dapat menentukan nilai numerik yang mewakili jarak linear atau memilih kolom numerik dari fitur pengamat input. Jika sebuah kolom disediakan, nilai yang berada dalam kolom harus dalam unit yang sama seperti unit xy pada permukaan elevasi input.
+            </p>
+            <p>Catat bahwa nilai yang besar meningkatkan waktu perhitungan. Kecuali ditentukan, jarak maksimum default akan dihitung berdasarkan resolusi dan jangkauan permukaan elevasi input.
+            </p>
+            <p>Parameter ini berguna untuk mencontohkan fenomena tertentu. Contoh, dengan membatasi jangkauan visibilitas, Anda dapat meniru kondisi cuaca seperti kabut ringan. Hampir serupa, membatasi jangkauan visibilitas dapat memberikan kontrol atas waktu hari dengan memperkirakan efek waktu petang.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Jarak pandang maksimum</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Jarak penglihatan minimum</h2></div>
+        <hr/>
+        <div>
+            <p>Masukkan jarak tempat dimulainya perhitungan area yang terlihat. Sel di permukaan yang lebih dekat daripada jarak ini tidak akan terlihat pada output, tetapi masih bisa menghalangi visibilitas sel antara jarak penglihatan minimum dan maksimum.
+            </p>
+            <p>Anda dapat menentukan nilai numerik yang mewakili jarak linear atau memilih kolom numerik dari fitur pengamat input. Jika sebuah kolom disediakan, nilai yang berada dalam kolom harus dalam unit yang sama seperti unit xy pada permukaan elevasi input.
+            </p>
+            <p>Parameter ini berguna untuk mengontrol area analisis jarak pandang pada jarak tertentu dari pengamat. Contoh, jika Anda mengevaluasi visibilitas dari puncak bangunan ke taman yang jauh, Anda dapat menetapkan jarak penglihatan minimum untuk mengecualikan area yang dekat yang tidak memiliki kepentingan dan memperoleh kecepatan memproses yang lebih baik.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Jarak penglihatan minimum</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>Jarak adalah 3D</h2></div>
+        <hr/>
+        <div>
+            <p>Tentukan apakah jarak penglihatan minimal dan maksimal diukur dalam cara tiga dimensi atau cara dua dimensi yang lebih sederhana. Ketika opsi dicentang, jarak penglihatan diperlakukan sebagai jarak 3D. Ketika tidak dicentang, jarak diperlakukan sebagai jarak 2D.
+            </p> 
+            <p>Jarak 2D adalah jarak linear sederhana yang diukur antara pengamat dan target dengan menggunakan lokasi yang diproyeksikan setara ketinggian permukaan laut. Jarak 3D memberikan nilai yang lebih realistis dengan mempertimbangkan tinggi relatifnya.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Elevasi lokasi pengamat</h2></div>
+        <hr/>
+        <div>
+            <p>Masukkan elevasi lokasi pengamat Anda.
+            </p>
+            <p>Anda dapat menentukan nilai numerik yang mewakili elevasi semua pengamat atau kolom yang mewakili elevasi setiap pengamat. Jika sebuah kolom disediakan, nilai yang berada di dalam kolom harus dalam unit yang sama seperti unit Z permukaan elevasi input.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Elevasi lokasi pengamat</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Ketinggian pengamat</h2></div>
+        <hr/>
+        <div>
+            <p>Masukkan ketinggian di atas tanah untuk lokasi pengamat Anda.
+            </p> 
+            <p>Anda dapat menentukan nilai numerik untuk ketinggian atau kolom dari fitur pengamat input. Jika sebuah kolom disediakan, nilai yang berada di dalam kolom harus dalam unit yang sama dengan unit z permukaan elevasi input.
+            </p>
+            <p>Default adalah 6 kaki. Jika Anda melihat dari lokasi yang tinggi, seperti menara pengamatan atau bangunan tinggi, gunakan tinggi tersebut. Selama perhitungan jarak pandang, nilai ini ditambahkan pada elevasi pengamat jika ditentukan; jika tidak, ia ditambahkan ke nilai z permukaan yang diinterpolasi.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Ketinggian pengamat</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Tinggi Target</h2></div>
+        <hr/>
+        <div>
+            <p>Masukkan ketinggian struktur atau orang di tanah yang digunakan untuk menciptakan visibilitas.
+            </p>
+            <p>Anda dapat menentukan nilai numerik untuk ketinggian atau kolom dari fitur pengamat input. Jika sebuah kolom disediakan, nilai yang berada di dalam kolom harus dalam unit yang sama dengan unit z permukaan elevasi input.
+            </p>
+            <p>Jarak pandang yang dihasilkan akan mengidentifikasi area tempat titik pengamat dapat melihat objek lainnya di tanah. Kebalikannya juga benar; benda di tanah dapat melihat titik pengamat. 
+            </p>
+            <p>Berikut ini adalah contoh pengaturan ketinggian target:
+            </p>
+            <ul>
+                <li>Jika titik input Anda mewakili turbin angin dan Anda ingin menentukan apakah orang-orang yang berdiri di tanah dapat melihat turbin tersebut, masukkan ketinggian rata-rata orang (sekitar 6 kaki).
+                    
+
+                </li>
+                <li>Jika titik input Anda mewakili menara pengawas kebakaran dan Anda ingin menentukan menara pengawas manakah yang dapat melihat asap membumbung setinggi 20 kaki atau lebih tinggi, masukkan 20 kaki untuk ketinggian targetnya.
+                    
+
+                </li>
+                <li>Jika titik input Anda mewakili bentang alam yang terbentang sepanjang jalan atau jalan setapak dan Anda ingin menentukan lokasi terlihatnya turbin angin setinggi 400 kaki atau lebih tinggi, masukkan 400 kaki untuk ketinggiannya.
+                    
+
+                </li>
+                <li>Jika titik input Anda mewakili bentang alam yang terbentang dan Anda ingin menentukan seberapa banyak area di tanah tempat orang berdiri di tempat yang terbentang dapat melihat, masukkan nol untuk ketinggian target. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Ketinggian pengamat</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Tinggi output agar terlihat</h2></div>
+        <hr/>
+        <div>
+            <p>Nama hasil above ground level (AGL) output. Hasil AGL adalah raster di mana setiap nilai sel adalah ketinggian minimum yang harus ditambahkan pada sel yang tidak terlihat untuk menjadikannya terlihat oleh setidaknya satu pengamat. Sel yang sudah terlihat akan diberikan angka 0 di output raster ini.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Anda dapat menentukan nama folder di  <b>Konten Saya</b> tempat hasil akan disimpan menggunakan kotak drop-down <b>Simpan hasil di</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

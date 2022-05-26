@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>豐富圖層</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="豐富圖層"></h2>
+        <hr/>
+    <p>此工具透過取得資料位置周邊的人員、場所及商業資訊來豐富您的資料，進而讓您可以回答那些僅根據地圖無法回答的新位置問題。例如：當地居住的是哪些人？ 該地區的人群有什麼喜好？ 他們的習慣和生活方式是什麼？ 該地區有何種商業形式？
+    </p>
+    <p>結果為一個新圖層，其中包含已知資料集的所有人口統計和地理資訊。此新資訊將作為欄位新增到表中。
+    </p>
+    <p>如果勾選 <b>使用當前地圖範圍</b>，則僅豐富目前地圖範圍中可見之輸入圖層的圖徵。如果未勾選，則豐富輸入圖層中的所有圖徵，包括超出當前地圖範圍的圖徵。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇要透過新資料來進行豐富的圖層</h2></div>
+        <hr/>
+        <div>
+            <p>將透過新屬性資料進行豐富的點、線或區域圖層。
+            </p>
+            <p>除了從地圖選擇圖層，您也可以選擇下拉清單底部的 <b>選擇分析圖層</b>。此選項將開啟圖庫，可讓您瀏覽並選擇各種來源中的資料集，以便在您的分析中使用該資料集。 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>豐富變數</h2></div>
+        <hr/>
+        <div>
+            
+            <p>按一下 <b>選擇變數</b>以打開 <b>資料瀏覽器</b>。 <b>資料瀏覽器</b>可用於單獨或按集合尋找及選擇豐富變數。
+            </p>
+            <p>可根據資料自動選擇區域。資料涵蓋多個國家或地區時，您可以選擇不同地區。
+            </p>
+            <p>為了容易存取，豐富變數以資料集合的形式組織。當您選取某個資料集合時，瀏覽器會顯示幾個此集合中最常見的豐富變數。在 <b>繼續瀏覽</b>之下，還會顯示集合中的類別。在每個類別中，可以選擇所有子類別，也可以展開某個子類別選擇單獨的豐富變數。還可以在類別中使用搜尋方塊來尋找特定變數。
+            </p>
+            <p>選擇要用於豐富的變數後，這些變數會新增到 <b>資料瀏覽器</b>角落的購物車中。利用此購物車追蹤已選變數的數量。
+            </p>
+            <p>每個已選變數將新增為結果圖層中的一個欄位。
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>定義要豐富的區域</h2></div>
+        <hr/>
+        <div>
+            <p>使用直線距離或所選的行進模式對將要執行豐富的輸入點或線周圍的區域進行定義。對於直線距離，請輸入一個不超過 1000 英里（1609 公里）的值。只有在輸入圖層包含點時，才能使用行進模式。可用的行進模式是由貴組織的管理員所決定的。使用某一行進模式時，將沿著道路或人行道進行測量，並且遵守適用的交通規則，例如單行道和違規轉彎等。選定模式和測量方式後，請輸入一個不超過 5 小時（300 分鐘）的時間或一個不超過 300 英里（482.8 公里）的距離。
+            </p>
+            <p>如果核取 <b>傳回結果作為邊界區域</b>，則會傳回依上述時間或距離值所定義的區域圖徵結果。若未核取，則傳回的結果將是點圖徵。
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層名稱已存在，系統將提示您提供其他名稱。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式功能表，可以在 <b>我的內容</b>中指定儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

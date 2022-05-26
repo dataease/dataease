@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Detetar Incidentes</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Detetar Incidentes"></h2>
+        <hr/>
+    <p> Esta ferramenta funciona com uma camada ativada por tempo de pontos, linhas, &aacute;reas ou tabelas que representa um instante no tempo.   Ao utilizar elementos ordenados sequencialmente, a que chamamos trilhos, esta ferramenta determina que elementos s&atilde;o incidentes de interesse. Os incidentes s&atilde;o determinados por condi&ccedil;&otilde;es especificadas por si.
+    </p>
+    <p>Primeiro, a ferramenta determina que elementos pertencem a um trilho, utilizando um ou mais campos. Utilizando a hora de cada elemento, os trilhos s&atilde;o ordenados sequencialmente e a condi&ccedil;&atilde;o de incidente &eacute; aplicada. Elementos que correspondem &agrave; condi&ccedil;&atilde;o incidente inicial s&atilde;o marcadas como um incidente. Opcionalmente, pode aplicar uma condi&ccedil;&atilde;o de incidente final; quando a condi&ccedil;&atilde;o de fim &eacute; verdadeira, o elemento deixa de ser um incidente.  Os resultados ser&atilde;o devolvidos com os elementos originais&mdash;com novas colunas que representam o nome do incidente&mdash;e indicam que elemento corresponde &agrave; condi&ccedil;&atilde;o de incidente. Pode devolver todos os incidentes originais ou apenas os elementos que s&atilde;o incidentes.
+    </p>
+    <p>Por exemplo, suponha que tem medi&ccedil;&otilde;es de GPS de furac&otilde;es a cada 10 minutos. Cada medi&ccedil;&atilde;o de GPS regista o nome e localiza&ccedil;&atilde;o do furac&atilde;o, hora da grava&ccedil;&atilde;o e a velocidade do vento. Utilizando estes campos, poderia criar um incidente em que qualquer medi&ccedil;&atilde;o com uma velocidade de vento superior a 208 km/h &eacute; um incidente denominado  <code>Catastr&oacute;fico</code>. Ao n&atilde;o definir uma condi&ccedil;&atilde;o de fim, o incidente terminaria se o elemento deixasse de corresponder &agrave; condi&ccedil;&atilde;o inicial (a velocidade do vento abranda para menos do que 208).
+    </p>
+    <p>Recorrendo a outro exemplo, suponha que est&aacute; a monitorizar concentra&ccedil;&otilde;es de um produto qu&iacute;mico no fornecimento de &aacute;gua local, utilizando um campo chamado  <code>contaminateLevel</code>. Sabe que os n&iacute;veis recomendados s&atilde;o inferiores a 0,01 mg/L, e os n&iacute;veis perigosos s&atilde;o superiores 0.03 mg/L. Para detetar incidentes em que um valor acima de 0.03mg/L &eacute; um incidente e mant&eacute;m-se um incidente at&eacute; que os n&iacute;veis de contamina&ccedil;&atilde;o voltem ao normal, criar&aacute; um incidente utilizando uma condi&ccedil;&atilde;o inicial de <code>contaminateLevel &gt; 0.03</code> e uma condi&ccedil;&atilde;o final de <code>contaminateLevel &lt; 0.01</code>. Esta a&ccedil;&atilde;o ir&aacute; marcar qualquer sequ&ecirc;ncia em que os valores excedem 0.03mg/L at&eacute; que regressem a um valor inferior a 0.01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Selecionar camada na qual detetar incidentes</h2></div>
+        <hr/>
+        <div>
+            <p>Os pontos, linhas, &aacute;reas ou tabelas que ser&atilde;o utilizados para encontrar incidentes. A camada de entrada tem de ter a compoenente temporal ativa com elementos que representam um instante no tempo, bem como ter um ou mais campos que podem ser utilizados para identificar trilhos.
+            </p>
+            <p>Para al&eacute;m de escolher uma camada do seu mapa, pode escolher  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista pendente para navegar at&eacute; aos seus conte&uacute;dos de um conjunto de dados de partilha de ficheiros de big data ou camada de elementos.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Selecionar um ou mais campos para identificar trilhos</h2></div>
+        <hr/>
+        <div>
+            <p>Os campos que representam o identificador de trilhos. Pode utilizar um campo ou v&aacute;rios campos para representar valores &uacute;nicos de trilhos.
+            </p>
+            <p>Por exemplo, caso estivesse a reconstruir trilhos de furac&otilde;es, poderia utilizar os nome dos furac&atilde;o como o campo de trilho.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Construir uma condição de expressão para significar o início de um incidente</h2></div>
+        <hr/>
+        <div>
+            <p>Adicione uma condi&ccedil;&atilde;o utilizando o builder de express&otilde;es para determinar o que &eacute; um incidente. Caso a condi&ccedil;&atilde;o que especificar seja verdadeira, o elemento ser&aacute; um incidente. Caso n&atilde;o especifique uma condi&ccedil;&atilde;o de fim, um incidente termina quando a condi&ccedil;&atilde;o inicial deixa de ser verdadeira.
+            </p>
+            <p>Por exemplo, suponha que pretende ser alertado quando a soma dos campos  <code>concentration_1</code> e <code>concentration_2</code> &eacute; superior a <code>concentration_3</code>.   Para fazer isto, aplique uma condi&ccedil;&atilde;o de <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>Caso estivesse interessado no modo como as concentra&ccedil;&otilde;es mudaram ao longo do tempo, e pretendesse ser alertado quando a atual  <code>concentration_1</code> fosse superior &agrave;s duas anteriores medi&ccedil;&otilde;es de <code>concentration_2</code> poderia utilizar uma express&atilde;o como <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Construir uma condição de expressão para significar o fim de um incidente (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Opcionalmente, adicione uma condi&ccedil;&atilde;o utilizando o builder de express&otilde;es para determinar o final de um incidente. Caso a condi&ccedil;&atilde;o de fim que especificar seja verdadeira, o elemento deixar&aacute; de ser um incidente. Caso n&atilde;o especifique uma condi&ccedil;&atilde;o de fim, um incidente termina quando a condi&ccedil;&atilde;o inicial deixa de ser verdadeira.    
+            </p>
+            <p>Por exemplo, suponha que pretende ser alertado quando a soma dos campos    <code>concentration_1</code> e <code>concentration_2</code> &eacute; superior a <code>concentration_3</code>, e pretenda que o incidente termine caso <code>concentration_4</code> seja inferior a <code>concentration_1</code>. Para fazer isto, aplique uma condi&ccedil;&atilde;o inicial de <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> e uma condi&ccedil;&atilde;o de fim de <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>.
+            </p>
+            <p>Caso pretendesse que um incidente terminasse quando a m&eacute;dia da atual  <code>concentration_1</code> e das quatro anteriores medi&ccedil;&otilde;es fosse superior &agrave; da primeira medi&ccedil;&atilde;o, poderia utilizar uma express&atilde;o como <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Mostre-me</h2></div>
+        <hr/>
+        <div>
+            <p>Todos os m&eacute;todos de sa&iacute;da anexar&atilde;o campos aos elementos originais. Existem duas formas de determinar que elementos s&atilde;o devolvidos:
+                <ul>
+                    <li> <b>Todos os elementos</b>&mdash;Isto &eacute; o padr&atilde;o. Todos os elementos da entrada ser&atilde;o devolvidos.
+                    </li>
+                    <li> <b>Apenas incidentes</b>&mdash;Este m&eacute;todo apenas devolver&aacute; os elementos que s&atilde;o incidentes. Quaisquer elementos que n&atilde;o sejam incidentes n&atilde;o ser&atilde;o devolvidos.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analisar dados com intervalos de tempo (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique se pretende detetar incidentes utilizando intervalos de tempo que segmentam os seus elementos de entrada para an&aacute;lise. Se utiliza intervalos de tempo tem de definir o intervalo de tempo que pretende utilizar, e opcionalmente definir o momento de refer&ecirc;ncia. Se n&atilde;o definir um momento de refer&ecirc;ncia ser&aacute; utilizado 1 de janeiro de 1970. 
+            </p>
+            <p>Por exemplo, se definir que o limite de tempo &eacute; de 1 dia, come&ccedil;ando &agrave;s 9:00 AM de 1 de janeiro de 1990, ent&atilde;o cada trilho ser&aacute; truncado &agrave;s 9:00 AM de cada dia e analisado dentro desse segmento. 
+            </p>
+            <p>Utilizar intervalos de tempo &eacute; uma forma r&aacute;pida de acelerar o tempo de c&aacute;lculo, visto que isso cria rapidamente trilhos mais pequenos para an&aacute;lise. Se a divis&atilde;o por um intervalo de tempo recorrente faz sentido para a sua an&aacute;lise, isso &eacute; recomendado para o processamento de big data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se estiver a escrever para ArcGIS Data Store, os seus resultados ser&atilde;o gravados em  <b>O Meu Conte&uacute;do</b> e adicionados ao mapa. Se estiver a escrever para uma partilha de ficheiros big data, os seus resultados ser&atilde;o guardados numa partilha de ficheiros big data e adicionados ao seu manifesto. N&atilde;o ser&atilde;o adicionados ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Caso a camada j&aacute; existe, a ferramenta ir&aacute; falhar.
+            </p>
+            <p>Ao escrever para   ArcGIS Data Store  (armazenamento relacional ou espaciotemporal de dados big data) utilizando a caixa suspensa  <b>Guardar resultado em</b> pode especificar o nome de uma pasta em <b>O Meu Conte&uacute;do</b>, onde ser&aacute; armazenado o resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

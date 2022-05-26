@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Konvertuj raster u geoobjekat</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Alat za konvertovanje rastera u geoobjekat"></h2>
+        <hr/>
+    <p>Ovaj alat konvertuje raster u skup podataka geoobjekta, kao &scaron;to su tačke, linije ili poligoni.
+    </p>
+    <p>Parametar  <b>Odaberite polje</b> vam omogućava da odaberete koje polje atributa skupa podataka ulaznog rastera će postati atribut u klasi izlaznog geoobjekta. Ovaj parametar je dostupan samo za celobrojne rastere koji imaju dodatne atribute u povezanoj tabeli.
+    </p>
+    <p>Ulazni raster može da ima ćeliju bilo koje veličine.
+    </p>
+    <p>Celobrojni rasteri mogu da se konvertuju u tačkaste, linijske ili poligonalne geoobjekte; međutim, rasteri sa pokretnim zarezom mogu da se konvertuju samo u tačkaste geoobjekte.
+    </p>
+    <p>Ako je opcija  <b>Koristi trenutni obuhvat mape</b> izabrana, konvertovaće se samo one ćelije rastera koje su vidljive unutar trenutnog obuhvata mape. Ako nije izabrana, sve ćelije u sloju rastera će biti konvertovane, čak i ako su izvan trenutnog obuhvata mape. Obratite pažnju na to, ako je sloj rastera velik ili ima veoma visoku rezoluciju.
+    </p>
+    <p>Slučajevi upotrebe za ovaj alat uključuju sledeće:
+ 
+        <ul>
+            <li>Kreirajte poligonalne geoobjekte iz rastera za klasifikaciju kori&scaron;ćenja zemlji&scaron;ta.
+                
+ 
+            </li>
+            <li>Potoci identifikovani u DEM-u mogu da se konvertuju u linijske geoobjekte.
+                
+
+            </li>
+            <li>DEM može da se konvertuje u tačkaste geoobjekte koji mogu da se koriste u radnom toku koji nije zasnovan na rasterima.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite sloj rastera za konvertovanje</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj ulaznog rastera koji će biti konvertovan u slojeve geoobjekta.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Odaberite polje</h2></div>
+        <hr/>
+        <div>
+            <p>Obezbedite polje koje navodi koja će vrednost da se koristi za konverziju.
+            </p>
+            <p>To može biti celobrojna ili tekstualna vrednost.
+            </p>
+            <p>Polje koje sadrži vrednosti sa pokretnim zarezom može da se koristi samo ako izlazni rezultati idu u tačkasti skup podataka.
+            </p>
+            <p>Podrazumevani izbor je kori&scaron;ćenje polja  <i>Value</i>, koje sadrži vrednost svake ćelije rastera.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Odaberite tip izlaznih rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite tip izlaznih rezultata između tačke, linije ili poligona.
+            </p>
+            <ul>
+                <li>Tačka&mdash;raster će biti konvertovan u tačkasti skup podataka.
+                    
+ 
+                </li>
+                <li>Linija&mdash;raster će biti konvertovan u skup podataka linijskog geoobjekta.
+                    
+ 
+                </li>
+                <li>Poligon&mdash;raster će biti konvertovan u skup podataka poligonalnog geoobjekta.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Pojednostavi linije ili poligone</h2></div>
+        <hr/>
+        <div>
+            <p>Naznačite da li bi geoobjekti trebalo da budu pojednostavljeni.
+            </p>
+            <p>Ako je opcija izabrana (podrazumevano), linijski ili poligonalni geoobjekti će biti poravnati kako bi se proizveo op&scaron;tiji rezultat. Ako ova opcija nije izabrana, linearni geoobjekti će pratiti granice ćelija rasterskog skupa podataka.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat mapi. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Možete da navedete ime fascikle u  <b>Mom sadržaju</b> gde će rezultat biti sačuvan kori&scaron;ćenjem padajućeg polja <b>Sačuvaj rezultat u</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

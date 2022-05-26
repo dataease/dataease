@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Sestavit stopy (Reconstruct Tracks)</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="Sestavit stopy"></h2>
+        <hr/>
+    <p> Tento n&aacute;stroj pracuje s časovou vrstvou bodov&yacute;ch nebo plo&scaron;n&yacute;ch prvků, kter&eacute; představuj&iacute; <code>okamžik</code> v čase.   Nejprve pomoc&iacute; identifik&aacute;toru urč&iacute;, kter&eacute; prvky patř&iacute; do stopy. Na z&aacute;kladě času v&nbsp;každ&eacute;m um&iacute;stěn&iacute; jsou stopy seřazeny za sebe a převedeny na linii nebo plochu představuj&iacute;c&iacute; dr&aacute;hu pohybu v&nbsp;čase. Volitelně může b&yacute;t pro vstup vytvořena obalov&aacute; z&oacute;na pomoc&iacute; pole, což vytvoř&iacute; v&nbsp;každ&eacute;m um&iacute;stěn&iacute; plochu. Tyto body s obalov&yacute;mi z&oacute;nami nebo vstupn&iacute; plochy jsou pot&eacute; postupně spojeny, aby vytvořily stopu ve formě plochy, jej&iacute;ž &scaron;&iacute;řka představuje z&aacute;jmov&yacute; atribut. V&yacute;sledn&eacute; stopy maj&iacute; čas zač&aacute;tku a čas konce, kter&eacute; představuj&iacute; časově prvn&iacute; a posledn&iacute; prvek na dan&eacute; stopě. Při vytv&aacute;řen&iacute; stop se vypoč&iacute;taj&iacute; statistiky vstupn&iacute;ch prvků a přiřad&iacute; se k&nbsp;v&yacute;stupn&iacute; stopě. Nejz&aacute;kladněj&scaron;&iacute; statistikou je počet bodů v&nbsp;oblasti, ale vypoč&iacute;tat lze i jin&eacute; statistiky.
+    </p>
+    <p>Prvky ve vrstv&aacute;ch s&nbsp;informacemi o čase lze reprezentovat jedn&iacute;m ze dvou způsobů:
+        <ul>
+            <li>Okamžik &ndash; Jedin&yacute; okamžik v&nbsp;čase
+            </li>
+            <li>Interval &ndash; Poč&aacute;tečn&iacute; a koncov&yacute; čas
+            </li>
+        </ul>
+        
+    </p>
+    <p>Předpokl&aacute;dejme např&iacute;klad, že každ&yacute;ch 10 minut m&aacute;te GPS měřen&iacute; hurik&aacute;nů. Každ&eacute; GPS měřen&iacute; zaznamen&aacute;v&aacute; n&aacute;zev a um&iacute;stěn&iacute; hurik&aacute;nu, čas z&aacute;znamu a rychlost větru. Pomoc&iacute; těchto informac&iacute; můžete vytvořit stopy pro každ&yacute; hurik&aacute;n pomoc&iacute; n&aacute;zvu pro identifikaci stopy. Tak&eacute; můžete vypoč&iacute;tat statistiky, jako je průměrn&aacute;, maxim&aacute;ln&iacute; a minim&aacute;ln&iacute; rychlost větru každ&eacute;ho hurik&aacute;nu a různ&aacute; měřen&iacute; v&nbsp;každ&eacute; stopě.
+    </p>
+    <p>Ve stejn&eacute;m př&iacute;kladu byste mohli tak&eacute; vytvořit obalovou z&oacute;nu pro va&scaron;e stopy podle rychlosti větru. T&iacute;m by byla pro každ&eacute; měřen&iacute; vytvořena obalov&aacute; z&oacute;na podle pole rychlosti větru v&nbsp;dan&eacute;m um&iacute;stěn&iacute; a oblasti obalov&yacute;ch z&oacute;n by byly spojeny dohromady. Vytvoř&iacute; se tak oblast představuj&iacute;c&iacute; cestu stopy a změny rychlosti větru v&nbsp;průběhu postupu hurik&aacute;nů.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Zvolte prvky, ze kterých budou sestaveny stopy</h2></div>
+        <hr/>
+        <div>
+            <p>Bodov&aacute; nebo oblastn&iacute; vrstva, kter&aacute; bude rekonstruov&aacute;na do stop. Vstupn&iacute; vrstva mus&iacute; b&yacute;t vrstva s&nbsp;informacemi o čase s prvky, kter&eacute; představuj&iacute; okamžik v&nbsp;čase. Vrstva mus&iacute; b&yacute;t v rovinn&eacute;m souřadnicov&eacute;m syst&eacute;mu nebo souřadnicov&yacute; syst&eacute;m zpracov&aacute;n&iacute; mus&iacute; b&yacute;t nastaven na rovinn&yacute; souřadnicov&yacute; syst&eacute;m použ&iacute;vaj&iacute;c&iacute;  <b>Prostřed&iacute; anal&yacute;zy</b>, pokud je použita obalov&aacute; z&oacute;na.
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Zvolit jedno nebo více polí k identifikaci stop</h2></div>
+        <hr/>
+        <div>
+            <p>Pole, kter&aacute; představuj&iacute; identifik&aacute;tor stopy. 
+            </p>
+            <p>Př&iacute;klad: Pokud byste rekonstruovali stopy hurik&aacute;nů, mohli byste jako pole stopy použ&iacute;t n&aacute;zev hurik&aacute;nu.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Zvolte způsob sestavení stop</h2></div>
+        <hr/>
+        <div>
+            <p>Způsob spojen&iacute; stop a aplikace obalov&eacute; z&oacute;ny (lze-li aplikovat).  <b>Rovinn&yacute;</b> způsob může vypoč&iacute;tat v&yacute;sledky rychleji, ale nezalom&iacute; stopy kolem mezin&aacute;rodn&iacute; datov&eacute; hranice ani nebude při vytv&aacute;řen&iacute; obalov&eacute; z&oacute;ny zohledňovat re&aacute;ln&yacute; tvar Země. <b>Geodetick&yacute;</b> způsob v&nbsp;př&iacute;padě potřeby zalom&iacute; stopy kolem datov&eacute; hranice a aplikuje geodetickou obalovou z&oacute;nu, aby zohledňovala tvar Země.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Vytvořit výraz pro vytvoření obalové zóny vstupních prvků (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p>Rovnice použit&aacute; pro v&yacute;počet &scaron;&iacute;řky obalov&eacute; z&oacute;ny kolem vstupn&iacute;ch prvků. Tato rovnice bude vytvořena pomoc&iacute; kalkul&aacute;toru obalov&eacute; z&oacute;ny. Jsou podporov&aacute;ny z&aacute;kladn&iacute; operace jako sč&iacute;t&aacute;n&iacute;, odeč&iacute;t&aacute;n&iacute;, n&aacute;soben&iacute; a dělen&iacute;. Hodnoty jsou vypoč&iacute;t&aacute;ny pomoc&iacute; souřadnicov&eacute;ho syst&eacute;mu anal&yacute;zy. Vrstva mus&iacute; b&yacute;t v rovinn&eacute;m souřadnicov&eacute;m syst&eacute;mu nebo souřadnicov&yacute; syst&eacute;m zpracov&aacute;n&iacute; mus&iacute; b&yacute;t nastaven na rovinn&yacute; souřadnicov&yacute; syst&eacute;m použ&iacute;vaj&iacute;c&iacute;  <b>Prostřed&iacute; anal&yacute;zy</b>, pokud je použita obalov&aacute; z&oacute;na.
+            </p>
+            <p>Rovnice jako  <code>$feature.windspeed * 1000</code> by použila obalovou z&oacute;nu o hodnotě 1 000 vyn&aacute;sobenou polem <i>windspeed</i>.V kalkul&aacute;toru obalov&eacute; z&oacute;ny můžete použ&iacute;t v&iacute;ce než jedno pole.
+            </p>
+            <p> Můžete tak&eacute; zadat v&yacute;raz, kter&yacute; je určen konkr&eacute;tn&iacute; stopě. Např&iacute;klad byste mohli vypoč&iacute;tat součet hodnot pole <i>windspeed</i> pro aktu&aacute;ln&iacute; prvek a předchoz&iacute; dva prvky pomoc&iacute; rovnice <code>$track.field(windspeed).history(-3)</code>. V každ&eacute;m um&iacute;stěn&iacute; by byl vypoč&iacute;t&aacute;n součet aktu&aacute;ln&iacute; <i>windspeed</i>, a předchoz&iacute; dvě měřen&iacute; a byla by vytvořena obalov&aacute; z&oacute;na.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Vyberte čas pro rozdělení stop (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p>Čas použit&yacute; k&nbsp;dělen&iacute; stop. Pokud mezi sebou maj&iacute; vstupn&iacute; body nebo plochy del&scaron;&iacute; dobu, než je časov&eacute; dělen&iacute;, budou rozděleny do různ&yacute;ch stop.
+            </p>
+            <p>Jestliže specifikujete časov&eacute; dělen&iacute; a dělen&iacute; vzd&aacute;lenosti, budou při splněn&iacute; jedn&eacute; nebo v&iacute;ce podm&iacute;nek stopy rozděleny. 
+            </p>
+            <p>Představte si, že m&aacute;te bodov&eacute; prvky představuj&iacute;c&iacute; lety letadel, kde polem stopy je identifik&aacute;tor letadla. Toto letadlo může podniknout několik cest a st&aacute;le b&yacute;t reprezentov&aacute;no jako jedna stopa.  Pokud byste věděli, že mezi lety je hodinov&aacute; přest&aacute;vka, mohli byste použ&iacute;t  <code>1 hodinu</code> pro rozdělen&iacute; stopy a každ&yacute; let by byl rozdělen do vlastn&iacute; stopy.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Rozdělit stopy (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p>Můžete rozdělit stopy pomoc&iacute; různ&yacute;ch metod. Můžete použ&iacute;vat kombinaci ž&aacute;dn&eacute;, v&scaron;ech nebo někter&eacute; z metod rozdělen&iacute;. 
+            </p>
+            <p>Rozdělen&iacute; lze dokončit n&aacute;sleduj&iacute;c&iacute;mi způsoby:
+                <ul>
+                    <li> <b>Podle vzd&aacute;lenosti mezi vstupy</b>&mdash;Pokud vstupn&iacute; body nebo plochy maj&iacute; mezi sebou vět&scaron;&iacute; vzd&aacute;lenost než je dělen&iacute; vzd&aacute;lenosti, pak budou rozděleny do různ&yacute;ch stop. Např&iacute;klad, pokud byste zadali vzd&aacute;lenost 10 kilometrů, postupn&eacute; body vět&scaron;&iacute; než 10 kilometrů by byly samostatn&eacute; stopy.
+                    </li>
+                    <li> <b>Podle času mezi vstupy</b>&mdash;Pokud vstupn&iacute; body nebo plochy maj&iacute; mezi sebou del&scaron;&iacute; trv&aacute;n&iacute; než je dělen&iacute; času, pak budou rozděleny do různ&yacute;ch stop. Např&iacute;klad, když že m&aacute;te bodov&eacute; prvky představuj&iacute;c&iacute; lety letadel, kde polem stopy je identifik&aacute;tor letadla. Toto letadlo může podniknout několik cest a st&aacute;le b&yacute;t reprezentov&aacute;no jako jedna stopa.  Pokud byste věděli, že mezi lety je hodinov&aacute; přest&aacute;vka, mohli byste použ&iacute;t <code>1 hodinu</code> pro rozdělen&iacute; stopy a každ&yacute; let by byl rozdělen do vlastn&iacute; stopy.
+                    </li>
+                    <li> <b>V definovan&yacute;ch časov&yacute;ch intervalech</b>&mdash;Rozdělen&iacute; pomoc&iacute; pravideln&yacute;ch intervalů, zadan&eacute; časov&yacute;m intervalem a referenčn&iacute;m časem. Pokud nezad&aacute;te referenčn&iacute; čas, bude použito 1. ledna 1970. Např&iacute;klad, pokud jste zadali 1 rok s referenčn&iacute;m časem 2. &uacute;nora 1990 v 10:00, rozděl&iacute;te stopy 2. &uacute;nora 1990 v 10:00, 2. &uacute;nora 1991 v 10:00 a tak budete d&aacute;le pokračovat v časov&yacute;ch intervalech jednoho roku.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jestliže specifikujete možnosti v&iacute;ce rozdělen&iacute;, budou při splněn&iacute; jedn&eacute; nebo v&iacute;ce podm&iacute;nek stopy rozděleny. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Zvolte vzdálenost pro rozdělení stop (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p>Vzd&aacute;lenost pro dělen&iacute; stop. Pokud vstupn&iacute; body nebo plochy maj&iacute; mezi sebou vět&scaron;&iacute; vzd&aacute;lenost než je dělen&iacute; vzd&aacute;lenosti, pak budou rozděleny do různ&yacute;ch stop.
+            </p>
+            <p>Jestliže specifikujete časov&eacute; dělen&iacute; a dělen&iacute; vzd&aacute;lenosti, budou při splněn&iacute; jedn&eacute; nebo v&iacute;ce podm&iacute;nek stopy rozděleny. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Přidat statistiku (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p> Můžete vypoč&iacute;tat statistiku sumarizovan&yacute;ch prvků.Můžete vypoč&iacute;tat n&aacute;sleduj&iacute;c&iacute; v č&iacute;seln&yacute;ch pol&iacute;ch:
+                <ul>
+                    <li>Počet &ndash; Spoč&iacute;t&aacute; počet nenulov&yacute;ch hodnot. Lze jej použ&iacute;t na č&iacute;seln&yacute;ch pol&iacute;ch nebo řetězc&iacute;ch. Počet pro [null, 0, 2] je 2.
+                    </li>
+                    <li>Součet &ndash; Součet č&iacute;seln&yacute;ch hodnot v poli. Součet pro [null, null, 3] je 3.
+                    </li>
+                    <li>Průměr &ndash; Průměr č&iacute;seln&yacute;ch hodnot. Průměr pro [0, 2, null] je 1.
+                    </li>
+                    <li>Min &ndash; Minim&aacute;ln&iacute; hodnota č&iacute;seln&eacute;ho pole. Minimum pro [0, 2, null] je 0. 
+                    </li>
+                    <li>Max &ndash; Maxim&aacute;ln&iacute; hodnota č&iacute;seln&eacute;ho pole. Maximum pro [0, 2, null] je 2.
+                    </li>
+                    <li>Rozsah &ndash; Rozsah č&iacute;seln&eacute;ho pole. Vypočtou se jako minim&aacute;ln&iacute; hodnoty odečten&eacute; od maxim&aacute;ln&iacute; hodnoty. Rozsah pro [0, null, 1] je 1. Rozsah pro [null, 4] je 0.
+                    </li>
+                    <li>Odchylka &ndash; Odchylka č&iacute;seln&eacute;ho pole ve stopě. Odchylka pro [1]  je null. Odchylka pro [null, 1,0,1,1] je 0,25.
+                    </li>
+                    <li>Standardn&iacute; odchylka &ndash; Standardn&iacute; odchylka č&iacute;seln&eacute;ho pole. Standardn&iacute; odchylka pro [1] je null. Standardn&iacute; odchylka pro [null, 1,0,1,1] je 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>N&aacute;sleduj&iacute;c&iacute; můžete vypoč&iacute;tat  v pol&iacute;ch řetězců:
+                <ul>
+                    <li>Počet &ndash; Počet nenulov&yacute;ch řetězců.
+                    </li>
+                    <li>Libovoln&eacute; &ndash; Tato statistika je n&aacute;hodn&yacute;m vzorkem hodnoty řetězce v&nbsp;určen&eacute;m poli.
+                    </li>
+                </ul>
+                V&scaron;echny statistiky se poč&iacute;taj&iacute; pro nenulov&eacute; hodnoty. V&yacute;sledn&aacute; vrstva bude obsahovat nov&eacute; pole pro každou vypoč&iacute;tanou statistiku. Lze přidat libovoln&yacute; počet statistik zvolen&iacute;m atributu a statistiky. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Výběr ArcGIS Data Store, do kterého budou uloženy výsledky</h2></div>
+        <hr/>
+        <div>
+            <p>V&yacute;sledky geoanal&yacute;zy jsou ukl&aacute;d&aacute;ny do nějak&eacute;ho datov&eacute;ho &uacute;loži&scaron;tě a jsou zobrazeny jako vrstva prvků v   Portal for ArcGIS. Ve vět&scaron;ině př&iacute;padů by v&yacute;sledky měly b&yacute;t uloženy do časoprostorov&eacute;ho datov&eacute;ho &uacute;loži&scaron;tě a toto je v&yacute;choz&iacute; nastaven&iacute;. V někter&yacute;ch př&iacute;padech je vhodn&eacute; uložit v&yacute;sledky do relačn&iacute;ho datov&eacute;ho &uacute;loži&scaron;tě. Důvody k uložen&iacute; v&yacute;sledků do relačn&iacute;ho datov&eacute;ho &uacute;loži&scaron;tě: 
+                <ul>
+                    <li>Můžete použ&iacute;t v&yacute;sledky ke spolupr&aacute;ci mezi port&aacute;ly.
+                    </li>
+                    <li>Můžete povolit funkce synchronizace s v&yacute;sledky
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relačn&iacute; datov&eacute; &uacute;loži&scaron;tě byste použ&iacute;vat neměli, pokud oček&aacute;v&aacute;te n&aacute;růst množstv&iacute; v&yacute;sledků geoanal&yacute;zy a chcete využ&iacute;t v&yacute;hod časoprostorov&eacute;ho &uacute;loži&scaron;tě Big Data ke zpracov&aacute;n&iacute; velk&yacute;ch objemů dat.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p> N&aacute;zev vytv&aacute;řen&eacute; vrstvy. Pokud zapisujete ArcGIS Data Store, va&scaron;e v&yacute;sledky budou uloženy v  <b>Můj obsah</b> a přid&aacute;ny na mapu. Pokud zapisujete sd&iacute;len&yacute; soubor velk&yacute;ch dat, va&scaron;e v&yacute;sledky budou uloženy ve sd&iacute;len&eacute;m souboru velk&yacute;ch dat a přid&aacute;ny do jejich manifestu.  Nebudou přid&aacute;ny na mapu. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, n&aacute;stroj selže.
+            </p>
+            <p>Když zapisujete do   ArcGIS Data Store  (datov&eacute; &uacute;loži&scaron;tě relačn&iacute;ch a časoprostorov&yacute;ch velk&yacute;ch dat) pomoc&iacute; rozbalovac&iacute;ho seznamu  <b>Uložit v&yacute;sledek do</b> , můžete zadat n&aacute;zev složky v <b>Můj obsah</b>, kde budou v&yacute;sledky uloženy.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Describe Dataset</h2><p/>
+        <h2><img src="./images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Describe Dataset workflow diagram"></h2>
+        <hr/>
+    <p>The Describe Dataset tool provides a more detailed look into your dataset. Before running analysis on large amounts of data, use this tool to determine what and where your input data is. By default, the  result will be a JSON string outlining key descriptors of your input layer and a table detailing the summary statistics for each field. 
+    </p>
+    <p>Optionally you can  create additional output feature layers to further describe your data. The options are a sample layer or an extent layer. You can choose to output one or both.
+    </p>
+    <p>For example, say you are given a big data file share containing 15 datasets. Each dataset has 10 million area features representing buildings and houses across different regions of your country. You are tasked with analyzing region C, but you do not know which dataset contains these features. To find out which dataset you should use, run Describe Dataset and choose to create an extent layer to investigate which dataset is in your study region.
+    </p>
+    <p>As another example, imagine you are tasked with completing an analysis workflow on a large volume of data. You want to try the workflow, but it could take hours or days with your full dataset. Instead of utilizing time and resources running the full analysis, create a sample layer to efficiently test your complete workflow on.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose dataset to describe</h2></div>
+        <hr/>
+        <div>
+            <p>The layer containing point, line, area, or tabular features that will be described, summarized, and sampled.
+            </p>
+            <p>In addition to choosing a layer from your map, you can choose  <b>Choose Analysis Layer</b> at the bottom of the drop-down list to browse to your contents for a big data file share dataset or feature layer. You may optionally apply a filter on your input layer or apply a selection on hosted layers added to your map. Filters and selections are only applied for analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Understand your dataset by creating a (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Output additional descriptive layers to improve your understanding of your big data. You can choose to output zero, one, or both of the following layers:
+            </p>
+            <ul>
+                <li> <b>Extent layer</b>&mdash;creates an area feature representing the extent of your input features or area of interest.
+                </li>
+                <li> <b>Sample layer</b>&mdash;creates a subset layer containing a specified amount of input features from within your dataset or area of interest.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Sample layer</h2></div>
+        <hr/>
+        <div>
+            <p>Output a layer containing a subset of features from your input layer. If  <b>Sample layer</b> is selected you are able to specify the number of features you want to return in the sample layer.  By default, 100 sample features will be returned in the output  layer.
+            </p>
+            <p>The value must be greater than zero. If you specify a number  greater than the total number of features all features will be returned.
+            </p>
+            <p>If  <b>Use current map extent</b> is selected then the sample layer will contain features from within the extent of the map.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Extent layer</h2></div>
+        <hr/>
+        <div>
+            <p>Output a feature layer containing a single feature representing the extent of the input features by selecting the  <b>Extent layer</b> button. This is selected by default.
+            </p>
+            <p>If  <b>Use current map extent</b> is selected then the extent layer will represent the visible extent of the map.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer
+name</h2></div>
+        <hr/>
+        <div>
+            <p> The name of the layer that will be created.  If you are writing to an ArcGIS Data Store, your results will be saved in  <b>My
+Content</b> and added to the map. If you are writing to a big data file share, your results will be stored in the big data file share and added to its manifest. It will not be added to the map. The default name is based on the
+tool name and the input layer name. If the layer already exists, the tool will fail.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

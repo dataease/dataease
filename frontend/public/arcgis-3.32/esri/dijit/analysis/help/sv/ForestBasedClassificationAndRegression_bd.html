@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Skogsbaserad klassificering och regression</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Skogsbaserad klassificering och diagram &ouml;ver regressionsarbetsfl&ouml;de"></h2>
+        <hr/>
+    <p>Skapar modeller och genererar f&ouml;ruts&auml;gelser med hj&auml;lp av en anpassning av Leo Breimans algoritm f&ouml;r slumpm&auml;ssig skog, som &auml;r en &ouml;vervakad metod f&ouml;r maskininl&auml;rning. F&ouml;ruts&auml;gelser kan g&ouml;ras b&aring;de f&ouml;r kategoriska variabler (klassificering) och kontinuerliga variabler (regression). F&ouml;rklarande variabler &auml;r f&auml;lt i attributtabellen f&ouml;r tr&auml;ningsgeoobjekt. Verktyget kan k&ouml;ras i syfte att generera en modell f&ouml;r att utv&auml;rdera prestanda, eller generera en modell och f&ouml;ruts&auml;ga resultat f&ouml;r ett annat dataset.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analystyp</h2></div>
+        <hr/>
+        <div>
+            <p>Anger verktygets driftl&auml;ge. Verktyget kan k&ouml;ras f&ouml;r att tr&auml;na en modell i att enbart utv&auml;rdera prestanda, eller tr&auml;na modellen och f&ouml;ruts&auml;ga geoobjekt. Det finns f&ouml;ljande f&ouml;ruts&auml;gelsetyper:
+                <ul>
+                    <li> <b>Tr&auml;na en modell i att utv&auml;rdera prestanda</b> &ndash; En modell tr&auml;nas och anpassas till indata. Anv&auml;nd det h&auml;r alternativet f&ouml;r att utv&auml;rdera korrektheten hos din modell innan du genererar f&ouml;ruts&auml;gelser p&aring; ett nytt dataset. Utdata f&ouml;r det h&auml;r alternativet kommer att vara en geoobjekttj&auml;nst f&ouml;r dina anpassade tr&auml;ningsdata, modelldiagnostik och en valfri tabell av varierande betydelse.
+                    </li>
+                    <li> <b>Tr&auml;na en modell och f&ouml;ruts&auml;g v&auml;rden</b> &ndash; F&ouml;ruts&auml;gelser eller klassificeringar genereras f&ouml;r geoobjekt. F&ouml;rklarande variabler m&aring;ste anges b&aring;de f&ouml;r tr&auml;ningsgeoobjekten och geoobjekten som ska f&ouml;ruts&auml;gas. Utdata f&ouml;r det h&auml;r alternativet kommer att vara en geoobjekttj&auml;nst f&ouml;r dina f&ouml;rutsagda v&auml;rden, modelldiagnostik och en valfri tabell av varierande betydelse.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Träna en modell att utvärdera modellprestanda</h2></div>
+        <hr/>
+        <div>
+            <p>Anv&auml;nd det h&auml;r l&auml;get om du vill prova ut en modell, och unders&ouml;k hur den passar.
+            </p>
+            <p>Med det h&auml;r valet tr&auml;nas modellen med ett indatalager. Anv&auml;nd det h&auml;r alternativet f&ouml;r att utv&auml;rdera korrektheten hos din modell innan du genererar f&ouml;ruts&auml;gelser p&aring; ett nytt dataset. Det h&auml;r alternativet g&ouml;r att modelldiagnostik visas i meddelandef&ouml;nstret och till&auml;mpar modellen p&aring; dina tr&auml;ningsdata.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Träna en modell och förutsäg värden</h2></div>
+        <hr/>
+        <div>
+            <p>Anv&auml;nd det h&auml;r l&auml;get om du vill prova ut en modell, och till&auml;mpa modellen p&aring; datasetet f&ouml;r att generera f&ouml;ruts&auml;gelser.
+            </p>
+            <p>F&ouml;ruts&auml;gelser eller klassificeringar kommer att genereras f&ouml;r geoobjekt. Utdata f&ouml;r det h&auml;r alternativet kommer att vara en geoobjekttj&auml;nst, modelldiagnostik och en valfri tabell av varierande betydelse.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Välj träningslager</h2></div>
+        <hr/>
+        <div>
+            <p>Geoobjektlagret som inneh&aring;ller variabeln som ska f&ouml;ruts&auml;gas och f&auml;lten som kommer att anv&auml;ndas f&ouml;r att generera f&ouml;ruts&auml;gelsen.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Välj ett lager att förutsäga värden för</h2></div>
+        <hr/>
+        <div>
+            <p>Ett geoobjektlager som representerar platser d&auml;r f&ouml;ruts&auml;gelser kommer att g&ouml;ras. Det h&auml;r geoobjektlagret m&aring;ste ocks&aring; inneh&aring;lla de f&ouml;rklarande variabler som anges som f&auml;lt som motsvarar dem som anv&auml;nds f&ouml;r tr&auml;ningsgeoobjekten.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Välj vilket fält som ska förutsägas</h2></div>
+        <hr/>
+        <div>
+            <p>F&auml;ltet fr&aring;n tr&auml;ningsgeoobjekten som inneh&aring;ller v&auml;rdena som ska anv&auml;ndas f&ouml;r att tr&auml;na modellen. Det h&auml;r f&auml;ltet inneh&aring;ller k&auml;nda (tr&auml;nings-) v&auml;rden f&ouml;r variabeln som kommer att anv&auml;ndas f&ouml;r att g&ouml;ra f&ouml;ruts&auml;gelser p&aring; ok&auml;nda platser. Om v&auml;rdena &auml;r kategoriska (till exempel l&ouml;nn, tall, ek) v&auml;ljer du den  <b>kategoriska</b> kryssrutan.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Välj en eller flera förklarande variabler</h2></div>
+        <hr/>
+        <div>
+            <p>Ett eller flera f&auml;lt som representerar de f&ouml;rklarande variablerna (f&auml;lt) som hj&auml;lper till att f&ouml;ruts&auml;ga v&auml;rdet eller kategorin hos variabeln som ska f&ouml;ruts&auml;gas. Anv&auml;nd den kategoriska kryssrutan f&ouml;r variabler som representerar klasser eller kategorier (till exempel markt&auml;ckning eller n&auml;rvaro eller fr&aring;nvaro). Ange variablerna som sanna om de representerar klasser eller kategorier som markt&auml;ckning eller n&auml;rvaro eller fr&aring;nvaro och som falska om variablerna &auml;r kontinuerliga.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Antal träd</h2></div>
+        <hr/>
+        <div>
+            <p>Antalet tr&auml;d som ska skapas i modellen. Fler tr&auml;d ger vanligtvis en mer korrekt modellf&ouml;ruts&auml;gelse, men modellen tar l&auml;ngre tid att ber&auml;kna. Standardantal f&ouml;r tr&auml;d &auml;r 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Minsta storlek för blad</h2></div>
+        <hr/>
+        <div>
+            <p>Minsta antalet observationer som kr&auml;vs f&ouml;r att beh&aring;lla ett blad (som &auml;r avslutande nod p&aring; ett tr&auml;d utan ytterligare delningar). Standardminimiantalet f&ouml;r regression &auml;r 5 och standardantalet f&ouml;r klassificering &auml;r 1. F&ouml;r mycket stora data minskar verktygets k&ouml;rningstid om dessa antal &ouml;kas.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Maximalt träddjup</h2></div>
+        <hr/>
+        <div>
+            <p>Maximalt antal delningar som g&ouml;rs genom ett tr&auml;d. Om ett stort maxdjup anv&auml;nds skapas fler delningar, vilket kan &ouml;ka sannolikheten f&ouml;r att modellen &ouml;veranpassas. Standard drivs av data och beror p&aring; antalet tr&auml;d som skapas och antalet variabler som inkluderas.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Data tillgängliga per träd (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Anger procentandelen geoobjekt i tr&auml;ningslagren som anv&auml;nds f&ouml;r varje beslutstr&auml;d. Standard &auml;r 100 procent av data. Exempel fr&aring;n varje tr&auml;d tas slumpm&auml;ssigt fr&aring;n tv&aring; tredjedelar av angivna data.
+            </p>
+            <p>Varje beslutstr&auml;d i skogen skapas genom att ett slumpm&auml;ssigt exempel eller en delm&auml;ngd (cirka tv&aring; tredjedelar) av tillg&auml;ngliga tr&auml;ningsdata anv&auml;nds. Om en l&auml;gre procentandel av indata anv&auml;nds f&ouml;r varje beslutstr&auml;d &ouml;kar verktygets hastighet f&ouml;r mycket stora dataset.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Antal slumpmässigt samplade variabler</h2></div>
+        <hr/>
+        <div>
+            <p>Anger antalet f&ouml;rklarande variabler som anv&auml;nds f&ouml;r att skapa varje beslutstr&auml;d.
+            </p>
+            <p>Vart och ett av beslutstr&auml;den i skogen skapas genom att en slumpm&auml;ssig delm&auml;ngd av de f&ouml;rklarande variablerna anv&auml;nds. Om antalet variabler som anv&auml;nds i varje beslutstr&auml;d &ouml;kar, &ouml;kar sannolikheten att modellen &ouml;veranpassas, s&auml;rskilt om det finns en eller ett par dominanta variabler. Det &auml;r vanligt att anv&auml;nda kvadratroten av det totala antalet f&ouml;r f&ouml;rklarande variabler om din variabel som ska f&ouml;ruts&auml;gas &auml;r numerisk eller delar det totala antalet f&ouml;rklarande variabler med 3 om variabeln som ska f&ouml;ruts&auml;gas &auml;r kategorisk.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Välj hur förklarande fält matchas</h2></div>
+        <hr/>
+        <div>
+            <p>S&aring; h&auml;r matchar motsvarande variabler i tr&auml;ningslagret variablerna i f&ouml;ruts&auml;gelselagret. Endast de variabler som anv&auml;nds vid tr&auml;ning kommer att ing&aring; i tabellen.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Antal körningar för validering</h2></div>
+        <hr/>
+        <div>
+            <p>Anger procentandelen (mellan 0 och 50 procent) f&ouml;r geoobjekt i tr&auml;ningslagret som ska reserveras som testdataset f&ouml;r validering. Modellen kommer att tr&auml;nas utan denna slumpm&auml;ssiga delm&auml;ngd data och de observerade v&auml;rdena f&ouml;r dessa geoobjekt kommer att j&auml;mf&ouml;ras med det f&ouml;rutsagda v&auml;rdet. Standardandel &auml;r 10 procent.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns uppmanas du att ange ett annat namn.
+            </p>
+            <p>Resultaten som erh&aring;lls beror p&aring; typen av analys. Om du tr&auml;nar f&ouml;r att utv&auml;rdera modellpassning kommer resultaten att inneh&aring;lla ett lager tr&auml;ningsdata som passar f&ouml;r modellen och resultatinformation som utv&auml;rderar modellpassningen. Om du tr&auml;nar och f&ouml;ruts&auml;ger kommer resultaten att inneh&aring;lla ett lager av tr&auml;ningsdata som passar f&ouml;r modellen, ett lager f&ouml;rutsagda resultat och resultatinformation som utv&auml;rderar modellpassningen.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

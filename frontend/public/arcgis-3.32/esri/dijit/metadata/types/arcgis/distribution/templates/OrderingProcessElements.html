@@ -1,0 +1,45 @@
+<div data-dojo-attach-point="containerNode">
+    
+  <!-- fees -->
+  <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+    data-dojo-props="target:'resFees',minOccurs:0,label:'${i18nArcGIS.distInfo.distorOrdPrc.resFees}'">
+    <div data-dojo-type="esri/dijit/metadata/form/InputText"></div>
+    <div style="margin-top:8px;"></div>
+    <div data-dojo-type="esri/dijit/metadata/form/Attribute"
+      data-dojo-props="target:'units',minOccurs:0,label:'${i18nArcGIS.codelist.MonetaryUnits}'">
+      <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputSelectCode"
+        data-dojo-props="codelistType:'MonetaryUnits',emptyLabel:'${i18nArcGIS.codelist.MonetaryUnits_empty}'">
+      </div>
+    </div>      
+  </div>
+  
+  <!-- available date -->
+  <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+    data-dojo-props="target:'planAvDtTm',minOccurs:0,label:'${i18nArcGIS.distInfo.distorOrdPrc.planAvDtTm}'">
+    <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputDate" data-dojo-props="allowTime:true"></div>
+  </div>
+  
+  <!-- available date period-->
+  <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+    data-dojo-props="target:'planAvTmPd',minOccurs:0,label:'${i18nArcGIS.distInfo.distorOrdPrc.planAvTmPd.caption}'">
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'tmBegin',minOccurs:0,label:'${i18nArcGIS.distInfo.distorOrdPrc.planAvTmPd.tmBegin}'">
+      <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputDate" data-dojo-props="allowTime:true"></div>
+    </div>
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'tmEnd',minOccurs:0,label:'${i18nArcGIS.distInfo.distorOrdPrc.planAvTmPd.tmEnd}'">
+      <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputDate" data-dojo-props="allowTime:true"></div>
+    </div>
+  </div>
+  
+  <!-- instructions -->
+  <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+    data-dojo-props="target:'ordInstr',minOccurs:0,label:'${i18nArcGIS.distInfo.distorOrdPrc.ordInstr}'">
+  </div>
+  
+  <!--  turnaround -->
+  <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+    data-dojo-props="target:'ordTurn',minOccurs:0,label:'${i18nArcGIS.distInfo.distorOrdPrc.ordTurn}'">
+  </div>
+        
+</div>

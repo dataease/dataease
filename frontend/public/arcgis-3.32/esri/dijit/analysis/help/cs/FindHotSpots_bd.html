@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Hot spot analýza (Find Hot Spots)</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Hot spot anal&yacute;za"></h2>
+        <hr/>
+    <p>N&aacute;stroj Hot spot anal&yacute;za umožňuje zjistit, zda v&nbsp;prostorov&eacute;m obrazci dat existuj&iacute; statisticky v&yacute;znamn&eacute; shluky. 
+        <ul>
+            <li>Jsou va&scaron;e body (trestn&eacute; činy, stromy, dopravn&iacute; nehody) opravdu shluknut&eacute;?  Jak si můžete b&yacute;t jist&iacute;?
+            </li>
+            <li>Narazili jste opravdu na statisticky v&yacute;znamn&yacute; Hot Spot nebo by va&scaron;e mapa měla zobrazovat data v jin&eacute;m kontextu, pokud byste změnili způsob zn&aacute;zorněn&iacute;?
+            </li>
+        </ul>
+        N&aacute;stroj Hot spot anal&yacute;za v&aacute;m pomůže s&nbsp;jistotou odpovědět na tyto ot&aacute;zky.
+    </p>
+    <p>Dokonce i n&aacute;hodn&eacute; prostorov&eacute; struktury vykazuj&iacute; určitou m&iacute;ru shlukov&aacute;n&iacute;.  Na&scaron;e oči a mozek se nav&iacute;c přirozeně snaž&iacute; hledat vzory a struktury i tam, kde ž&aacute;dn&eacute; nejsou.  Může tak b&yacute;t obt&iacute;žn&eacute; určit, zda struktury ve va&scaron;ich datech jsou důsledkem skutečn&yacute;ch prostorov&yacute;ch procesů nebo jen d&iacute;lem n&aacute;hody.  Proto specialist&eacute; a analytici použ&iacute;vaj&iacute; ke kvantifikaci prostorov&yacute;ch struktur metody, jako je Vyhledat m&iacute;sta s&nbsp;vysokou intenzitou (Getis-Ordovo Gi*). Statisticky v&yacute;znamn&eacute; shlukov&aacute;n&iacute; dat představuje cenn&eacute; informace.  Znalost toho, kde a kdy ke shlukov&aacute;n&iacute; doch&aacute;z&iacute;, může b&yacute;t užitečn&aacute; k&nbsp;pochopen&iacute; procesů, kter&eacute; tyto patrn&eacute; struktury vytv&aacute;ř&iacute;.  Pokud např&iacute;klad v&iacute;te, že m&iacute;ra vloup&aacute;n&iacute; do obytn&yacute;ch objektů je v&nbsp;určit&yacute;ch čtvrt&iacute;ch konzistentně vy&scaron;&scaron;&iacute;, můžete l&eacute;pe navrhovat efektivn&iacute; strategie prevence, přidělovat nedostatkov&eacute; zdroje policejn&iacute;ch sil, inicializovat programy sousedsk&eacute; hl&iacute;dky, schvalovat důkladn&eacute; vy&scaron;etřov&aacute;n&iacute; trestn&yacute;ch činů nebo identifikovat potenci&aacute;ln&iacute; podezřel&eacute; osoby.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Zvolte vrstvu, která se použije k výpočtu míst s vysokou intenzitou.</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva bodů, ze kter&eacute; budou vyhled&aacute;na m&iacute;sta s&nbsp;vysokou a n&iacute;zkou intenzitou.
+            </p>
+            <p>Tato anal&yacute;za využ&iacute;v&aacute; přihr&aacute;dky a&nbsp;vyžaduje rovinn&yacute; souřadnicov&yacute; syst&eacute;m. Můžete nastavit  <b>Souřadnicov&yacute; syst&eacute;m pro zpracov&aacute;n&iacute;</b> v <b>Prostřed&iacute; anal&yacute;zy</b>. Pokud v&aacute;&scaron; souřadnicov&yacute; syst&eacute;m pro zpracov&aacute;n&iacute; nen&iacute; nastaven na rovinn&yacute; souřadnicov&yacute; syst&eacute;m, budete vyzv&aacute;ni k&nbsp;jeho nastaven&iacute; při <b>Spu&scaron;těn&iacute; anal&yacute;zy</b> .
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Najít shluky míst s vysokou a nízkou intenzitou</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Tato anal&yacute;za odpov&iacute;d&aacute; na ot&aacute;zku: Kde se prostorově shlukuj&iacute; vysok&eacute; a n&iacute;zk&eacute; hodnoty?
+            </p>
+            <p>Pokud jsou data určen&aacute; body a zvol&iacute;te možnost  <b>Počet bodů</b>, vyhodnot&iacute; n&aacute;stroj prostorov&eacute; uspoř&aacute;d&aacute;n&iacute; bodov&yacute;ch prvků k&nbsp;zodpovězen&iacute; ot&aacute;zky: Kde se body neoček&aacute;vaně shlukuj&iacute; nebo rozprost&iacute;raj&iacute;?
+            </p>
+            <p>Pokud zvol&iacute;te pole, vyhodnot&iacute; n&aacute;stroj prostorov&eacute; uspoř&aacute;d&aacute;n&iacute; hodnot přiřazen&yacute;ch k&nbsp;jednotliv&yacute;m prvkům, aby odpověděl na ot&aacute;zku: Kde se shlukuj&iacute; vysok&eacute; a n&iacute;zk&eacute; hodnoty?
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Vybrat velikost přihrádky k seskupení</h2></div>
+        <hr/>
+        <div>
+            <p>Vzd&aacute;lenost použit&aacute; při tvorbě čtvercov&yacute;ch přihr&aacute;dek, kter&eacute; budou použity pro anal&yacute;zu va&scaron;ich vstupn&iacute;ch bodů.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Vyhledat místa s vysokou intenzitou pomocí časových kroků (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p>Pokud bodov&aacute; vrstva obsahuje časov&aacute; data, ve form&aacute;tu okamžit&yacute;ch dat, můžete prov&aacute;dět anal&yacute;zu pomoc&iacute; časov&yacute;ch kroků.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Interval časového kroku</h2></div>
+        <hr/>
+        <div>
+            <p>Časov&yacute; interval použit&yacute; ke generov&aacute;n&iacute; časov&yacute;ch kroků. Čas může b&yacute;t sladěn s&nbsp;poč&aacute;tečn&iacute;m nebo koncov&yacute;m časem vstupn&iacute;ch dat nebo se&nbsp;zadan&yacute;m referenčn&iacute;m časem.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Interval časového kroku</h2></div>
+        <hr/>
+        <div>
+            <p>Časov&yacute; interval použit&yacute; ke generov&aacute;n&iacute; časov&yacute;ch kroků. Čas může b&yacute;t sladěn s&nbsp;poč&aacute;tečn&iacute;m nebo koncov&yacute;m časem vstupn&iacute;ch dat nebo se&nbsp;zadan&yacute;m referenčn&iacute;m časem.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Zvolit způsob srovnání časových kroků</h2></div>
+        <hr/>
+        <div>
+            <p>Jak budou zarovn&aacute;ny časov&eacute; kroky. Časov&eacute; kroky se zarovn&aacute;vaj&iacute; třemi způsoby:
+                <ul>
+                    <li> <b>Poč&aacute;tečn&iacute; čas</b> &ndash; Časov&eacute; kroky jsou sladěny s prvn&iacute;m prvkem v čase.
+                    </li>
+                    <li> <b>Konečn&yacute; čas</b> &ndash; Časov&eacute; kroky jsou sladěny s posledn&iacute;m prvkem v čase.
+                    </li>
+                    <li> <b>Referenčn&iacute; čas</b> &ndash; Časov&eacute; kroky jsou sladěny se zadan&yacute;m časem.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Referenční čas ke srovnání časových kroků</h2></div>
+        <hr/>
+        <div>
+            <p>Datum a čas použit&eacute; pro srovn&aacute;n&iacute; časov&yacute;ch kroků.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Vybrat velikost sousedství pro výpočty míst s vysokou intenzitou</h2></div>
+        <hr/>
+        <div>
+            <p>Vzd&aacute;lenost použit&aacute; k&nbsp;určen&iacute; okol&iacute; pro v&yacute;počet m&iacute;st s&nbsp;vysokou intenzitou. Okol&iacute; by mělo b&yacute;t vět&scaron;&iacute; než velikost bloku, aby každ&yacute; blok měl aspoň jednoho souseda. Každ&aacute; přihr&aacute;dka se analyzuje a porovn&aacute;v&aacute; se sousedn&iacute;mi přihr&aacute;dkami.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Jedn&aacute; se o dočasn&yacute; parametr pro předčasn&eacute; vyd&aacute;n&iacute; pro nastaven&iacute; souřadnicov&eacute;ho syst&eacute;mu zpracov&aacute;n&iacute;. Mnoho n&aacute;strojů pro velk&aacute; data vyžaduje, aby byl jako souřadnicov&yacute; syst&eacute;m pro zpracov&aacute;n&iacute; použit rovinn&yacute; souřadnicov&yacute; syst&eacute;m. Ve v&yacute;choz&iacute;m nastaven&iacute; n&aacute;stroj použije vstupn&iacute; souřadnicov&yacute; syst&eacute;m, ale pokud se jedn&aacute; o zeměpisn&yacute; souřadnicov&yacute; syst&eacute;m, n&aacute;stroj selže. Pro nastaven&iacute; rovinn&eacute;ho souřadnicov&eacute;ho syst&eacute;mu zadejte WKID. Např&iacute;klad  <b>Web Mercator</b> zad&aacute;te jako <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Výběr ArcGIS Data Store, do kterého budou uloženy výsledky</h2></div>
+        <hr/>
+        <div>
+            <p>V&yacute;sledky geoanal&yacute;zy jsou ukl&aacute;d&aacute;ny do nějak&eacute;ho datov&eacute;ho &uacute;loži&scaron;tě a jsou zobrazeny jako vrstva prvků v   Portal for ArcGIS. Ve vět&scaron;ině př&iacute;padů by v&yacute;sledky měly b&yacute;t uloženy do časoprostorov&eacute;ho datov&eacute;ho &uacute;loži&scaron;tě a toto je v&yacute;choz&iacute; nastaven&iacute;. V někter&yacute;ch př&iacute;padech je vhodn&eacute; uložit v&yacute;sledky do relačn&iacute;ho datov&eacute;ho &uacute;loži&scaron;tě. Důvody k uložen&iacute; v&yacute;sledků do relačn&iacute;ho datov&eacute;ho &uacute;loži&scaron;tě: 
+                <ul>
+                    <li>Můžete použ&iacute;t v&yacute;sledky ke spolupr&aacute;ci mezi port&aacute;ly.
+                    </li>
+                    <li>Můžete povolit funkce synchronizace s v&yacute;sledky
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relačn&iacute; datov&eacute; &uacute;loži&scaron;tě byste použ&iacute;vat neměli, pokud oček&aacute;v&aacute;te n&aacute;růst množstv&iacute; v&yacute;sledků geoanal&yacute;zy a chcete využ&iacute;t v&yacute;hod časoprostorov&eacute;ho &uacute;loži&scaron;tě Big Data ke zpracov&aacute;n&iacute; velk&yacute;ch objemů dat.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p> N&aacute;zev vytv&aacute;řen&eacute; vrstvy. Pokud zapisujete ArcGIS Data Store, va&scaron;e v&yacute;sledky budou uloženy v  <b>Můj obsah</b> a přid&aacute;ny na mapu. Pokud zapisujete sd&iacute;len&yacute; soubor velk&yacute;ch dat, va&scaron;e v&yacute;sledky budou uloženy ve sd&iacute;len&eacute;m souboru velk&yacute;ch dat a přid&aacute;ny do jejich manifestu.  Nebudou přid&aacute;ny na mapu. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, n&aacute;stroj selže.
+            </p>
+            <p>Tato v&yacute;sledn&aacute; vrstva zobraz&iacute; statisticky v&yacute;znamn&eacute; shluky vysok&yacute;ch a n&iacute;zk&yacute;ch hodnot, nebo počtů bodů. Pokud n&aacute;zev v&yacute;sledn&eacute; vrstvy již existuje, budete pož&aacute;d&aacute;ni o jej&iacute; přejmenov&aacute;n&iacute;.
+            </p>
+            <p>Když zapisujete do   ArcGIS Data Store  (datov&eacute; &uacute;loži&scaron;tě relačn&iacute;ch a časoprostorov&yacute;ch velk&yacute;ch dat) pomoc&iacute; rozbalovac&iacute;ho seznamu  <b>Uložit v&yacute;sledek do</b> , můžete zadat n&aacute;zev složky v <b>Můj obsah</b>, kde budou v&yacute;sledky uloženy.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

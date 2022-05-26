@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Generuoti teseliacijas</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Generuoti teseliacijas"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis generuoja teseliacijas jūsų tiriamoje teritorijoje pagal nurodytą formą ir dydį.
+    </p>
+    <p>Laukelis  <b>Naudoti esamą žemėlapio aprėptį</b> &scaron;iam įrankiui i&scaron;jungtas, nes teseliacijoms generuoti naudojamą aprėptį valdo parametras <b>Apibrėžti aprėptį</b>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Pasirinkite figūrą</h2></div>
+        <hr/>
+        <div>
+            <p>Norimos sukurti teseliacijos forma arba geometrija. Galimos formos:  <code>Kvadratas</code>, <code>&Scaron;e&scaron;iakampis</code>, <code>Skersinis &scaron;e&scaron;iakampis</code>, <code>Trikampis</code> ir <code>Rombas</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Apibrėžkite tiriamą teritoriją</h2></div>
+        <hr/>
+        <div>
+            <p>Aprėptis arba teritorija, kurią dengs teseliacija. Aprėptį galima nustatyti naudojant esamą žemėlapio aprėptį, esamo sluoksnio aprėptį arba interaktyviai nubrėžiant plotą, kuris bus naudojamas kaip aprėptis.
+            </p>
+            <p>Jei aprėpčiai nustatyti pasirinktas elementų sluoksnis, bus įjungiama parinktis palikti tik susikertančias teseliacijas. Ją pažymėjus, rezultatų teseliacijos sluoksnyje bus generuojamos tik tokios teseliacijos, kurios dengia arba kertasi su nurodytame aprėpties sluoksnyje esančiais elementais. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Nepažymėta
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Visa aprėpties apimtis">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Pažymėta
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Elementų apimtis">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Nurodydami apibrėžkite daugiakampio dydį</h2></div>
+        <hr/>
+        <div>
+            <p>Kiekvienos gardelės dydis. Gardelės dydį galima nustatyti nurodant kvadratinius vienetus arba atstumą, kuris skaičiuojamas naudojant tokius matavimus, kur d = atstumas: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Kvadratas
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Kvadratinė teseliacija">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>&Scaron;e&scaron;iakampė
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="&Scaron;e&scaron;iakampė teseliacija">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Skersinis &scaron;e&scaron;iakampis
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Skersinio &scaron;e&scaron;iakampio teseliacija">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Trikampis
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Trikampė teseliacija">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Rombas
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Rombo teseliacija">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Tai sluoksnio, kuris bus sukurtas ir patalpintas  <b>Turinyje</b> ir pridėtas į žemėlapį, pavadinimas. Jei toks sluoksnis jau egzistuoja, jūsų papra&scaron;ys pateikti kitą pavadinimą.
+            </p>
+            <p>I&scaron;plečiamajame meniu pasirinkę  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

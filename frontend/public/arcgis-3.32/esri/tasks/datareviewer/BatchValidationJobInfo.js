@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/tasks/datareviewer/BatchValidationJobInfo",["dojo/_base/declare","dojo/has","dojo/_base/lang","../../kernel"],function(b,c,d,e){b=b(null,{declaredClass:"esri.tasks.datareviewer.BatchValidationJobInfo",status:null,messages:null,gpJobId:null,gpUrl:null,startTimeUTC:void 0,finishTimeUTC:void 0,batchRunId:null,constructor:function(a){a&&!a.error&&(this.gpJobId=a.gpJobId,this.messages=a.messages,this.gpUrl=a.gpUrl,this.status=a.status,this.batchRunId=a.batchRunId,void 0!==a.startTimeUtc&&
+null!==a.startTimeUtc&&(this.startTimeUTC=new Date(a.startTimeUtc)),void 0!==a.finishTimeUtc&&null!==a.finishTimeUtc&&(this.finishTimeUTC=new Date(a.finishTimeUtc)))}});c("extend-esri")&&d.setObject("tasks.datareviewer.BatchValidationJobInfo",b,e);return b});

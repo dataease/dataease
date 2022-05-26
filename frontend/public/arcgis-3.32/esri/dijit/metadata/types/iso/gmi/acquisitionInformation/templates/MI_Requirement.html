@@ -1,0 +1,123 @@
+<div data-dojo-attach-point="containerNode">
+  <div data-dojo-type="esri/dijit/metadata/form/iso/AbstractObject" data-dojo-props="target:'gmi:MI_Requirement',minOccurs:0">
+  
+    <!-- 
+      http://www.isotc211.org/2005/gmi/acquisitionInformation.xsd
+      <xs:sequence>
+        <xs:element name="citation" type="gmd:CI_Citation_PropertyType" minOccurs="0"/>
+        <xs:element name="identifier" type="gmd:MD_Identifier_PropertyType"/>
+        <xs:element name="requestor" type="gmd:CI_ResponsibleParty_PropertyType" maxOccurs="unbounded"/>
+        <xs:element name="recipient" type="gmd:CI_ResponsibleParty_PropertyType" maxOccurs="unbounded"/>
+        <xs:element name="priority" type="gmi:MI_PriorityCode_PropertyType"/>
+        <xs:element name="requestedDate" type="gmi:MI_RequestedDate_PropertyType"/>
+        <xs:element name="expiryDate" type="gco:DateTime_PropertyType"/>
+        <xs:element name="satisifiedPlan" type="gmi:MI_Plan_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+     -->
+     
+    <div data-dojo-type="esri/dijit/metadata/form/Tabs">
+    
+      <!-- identification section -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+          data-dojo-props="showHeader:false,label:'${i18nIso.MI_Requirement.sections.identification}'">
+    
+         <!-- citation - identification of reference or guidance material for the requirement -->
+        <div data-dojo-type="esri/dijit/metadata/form/iso/ObjectReference"
+          data-dojo-props="target:'gmi:citation',minOccurs:0,
+            label:'${i18nIso.MI_Requirement.citation}'">
+          <div data-dojo-type="esri/dijit/metadata/types/iso/gmd/citation/SimpleCI_Citation"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Attribute"
+            data-dojo-props="target:'xlink:href',label:'${i18nIso.ObjectReference.xlinkref}'"></div>
+        </div>
+        
+        <!-- identifier - unique name, or code, for the requirement -->
+        <div data-dojo-type="esri/dijit/metadata/form/iso/ObjectReference"
+          data-dojo-props="target:'gmi:identifier',label:'${i18nIso.MI_Requirement.identifier}'">
+          <div data-dojo-type="esri/dijit/metadata/types/iso/gmd/identification/SimpleMD_Identifier"></div>
+        </div>
+      
+      </div>
+      
+      <!-- requestor section -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+          data-dojo-props="showHeader:false,label:'${i18nIso.MI_Requirement.sections.requestor}'">
+          
+        <!-- requestor - origin of requirement  -->
+        <div data-dojo-type="esri/dijit/metadata/form/iso/ObjectReference"
+          data-dojo-props="target:'gmi:requestor',minOccurs:1,maxOccurs:'unbounded',
+            label:'${i18nIso.MI_Requirement.requestor}'">
+          <div data-dojo-type="esri/dijit/metadata/types/iso/gmd/citation/CI_ResponsibleParty"></div>
+        </div>  
+      </div>
+      
+      <!-- recipient section -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+          data-dojo-props="showHeader:false,label:'${i18nIso.MI_Requirement.sections.recipient}'">
+          
+        <!-- recipient - person(s), or body(ies), to receive results of requirement -->
+        <div data-dojo-type="esri/dijit/metadata/form/iso/ObjectReference"
+          data-dojo-props="target:'gmi:recipient',minOccurs:1,maxOccurs:'unbounded',
+            label:'${i18nIso.MI_Requirement.recipient}'">
+          <div data-dojo-type="esri/dijit/metadata/types/iso/gmd/citation/CI_ResponsibleParty"></div>
+        </div>
+      </div>
+      
+      <!-- priority and dates section -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+          data-dojo-props="showHeader:false,label:'${i18nIso.MI_Requirement.sections.priorityAndDates}'">
+          
+        <!-- priority - relative ordered importance, or urgency, of the requirement -->
+        <div data-dojo-type="esri/dijit/metadata/form/iso/CodeListReference"
+          data-dojo-props="target:'gmi:priority',
+            label:'${i18nIso.MI_Requirement.priority}'">
+          <div data-dojo-type="esri/dijit/metadata/types/iso/gmi/acquisitionInformation/MI_PriorityCode">
+          </div>
+        </div>
+        
+        <!-- requestedDate - required or preferred acquisition date and time -->
+        <div data-dojo-type="esri/dijit/metadata/form/iso/ObjectReference"
+          data-dojo-props="target:'gmi:requestedDate',showHeader:false,
+            label:'${i18nIso.MI_Requirement.requestedDate}'">
+          <div data-dojo-type="esri/dijit/metadata/form/iso/AbstractObject"
+            data-dojo-props="target:'gmi:MI_RequestedDate',minOccurs:0">
+            <div data-dojo-type="esri/dijit/metadata/form/Element"
+              data-dojo-props="target:'gmi:requestedDateOfCollection',
+                label:'${i18nIso.MI_RequestedDate.requestedDateOfCollection}'">
+              <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement" data-dojo-props="target:'gco:DateTime'">
+                <div data-dojo-type="esri/dijit/metadata/form/InputDate" data-dojo-props="forceTime:true"></div>
+              </div>
+            </div>
+            <div data-dojo-type="esri/dijit/metadata/form/Element"
+              data-dojo-props="target:'gmi:latestAcceptableDate',
+                label:'${i18nIso.MI_RequestedDate.latestAcceptableDate}'">
+              <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement" data-dojo-props="target:'gco:DateTime'">
+                <div data-dojo-type="esri/dijit/metadata/form/InputDate" data-dojo-props="forceTime:true"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- expiryDate - date and time after which collection is no longer valid -->
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'gmi:expiryDate',label:'${i18nIso.MI_Requirement.expiryDate}'">
+          <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement" data-dojo-props="target:'gco:DateTime'">
+            <div data-dojo-type="esri/dijit/metadata/form/InputDate" data-dojo-props="forceTime:true"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- satisified plan section -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+          data-dojo-props="showHeader:false,label:'${i18nIso.MI_Requirement.sections.satisifiedPlan}'">
+      
+        <!-- satisifiedPlan (allow MI_Plan references) -->
+        <div data-dojo-type="esri/dijit/metadata/form/iso/ObjectReference"
+          data-dojo-props="target:'gmi:satisifiedPlan',minOccurs:0,maxOccurs:'unbounded',
+            label:'${i18nIso.MI_Requirement.satisifiedPlanReference}'">
+          <div data-dojo-type="esri/dijit/metadata/form/Attribute" data-dojo-props="target:'xlink:href',showHeader:false"></div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Thiết lập Môi trường Phân tích cho Cổng thông tin</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>  Thiết lập m&ocirc;i trường cho c&ocirc;ng cụ ph&acirc;n t&iacute;ch trong Portal for ArcGIS v&agrave;  ArcGIS Online. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Ghi đè lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            
+            <p>X&aacute;c định c&oacute; ghi đ&egrave; c&aacute;c lớp hiện tại hay kh&ocirc;ng.   Khi kiểm tra, nếu đ&atilde; c&oacute; lớp c&oacute; c&ugrave;ng t&ecirc;n trong nội dung của bạn, lớp sẽ được ghi đ&egrave;.
+            </p>
+            <p>
+                <ul>
+                    <li>Chọn&mdash;Nếu đ&atilde; c&oacute; lớp c&oacute; c&ugrave;ng t&ecirc;n trong nội dung của bạn, lớp sẽ được ghi đ&egrave;. Dữ liệu đầu ra sẽ c&oacute; c&ugrave;ng hệ thống tọa độ như dữ liệu đầu v&agrave;o.
+                    </li>
+                    <li>Kh&ocirc;ng chọn&mdash;Nếu t&ecirc;n cung cấp cho lớp kết quả đ&atilde; c&oacute;, sẽ xảy ra lỗi v&agrave; phải đặt lại t&ecirc;n cho lớp kết quả trước khi chạy c&ocirc;ng cụ. Điều n&agrave;y l&agrave; mặc định.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Đóng tiện ích phân tích sau khi chạy phân tích</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định c&oacute; giữ hộp thoại ph&acirc;n t&iacute;ch lu&ocirc;n mở v&agrave; khả dụng trong l&uacute;c c&ocirc;ng cụ đang xử l&yacute; hay kh&ocirc;ng.    Thiết lập n&agrave;y cho ph&eacute;p bạn chỉnh sửa c&aacute;c th&ocirc;ng số ph&acirc;n t&iacute;ch của m&igrave;nh trong khi c&ocirc;ng việc ph&acirc;n t&iacute;ch trước đ&oacute; vẫn tiếp tục chạy. Ph&acirc;n t&iacute;ch l&agrave; một quy tr&igrave;nh tương t&aacute;c v&agrave; việc giữ cho hộp thoại c&ocirc;ng cụ lu&ocirc;n mở sẽ gi&uacute;p bạn dễ d&agrave;ng thay đổi c&aacute;c th&ocirc;ng số v&agrave; chạy lại ph&acirc;n t&iacute;ch của m&igrave;nh.
+            </p>
+            <p>
+                <ul>
+                    <li>Chọn&mdash;Hộp thoại c&ocirc;ng cụ ph&acirc;n t&iacute;ch sẽ đ&oacute;ng v&agrave; trọng t&acirc;m sẽ được trở về lại bảng mục lục. Điều n&agrave;y l&agrave; mặc định
+                    </li>
+                    <li>Bỏ chọn&mdash;Hộp thoại c&ocirc;ng cụ ph&acirc;n t&iacute;ch vẫn mở v&agrave; được k&iacute;ch hoạt.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Lưu các kết quả phân tích dưới dạng các lớp đối tượng được lưu trữ</h2></div>
+        <hr/>
+        <div>
+            
+            <p>X&aacute;c định xem lớp kết quả được tạo ra từ ph&acirc;n t&iacute;ch của bạn sẽ l&agrave; bộ sưu tập đối tượng hay lớp đối tượng được lưu trữ. 
+            </p>
+            <p>
+                <ul>
+                    <li>Chọn&mdash;Kết quả ph&acirc;n t&iacute;ch của bạn sẽ tạo ra một lớp đối tượng được lưu trữ v&agrave; hạng mục sẽ được tạo trong nội dung của bạn. Điều n&agrave;y l&agrave; mặc định.
+                    </li>
+                    <li>Kh&ocirc;ng chọn&mdash;Kết quả ph&acirc;n t&iacute;ch của bạn sẽ tạo bộ sưu tập đối tượng.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Hệ tọa độ đầu ra</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định hệ tọa độ của lớp kết quả cho ph&acirc;n t&iacute;ch raster.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Tương tự với đầu v&agrave;o</b>&mdash;Kết quả ph&acirc;n t&iacute;ch của bạn sẽ trong c&ugrave;ng hệ tọa độ với đầu v&agrave;o. Điều n&agrave;y l&agrave; mặc định.
+                    </li>
+                    <li> <b>Như được x&aacute;c định</b>&mdash;Kết quả ph&acirc;n t&iacute;ch của bạn sẽ nằm trong hệ tọa độ bạn chọn.   Nếu chọn lựa chọn n&agrave;y, nhấp v&agrave;o n&uacute;t quả địa cầu để chọn từ danh s&aacute;ch c&aacute;c hệ tọa độ đ&atilde; biết hoặc th&ecirc;m WKID tham chiếu kh&ocirc;ng gian v&agrave;o &ocirc; được cung cấp.
+                    </li>
+                    <li> <b>Lớp
+&lt;name&gt;</b>&mdash;Kết quả ph&acirc;n t&iacute;ch của bạn sẽ nằm trong c&ugrave;ng hệ tọa độ với lớp hiện tại bạn chọn trong bản đồ web.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Hệ tọa độ xử lý</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định hệ tọa độ m&agrave; ph&acirc;n t&iacute;ch của bạn sẽ sử dụng trong khi thực hiện ph&acirc;n t&iacute;ch GeoAnalytics.   
+            </p>
+            <p>Đối với GeoAnalytics, một số ph&acirc;n t&iacute;ch đ&ograve;i hỏi phải tiến h&agrave;nh xử l&yacute; trong hệ tọa độ dự kiến.   Bất kỳ c&ocirc;ng cụ n&agrave;o thực hiện cho dữ liệu v&agrave;o th&ugrave;ng hoặc đơn vị tuyến t&iacute;nh đ&ograve;i hỏi phải c&oacute; hệ tọa độ dự kiến. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Tương tự với đầu v&agrave;o</b>&mdash;Ph&acirc;n t&iacute;ch của bạn sẽ được xử l&yacute; trong c&ugrave;ng hệ tọa độ với đầu v&agrave;o. Điều n&agrave;y l&agrave; mặc định.
+                    </li>
+                    <li> <b>Như được x&aacute;c định</b>&mdash;Ph&acirc;n t&iacute;ch của bạn sẽ nằm trong hệ tọa độ bạn chọn.   Nếu chọn lựa chọn n&agrave;y, nhấp v&agrave;o n&uacute;t quả địa cầu để chọn từ danh s&aacute;ch c&aacute;c hệ tọa độ dự kiến đ&atilde; biết hoặc th&ecirc;m WKID tham chiếu kh&ocirc;ng gian v&agrave;o &ocirc; được cung cấp.
+                    </li>
+                    <li> <b>Lớp
+&lt;name&gt;</b>&mdash;Ph&acirc;n t&iacute;ch của bạn sẽ nằm trong c&ugrave;ng hệ tọa độ với lớp hiện tại bạn chọn trong bản đồ web.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Phạm vi</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định phạm vi hoặc ranh giới sẽ được sử dụng trong khi ph&acirc;n t&iacute;ch.  Mọi đối tượng đầu v&agrave;o ho&agrave;n to&agrave;n nằm trong hoặc giao cắt với phạm vi cụ thể sẽ được sử dụng trong ph&acirc;n t&iacute;ch.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Mặc định</b>&mdash;Phạm vi do c&ocirc;ng cụ cung cấp.
+                    </li>
+                    <li> <b>Như được x&aacute;c định</b>&mdash;Phạm vi được x&aacute;c định bởi c&aacute;c tọa độ bạn cung cấp.
+                    </li>
+                    <li> <b>Lớp
+&lt;name&gt;</b>&mdash;Phạm vi được sử dụng để xử l&yacute; ph&acirc;n t&iacute;ch sẽ giống với phạm vi kh&ocirc;ng gian của lớp hiện tại bạn chọn trong bản đồ web. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Bắt dính trong Raster</h2></div>
+        <hr/>
+        <div>
+            <p>Điều chỉnh phạm vi của lớp raster đầu ra sao cho tr&ugrave;ng khớp với cell căn chỉnh của lớp  <b>Bắt d&iacute;nh trong Raster</b> được chỉ định trong c&ocirc;ng cụ ph&acirc;n t&iacute;ch raster.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Kích cỡ Ô</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định k&iacute;ch cỡ &ocirc; hoặc độ ph&acirc;n giải sẽ được sử dụng để tạo lớp raster đầu ra trong ph&acirc;n t&iacute;ch raster. Giải ph&aacute;p đầu ra mặc định được x&aacute;c định bởi k&iacute;ch cỡ &ocirc; lớn nhất của lớp raster đầu v&agrave;o.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Đầu v&agrave;o tối thiểu</b>&mdash;Sử dụng k&iacute;ch cỡ &ocirc; nhỏ nhất của tất cả c&aacute;c lớp đầu v&agrave;o.
+                    </li>
+                    <li> <b>Đầu v&agrave;o tối đa</b>&mdash;Sử dụng k&iacute;ch cỡ &ocirc; lớn nhất của tất cả c&aacute;c lớp đầu v&agrave;o. Điều n&agrave;y l&agrave; mặc định.
+                    </li>
+                    <li> <b>Như được x&aacute;c định</b>&mdash;N&ecirc;u r&otilde; gi&aacute; trị số để thiết lập k&iacute;ch thước cell. Nếu chọn điều n&agrave;y, gi&aacute; trị mặc định l&agrave; 1.
+                    </li>
+                    <li> <b>Lớp &lt;name&gt;</b>&mdash;Thiết lập k&iacute;ch thước cell th&agrave;nh lớp raster được chọn.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Mask</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định lớp sẽ sử dụng để x&aacute;c định phạm vi quan t&acirc;m của bạn trong ph&acirc;n t&iacute;ch raster.   Chỉ những cell nằm trong mask ph&acirc;n t&iacute;ch mới được xem x&eacute;t trong qu&aacute; tr&igrave;nh ph&acirc;n t&iacute;ch.
+            </p>
+            <ul>
+                <li>Mask c&oacute; thể l&agrave; lớp raster hoặc lớp đối tượng.
+                </li>
+                <li>Nếu mask ph&acirc;n t&iacute;ch l&agrave; raster, th&igrave; tất cả c&aacute;c cell c&oacute; gi&aacute; trị sẽ được xem x&eacute;t để x&aacute;c định mask. C&aacute;c cell trong raster mask Kh&ocirc;ng c&oacute; Dữ liệu sẽ được xem l&agrave; nằm b&ecirc;n ngo&agrave;i mặt nạ v&agrave; sẽ Kh&ocirc;ng c&oacute; Dữ liệu trong lớp kết quả ph&acirc;n t&iacute;ch. 
+                </li>
+                <li>Nếu mask ph&acirc;n t&iacute;ch l&agrave; lớp đối tượng, n&oacute; sẽ được chuyển th&agrave;nh raster khi thực hiện. Theo đ&oacute;, h&atilde;y đảm bảo rằng  <b>K&iacute;ch thước Cell</b> v&agrave; <b>Chế độ bắt d&iacute;nh trong Raster</b> được thiết lập th&iacute;ch hợp cho ph&acirc;n t&iacute;ch của bạn.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Kho dữ liệu</h2></div>
+        <hr/>
+        <div>
+            <p>Bạn c&oacute; thể lưu trữ kết quả GeoAnalytics trong  ArcGIS Data Store v&agrave; hiển thị như một lớp đối tượng trong  Portal for ArcGIS hoặc một phần chia tẻ tệp dữ liệu lớn được cấu h&igrave;nh. 
+            </p>
+            <p>Khi lưu trữ kết quả trong  ArcGIS Data Store, ở hầu hết c&aacute;c trường hợp, kết quả sẽ được lưu trữ v&agrave;o kho dữ liệu kh&ocirc;ng gian thời gian. Điều n&agrave;y l&agrave; mặc định. Sau đ&acirc;y l&agrave; l&yacute; do bạn c&oacute; thể muốn lưu kết quả trong kho dữ liệu li&ecirc;n quan: 
+                <ul>
+                    <li>Sử dụng kết quả trong nh&oacute;m cộng t&aacute;c giữa c&aacute;c cổng th&ocirc;ng tin
+                    </li>
+                    <li>Bật t&iacute;nh năng đồng bộ với c&aacute;c kết quả của bạn
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Bạn kh&ocirc;ng n&ecirc;n sử dụng kho dữ liệu li&ecirc;n quan nếu bạn mong đợi kết quả GeoAnalytics tăng v&agrave; muốn tận dụng khả năng của kho chứa dữ liệu lớn theo kh&ocirc;ng gian thời gian để xử l&yacute; một lượng dữ liệu lớn. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Hệ số xử lý song song</h2></div>
+        <hr/>
+        <div>
+            <p>Ph&acirc;n phối ph&acirc;n t&iacute;ch tr&ecirc;n nhiều phi&ecirc;n bản dịch vụ Xử l&yacute; Raster. 
+            </p>
+            <p>C&aacute;c c&ocirc;ng cụ đề cao m&ocirc;i trường  <b>Hệ số xử l&yacute; song song</b> cho ph&eacute;p bạn kiểm so&aacute;t số lượng phi&ecirc;n bản dịch vụ xử l&yacute; raster được sử dụng để xử l&yacute; dữ liệu.
+            </p>
+            <p>Nếu c&ocirc;ng cụ kh&ocirc;ng đề cao m&ocirc;i trường  <b>Loại bộ xử l&yacute;</b>, hoặc nếu m&ocirc;i trường <b>Loại bộ xử l&yacute;</b> được đặt th&agrave;nh <b>CPU</b>, th&igrave; m&ocirc;i trường <b>Hệ số xử l&yacute; song song</b> sẽ kiểm so&aacute;t c&aacute;c phi&ecirc;n bản dịch vụ xử l&yacute; raster (CPU). Nếu <b>Loại Bộ xử l&yacute;</b> được đặt th&agrave;nh <b>GPU</b>, m&ocirc;i trường <b>Hệ số xử l&yacute; song song</b> sẽ kiểm so&aacute;t số lượng phi&ecirc;n bản GPU xử l&yacute; raster.
+            </p> 
+            <p>Với việc thiết lập  <b>Hệ số xử l&yacute; song song</b>, bạn c&oacute; thể y&ecirc;u cầu số lượng quy tr&igrave;nh song song m&agrave; m&aacute;y chủ h&igrave;nh ảnh ph&acirc;n t&iacute;ch raster sử dụng để xử l&yacute; một t&aacute;c vụ ph&acirc;n t&iacute;ch raster. Tuy nhi&ecirc;n, nếu tổng số quy tr&igrave;nh song song vượt qu&aacute; số lượng tối đa của phi&ecirc;n bản dịch vụ xử l&yacute; raster (CPU hoặc GPU) th&igrave; c&aacute;c quy tr&igrave;nh song song bổ sung sẽ được đưa v&agrave;o h&agrave;ng đợi.
+            </p>
+            <p>Nếu kh&ocirc;ng quy định  <b>Hệ số xử l&yacute; song song</b>, đ&acirc;y l&agrave; mặc định, th&igrave; c&ocirc;ng cụ sẽ sử dụng 80 phần trăm số lượng phi&ecirc;n bản dịch vụ xử l&yacute; raster tối đa. Cả số nguy&ecirc;n hoặc phần trăm đều c&oacute; thể được chỉ định l&agrave;m Hệ số xử l&yacute; song song.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>Loại Bộ xử lý</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c c&ocirc;ng cụ đề cao m&ocirc;i trường  <b>Loại bộ xử l&yacute;</b> cho ph&eacute;p bạn chọn nơi xử l&yacute; dữ liệu v&agrave; c&aacute;ch thức xử l&yacute;. Bạn c&oacute; thể xử l&yacute; dữ liệu bằng CPU hoặc GPU m&aacute;y t&iacute;nh của m&aacute;y chủ.  Nếu m&ocirc;i trường <b>Loại bộ xử l&yacute;</b> trống, c&ocirc;ng cụ sẽ sử dụng CPU để xử l&yacute; dữ liệu. Điều n&agrave;y l&agrave; mặc định.
+            </p> 
+            <p>Bạn c&oacute; thể chọn xử l&yacute; CPU song song tr&ecirc;n nhiều l&otilde;i phi&ecirc;n bản, như c&aacute;ch  <b>Hệ số xử l&yacute; song song</b> thực hiện.
+            </p>
+            <p>GPU hiệu quả với việc xử l&yacute; đồ họa v&agrave; h&igrave;nh ảnh, trong đ&oacute; cấu tr&uacute;c song song cao cho ph&eacute;p GPU ph&aacute;t huy hiệu quả trong việc xử l&yacute; lặp đi lặp lại c&aacute;c khối dữ liệu lớn. C&aacute;c c&ocirc;ng cụ Ph&acirc;n t&iacute;ch Raster đề cao m&ocirc;i trường n&agrave;y c&oacute; thể ph&acirc;n phối c&ocirc;ng việc qua c&aacute;c phi&ecirc;n bản GPU tại nhiều m&aacute;y chủ ph&acirc;n t&iacute;ch raster, được  <b>Hệ số xử l&yacute; song song</b> đảm nhận.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b>&mdash;Dữ liệu sẽ được xử l&yacute; bằng c&aacute;ch sử dụng bộ xử l&yacute; đồ họa.
+                    </li>
+                    <li> <b>CPU</b>&mdash;Dữ liệu sẽ được xử l&yacute; bằng c&aacute;ch sử dụng bộ xử l&yacute; trung t&acirc;m của m&aacute;y t&iacute;nh.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

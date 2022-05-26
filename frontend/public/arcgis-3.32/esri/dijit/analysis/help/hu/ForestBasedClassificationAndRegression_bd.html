@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Erdő alapú osztályozás és regresszió</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Erdő alap&uacute; oszt&aacute;lyoz&aacute;s &eacute;s regresszi&oacute; munkafolyamat&aacute;nak diagramja"></h2>
+        <hr/>
+    <p>Modelleket hoz l&eacute;tre, &eacute;s előrejelz&eacute;seket gener&aacute;l Leo Breiman v&eacute;letlen erdő algoritmus&aacute;nak adapt&aacute;ci&oacute;j&aacute;t alkalmazva, amely egy fel&uuml;gyelt g&eacute;pi tanul&aacute;si m&oacute;dszer. Előrejelz&eacute;seket lehet gener&aacute;lni kategorikus v&aacute;ltoz&oacute;kra (oszt&aacute;lyoz&aacute;s) &eacute;s folyamatos v&aacute;ltoz&oacute;kra (regresszi&oacute;). A magyar&aacute;z&oacute; v&aacute;ltoz&oacute;k a tan&iacute;t&aacute;si vektoros elemek attrib&uacute;tumt&aacute;bl&aacute;j&aacute;ban tal&aacute;lhat&oacute; mezők. Az eszk&ouml;z futtat&aacute;s&aacute;val vagy teljes&iacute;tm&eacute;ny&eacute;rt&eacute;kel&eacute;si modell gener&aacute;lhat&oacute;, vagy egy olyan modell amellyel előrejelezhetők eredm&eacute;nyek egy m&aacute;sik adathalmazra.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Elemzés típusa</h2></div>
+        <hr/>
+        <div>
+            <p>Meghat&aacute;rozza az eszk&ouml;z műk&ouml;d&eacute;si m&oacute;dj&aacute;t. Az eszk&ouml;z futtat&aacute;s&aacute;val egy modellnek megtan&iacute;that&oacute;, hogy csak teljes&iacute;tm&eacute;nyt &eacute;rt&eacute;keljen, vagy tan&iacute;t&aacute;ssal l&eacute;trehozhat&oacute; egy modell vektoros elemek előrejelz&eacute;s&eacute;re. Az előrejelz&eacute;st&iacute;pusok a k&ouml;vetkezők:
+                <ul>
+                    <li> <b>Modell tan&iacute;t&aacute;sa modellteljes&iacute;tm&eacute;ny &eacute;rt&eacute;kel&eacute;s&eacute;re</b>&mdash;Modell tan&iacute;t&aacute;sa, majd a bemeneti adatokhoz illeszt&eacute;se. Ezzel az opci&oacute;val &eacute;rt&eacute;kelheti modellje pontoss&aacute;g&aacute;t, mielőtt előrejelz&eacute;seket gener&aacute;lna &uacute;j adathalmazra. Az opci&oacute; kimenete: az illesztett tan&iacute;t&aacute;si adatok vektoros szolg&aacute;ltat&aacute;sa, modelldiagnosztika &eacute;s opcion&aacute;lisan a v&aacute;ltoz&oacute;k jelentős&eacute;g&eacute;nek t&aacute;bl&aacute;ja.
+                    </li>
+                    <li> <b>Modell tan&iacute;t&aacute;sa &eacute;s &eacute;rt&eacute;kek előrejelz&eacute;se</b>&mdash; Előrejelz&eacute;set vagy oszt&aacute;lyoz&aacute;sokat gener&aacute;l vektoros elemekre. Magyar&aacute;z&oacute; v&aacute;ltoz&oacute;kat meg kell adni mind a tan&iacute;t&aacute;si vektoros elemekhez, mind az előrejelzendő vektoros elemekhez. Az opci&oacute; kimenete: az előrejelzett &eacute;rt&eacute;kek vektoros szolg&aacute;ltat&aacute;sa, modelldiagnosztika &eacute;s opcion&aacute;lisan a v&aacute;ltoz&oacute;k jelentős&eacute;g&eacute;nek t&aacute;bl&aacute;ja.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Modell tanítása modellteljesítmény értékelésére</h2></div>
+        <hr/>
+        <div>
+            <p>Alkalmazza ezt az opci&oacute;t, ha illeszteni akar egy modellt, majd meg akarja vizsg&aacute;lni az illeszt&eacute;st.
+            </p>
+            <p>Ezzel a modellel v&eacute;gezhető a tan&iacute;t&aacute;s bemeneti r&eacute;teg alkalmaz&aacute;s&aacute;val. Ezzel az opci&oacute;val &eacute;rt&eacute;kelheti modellje pontoss&aacute;g&aacute;t, mielőtt előrejelz&eacute;seket gener&aacute;lna &uacute;j adathalmazra. Az opci&oacute; kimenete: modelldiagnosztika az &uuml;zenetek ablakban &eacute;s a modell alkalmaz&aacute;sa a tan&iacute;t&aacute;si adatokra.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Modell tanítása és értékek előrejelzése</h2></div>
+        <hr/>
+        <div>
+            <p>Alkalmazza ezt az opci&oacute;t, ha illeszteni akar egy modellt, majd alkalmazni akarja a modellt az adathalmazra előrejelz&eacute;sek l&eacute;trehoz&aacute;sa &eacute;rdek&eacute;ben.
+            </p>
+            <p>A program ekkor előrejelz&eacute;set vagy oszt&aacute;lyoz&aacute;sokat gener&aacute;l vektoros elemekre. Az opci&oacute; kimenete: vektoros szolg&aacute;ltat&aacute;s, modelldiagnosztika &eacute;s opcion&aacute;lisan a v&aacute;ltoz&oacute;k jelentős&eacute;g&eacute;nek t&aacute;bl&aacute;ja.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Tanítási réteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>Az a vektoros r&eacute;teg, amely tartalmazza az előrejelzendő v&aacute;ltoz&oacute;t &eacute;s az előrejelz&eacute;s l&eacute;trehoz&aacute;s&aacute;hoz alkalmazand&oacute; mezőket.
+            </p>
+            <p>Ahelyett, hogy egy r&eacute;teget v&aacute;laszt a t&eacute;rk&eacute;p&eacute;ről, v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n l&eacute;vő  <b>Eredm&eacute;nyr&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is, ha a saj&aacute;t tartalomban szeretne big data-f&aacute;jlmegoszt&oacute; adathalmazt vagy vektoros r&eacute;teget keresni.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Válasszon egy réteget, amelyre előre akar jelezni értékeket</h2></div>
+        <hr/>
+        <div>
+            <p>Vektoros r&eacute;teg, amely meghat&aacute;rozza azokat a helyeket, ahol az előrejelz&eacute;sek t&ouml;rt&eacute;nni fognak. A vektoros r&eacute;tegnek tartalmaznia kell azokat a mezők&eacute;nt megadott magyar&aacute;z&oacute; v&aacute;ltoz&oacute;kat is, amelyek megfelelnek a tan&iacute;t&aacute;si vektoros elemekből alkalmazott mezőknek.
+            </p>
+            <p>Ahelyett, hogy egy r&eacute;teget v&aacute;laszt a t&eacute;rk&eacute;p&eacute;ről, v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n l&eacute;vő  <b>Eredm&eacute;nyr&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is, ha a saj&aacute;t tartalomban szeretne big data-f&aacute;jlmegoszt&oacute; adathalmazt vagy vektoros r&eacute;teget keresni.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Válassza ki az előrejelzendő mezőt</h2></div>
+        <hr/>
+        <div>
+            <p>Az a mező a tan&iacute;t&aacute;si vektoros elemekből, amely a modell tan&iacute;t&aacute;s&aacute;ra haszn&aacute;land&oacute; &eacute;rt&eacute;keket tartalmazza. Ez a mező ismert (tan&iacute;t&aacute;si) &eacute;rt&eacute;keket tartalmaz arra a v&aacute;ltoz&oacute;ra, amelyet az ismeretlen helyeken t&ouml;rt&eacute;nő előrejelz&eacute;s&eacute;re fognak haszn&aacute;lni. Ha kategorikus &eacute;rt&eacute;kekről (pl. juhar, fenyő, t&ouml;lgy) van sz&oacute;, jel&ouml;lje ki a  <b>Kategorikus</b> jel&ouml;lőn&eacute;gyzetet.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Válasszon ki egy vagy több magyarázó változót</h2></div>
+        <hr/>
+        <div>
+            <p>Azoknak a magyar&aacute;z&oacute; v&aacute;ltoz&oacute;knak (mezők) megfelelő egy vagy t&ouml;bb mező, amely magyar&aacute;z&oacute; v&aacute;ltoz&oacute;k seg&iacute;tenek előrejelezni az előrejelzendő v&aacute;ltoz&oacute; &eacute;rt&eacute;k&eacute;t vagy kateg&oacute;ri&aacute;j&aacute;t.   Jel&ouml;lje ki a Kategorikus jel&ouml;lőn&eacute;gyzetet olyan v&aacute;ltoz&oacute;k eset&eacute;n, amelyek oszt&aacute;lyokat vagy kateg&oacute;ri&aacute;kat (pl. felsz&iacute;nbor&iacute;t&aacute;s vagy jelenl&eacute;t vagy t&aacute;voll&eacute;t) reprezent&aacute;lnak. A v&aacute;ltoz&oacute;t adja meg &bdquo;igaz&rdquo;-nak olyan v&aacute;ltoz&oacute;k eset&eacute;n, amelyek oszt&aacute;lyokat vagy kateg&oacute;ri&aacute;kat (pl. felsz&iacute;nbor&iacute;t&aacute;s vagy jelenl&eacute;t vagy t&aacute;voll&eacute;t) reprezent&aacute;lnak, &eacute;s &bdquo;hamis&rdquo;-nak a folyamatos v&aacute;ltoz&oacute;k eset&eacute;n.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Fastruktúrák száma</h2></div>
+        <hr/>
+        <div>
+            <p>A modellben l&eacute;trehozand&oacute; fastrukt&uacute;r&aacute;k sz&aacute;ma. Ha t&ouml;bb fastrukt&uacute;ra van, annak eredm&eacute;nyek&eacute;ppen &aacute;ltal&aacute;ban pontosabb lesz a modell-előrejelz&eacute;s, de t&ouml;bb időre lesz sz&uuml;ks&eacute;g az előrejelz&eacute;shez. Fastrukt&uacute;r&aacute;k alap&eacute;rtelmezett sz&aacute;ma: 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Minimális levélméret</h2></div>
+        <hr/>
+        <div>
+            <p>Egy lev&eacute;l (v&eacute;gső csom&oacute;pont a fastrukt&uacute;r&aacute;n, tov&aacute;bbi feloszt&aacute;s nem lehets&eacute;ges) megtart&aacute;s&aacute;hoz sz&uuml;ks&eacute;ges megfigyel&eacute;sek minim&aacute;lis sz&aacute;ma. Alap&eacute;rtelmezett minimum regresszi&oacute; eset&eacute;n: 5. Alap&eacute;rtelmezett minimum oszt&aacute;lyoz&aacute;s eset&eacute;n: 1. Nagyon nagy adatok eset&eacute;n ezen sz&aacute;mok n&ouml;vel&eacute;se cs&ouml;kkenteni fogja az eszk&ouml;z fut&aacute;sidej&eacute;t.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Fastruktúra maximális mélysége</h2></div>
+        <hr/>
+        <div>
+            <p>A fastrukt&uacute;r&aacute;n lefel&eacute; tal&aacute;lhat&oacute; feloszt&aacute;sok maxim&aacute;lis sz&aacute;ma. Ha a maxim&aacute;lis m&eacute;lys&eacute;g nagy, azaz t&ouml;bb feloszt&aacute;st hoznak l&eacute;tre, az n&ouml;veli a modell t&uacute;lilleszt&eacute;s&eacute;nek val&oacute;sz&iacute;nűs&eacute;g&eacute;t.  Az alap&eacute;rtelmezett &eacute;rt&eacute;k adatf&uuml;ggő, &eacute;s a l&eacute;trehozott fastruktur&aacute;k sz&aacute;m&aacute;t&oacute;l, ill. a tartalmazott v&aacute;ltoz&oacute;k sz&aacute;m&aacute;t&oacute;l f&uuml;gg.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Fastruktúránként elérhető adatok (%)</h2></div>
+        <hr/>
+        <div>
+            <p>A d&ouml;nt&eacute;shozatali fastruktur&aacute;kra alkalmazott tan&iacute;t&aacute;si r&eacute;tegben tal&aacute;lhat&oacute; vektoros elemek sz&aacute;zal&eacute;kos ar&aacute;ny&aacute;t hat&aacute;rozza meg. Alap&eacute;rtelmezett &eacute;rt&eacute;k: az adatok 100%-a. Minden fastrukt&uacute;r&aacute;ra v&eacute;letlen mintav&eacute;tel t&ouml;rt&eacute;nik a megadott adatok k&eacute;tharmad&aacute;b&oacute;l.
+            </p>
+            <p>Az erdőben tal&aacute;lhat&oacute; d&ouml;nt&eacute;shozatali fastruktur&aacute;k l&eacute;trehoz&aacute;sa v&eacute;letlen minta vagy r&eacute;szcsoport (az el&eacute;rhető tan&iacute;t&aacute;si adatok kb. k&eacute;tharmada) alkalmaz&aacute;s&aacute;val t&ouml;rt&eacute;nik. Ha a bemeneti adatok sz&aacute;zal&eacute;kos ar&aacute;ny&aacute;t a d&ouml;nt&eacute;shozatali fastruktur&aacute;kra n&eacute;zve cs&ouml;kkentik, akkor nagyon nagy adathalmazok eset&eacute;n nő az eszk&ouml;z gyorsas&aacute;ga.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Véletlen mintavételben részt vevő változók száma</h2></div>
+        <hr/>
+        <div>
+            <p>A d&ouml;nt&eacute;shozatali fastruktur&aacute;k l&eacute;trehoz&aacute;s&aacute;hoz alkalmazott magyar&aacute;z&oacute; v&aacute;ltoz&oacute;k sz&aacute;m&aacute;t hat&aacute;rozza meg.
+            </p>
+            <p>Az erdőben tal&aacute;lhat&oacute; d&ouml;nt&eacute;shozatali fastruktur&aacute;k l&eacute;trehoz&aacute;sa a megadott magyar&aacute;z&oacute; v&aacute;ltoz&oacute;k v&eacute;letlen r&eacute;szcsoportj&aacute;nak alkalmaz&aacute;s&aacute;val t&ouml;rt&eacute;nik. A d&ouml;nt&eacute;shozatali fastruktur&aacute;k l&eacute;trehoz&aacute;s&aacute;hoz alkalmazott v&aacute;ltoz&oacute;k sz&aacute;m&aacute;nak n&ouml;vel&eacute;s&eacute;vel nőni fog a modell t&uacute;lilleszt&eacute;s&eacute;nek val&oacute;sz&iacute;nűs&eacute;ge, k&uuml;l&ouml;n&ouml;sen akkor, ha van egy vagy n&eacute;h&aacute;ny domin&aacute;ns v&aacute;ltoz&oacute;. Az &aacute;ltal&aacute;nos gyakorlat az, hogy numerikus előrejelzendő v&aacute;ltoz&oacute; eset&eacute;n a magyar&aacute;z&oacute; v&aacute;ltoz&oacute;k teljes sz&aacute;m&aacute;nak n&eacute;gyzetgy&ouml;k&eacute;t, kategorikus előrejelzendő v&aacute;ltoz&oacute; eset&eacute;n pedig a magyar&aacute;z&oacute; v&aacute;ltoz&oacute;k teljes sz&aacute;m&aacute;nak harmad&aacute;t alkalmazz&aacute;k.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Magyarázó változók párosítási módjának kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>Hogyan lesznek p&aacute;ros&iacute;tva a tan&iacute;t&aacute;si r&eacute;teg megfelelő v&aacute;ltoz&oacute;i az előrejelz&eacute;si r&eacute;teg v&aacute;ltoz&oacute;ival. A t&aacute;bl&aacute;ban csak a tan&iacute;t&aacute;shoz haszn&aacute;lt v&aacute;ltoz&oacute;k fognak szerepelni.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Érvényesítési futtatások száma</h2></div>
+        <hr/>
+        <div>
+            <p>Meghat&aacute;rozza a tan&iacute;t&aacute;si r&eacute;teg vektoros elemeinek azon sz&aacute;zal&eacute;k&aacute;t (0% &eacute;s 50% k&ouml;z&ouml;tt), amely az &eacute;rv&eacute;nyes&iacute;t&eacute;si teszt-adathalmazt k&eacute;pezi. A modell tan&iacute;t&aacute;sa e n&eacute;lk&uuml;l a v&eacute;letlen adat-r&eacute;szcsoport n&eacute;lk&uuml;l t&ouml;rt&eacute;nik, &eacute;s a program az ezekre a vektoros elemekre megfigyelt &eacute;rt&eacute;keket &ouml;sszehasonl&iacute;tja az előrejelzett &eacute;rt&eacute;kkel. Az alap&eacute;rtelmezett &eacute;rt&eacute;k 10%.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredményréteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor az alkalmaz&aacute;s megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>A kapott eredm&eacute;nyek az elemz&eacute;s t&iacute;pus&aacute;t&oacute;l f&uuml;ggenek. Ha a modellilleszt&eacute;s &eacute;rt&eacute;kel&eacute;s&eacute;t tan&iacute;tja, akkor az eredm&eacute;nyek tartalmazni fogj&aacute;k a tan&iacute;t&aacute;si adatok r&eacute;teg&eacute;t &eacute;s a modellilleszt&eacute;st &eacute;rt&eacute;kelő eredm&eacute;nyinform&aacute;ci&oacute;kat. Ha tan&iacute;t &eacute;s előrejelez, akkor az eredm&eacute;nyek tartalmazni fogj&aacute;k a tan&iacute;t&aacute;si adatok r&eacute;teg&eacute;t, az előrejelzett eredm&eacute;nyek r&eacute;teg&eacute;t &eacute;s a modellilleszt&eacute;st &eacute;rt&eacute;kelő eredm&eacute;nyinform&aacute;ci&oacute;kat.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő mezőben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

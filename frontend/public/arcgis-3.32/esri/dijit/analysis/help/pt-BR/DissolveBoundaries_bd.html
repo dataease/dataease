@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Dissolver Limites</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Dissolver Limites
+"></h2>
+        <hr/>
+    <p>As &aacute;reas que sobrep&otilde;em ou compartilham um limite em comum ou valores de atributos s&atilde;o unidas para formarem uma &uacute;nica &aacute;rea.
+    </p>
+    <p>Voc&ecirc; pode controlar quais limites s&atilde;o unidos especificando um campo. Por exemplo, se voc&ecirc; tiver uma camada de munic&iacute;pios, e cada munic&iacute;pio tiver um atributo  <pre>State_Name</pre>, voc&ecirc; poder&aacute; dissolver os limites utilizando o atributo <pre>State_Name</pre>.
+ Os munic&iacute;pios ser&atilde;o unidos se tiverem o mesmo valor <pre>State_Name</pre> .  O resultado &eacute; uma camada de limites do estado.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolha a camada de área cujos limites serão dissolvidos</h2></div>
+        <hr/>
+        <div>
+            <p>A camada contendo fei&ccedil;&otilde;es de &aacute;rea que ser&atilde;o dissolvidas. 
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista suspensa para procurar por seu conte&uacute;do para um conjunto de dados de compartilhamento do arquivo de grandes dados ou camada de fei&ccedil;&atilde;o.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Escolher método Dissolver</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica o m&eacute;todo utilizado para dissolver os campos.
+            </p>
+            <p>Voc&ecirc; pode escolher um de dois m&eacute;todos para unir as fei&ccedil;&otilde;es da &aacute;rea:
+                <ul>
+                    <li> <b>&Aacute;reas que se sobrep&otilde;em ou s&atilde;o adjacentes</b>&mdash;Duas ou mais &aacute;reas cujos limites se sobrep&otilde;em ser&atilde;o unidas em uma &aacute;rea. Al&eacute;m disso, as &aacute;reas que s&atilde;o adjacentes (isto &eacute;, compartilham um limite em comum) ser&atilde;o unidas em uma &aacute;rea.
+                    </li>
+                    <li> <b>&Aacute;reas com o mesmo valor de campo</b>&mdash;Duas ou mais &aacute;reas ser&atilde;o unidas em uma &aacute;rea se tiverem o mesmo valor de campo.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Criar feições de múltiplas partes</h2></div>
+        <hr/>
+        <div>
+            <p>M&uacute;ltiplas partes &eacute; uma representa&ccedil;&atilde;o de um lugar ou coisa que tem mais de uma parte, mas &eacute; definida como uma fei&ccedil;&atilde;o, pois faz refer&ecirc;ncia a um conjunto de atributos. Em uma camada de estados, por exemplo, Hava&iacute; poderia ser considerado uma fei&ccedil;&atilde;o de m&uacute;ltiplas partes, pois suas partes geom&eacute;tricas separadas s&atilde;o classificadas como um &uacute;nico estado.
+            </p>
+            <p> <b>Criar fei&ccedil;&otilde;es de m&uacute;ltiplas partes</b> oferecem duas op&ccedil;&otilde;es:
+                <ul>
+                    <li>Verdadeiro (marcado)&mdash; O servi&ccedil;o de sa&iacute;da pode conter fei&ccedil;&otilde;es de m&uacute;ltiplas partes.
+                    </li>
+                    <li>Falso (desmarcado)&mdash; O servi&ccedil;o de sa&iacute;da conter&aacute; somente fei&ccedil;&otilde;es de &uacute;nica parte e fei&ccedil;&otilde;es individuais ser&atilde;o criadas para cada parte. Este &eacute; o padr&atilde;o.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Adicionar estatísticas (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Quando as &aacute;reas s&atilde;o mescladas, voc&ecirc; pode resumir seus valores de atributo com estat&iacute;sticas significativas. Por exemplo, se voc&ecirc; estiver dissolvendo o limite entre munic&iacute;pios baseado em  <pre>State_Name</pre>, e cada munic&iacute;pio tiver um campo <i>Population</i> , voc&ecirc; poder&aacute; calcular a soma <pre>Population</pre> para o estado.
+            </p>
+            <p> Voc&ecirc; pode calcular as estat&iacute;stica em fei&ccedil;&otilde;es que s&atilde;o resumidas.
+Voc&ecirc; pode calcular o seguinte em campos num&eacute;ricos:
+                <ul>
+                    <li>Contagem&mdash;Calcula o n&uacute;mero de valores diferentes de nulo.
+Pode ser utilizado em campos num&eacute;ricos ou strings. 'A contagem de [null, 0, 2] &eacute; 2.
+                    </li>
+                    <li>Soma&mdash;A soma de valores num&eacute;ricos em um campo. A soma de [null, null, 3] &eacute; 3.
+                    </li>
+                    <li>M&eacute;dia&mdash;A m&eacute;dia de valores num&eacute;ricos. A m&eacute;dia de [0, 2, null] &eacute; 1.
+                    </li>
+                    <li>M&iacute;n&mdash;O valor m&iacute;nimo de um campo num&eacute;rico. O m&iacute;nimo de [0, 2, null] &eacute; 0. 
+                    </li>
+                    <li>M&aacute;x&mdash;O valor m&aacute;ximo de um campo num&eacute;rico. O valor m&aacute;ximo de [0, 2, null] &eacute; 2.
+                    </li>
+                    <li>Alcance&mdash;O alcance de um campo num&eacute;rico. Isto &eacute; calculado como os valores m&iacute;nimos subtra&iacute;dos do valor m&aacute;ximo. O alcance de [0, null, 1] &eacute; 1. O alcance de [null, 4] &eacute; 0.
+                    </li>
+                    <li>Vari&acirc;ncia&mdash;A vari&acirc;ncia de um campo num&eacute;rico em um caminho. A vari&acirc;ncia de [1] &eacute; nula. A vari&acirc;ncia de [null, 1,0,1,1] &eacute; 0,25.
+                    </li>
+                    <li>Desvio padr&atilde;o&mdash;O desvio padr&atilde;o de um campo num&eacute;rico. O desvio padr&atilde;o de [1] &eacute; nulo. O desvio padr&atilde;o de [nulo, 1,0,1,1] &eacute; 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Voc&ecirc; pode calcular o seguinte em campos de strings:
+                <ul>
+                    <li>Contagem&mdash;O n&uacute;mero de strings diferente de nulo.
+                    </li>
+                    <li>Qualquer&mdash;Esta estat&iacute;stica &eacute; uma amostra aleat&oacute;ria de um valor de string no campo especificado.
+                    </li>
+                </ul>
+                Todas as estat&iacute;sticas s&atilde;o calculadas em valores n&atilde;o nulos. A camada resultante conter&aacute; um novo atributo para cada estat&iacute;stica calculada. Qualquer n&uacute;mero de estat&iacute;stica pode ser adicionado ao escolher um atributo e estat&iacute;stica. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se voc&ecirc; estiver gravando em um ArcGIS Data Store, seus resultados ser&atilde;o salvos em  <b>Meu Conte&uacute;do</b> e adicionados no mapa. Se voc&ecirc; estiver gravando em um compartilhamento do arquivo de grandes dados, seus resultados ser&atilde;o armazenados compartilhamento do arquivo de grandes dados  e adicionados em seu   manifesto. N&atilde;o ser&atilde;o adicionados no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existe, a ferramenta falhar&aacute;.
+            </p>
+            <p>Ao gravar no  ArcGIS Data Store  (armazenamento de grandes dados de espa&ccedil;o-tempo ou relacional) utilizando a caixa suspensa  <b>Salvar resultados em</b> , voc&ecirc; pode especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

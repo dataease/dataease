@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Aprēķināt slīpumu</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="Portāla rīks Aprēķināt slīpumu"></h2>
+        <hr/>
+    <p>&Scaron;is rīks izveido virsmu, kurā parādīts ievades augstuma datu slīpums. Slīpums norāda augstuma maiņas līmeni katrai digitālā augstuma modeļa (digital elevation model&nbsp;&mdash; DEM) &scaron;ūnai.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlēties ievades datus, lai aprēķinātu slīpumu</h2></div>
+        <hr/>
+        <div>
+            <p>Augstuma slānis, no kura tiks aprēķināts slīpums.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>Norādīt augstumam paredzētu mērogošanas koeficientu</h2></div>
+        <hr/>
+        <div>
+            <p>Ievadīt z koeficientu.
+            </p>
+            <p>Z koeficients ir mērogo&scaron;anas koeficients, kas tiek izmantots, lai konvertētu augstuma vērtības diviem mērķiem:
+ 
+                <ul>
+                    <li>Lai konvertētu augstuma mērvienības (piemēram, metrus vai pēdas) uz slāņa horizontālajām koordinātu mērvienībām, kas var būt pēdas, metri vai grādi
+                        
+  
+                    </li>
+                    <li>Lai pievienotu vertikālo pārspīlējumu vizuāla iespaida radī&scaron;anai
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>No pēdām
+                    </p>
+                </td>
+                <td>
+                    <p>No metriem
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>No pēdām
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0,3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>No metriem
+                    </p>
+                </td>
+                <td>
+                    <p>3,28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slānis jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Mapes nosaukumu var norādīt mapē  <b>Mans saturs,</b> kur rezultāts tiks saglabāts, izmantojot nolaižamo lodziņu <b>Saglabāt rezultātu</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

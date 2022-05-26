@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Vypočítat hodnoty pole (Calculate Field)</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Vypoč&iacute;tat hodnoty pole"></h2>
+        <hr/>
+    <p> Tento n&aacute;stroj pracuje se vstupn&iacute; vrstvou a  vypoč&iacute;t&aacute; hodnoty pro nov&eacute; nebo již existuj&iacute;c&iacute; pole. Vytvořte v&yacute;raz v jazyce Arcade pro v&yacute;počet hodnot, kter&yacute;mi napln&iacute;te prvky.   Jestliže jsou va&scaron;e data časov&aacute; a jsou okamžit&eacute;ho časov&eacute;ho typu, můžete volitelně sestavovat v&yacute;razy, kter&eacute; poč&iacute;taj&iacute; se stopami.
+    </p>
+    <p>Předpokl&aacute;dejme např&iacute;klad, že chcete modifikovat st&aacute;vaj&iacute;c&iacute; pole s n&aacute;zvem  <i>TotalSales</i>. Chcete, aby toto pole bylo zastoupeno hodnotou v&scaron;ech prodejů za roky 2016 a 2017. S použit&iacute;m těch pol&iacute; ve v&yacute;razu, vypoč&iacute;t&aacute;te hodnotu pole jako <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>
+    </p>
+    <p>Dal&scaron;&iacute; př&iacute;klad, předpokl&aacute;dejme, že m&aacute;te v&yacute;sledky měřen&iacute; v GPS, v nichž jsou zaznamen&aacute;na um&iacute;stěn&iacute;, čas, ID autobusů a rychlost autobusů ve městě. Chceme vytvořit nov&eacute; pole nazvan&eacute;  <i>SpeedFrom3</i>, kter&eacute; uv&aacute;d&iacute; průměrn&eacute; rychlosti z posledn&iacute;ch tř&iacute; zaznamenan&yacute;ch měřen&iacute; pomoc&iacute; GPS pro každ&yacute; prvek. Pro tento v&yacute;počet bychom použili v&yacute;počet, kter&yacute; poč&iacute;t&aacute; se stopami, kde stopu představuje autobus označen&yacute; ID autobusu.    V&yacute;počet pro stanoven&iacute; průměrn&eacute; rychlosti předchoz&iacute;ch tř&iacute; časov&yacute;ch kroků, kdy aktu&aacute;ln&iacute; časov&yacute; krok je <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vybrat vrstvu pro výpočet hodnot pole pro</h2></div>
+        <hr/>
+        <div>
+            <p>body, linie, plochy nebo tabulku, pro něž se budou hodnoty pole poč&iacute;tat.  
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Vypočítat hodnoty pro pole</h2></div>
+        <hr/>
+        <div>
+            <p>Nov&eacute; nebo již existuj&iacute;c&iacute; pole, pro něž se budou hodnoty pole poč&iacute;tat, a datov&yacute; typ toho pole. Když budete poč&iacute;tat hodnoty pro pole, kter&eacute; již existuje, nepotřebujete shodn&yacute; datov&yacute; typ. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Vytvořit výraz pro výpočet hodnot pole</h2></div>
+        <hr/>
+        <div>
+            <p>Pro v&yacute;počet hodnot pole přidejte v&yacute;raz s použit&iacute;m n&aacute;stroje pro sestaven&iacute; v&yacute;razů. 
+            </p>
+            <p>Předpokl&aacute;dejme např&iacute;klad, že chceme přidat hodnoty pole nazvan&eacute;ho  <i>income</i>  a <i>bonus</i>. Provedete to tak, že přid&aacute;te v&yacute;raz <code>$feature[&quot;prijem&quot;] + $feature[&quot;bonus&quot;] </code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>Výraz počítá se stopami</h2></div>
+        <hr/>
+        <div>
+            <p>Specifikujte, zda v&aacute;&scaron; v&yacute;raz poč&iacute;t&aacute; se stopami. V&yacute;raz, kter&yacute; poč&iacute;t&aacute; se stopami, bude naform&aacute;tov&aacute;n např&iacute;klad takto       <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. V&yacute;razy, kter&eacute; poč&iacute;taj&iacute; se stopami, potřebuj&iacute; pole pro identifikaci jednotliv&yacute;ch stop. Stopy mohou sest&aacute;vat z bodů, lini&iacute;, ploch nebo tabulek, a potřebuj&iacute; pouze to, aby vstupn&iacute; hodnota měla identifik&aacute;tor stopy, a aby data byla časov&aacute;, okamžit&eacute;ho časov&eacute;ho typu.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analyzovat data s časovými intervaly</h2></div>
+        <hr/>
+        <div>
+            <p>Zadejte, jestli chcete vypoč&iacute;tat hodnoty va&scaron;ich stop pomoc&iacute; intervalů, kter&eacute; provedou segmentaci va&scaron;ich vstupů za &uacute;čelem anal&yacute;zy. Pokud použ&iacute;v&aacute;te časov&eacute; intervaly, mus&iacute;te nastavit časov&yacute; interval, kter&yacute; chcete použ&iacute;vat, a volitelně nastavit referenčn&iacute; čas. Pokud nenastav&iacute;te referenčn&iacute; čas, bude použito 1. ledna 1970. 
+            </p>
+            <p>Např&iacute;klad, pokud nastav&iacute;te časovou hranici na 1 den, zač&iacute;t od 9:00 1. ledna, 1990, potom každ&aacute; stopa bude zkr&aacute;cena v 9:00 pro každ&yacute; den a analyzov&aacute;na v tomto segmentu. 
+            </p>
+            <p>Použ&iacute;v&aacute;n&iacute; časov&yacute;ch intervalů představuje rychl&yacute; způsob zv&yacute;&scaron;en&iacute; doby v&yacute;počtu, protože rychle vytv&aacute;ř&iacute; men&scaron;&iacute; stopy k anal&yacute;ze. Pokud rozdělen&iacute; pomoc&iacute; znovu nastal&eacute;ho časov&eacute;ho intervalu m&aacute; smysl pro va&scaron;i anal&yacute;zu, doporučuje se pro zpracov&aacute;n&iacute; velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p> N&aacute;zev vytv&aacute;řen&eacute; vrstvy. Pokud zapisujete ArcGIS Data Store, va&scaron;e v&yacute;sledky budou uloženy v  <b>Můj obsah</b> a přid&aacute;ny na mapu. Pokud zapisujete sd&iacute;len&yacute; soubor velk&yacute;ch dat, va&scaron;e v&yacute;sledky budou uloženy ve sd&iacute;len&eacute;m souboru velk&yacute;ch dat a přid&aacute;ny do jejich manifestu.  Nebudou přid&aacute;ny na mapu. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, n&aacute;stroj selže.
+            </p>
+            <p>Když zapisujete do   ArcGIS Data Store  (datov&eacute; &uacute;loži&scaron;tě relačn&iacute;ch a časoprostorov&yacute;ch velk&yacute;ch dat) pomoc&iacute; rozbalovac&iacute;ho seznamu  <b>Uložit v&yacute;sledek do</b> , můžete zadat n&aacute;zev složky v <b>Můj obsah</b>, kde budou v&yacute;sledky uloženy.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

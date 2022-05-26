@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Aggregera punkter</h2><p/>
+        <h2><img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" alt="Aggregera punkter"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget arbetar med ett lager med punktgeoobjekt och ett lager med omr&aring;desgeoobjekt. Omr&aring;desgeoobjekten som anv&auml;nds som indata kan vara fr&aring;n ett polygonlager eller s&aring; kan de vara kvadratiska eller sexkantiga lagringsplatser som ber&auml;knas n&auml;r verktyget k&ouml;rs. F&ouml;rst avg&ouml;rs vilka punkter som hamnar inom respektive angivet omr&aring;de. Efter att den geografiska analysen f&ouml;r punkter inom olika omr&aring;den &auml;r f&auml;rdig, ber&auml;knas statistik f&ouml;r alla punkter i respektive omr&aring;de. Den mest grundl&auml;ggande statistiken &auml;r r&auml;kningen av antalet punkter i omr&aring;det, men du kan &auml;ven skaffa annan statistik. 
+
+    </p>
+    <p>Anta till exempel att du har punktgeoobjekt i form av platser f&ouml;r kaf&eacute;er och omr&aring;desgeoobjekt i form av l&auml;n, och nu vill summera kaffef&ouml;rs&auml;ljningen per l&auml;n. Om vi antar att kaf&eacute;erna har attributet  <i>TOTAL_SALES</i> kan du ber&auml;kna summan av alla <i>TOTAL_SALES</i> i varje l&auml;n, minsta och h&ouml;gsta <i>TOTAL_SALES</i>
+ i varje l&auml;n eller annan statistik som antal, omf&aring;ng, standardavvikelse och varians.
+    </p>
+    <p>Verktyget kan ocks&aring; arbeta med data som &auml;r tidsaktiverade. Om tid &auml;r aktiverat p&aring; indatapunkterna &auml;r alternativen f&ouml;r tidsdelning tillg&auml;ngliga. Med tidsdelning kan du ber&auml;kna f&ouml;rh&aring;llandet f&ouml;r punkter inom olika omr&aring;den medan du tittar p&aring; en viss tidsdel. Du kan t.ex. titta p&aring; timintervaller, vilket ger utdata f&ouml;r varje timme. 
+    </p>
+    <p>Med tid kan du till exempel ha punktgeoobjekt f&ouml;r varje utf&ouml;rd transaktion vid olika platser f&ouml;r caf&eacute;er och inget omr&aring;deslager. Data har registrerats under ett &aring;r och varje transaktion har en plats och en tidsst&auml;mpel. Om vi antar att varje transaktion har attributet  <i>TOTAL_SALES</i>, kan du f&aring; summan av alla <i>TOTAL_SALES</i> inom det intressanta rummet och tiden. Om transaktionerna &auml;r f&ouml;r en enda ort kan vi generera omr&aring;den som &auml;r rutn&auml;t med en kilometers uppl&ouml;sning och se p&aring; veckotidsdelar f&ouml;r att summera transaktionerna i tid och rum.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Välj ett lager som innehåller punkter som ska aggregeras till områden</h2></div>
+        <hr/>
+        <div>
+            <p>Punktlagret som ska aggregeras till omr&aring;den. F&ouml;r punktlager som aggregeras till lagringsplatserna  <b>Kvadrat </b> eller <b>Hexagon</b> m&aring;ste den geografiska referensen f&ouml;r bearbetning st&auml;llas in f&ouml;r ett projicerat koordinatsystem med <b>Analysmilj&ouml;</b>.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="inputAggregation">
+        <div><h2>Välj ett områdeslager att aggregera till</h2></div>
+        <hr/>
+        <div>
+            <p>De omr&aring;den som punktlagret ska aggregeras till. Du kan v&auml;lja mellan ett omr&aring;deslager som du anger eller lagringsplatser som genereras n&auml;r verktyget k&ouml;rs.   N&auml;r lagringsplatser skapas avg&ouml;r siffran och enheterna som angivits f&ouml;r  <b>Kvadrat</b> kvadratens h&ouml;jd och l&auml;ngd. F&ouml;r <b>Hexagon</b> avg&ouml;r siffran och enheterna som angivits avst&aring;ndet mellan parallella sidor.
+            </p>
+            <p>Analyser som anv&auml;nder lagringsplatserna  <b>Kvadrat</b> eller <b>Hexagon</b> kr&auml;ver ett projicerat koordinatsystem. Du kan ange <b>Bearbetande koordinatsystem</b> i <b>Analysmilj&ouml;</b>. Om ditt bearbetande koordinatsystem inte &auml;r inst&auml;llt som ett projicerat koordinatsystem, blir du uppmanad att st&auml;lla in det n&auml;r du anv&auml;nder <b>K&ouml;r analys</b> .
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Välj områdeslagret att aggregera till</h2></div>
+        <hr/>
+        <div>
+            <p>Omr&aring;deslagret som punkterna ska aggregeras till. Alla punkter som hamnar inom gr&auml;nserna f&ouml;r omr&aring;den i lagret r&auml;knas, och du kan v&auml;lja att summera dem med valfri statistik. 
+            </p>
+            <p>Du m&aring;ste ange antingen  <b>Lagringsplatsstorlek</b> f&ouml;r lagringsplatser eller <b>Omr&aring;deslager</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Välj avstånd för att generera lagerplatser och aggregera till</h2></div>
+        <hr/>
+        <div>
+            <p>Det avst&aring;nd som anv&auml;nds f&ouml;r att generera lagringsplatser att aggregera dina indatapunkter till. F&ouml;r en kvadratisk lagringsplats motsvarar storleken kvadratens h&ouml;jd. F&ouml;r en hexagon motsvarar storleken hexagonens h&ouml;jd (fr&aring;n parallella sidor).  
+            </p>
+            <p>Du m&aring;ste ange antingen  <b>Lagringsplatsstorlek</b> f&ouml;r lagringsplatser eller <b>Omr&aring;deslager</b>.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Aggregera med tidssteg (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Om tid &auml;r aktiverat p&aring; indatapunktlagret och det &auml;r av typen tidspunkt, kan du analysera med tidsstegning. Du kan st&auml;lla in tre parametrar n&auml;r du anv&auml;nder tid:
+                <ul>
+                    <li> <b>Tidsstegsintervall</b>
+                    </li>
+                    <li> <b>Hur ofta tidssteget ska upprepas</b>
+                    </li>
+                    <li> <b>Tid som anv&auml;nds till att justera tidssteg till</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Om du till exempel har data som representerar ett &aring;rs tid och du vill analysera dem i veckovisa steg, st&auml;ller du in  <b>Tidsstegsintervall</b> p&aring; <code>1 vecka</code>. 
+            </p>
+            <p>Om du till exempel har data som representerar ett &aring;rs tid och du vill analysera dem med hj&auml;lp av den f&ouml;rsta veckan i m&aring;naden, st&auml;ller du in  <b>Tidsstegsintervall</b> p&aring; <code>1 vecka</code>, <b>Hur ofta tidssteget ska upprepas</b> p&aring; <code>1 m&aring;nad</code> och <b>Tid som anv&auml;nds till att justera tidssteg till</b> p&aring; <code>1 januari, kl. 00:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Tidsstegsintervall</h2></div>
+        <hr/>
+        <div>
+            <p>Det tidsintervall som anv&auml;nds f&ouml;r att generera tidssteg.  <b>Tidsstegsintervall</b> kan anv&auml;ndas var f&ouml;r sig eller med parametern <b>Hur ofta tidssteget ska upprepas</b> eller <b>Tid som anv&auml;nds till att justera tidssteg till</b>.
+            </p>
+            <p>Om du till exempel vill skapa tidssteg som intr&auml;ffar varje m&aring;ndag fr&aring;n 09:00 till 10:00, st&auml;ller du in  <b>Tidsstegsintervall</b> p&aring; <code>1 timme</code>, <b>Hur ofta tidssteget ska upprepas</b> p&aring; <code>1 vecka</code> och <b>Tid som anv&auml;nds till att justera tidssteg till</b> p&aring; <code>9:00:00 p&aring; en m&aring;ndag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Hur ofta tidssteget ska upprepas</h2></div>
+        <hr/>
+        <div>
+            <p> Det steg som anv&auml;nds f&ouml;r att ber&auml;kna ett tidssteg. <b>Hur ofta tidssteget ska upprepas</b> kan anv&auml;ndas var f&ouml;r sig, med <b>Tidsstegsintervall</b>, med <b>Referenstid</b> eller med b&aring;de <b>Tidsstegsintervall</b> och <b>Tid som anv&auml;nds till att justera tidssteg till</b>.
+            </p>
+            <p> Om du till exempel vill skapa tidssteg som intr&auml;ffar varje m&aring;ndag fr&aring;n 09:00 till 10:00, st&auml;ller du in <b>Tidsstegsintervall</b> p&aring; <code>1 timme</code>, <b>Hur ofta tidssteget ska upprepas</b> p&aring; <code>1 vecka</code> och <b>Tid som anv&auml;nds till att justera tidssteg till</b> p&aring; <code>9:00:00 p&aring; en m&aring;ndag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Tid som används till att justera tidssteg till</h2></div>
+        <hr/>
+        <div>
+            <p>Datum och tid som anv&auml;nds f&ouml;r att justera tidsdelar. Tidssteg startar vid och forts&auml;tter bak&aring;t fr&aring;n den h&auml;r tiden. Om ingen referenstid v&auml;ljs justeras tidssteg mot 1 januari 1970. 
+            </p>
+            <p> Om du till exempel vill skapa tidssteg som intr&auml;ffar varje m&aring;ndag fr&aring;n 09:00 till 10:00, st&auml;ller du in <b>Tidsstegsintervall</b> p&aring; <code>1 timme</code>, <b>Hur ofta tidssteget ska upprepas</b> p&aring; <code>1 vecka</code> och <b>Tid som anv&auml;nds till att justera tidssteg till</b> p&aring; <code>9:00:00 p&aring; en m&aring;ndag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Lägg till statistik (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p> Du kan ber&auml;kna statistik p&aring; summerade geoobjekt. Du kan ber&auml;kna f&ouml;ljande p&aring; numeriska f&auml;lt:
+                <ul>
+                    <li>Antal &ndash; Ber&auml;knar antal v&auml;rden som inte &auml;r null. Kan anv&auml;ndas p&aring; numeriska f&auml;lt eller str&auml;ngar. Antalet f&ouml;r [null, 0, 2] &auml;r 2.
+                    </li>
+                    <li>Summa &ndash; Summan av de numeriska v&auml;rdena i ett f&auml;lt. Summan f&ouml;r [null, null, 3] &auml;r 3.
+                    </li>
+                    <li>Medelv&auml;rde &ndash; Medelv&auml;rdet f&ouml;r numeriska v&auml;rden. Medelv&auml;rde f&ouml;r [0, 2, null] &auml;r 1.
+                    </li>
+                    <li>Min &ndash; Minimiv&auml;rdet f&ouml;r ett numeriskt f&auml;lt. Minimiv&auml;rde f&ouml;r [0, 2, null] &auml;r 0. 
+                    </li>
+                    <li>Max &ndash; Det maximala v&auml;rdet f&ouml;r ett numeriskt f&auml;lt. Det maximala v&auml;rdet f&ouml;r [0, 2, null] &auml;r 2.
+                    </li>
+                    <li>Intervall &ndash; Intervallet f&ouml;r ett numeriskt f&auml;lt. Det ber&auml;knas som det maximala v&auml;rdet minus minimiv&auml;rdena. Intervallet f&ouml;r [0, null, 1] &auml;r 1. Intervallet f&ouml;r [null, 4] &auml;r 0.
+                    </li>
+                    <li>Varians &ndash; Variansen hos ett numeriskt f&auml;lt i ett sp&aring;r. Variansen hos [1] &auml;r null. Variansen hos [null, 1,0,1,1] &auml;r 0,25.
+                    </li>
+                    <li>Standardavvikelse &ndash; Standardavvikelsen hos ett numeriskt f&auml;lt. Standardavvikelsen hos [1] &auml;r null. Standardavvikelsen hos [null, 1,0,1,1] &auml;r 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du kan ber&auml;kna f&ouml;ljande p&aring; numeriska f&auml;lt:
+                <ul>
+                    <li>Antal &ndash; Antalet str&auml;ngar som inte &auml;r null.
+                    </li>
+                    <li>Alla &ndash; Det statistiska v&auml;rdet &auml;r ett slumpm&auml;ssigt exempel p&aring; ett str&auml;ngv&auml;rde i det angivna f&auml;ltet.
+                    </li>
+                </ul>
+                All statistik ber&auml;knas p&aring; v&auml;rden som inte &auml;r null. Det resulterande lagret inneh&aring;ller ett nytt f&auml;lt f&ouml;r varje statistiskt v&auml;rde som ber&auml;knas. Du kan l&auml;gga till valfri m&auml;ngd statistiska v&auml;rden genom att v&auml;lja ett attribut och statistik. 
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r en tillf&auml;llig parameter f&ouml;r f&ouml;rhandsversionen f&ouml;r att st&auml;lla in den geografiska referensen f&ouml;r bearbetning. M&aring;nga big data-verktyg kr&auml;ver att ett projicerat koordinatsystem anv&auml;nds som geografisk referens f&ouml;r bearbetning. Som standard anv&auml;nder verktyget indatakoordinatsystemet men misslyckas om det &auml;r ett geografiskt koordinatsystem. Ange WKID f&ouml;r att st&auml;lla in ett projicerat koordinatsystem. Till exempel anges  <b>Web Mercator</b> som <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Välj ett ArcGIS-datalager att spara resultat till</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-resultat sparas i ett datalager och visas som ett geoobjektlager i  Portal for ArcGIS. I de flesta fall ska resultat sparas i det rumstemporala datalagret och det &auml;r standardinst&auml;llningen. I vissa fall &auml;r det ett bra alternativ att spara resultat i det relationella datalagret. F&ouml;ljande &auml;r anledningar till varf&ouml;r du kanske vill spara resultat i det relationella datalagret: 
+                <ul>
+                    <li>Du kan anv&auml;nda resultaten i portal-till-portal-samarbeten.
+                    </li>
+                    <li>Du kan aktivera synkroniseringsfunktioner med dina resultat.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du b&ouml;r inte anv&auml;nda det relationella datalagret om du f&ouml;rv&auml;ntar dig att dina GeoAnalytics-resultat kommer att &ouml;ka och du beh&ouml;ver anv&auml;nda det rumstemporala big data-lagrets funktioner till att hantera stora m&auml;ngder data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p> Namnet p&aring; lagret som ska skapas.  Om du skriver till en ArcGIS Data Store, sparas dina resultat i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om du skriver till en big data-fildelning, lagras dina resultat i big data-fildelningen och l&auml;ggs till i dess manifest. Det l&auml;ggs inte till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns misslyckas verktyget.
+            </p>
+            <p>N&auml;r du skriver till   ArcGIS Data Store (relationellt eller rumstempor&auml;rt Big Data-datalager) med listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

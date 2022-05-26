@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="2000">
+<g font-family="Verdana" font-size="120">
+<text x="-310" y="700" fill="#fff" fill-opacity=".1" transform="rotate(-45)">
+Sample Data
+</text>
+<text x="-310" y="700" fill="gray" fill-opacity=".15" transform="rotate(-45)">
+Sample Data
+</text>
+</g>
+</svg>

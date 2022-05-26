@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Förena geoobjekt</h2><p/>
+        <h2><img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" alt="F&ouml;rena geoobjekt"></h2>
+        <hr/>
+    <p>Verktyget F&ouml;rena geoobjekt arbetar med tv&aring; lager. F&ouml;rena geoobjekt f&ouml;renar attribut fr&aring;n ett geoobjekt till ett annat baserat p&aring; rums-, tids- och attributrelationer eller n&aring;gon kombination av dem. Verktyget avg&ouml;r alla indatageoobjekt som uppfyller de angivna f&ouml;reningsvillkoren och f&ouml;renar det andra indatalagret med det f&ouml;rsta. Du kan ocks&aring; f&ouml;rena alla geoobjekt med de matchande geoobjekten eller summera de matchande geoobjekten.
+    </p>
+    <p>F&ouml;rena geoobjekt kan anv&auml;ndas p&aring; punkter, linjer, omr&aring;den och tabeller. En tidsf&ouml;rening kr&auml;ver att dina indata &auml;r tidsaktiverade, och en rumsf&ouml;rening att dina data har en geometri. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Välj mållager</h2></div>
+        <hr/>
+        <div>
+            <p>Det lager som kommer att f&aring; attribut fr&aring;n f&ouml;reningslagret tillagda i sin tabell.
+            </p>
+            <p>Analyser som anv&auml;nder den geografiska relationen  <b>N&auml;ra</b> kr&auml;ver ett projicerat koordinatsystem. Du kan ange <b>Bearbetande koordinatsystem</b> i <b>Analysmilj&ouml;</b>. Om ditt bearbetande koordinatsystem inte &auml;r inst&auml;llt som ett projicerat koordinatsystem, blir du uppmanad att st&auml;lla in det n&auml;r du anv&auml;nder <b>K&ouml;r analys</b> .
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Välj lager som ska förenas till mållagret</h2></div>
+        <hr/>
+        <div>
+            <p>F&ouml;reningslagret med de attribut som ska l&auml;ggas till i m&aring;llagret.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Välj föreningsåtgärd</h2></div>
+        <hr/>
+        <div>
+            <p>Avg&ouml;r hur f&ouml;reningar mellan m&aring;l- och f&ouml;reningslager ska hanteras i utdata om flera geoobjekt f&ouml;r f&ouml;rening visar sig ha samma relation med lagret som f&ouml;renas. Det finns tv&aring; f&ouml;renings&aring;tg&auml;rder att v&auml;lja mellan:
+                <ul>
+                    <li> <b>F&ouml;rena ett till ett</b> &ndash; Det h&auml;r alternativet summerar alla matchande geoobjekt till varje geoobjekt som f&ouml;renas.
+                    </li>
+                    <li> <b>F&ouml;rena ett till flera</b> &ndash; Det h&auml;r alternativet f&ouml;renar alla matchande geoobjekt med f&ouml;reningslagret.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Anta till exempel att du ville hitta snabbk&ouml;p inom 2 kilometer fr&aring;n en jordbruksmarknad. I det h&auml;r fallet har m&aring;llagret ett enstaka geoobjekt som representerar en jordbruksmarknad, och f&ouml;reningslagret representerar de lokala livsmedelsbutikerna som har attribut som total &aring;rsf&ouml;rs&auml;ljning. Med verktyget F&ouml;rena geoobjekt hittar du fem livsmedelsbutiker som uppfyller villkoren. Om du angav f&ouml;renings&aring;tg&auml;rden  <b>F&ouml;rena ett till m&aring;nga</b>, skulle du f&aring; fem geoobjekt i resultatet, d&auml;r varje rad representerar jordbruksmarknaden och ett snabbk&ouml;p. Om du angav en <b>F&ouml;rena ett till ett</b>-relation, skulle du f&aring; ett geoobjekt som representerar jordbruksmarknaden och den summerade informationen fr&aring;n snabbk&ouml;pen, t.ex. antalet (2) och annan statistik som den totala &aring;rsf&ouml;rs&auml;ljningen.
+            </p>
+        </div>
+    </div>
+    <div id="joinOptions">
+        <div><h2>Välj en eller flera föreningar</h2></div>
+        <hr/>
+        <div>
+            <p>Anger vilket f&ouml;reningsalternativ som anv&auml;nds. Du kan anv&auml;nda en, tv&aring; eller tre av f&ouml;ljande f&ouml;reningstyper. 
+                <ul>
+                    <li> <b>Geografisk</b> &ndash; Anv&auml;nder en angiven geografisk relation f&ouml;r att f&ouml;rena geoobjekt. Detta kr&auml;ver att b&aring;da lagren har en geometri.
+                    </li>
+                    <li> <b>Tidsm&auml;ssig</b> &ndash; Anv&auml;nder en tidsm&auml;ssig relation f&ouml;r att f&ouml;rena geoobjekt. Detta kr&auml;ver att tid &auml;r aktiverad p&aring; b&aring;da lagren.
+                    </li>
+                    <li> <b>Attribut</b> &ndash; F&ouml;renar geoobjekt baserat p&aring; likadana f&auml;lt.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Välj en geografisk relation</h2></div>
+        <hr/>
+        <div>
+            <p>Den geografiska relation som avg&ouml;r om geoobjekt f&ouml;renas med varandra. De f&ouml;ljande tillg&auml;ngliga relationerna beror p&aring; typen av geometri (punkt, polylinje, polygon) som anv&auml;nds som indatageoobjekt:
+                <ul>
+                    <li> <b>Sk&auml;r</b> &ndash; Geoobjekten matchas om de sk&auml;r varandra.
+                    </li>
+                    <li> <b>Motsvarar</b> &ndash; Geoobjekten matchas om de har samma geometri.
+                    </li>
+                    <li> <b>N&auml;ra</b> &ndash; Geoobjekten matchas om de ligger inom ett angivet avst&aring;nd fr&aring;n varandra. M&aring;llagret m&aring;ste finnas i ett projicerat koordinatsystem eller s&aring; m&aring;ste den geografiska referensen f&ouml;r bearbetning st&auml;llas in f&ouml;r ett projicerat koordinatsystem med <b>Analysmilj&ouml;</b> om en geografiskt <b>n&auml;ra</b> relation anv&auml;nds.
+                    </li>
+                    <li> <b>Inneh&aring;ller</b> &ndash; Geoobjekten matchas om m&aring;llagret innefattas i de geoobjekt som f&ouml;renas.
+                    </li>
+                    <li> <b>Inom</b> &ndash; Geoobjekten matchas om m&aring;llagret finns inom de geoobjekt som f&ouml;renas.
+                    </li>
+                    <li> <b>Vidr&ouml;r</b> &ndash; Geoobjekten matchas om de har en gr&auml;ns som vidr&ouml;r m&aring;lgeoobjektet.
+                    </li>
+                    <li> <b>Korsar</b> &ndash; Geoobjekten matchas om de har en korsande kontur.
+                    </li>
+                    <li> <b>&Ouml;verlappar</b> &ndash; Geoobjekten f&ouml;renas om de &ouml;verlappar varandra.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearSpatial">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            <p> Anger den radie som anv&auml;nds f&ouml;r en geografisk n&auml;ra-relation.
+            </p>
+            <p>Om du till exempel hade ett dataset som motsvarar ett k&auml;rnkraftverk och ett dataset som representerar bost&auml;der, skulle du kunna st&auml;lla in ett 1-kilometers nearSpatial-avst&aring;nd f&ouml;r att hitta hus inom 1 kilometer fr&aring;n k&auml;rnkraftverket.
+            </p> 
+        </div>
+    </div>
+    <div id="temporalRelationship">
+        <div><h2>Välj en tidsaktiverad relation</h2></div>
+        <hr/>
+        <div>
+            <p>Den tidsm&auml;ssiga relation som avg&ouml;r om geoobjekt f&ouml;renas med varandra. Alternativet &auml;r bara tillg&auml;ngligt om tid &auml;r aktiverad p&aring; b&aring;da lagren och vilka relationer som &auml;r tillg&auml;ngliga beror p&aring; vilken typ av tid (tidpunkt eller intervall) som anv&auml;nds f&ouml;r indatageoobjekten. F&ouml;ljande tidsrelationer &auml;r tillg&auml;ngliga:
+                <ul>
+                    <li> <b>Uppfyller</b> &ndash; Geoobjekten matchas om det f&ouml;rsta geoobjektet uppfyller det andra.
+                    </li>
+                    <li> <b>Uppfylls av</b> &ndash; Geoobjekten matchas om det f&ouml;rsta geoobjektet uppfylls av det andra.
+                    </li>
+                    <li> <b>&Ouml;verlappar</b> &ndash; Geoobjekten matchas om det f&ouml;rsta geoobjektet &ouml;verlappar det andra.
+                    </li>
+                    <li> <b>&Ouml;verlappas av</b> &ndash; Geoobjekten matchas om det f&ouml;rsta geoobjektet &ouml;verlappas av det andra.
+                    </li>
+                    <li> <b>Under</b> &ndash; Geoobjekten matchas om det f&ouml;rsta geoobjektet infaller under det andra.
+                    </li>
+                    <li> <b>Inneh&aring;ller</b> &ndash; Geoobjekten matchas om det f&ouml;rsta geoobjektet inneh&aring;ller det andra.
+                    </li>
+                    <li> <b>Motsvarar</b> &ndash; Geoobjekten matchas om det f&ouml;rsta geoobjektet motsvarar det andra.
+                    </li>
+                    <li> <b>Slutf&ouml;r</b> &ndash; Geoobjekten matchas om det f&ouml;rsta geoobjektet slutf&ouml;r det andra.
+                    </li>
+                    <li> <b>Slutf&ouml;rd av</b> &ndash; Geoobjekten matchas om det f&ouml;rsta geoobjektet slutf&ouml;rs av det andra.
+                    </li>
+                    <li> <b>Startar</b> &ndash; Geoobjekten matchas om det f&ouml;rsta geoobjektet startar det andra.
+                    </li>
+                    <li> <b>Startad av</b> &ndash; Geoobjekten matchas om det f&ouml;rsta geoobjektet startas av det andra.
+                    </li>
+                    <li> <b>Sk&auml;r</b> &ndash; Geoobjekten matchas om tiderna alls sk&auml;r varandra.
+                    </li>
+                    <li> <b>N&auml;ra</b> &ndash; Geoobjekten f&ouml;renas om de ligger n&auml;ra varandra, vilket avg&ouml;ras av en angiven tid.
+                    </li>
+                    <li> <b>N&auml;ra f&ouml;re</b> &ndash; Geoobjekten kommer att f&ouml;renas om det f&ouml;rsta geoobjektet &auml;r f&ouml;re det andra geoobjektet och inom den angivna tiden.
+                    </li>
+                    <li> <b>N&auml;ra efter</b> &ndash; Geoobjekten kommer att f&ouml;renas om det f&ouml;rsta geoobjektet &auml;r efter det andra geoobjektet och inom den angivna tiden.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearTemporal">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            
+            <p>Anger den tidsradie som anv&auml;nds f&ouml;r en tidsm&auml;ssig n&auml;ra-relation. En tidsm&auml;ssig n&auml;ra-relation inbegriper  <b>N&auml;ra</b>, <b>N&auml;ra f&ouml;re</b> och <b>N&auml;ra efter</b>.
+            </p>
+            <p>Om du till exempel har ett lager med b&aring;tincidenter och ett lager med GPS-sp&aring;r f&ouml;r en orkan, kan du titta efter b&aring;tincidenter inom ett angivet avst&aring;nd fr&aring;n orkansp&aring;r i b&aring;de rum (1 kilometer) och tid (5 timmar). Det resulterar i b&aring;tincidenter som f&ouml;renas med orkaner som intr&auml;ffade n&auml;ra varandra i rum och tid.
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Välj vilka fält som ska matchas</h2></div>
+        <hr/>
+        <div>
+            <p>Matchar v&auml;rden i ett f&auml;lt fr&aring;n ett lager med v&auml;rden i ett f&auml;lt fr&aring;n ett annat lager. 
+            </p>
+            <p>Om du till exempel hade ett l&auml;nsomfattande geografiskt lager med  bostadsadresser (inklusive ett  <i>ZIP</i>-f&auml;lt) och ett tabelldataset med demografiska h&auml;lsov&auml;rden sorterade efter postnummer (ett f&auml;lt med namnet <i>HEALTHZIP</i>), kunde du f&ouml;rena h&auml;lsodatasetet med bostadsdata genom att matcha <i>ZIP</i>-f&auml;ltet med <i>HEALTHZIP</i>-f&auml;ltet. Detta skulle resultera i ett lager med bost&auml;der och motsvarande uppgifter om h&auml;lsodata.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Lägg till statistik (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Ber&auml;knar statistik p&aring; de f&ouml;renade geoobjekten om f&ouml;reningsoperationen &auml;r  <b>F&ouml;rena en till en</b>. All statistik ber&auml;knas som standard.
+            </p>
+            <p>Du kan ber&auml;kna statistik p&aring; summerade geoobjekt. P&aring; numeriska f&auml;lt kan du ber&auml;kna f&ouml;ljande: 
+                <ul>
+                    <li>Antal &ndash; Ber&auml;knar antal v&auml;rden som inte &auml;r null. Kan anv&auml;ndas p&aring; numeriska f&auml;lt eller str&auml;ngar. Antalet f&ouml;r [null, 0, 2] &auml;r 2.
+                    </li>
+                    <li>Summa &ndash; Summan av de numeriska v&auml;rdena i ett f&auml;lt. Summan f&ouml;r [null, null, 3] &auml;r 3.
+                    </li>
+                    <li>Medelv&auml;rde &ndash; Medelv&auml;rdet f&ouml;r numeriska v&auml;rden. Medelv&auml;rde f&ouml;r [0, 2, null] &auml;r 1.
+                    </li>
+                    <li>Min &ndash; Minimiv&auml;rdet f&ouml;r ett numeriskt f&auml;lt. Minimiv&auml;rde f&ouml;r [0, 2, null] &auml;r 0. 
+                    </li>
+                    <li>Max &ndash; Det maximala v&auml;rdet f&ouml;r ett numeriskt f&auml;lt. Det maximala v&auml;rdet f&ouml;r [0, 2, null] &auml;r 2.
+                    </li>
+                    <li>Intervall &ndash; Intervallet f&ouml;r ett numeriskt f&auml;lt. Det ber&auml;knas som det maximala v&auml;rdet minus minimiv&auml;rdena. Intervallet f&ouml;r [0, null, 1] &auml;r 1. Intervallet f&ouml;r [null, 4] &auml;r 0.
+                    </li>
+                    <li>Varians &ndash; Variansen hos ett numeriskt f&auml;lt i ett sp&aring;r. Variansen hos [1] &auml;r null. Variansen hos [null, 1,0,1,1] &auml;r 0,25.
+                    </li>
+                    <li>Standardavvikelse &ndash; Standardavvikelsen hos ett numeriskt f&auml;lt. Standardavvikelsen hos [1] &auml;r null. Standardavvikelsen hos [null, 1,0,1,1] &auml;r 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>P&aring; f&auml;lt med str&auml;ngar kan du ber&auml;kna f&ouml;ljande:
+                <ul>
+                    <li>Antal &ndash; Antalet str&auml;ngar som inte &auml;r null.
+                    </li>
+                    <li>Alla &ndash; Det statistiska v&auml;rdet &auml;r ett slumpm&auml;ssigt exempel p&aring; ett str&auml;ngv&auml;rde i det angivna f&auml;ltet.
+                    </li>
+                </ul>
+                All statistik ber&auml;knas p&aring; v&auml;rden som inte &auml;r null. Det resulterande lagret inneh&aring;ller ett nytt f&auml;lt f&ouml;r varje statistiskt v&auml;rde som ber&auml;knas. Du kan l&auml;gga till valfri m&auml;ngd statistiska v&auml;rden genom att v&auml;lja ett attribut och statistik.
+            </p>
+            <p>All statistik ber&auml;knas p&aring; v&auml;rden som inte &auml;r null. Det resulterande lagret inneh&aring;ller ett nytt f&auml;lt f&ouml;r varje statistiskt v&auml;rde som ber&auml;knas. Du kan l&auml;gga till valfri m&auml;ngd statistiska v&auml;rden genom att v&auml;lja ett attribut och statistik.
+            </p>
+        </div>
+    </div>
+    <div id="joinCondition">
+        <div><h2>Skapa ett uttryck att förena geoobjekt med (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Till&auml;mpar ett villkor f&ouml;r angivna f&auml;lt. Det &auml;r endast geoobjekt med f&auml;lt som uppfyller dessa villkor som f&ouml;renas.
+            </p>
+            <p>Om du till exempel vill anv&auml;nda en f&ouml;rening p&aring; ett dataset f&ouml;r endast de geoobjekt d&auml;r  <i>health_spending</i> &auml;r st&ouml;rre &auml;n 20 procent av <i>income</i>, anv&auml;nder du f&ouml;reningsvillkoret <code>$target[&quot;health_spending&quot;] &gt; ($join[&quot;income&quot;] * .20)</code> med f&auml;ltet <i>health_spending</i> fr&aring;n det f&ouml;rsta datasetet (som datasetgeoobjekten f&ouml;renas med) och f&auml;ltet <i>income</i> fr&aring;n det andra datasetet (det dataset som f&ouml;renas).
+            </p>
+            <p>F&ouml;reningsvillkoren kan till&auml;mpas med uttryckskalkylatorn.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Välj datalager</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-resultat sparas i ett datalager och visas som ett geoobjektlager i  Portal for ArcGIS. I de flesta fall ska resultat sparas i det rumstemporala datalagret och det &auml;r standardinst&auml;llningen. I vissa fall &auml;r det ett bra alternativ att spara resultat i det relationella datalagret. F&ouml;ljande &auml;r anledningar till varf&ouml;r du kanske vill spara resultat i det relationella datalagret: 
+                <ul>
+                    <li>Du kan anv&auml;nda resultaten i portal-till-portal-samarbeten.
+                    </li>
+                    <li>Du kan aktivera synkroniseringsfunktioner med dina resultat.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du b&ouml;r inte anv&auml;nda det relationella datalagret om du f&ouml;rv&auml;ntar dig att dina GeoAnalytics-resultat kommer att &ouml;ka och du beh&ouml;ver anv&auml;nda det rumstemporala big data-lagrets funktioner till att hantera stora m&auml;ngder data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p> Namnet p&aring; lagret som ska skapas.  Om du skriver till en ArcGIS Data Store, sparas dina resultat i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om du skriver till en big data-fildelning, lagras dina resultat i big data-fildelningen och l&auml;ggs till i dess manifest. Det l&auml;ggs inte till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns misslyckas verktyget.
+            </p>
+            <p>N&auml;r du skriver till   ArcGIS Data Store (relationellt eller rumstempor&auml;rt Big Data-datalager) med listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

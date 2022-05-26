@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Monitoruj roślinność</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Narzędzie portalu Monitoruj roślinność"></h2>
+        <hr/>
+    <p>To narzędzie wykonuje operacje arytmetyczne na pasmach wielopasmowych warstw rastrowych w celu pozyskania informacji o szacie roślinnej na danym obszarze.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz dane wejściowe</h2></div>
+        <hr/>
+        <div>
+            <p>Wybierz wielopasmową warstwę rastrową. Upewnij się, że na wejściowej warstwie rastrowej są dostępne odpowiednie pasma.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Wybierz metodę monitorowania roślinności</h2></div>
+        <hr/>
+        <div>
+            <p>Pozwala wybrać metodę używaną do tworzenia warstwy wskaźnika roślinności. Poszczeg&oacute;lne wskaźniki roślinności ułatwiają wyr&oacute;żnianie określonych obiekt&oacute;w lub redukowanie r&oacute;żnych szum&oacute;w informacyjnych.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI jest nieliniowym indeksem roślinności służącym do globalnego monitorowania środowiska przy użyciu zobrazowań satelitarnych. Jest on podobny do indeksu NDVI, jednak jest mniej wrażliwy na zjawiska atmosferyczne. Na indeks ten wpływają puste obszary, zatem nie zaleca się używania go w obszarach o niskim lub umiarkowanym zagęszczeniu roślinności.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+Indeks GVI został początkowo zaprojektowany na podstawie zobrazowania Landsat MSS, ale został zmodyfikowany w taki spos&oacute;b, że można go używać ze zobrazowaniem Landsat TM. Jest on także znany pod nazwą Landsat TM Tasseled Cap green vegetation index (indeks roślinności zielonej Landsat TM Tasseled Cap). Ten indeks monitorowania może być także używany ze zobrazowaniem, kt&oacute;rego pasma mają takie same charakterystyki spektralne.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 jest indeksem roślinności, w przypadku kt&oacute;rego podjęto pr&oacute;bę zminimalizowania wpływu pustych obszar&oacute;w na metodę SAVI.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI jest standardowym indeksem umożliwiającym generowanie obraz&oacute;w zawierających obszary zielone (względną biomasę). Ten indeks wykorzystuje kontrast między charakterystykami dw&oacute;ch pasm z wielospektralnego zestawu danych rastrowych: absorpcji chlorofilu w paśmie czerwieni i wysokiego wsp&oacute;łczynnik odbicia roślinności w paśmie bliskiej podczerwieni (NIR).
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+Indeks PVI jest podobny do indeksu DVI, jednak jest wrażliwy na zmiany warunk&oacute;w atmosferycznych. Ta metoda powinna być używana tylko do por&oacute;wnywania obraz&oacute;w, w przypadku kt&oacute;rych wyeliminowano wpływ warunk&oacute;w atmosferycznych. Te informacje mogą zostać dostarczone przez dostawcę danych.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI jest indeksem roślinności, w przypadku kt&oacute;rego podjęto pr&oacute;bę zminimalizowania wpływu jasności obrazu gleb przy użyciu wsp&oacute;łczynnika korygującego jasność obrazu gleb. Jest on często używany na jałowych obszarach o niskim zagęszczeniu szaty roślinnej.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Proces Formuła Sułtana wykorzystuje 8-bitowy obraz zawierający sześć pasm i stosuje względem niego odpowiedni algorytm w celu utworzenia 8-bitowego obrazu zawierającego trzy pasma. Wynikowy obraz pozwala wyr&oacute;żnić spotykane na wybrzeżach formacje skalne nazywane ofiolitami. Ten wz&oacute;r został zaprojektowany na podstawie pasm TM i ETM sceny Landsat 5 lub 7.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+Przekształcony indeks SAVI (Transformed-SAVI) jest indeksem roślinności, w przypadku kt&oacute;rego podjęto pr&oacute;bę zminimalizowania wpływu jasności obrazu gleb, przyjmując, że linia gleb ma arbitralny spadek i przecięcie.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Określ indeksy pasma NIR i pasma Red</h2></div>
+        <hr/>
+        <div>
+            <p>Określa indeksy pasm dla pasma bliskiej podczerwieni (NIR) i pasma czerwieni (Red).
+            </p>
+            <p>Wszystkie czujniki satelitarne i kamery lotnicze przechwytują informacje podzielone na indeksy pasm. Każdy indeks pasma zawiera informacje dotyczące określonej części spektrum promieniowania elektromagnetycznego. Ta metoda monitorowania roślinności wymaga podania indeksu pasma przechwytującego fale o długości w zakresie bliskiej podczerwieni (NIR) i czerwieni (Red).
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Spadki linii gleb</h2></div>
+        <hr/>
+        <div>
+            <p>Spadek linii gleb. Spadek jest przybliżoną relacją liniową między pasmami bliskiej podczerwieni i czerwieni na diagramie punktowym.
+            </p>
+            <p>Ten parametr dotyczy tylko metody Przetransformowany wskaźnik roślinności dostosowany względem gleby (Transformed Soil-Adjusted Vegetation Index).
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Przecięcie</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to wartość w bliskiej podczerwieni (NIR), gdy wsp&oacute;łczynnik odbicia pasma czerwieni (Red) wynosi 0 dla określonych linii gleb.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , gdy Red ma wartość 0.
+            </p> 
+            <p>Ten parametr dotyczy tylko metody Przetransformowany wskaźnik roślinności dostosowany względem gleby (Transformed Soil-Adjusted Vegetation Index).
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Wielkość pokrycia roślinnością zieloną</h2></div>
+        <hr/>
+        <div>
+            <p>Określa stopień pokrycia roślinnością zieloną, ta wielkość jest wymagana w metodzie SAVI.
+            </p>
+            <p>Poniżej podano prawidłowe wartości: 
+
+                <ul>
+                    <li>1 = obszary bez szaty roślinnej
+                        
+ 
+                    </li>
+                    <li>0,5 = obszary o umiarkowanym zagęszczeniu szaty roślinnej
+                        
+ 
+                    </li>
+                    <li>0 = obszary o wysokim zagęszczeniu szaty roślinnej
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Współczynnik dostosowania</h2></div>
+        <hr/>
+        <div>
+            <p>Określa wsp&oacute;łczynnik korygujący pozwalający zminimalizować efekt gleb, kt&oacute;ra to wielkość jest wymagana w metodzie Przetransformowany wskaźnik roślinności dostosowany względem gleby (Transformed Soil-Adjusted Vegetation Index). Wartość domyślna wynosi 0,08.
+            </p>
+            <p>Niska wartość oznacza, że efekt gleb jest ignorowany. Wysoka wartość oznacza, że gleby będą miały wpływ na wynik.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Nazwa warstwy, kt&oacute;ra zostanie utworzona w obszarze  <b>Moje zasoby</b> i dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, wyświetlony zostanie komunikat z monitem o podanie innej nazwy.
+            </p>
+            <p>Za pomocą listy rozwijanej  <b>Zapisz wynik w</b> można podać nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

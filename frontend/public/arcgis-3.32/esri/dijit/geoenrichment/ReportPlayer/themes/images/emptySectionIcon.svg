@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<svg
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   viewBox="0 0 200 110"
+   height="110"
+   width="200">
+  <defs>
+    <style>
+      .cls-7{fill:#e7e7e7}.cls-2,.cls-4,.cls-5,.cls-7,.cls-8{stroke:#949494}.cls-2{stroke-linejoin:round;fill:#d6d6d6}.cls-4{fill:#fff}.cls-4,.cls-5,.cls-7,.cls-8{stroke-miterlimit:10}.cls-5{fill:#f4f4f4}.cls-8{fill:none}
+    </style>
+  </defs>
+  <circle
+     id="circle6"
+     transform="rotate(-10.72 38.4262 54.5704)"
+     stroke-linejoin="round"
+     stroke="#949494"
+     fill="#e7e7e7"
+     r="29.31"
+     cy="54.56"
+     cx="38.42" />
+  <path
+     id="path8"
+     class="cls-2"
+     d="M60 74a29.36 29.36 0 0 0-27.59-48.14l5.45 28.8z" />
+  <path
+     id="path10"
+     d="M53.66 30a27.2 27.2 0 0 0-21.25-4.14l5.45 28.8z"
+     stroke-linejoin="round"
+     stroke="#949494"
+     fill="#fff" />
+  <path
+     id="path12"
+     class="cls-2"
+     d="M129.3705 34.2408l57.9362-8.2455 7.6115 53.481-57.9362 8.2456z" />
+  <path
+     id="path14"
+     class="cls-4"
+     d="M130.3197 40.928l57.9361-8.2456 6.659 46.7885-57.9361 8.2455z" />
+  <path
+     id="path16"
+     class="cls-5"
+     d="M131.85 47.6l57.95-8.16m-57.01 14.84l57.95-8.16m-57.01 14.85l57.95-8.16m-57.01 14.84l57.95-8.15m-57 14.84l57.94-8.16m-57 14.85l57.94-8.16m-45.13-33.99l6.44 45.69m13.62-48.52l6.43 45.69" />
+  <path
+     id="path18"
+     d="M128.84 33.88l7.68 54.47.2-.02 5.09-56.28-12.97 1.83zM59.66 75.47A30.14 30.14 0 0 0 63 71.35a29.79 29.79 0 0 0 0-33.55z"
+     fill="#f9f9fa" />
+  <path
+     id="path20"
+     class="cls-4"
+     d="M69.1658 14.649l69.6267 6.2876-6.3783 70.6326-69.6267-6.2876z" />
+  <path
+     id="path22"
+     class="cls-4"
+     d="M134.3993 24.6094l-4.5562 50.4547-61.5495-5.5581 4.5562-50.4547z" />
+  <path
+     id="path24"
+     class="cls-7"
+     d="M69.34 58.08l61.52 5.98-1 10.76-61.58-5.32 1.06-11.42z" />
+  <path
+     id="path26"
+     class="cls-7"
+     d="M87.18 24.46c-1.92-.19-3 .53-3.14 1.88l-3.43 35.34 39.29 3.82 3.44-35.33a2.24 2.24 0 0 0-1.82-2.37z" />
+  <path
+     id="path28"
+     class="cls-4"
+     d="M123.22 31.37l-.07.74 3.93 9.71-48.86-4.76L84 27.77l.04-.49" />
+  <path
+     id="path30"
+     class="cls-8"
+     d="M94.4 38.52l2.51-9.41.14-1.4m14.72 12.5l-.65-9.72.14-1.4" />
+  <path
+     id="path32"
+     class="cls-8"
+     d="M82.45 27.6a1.6 1.6 0 0 1 1.75-1.42l22.8 2.21m1.73.17l4.54.44" />
+  <path
+     id="path34"
+     class="cls-5"
+     d="M89.5562 62.1654l2.1783-20.7258 11.3575 1.1937-2.1784 20.7258zm11.4056 1.0613l2.1784-20.7258 11.3575 1.1937-2.1784 20.7259z" />
+  <path
+     style="fill:#ffffff;stroke:#949494;stroke-miterlimit:10"
+     id="path36"
+     class="cls-4"
+     d="m 105.75854,46.31478 4.54532,0.473745 -0.71004,6.813016 -4.54528,-0.473749 z" />
+  <path
+     id="path38"
+     class="cls-8"
+     d="M124.66 31.7a1.6 1.6 0 0 0-1.44-1.7l-8.24-.8" />
+  <path
+     id="path40"
+     class="cls-5"
+     d="M68.81 63.49l61.52 5.99-.5 5.66-61.55-5.64.53-6.01z" />
+  <path
+     id="path42"
+     d="M68.58 65.88l61.52 5.98-.29 3.41-61.53-5.77.3-3.62z"
+     stroke-miterlimit="10"
+     stroke="#949494"
+     fill="#d6d6d6" />
+  <path
+     style="fill:#ffffff;stroke:#949494;stroke-miterlimit:10"
+     id="path36-6"
+     class="cls-4"
+     d="m 95.403449,45.109296 4.550032,0.426121 -0.63866,6.820078 -4.549992,-0.426125 z" />
+</svg>

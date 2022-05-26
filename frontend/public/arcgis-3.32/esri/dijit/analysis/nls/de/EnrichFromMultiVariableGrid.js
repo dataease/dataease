@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/de/EnrichFromMultiVariableGrid",{choosePointLyrLabel:"Anzureichernde Punkt-Features ausw\u00e4hlen",chooseMVgridLyrLabel:"Gitter mit mehreren Variablen ausw\u00e4hlen, \u00fcber das angereichert werden soll",chooseVariables:"Hinzuzuf\u00fcgende Variablen ausw\u00e4hlen",outputLayerName:"Angereicherte ${inputFeatures} aus ${gridLayer}",itemDescription:"Durch Ausf\u00fchrung der L\u00f6sung '\u00dcber Gitter mit mehreren Variablen anreichern' f\u00fcr ${inputFeatures} generierter Feature-Layer.",
+itemTags:"Analyseergebnis, \u00dcber Gitter mit mehreren Variablen anreichern, ${inputFeatures}, ${gridLayer}",itemSnippet:"\u00dcber '\u00dcber Gitter mit mehreren Variablen anreichern' generierter Feature-Layer."});

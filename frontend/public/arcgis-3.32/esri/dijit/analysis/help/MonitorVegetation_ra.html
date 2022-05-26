@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Monitor Vegetation</h2><p/>
+        <h2><img src="./images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Monitor Vegetation tool for Portal"></h2>
+        <hr/>
+    <p>This tool performs an arithmetic operation on the bands of a multiband raster layer to reveal vegetation coverage information of the study area.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Select the input data</h2></div>
+        <hr/>
+        <div>
+            <p>Choose the multiband raster layer. Make sure the input raster has the appropriate bands available.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Choose method to monitor vegetation</h2></div>
+        <hr/>
+        <div>
+            <p>Choose the method to create the vegetation index layer. The different vegetation indexes can help highlight certain features or reduce various noise.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI is a nonlinear vegetation index for global environmental monitoring from satellite imagery. It is similar to NDVI, but it is less sensitive to atmospheric effects. It is affected by bare soil; therefore, it is not recommended for use in areas of sparse or moderately dense vegetation.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+GVI was originally designed from Landsat MSS imagery but has been modified for use with Landsat TM imagery. It is also known as the Landsat TM Tasseled Cap green vegetation index. This monitoring index can also be used with imagery whose bands share the same spectral characteristics.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 is a vegetation index that tries to minimize bare soil influences of the SAVI method.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI is a standardized index allowing you to generate an image displaying greenness, or relative biomass. This index takes advantage of the contrast of the characteristics of two bands from a multispectral raster dataset: the chlorophyll pigment absorptions in the red band and the high reflectivity of plant materials in the near-infrared (NIR) band.
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI is similar to a difference vegetation index; however, it is sensitive to atmospheric variations. When using this method to compare different images, it should only be used on images that have been atmospherically corrected. This information can be provided by your data vendor.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI is a vegetation index that attempts to minimize soil brightness influences using a soil-brightness correction factor. This is often used in arid regions where vegetative cover is low.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+The Sultan's Formula process takes a six-band 8-bit image and applies a specific algorithm to it to produce a three-band 8-bit image. The resulting image highlights rock formations called ophiolites on coastlines. This formula was designed based on the TM and ETM bands of a Landsat 5 or 7 scene.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+Transformed-SAVI is a vegetation index that attempts to minimize soil brightness influences by assuming the soil line has an arbitrary slope and intercept.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Specify indexes of NIR band and Red band</h2></div>
+        <hr/>
+        <div>
+            <p>Specify the band indexes for the NIR and red bands.
+            </p>
+            <p>Each satellite sensor and aerial camera captures information that is broken up into band indexes. Each band index contains the information for a specific part of the electromagnetic spectrum. This vegetation monitoring method requires you to specify the band index that captured the NIR and red wavelengths.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Slope of soil line</h2></div>
+        <hr/>
+        <div>
+            <p>The slope of the soil line. The slope is the approximate linear relationship between the NIR and red bands on a scatterplot.
+            </p>
+            <p>This parameter is only valid for the Transformed Soil-Adjusted Vegetation Index method.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Intercept</h2></div>
+        <hr/>
+        <div>
+            <p>The value of the NIR when the reflection value of the red (Red) band is 0 for the particular soil lines.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , when Red is 0.
+            </p> 
+            <p>This parameter is only valid for the Transformed Soil-Adjusted Vegetation Index method.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Amount of green vegetation cover</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the amount of green vegetation cover, which is required by the SAVI method.
+            </p>
+            <p>Valid values are as follows: 
+
+                <ul>
+                    <li>1 = Areas with no green vegetation cover
+                        
+ 
+                    </li>
+                    <li>0.5 = Areas with moderate green vegetation cover
+                        
+ 
+                    </li>
+                    <li>0 = Areas with high green vegetation cover
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Adjustment factor</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the adjustment factor to help minimize soil effect, which is required by the Transformed Soil-Adjusted Vegetation Index method. The default value is 0.08.
+            </p>
+            <p>A low value means that you are ignoring the soil effect. A high value means that the soil will affect your result.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map. The default name is based on the tool name and the input layer name. If the layer already exists, you will be prompted to provide another name.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

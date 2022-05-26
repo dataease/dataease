@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>聚合点</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="聚合点"></h2>
+        <hr/>
+    <p>该工具适用于点要素图层以及面要素图层。首先确定每个区域内的点。确定点与区域的空间关系后，会计算出区域内所有点的统计数据并将统计数据指定给该区域。最基本的统计数据是区域内点的计数，但是也可以获取其他统计数据。
+    </p>
+    <p>例如，假设以咖啡店位置作为点要素，以县作为面要素，并且希望按县汇总咖啡销售额。假定咖啡店具有  <i>TOTAL_SALES</i> 属性，则您可以获得每个县内所有 <i>TOTAL_SALES</i> 的总和，或者每个县内 <i>TOTAL_SALES</i> 的最小值或最大值，或每个县内所有销售额的标准差。
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则仅分析当前地图范围中可见的输入点图层以及区域图层中的要素。如果未选中，则会对输入点图层和区域图层内的所有要素进行分析，包括超出当前地图范围的要素。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>选择包含将聚合到区域中的点的图层</h2></div>
+        <hr/>
+        <div>
+            <p>将聚合到区域中的点图层。
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>选择包含聚合面的图层</h2></div>
+        <hr/>
+        <div>
+            <p>将聚合点的面图层。位于该图层的区域边界内的所有点都将计算在内，还可以使用所选的统计方法进行汇总。
+            </p>
+            <p>可以在您提供的区域图层或工具运行时生成的图格之间进行选择。生成 <b>正方形</b>图格时，由指定的数字和单位决定正方形的高度和长度。生成 <b>六边形</b>图格时，由指定的数字和单位决定平行边之间的距离。
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>保留未含点要素的区域</h2></div>
+        <hr/>
+        <div>
+            <p>确定未含点的区域是否显示在结果图层中。如果未选中，则未含点的区域将不会出现在结果图层中。如果选中，则未含点的区域将会出现在结果图层中。
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>添加统计数据</h2></div>
+        <hr/>
+        <div>
+            <p>可以根据输入点图层的属性计算各种统计数据，如总和、平均值、最小值、最大值以及标准差。结果图层在每个计算出的统计数据中加入一个新属性。通过选择一个属性和统计数据（将显示一个新的下拉框）可添加任意数量的统计数据。
+ 
+            </p>
+            <p>如果要汇总的图层没有任何数字字段，则附加统计数据将不可用。
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>选择作为分组依据的字段</h2></div>
+        <hr/>
+        <div>
+            <p> 可以使用输入点图层中的属性来创建统计组。例如，如果要将犯罪事件聚合至邻近地区边界，可能会有一个含有五种不同犯罪类型的属性 <i>Crime_type</i>。各种唯一的犯罪类型构成一组，并将针对 <i>Crime_type</i> 的每个唯一值计算您选择的统计数据。每个组的统计数据以及点计数将显示在结果图层的弹出窗口中。选择分组属性后，将创建两个分析结果：结果图层，以及包含每个唯一组的统计数据的结果表。
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>添加少数、多数</h2></div>
+        <hr/>
+        <div>
+            <p>选择作为分组依据的字段时，将启用此复选框。如果想要了解每条边界内每个组中哪些属性值为少数（所占比例最小）、哪些属性值为多数（所占比例最大），请选择 <b>添加少数、多数</b>。选择 <b>添加少数、多数</b>后，两个新字段将添加到结果图层。如果同时选择 <b>添加百分比</b>，则会有两个额外字段添加到结果图层，其中包含每组内少数属性值和多数属性值所占的百分比。
+            </p>
+            <p>例如，如果您是一位城市规划者并且想要了解所有城市公园中哪些树种占少数、哪些树种占多数，可使用公园区域对树数据进行聚合并选中此选项。
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>添加百分比</h2></div>
+        <hr/>
+        <div>
+            <p>选择作为分组依据的字段时，将启用此复选框。如果想要了解每组内每个属性值所占的百分比，可选择 <b>添加百分比</b>。向结果表添加一个新字段，其中包含每组内每个属性值所占的百分比。如果也选中了 <b>添加少数、多数</b>，则会有两个额外字段添加到结果图层，其中包含每组内少数属性值和多数属性值所占的百分比。
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该图层名称已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉菜单，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calcolo Densità</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="Strumento Calcolo densit&agrave;"></h2>
+        <hr/>
+    <p>Questo strumento consente di creare una mappa di densit&agrave; a partire da feature puntuali o lineari diffondendo nella mappa quantit&agrave; note di alcuni fenomeni (rappresentati come attributi di punti o linee). Il risultato &egrave; un layer di aree classificate a partire da quella meno densa a quella pi&ugrave; densa.
+    </p>
+    <p>Per l'input di punti, ogni punto deve rappresentare la localit&agrave; di un evento o di un incidente, mentre il layer dei risultati rappresenta il conteggio degli incidenti per area unitaria. Un valore di densit&agrave; maggiore in una nuova localit&agrave; indica che sono presenti pi&ugrave; punti in prossimit&agrave; di tale localit&agrave;. In molti casi il layer dei risultati pu&ograve; essere interpretato come una superficie di rischio per eventi futuri. Se ad esempio i punti di input rappresentano le posizioni in cui si sono verificati fulmini, il layer dei risultati pu&ograve; essere interpretato come una superficie a rischio fulmini in futuro.
+    </p>
+    <p>Per l'input lineare la superficie di densit&agrave; lineare rappresenta il numero totale di linee in prossimit&agrave; di ciascuna localit&agrave;. Le unit&agrave; dei valori di densit&agrave; calcolati costituiscono la lunghezza della linea per area unitaria. Se ad esempio le linee rappresentano fiumi, il layer dei risultati rappresenter&agrave; la lunghezza totale dei fiumi compresi nel raggio di ricerca. &Egrave; quindi possibile utilizzare questo risultato per identificare le aree idonee ad ospitare animali da pascolo.
+    </p>
+    <p>&Egrave; inoltre possibile utilizzare questo strumento nei seguenti casi:
+
+        <ul>
+            <li>Per creare mappe della densit&agrave; dei reati e consentire alle stazioni di polizia di allocare correttamente le risorse per le aree ad elevato rischio di criminalit&agrave;
+                
+ 
+            </li>
+            <li>Per calcolare le densit&agrave; relative agli ospedali presenti in una determinata area. Nel layer dei risultati verranno indicate le aree con maggiore o minore accessibilit&agrave; agli ospedali e tali informazioni saranno utili per stabilire dove costruire nuove strutture.
+                
+ 
+            </li>
+            <li>Per identificare aree ad alto rischio di incendio sulla base dei luoghi in cui nel tempo si sono verificati incendi di aree boschive.
+                
+ 
+            </li>
+            <li>Per individuare le comunit&agrave; pi&ugrave; lontane dalle principali autostrade e pianificare le aree in cui costruire nuove strade.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>Scegli il layer di punti o di linea di input in base al quale calcolare la densità</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer di punti di input o di linea che verr&agrave; utilizzato per calcolare il layer di densit&agrave;.
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>Usa un campo conteggio</h2></div>
+        <hr/>
+        <div>
+            <p>Consente di visualizzare un campo in cui specificare il numero di incidenti in ogni localit&agrave;. Se ad esempio sono presenti punti che rappresentano citt&agrave;, &egrave; possibile utilizzare un campo per rappresentare la popolazione della citt&agrave; come campo conteggio, in modo che nel layer della densit&agrave; di popolazione risultante vengano calcolate le densit&agrave; di popolazione maggiori in prossimit&agrave; di citt&agrave; con popolazioni pi&ugrave; numerose.
+            </p>
+            <p>Se si utilizza il valore predefinito  <b>Nessuno</b>, ogni localit&agrave; verr&agrave; considerata singolarmente.
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Distanza di ricerca</h2></div>
+        <hr/>
+        <div>
+            <p>Immettere un valore che specifica la distanza di ricerca di feature puntuali o lineari durante il calcolo di valori di densit&agrave;. Se ad esempio si specifica una distanza di ricerca pari a 10.000 metri, la densit&agrave; di qualsiasi localit&agrave; nel layer di output verr&agrave; calcolata sulla base delle feature che si trovano a una distanza massima di 10.000 metri dalla localit&agrave;. Il valore di densit&agrave; di qualsiasi localit&agrave; per la quale non sono presenti incidenti a una distanza massima di 10.000 metri sar&agrave; zero.
+            </p>
+            <p>Se non viene specificata nessuna distanza, verr&agrave; calcolato un valore predefinito basato sulle localit&agrave; delle feature di input e dei valori nel campo conteggio, se fornito.
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>Unità area di output</h2></div>
+        <hr/>
+        <div>
+            <p>Consente di specificare l'unit&agrave; dell'area di output. La densit&agrave; &egrave; data dalla divisione del conteggio per l'area; questo parametro consente di specificare l'unit&agrave; dell'area nel calcolo della densit&agrave;.
+            </p>
+            <p>Le unit&agrave; areali disponibili sono miglia quadrate, piedi quadrati, metri quadrati e chilometri quadrati.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Dimensione cella di output</h2></div>
+        <hr/>
+        <div>
+            <p>La dimensione della cella e l'unit&agrave; per i raster di output.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome.
+            </p>
+            <p>&Egrave; possibile specificare il nome di una cartella in  <b>I miei contenuti</b> in cui salvare il risultato usando la casella a discesa <b>Salva risultato in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

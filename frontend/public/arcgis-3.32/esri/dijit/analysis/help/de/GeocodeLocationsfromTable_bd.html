@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Positionen aus Tabelle geokodieren</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Positionen aus Tabelle geokodieren"></h2>
+        <hr/>
+    <p>Geokodierung konvertiert Adressen in Koordinaten. Dieses Werkzeug konvertiert Adressen aus einer Big-Data-Dateifreigabe-Tabelle in einen Feature-Layer mit den Koordinaten als gesonderte Spalten.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Eingabetabelle auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Eingabetabelle mit den Adressen, die geokodiert werden sollen. 
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Locator auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>W&auml;hlen Sie einen Locator-Service f&uuml;r die Geokodierung aus. Wenn der Locator-Service, den Sie verwenden m&ouml;chten, nicht im Dropdown-Men&uuml; aufgef&uuml;hrt ist, wenden Sie sich an Ihren Administrator, um den Locator-Service f&uuml;r Batch-Geokodierung konfigurieren zu lassen.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Land</h2></div>
+        <hr/>
+        <div>
+            <p>Wenn alle Adressen aus einem Land stammen, w&auml;hlen Sie dieses Land aus, um genaueste Ergebnisse sicherzustellen. Andernfalls lassen Sie diesen Parameter leer.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Datenfelder auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Locator-Service erwartet bestimmte Felder in den Daten, z.&nbsp;B. Adresse, Stadt, Bundesland und Postleitzahl. Gleichen Sie die Datenfelder in der Eingabedatei oder -tabelle mit den vom Locator erwarteten Feldern &uuml;ber die entsprechenden Dropdown-Felder ab. Je mehr Felder Sie zuordnen, desto genauer sind die Ergebnisse. Wenn alle Daten der Eingabetabelle in einer Spalte enthalten sind, w&auml;hlen Sie  <b>Einzelnes Feld</b> und dann ein Datenfeld aus der Dropdown-Liste aus. Andernfalls w&auml;hlen Sie <b>Mehrere Felder</b> aus und ordnen die entsprechenden Locator-Felder den Spalten mit mehreren Feldern in Ihrer Tabelle zu.
+            </p>
+        </div>
+    </div>
+    <div id="includeAttributes">
+        <div><h2>Für jede Position</h2></div>
+        <hr/>
+        <div>
+            <p>Zus&auml;tzliche Felder, die durch den Locator-Service zur&uuml;ckgegeben wurden, einbeziehen. Wenn diese Option aktiviert ist, werden alle Felder, die durch den Locator-Service erstellt wurden, zur&uuml;ckgegeben. Wenn diese Option deaktiviert ist, werden Ihre Eingabedaten mit den geokodierten Koordinaten zur&uuml;ckgegeben. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ausgabeergebnisses</h2></div>
+        <hr/>
+        <div>
+            <p> Der Name des Layers, der erstellt wird.  Wenn Sie in einen ArcGIS Data Store schreiben, werden Ihre Ergebnisse in  <b>Eigene Inhalte</b> gespeichert und der Karte hinzugef&uuml;gt. Wenn Sie in eine Big-Data-Dateifreigabe schreiben, werden Ihre Ergebnisse in der Big-Data-Dateifreigabe gespeichert und  ihrem Manifest hinzugef&uuml;gt. Sie werden nicht der Karte hinzugef&uuml;gt. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, kann das Werkzeug nicht ausgef&uuml;hrt werden.
+            </p>
+            <p>Wenn Sie &uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> in ArcGIS Data Store (Big Data Store vom Typ &quot;relational&quot; oder &quot;spatiotemporal&quot;) schreiben, k&ouml;nnen Sie den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

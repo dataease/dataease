@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Znajdź elementy odstające</h2><p/>
+        <h2><img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" alt="Znajdź elementy odstające"></h2>
+        <hr/>
+    <p>Za pomocą narzędzia Znajdź elementy odstające można sprawdzić, czy zależności przestrzenne występujące w danych zawierają statystycznie istotne elementy odstające. 
+        <ul>
+            <li>Czy w danych (dotyczących przestępstw, drzew, wypadk&oacute;w drogowych) występują nietypowe obszary zależności? Masz absolutną pewność?
+            </li>
+            <li>Czy naprawdę udało się ustalić, jakie są statystycznie istotne elementy odstające (wydatki, umieralność noworodk&oacute;w, systematycznie wysokie wyniki test&oacute;w) czy może Twoja mapa przedstawiałaby zupełnie inne zależności, gdyby zmienione zostały używane symbole?
+            </li>
+        </ul>
+        Narzędzie Znajdź elementy odstające pomoże Tobie w&nbsp;uzyskaniu rzetelnej odpowiedzi na te pytania.
+    </p>
+    <p>Gdy patrzymy na mapę, nasze oczy i m&oacute;zg natychmiast zaczynają wyszukiwać zależności, nawet jeśli takie nie istnieją. W&nbsp;konsekwencji trudno jest ocenić, czy zależności pojawiające się w&nbsp;Twoich danych są wynikiem rzeczywistych proces&oacute;w przestrzennych czy może losowym przypadkiem. Właśnie dlatego badacze oraz analitycy korzystają z&nbsp;metod statystycznych, takich jak Znajdź elementy odstające (Anselin Local Moran's I) w&nbsp;celu ilościowego określania zależności przestrzennych. Odnalezienie statystycznie istotnych element&oacute;w odstających lub klastr&oacute;w w&nbsp;danych pozwala uzyskać wartościowe informacje. Dzięki wiedzy o tym, gdzie i&nbsp;kiedy pojawiają się elementy odstające, można lepiej poznać procesy sprzyjające powstawaniu widocznych zależności. Następnie należałoby zbadać, dlaczego obszary odstające wyraźnie się r&oacute;żnią.  W przypadku zadań polegających na przykład na opracowaniu skutecznych strategii zapobiegania, rozlokowaniu ograniczonych sił policyjnych, wdrożeniu sąsiedzkich program&oacute;w przeciwdziałania przestępczości, podjęciu decyzji o&nbsp;rozpoczęciu dogłębnego śledztwa kryminalnego czy identyfikacji potencjalnych podejrzanych informacja o&nbsp;tym, że w&nbsp;określonych dzielnicach znacznie częściej dochodzi do kradzieży z&nbsp;włamaniem, mimo że są one otoczone dzielnicami o niskim wskaźniku tego typu przestępstw, nabiera kluczowego znaczenia.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Wybierz warstwę, dla której mają zostać obliczone elementy odstające</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa punktowa lub powierzchniowa, w kt&oacute;rej mają zostać znalezione elementy odstające. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Znajdź elementy odstające dla</h2></div>
+        <hr/>
+        <div>
+            <p>Ta analiza odpowiada na pytanie: gdzie w moich danych znajdują się elementy odstające?  
+            </p>
+            <p>Jeśli dane są przedstawione w postaci punkt&oacute;w i wybrane jest narzędzie  <b>Liczba punkt&oacute;w</b>, narzędzie wykona ocenę przestrzennego rozmieszczenia obiekt&oacute;w punktowych w&nbsp;celu uzyskania odpowiedzi na pytanie: Gdzie punkty te uległy nagłemu zagęszczeniu lub rozproszeniu?
+            </p>
+            <p>Jeśli zostanie wybrane pole, to narzędzie wykona ocenę przestrzennego rozmieszczenia wartości powiązanych z każdym obiektem w&nbsp;celu uzyskania odpowiedzi na pytania: gdzie znajdują się niskie wartości otoczone wysokimi wartościami? Gdzie znajdują się wysokie wartości otoczone niskimi wartościami?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Liczba punktów w</h2></div>
+        <hr/>
+        <div>
+            <p>Domyślnie punkty są zliczane w obrębie siatki utworzonej za pomocą narzędzia w oparciu o dane punktowe. Można r&oacute;wnież wybrać opcję zliczania punkt&oacute;w na siatce sześciokątnej lub wskazać warstwę powierzchniową (zwykle reprezentującą obszar administracyjny, dla kt&oacute;rego tworzone są raporty, taki jak obw&oacute;d spisowy, granice miejskie czy powiat), aby uzyskać odpowiedź na pytanie: czy, w oparciu o liczbę punkt&oacute;w w każdym obiekcie powierzchniowym, istnieją lokalizacje, w&nbsp;kt&oacute;rych liczba punkt&oacute;w jest istotnie wyższa lub niższa niż w lokalizacjach sąsiadujących?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Wskaż prawdopodobne miejsca punktów</h2></div>
+        <hr/>
+        <div>
+            <p>Wyświetl lub wskaż warstwę definiującą możliwość wystąpienia zdarzeń, aby uzyskać odpowiedź na pytanie: czy w&nbsp;granicach obszar&oacute;w istnieją lokalizacje o&nbsp;nieoczekiwanie wysokich lub niskich koncentracjach punkt&oacute;w?   
+            </p>
+            <p>Utworzone obiekty powierzchniowe lub obiekty w&nbsp;podanej warstwie obszar&oacute;w powinny definiować potencjalne lokalizacje punkt&oacute;w. Aby wyświetlić te obszary, kliknij przycisk  <b>Wyświetl</b>, a&nbsp;następnie kliknij mapę w&nbsp;dowolnym miejscu i&nbsp;utw&oacute;rz kształt obszaru. Aby wyświetlić dodatkowe obszary, kliknij ponownie przycisk wyświetlania, a&nbsp;następnie kliknij mapę w&nbsp;dowolnym miejscu, aby&nbsp;kontynuować.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Dzielone przez</h2></div>
+        <hr/>
+        <div>
+            <p>Niekiedy wymagane jest przeanalizowanie wzor&oacute;w uwzględniających rozkłady podkładowe. Na przykład, jeżeli punkty reprezentują przestępstwa, to podzielenie ich liczby przez liczbę ludności pozwoli na opracowanie analizy wskaźnika przestępczości przypadającej na mieszkańca, a nie tylko przedstawienie samej liczby przestępstw. Wyb&oacute;r atrybutu do dzielenia jest często nazywany procesem normalizacji.
+            </p>
+            <p> Wybranie opcji <i>Populacja Esri</i> pozwoli na dodanie do każdego obiektu powierzchniowego wartości liczby ludności, kt&oacute;re następnie posłużą jako atrybut operacji dzielenia. Korzystanie z tej opcji powoduje zużywanie kredyt&oacute;w.
+            </p>
+        </div>
+    </div>
+    <div id="permutations">
+        <div><h2>Optymalizuj dla</h2></div>
+        <hr/>
+        <div>
+            <p>Można przeprowadzić optymalizację pod kątem szybkości lub dokładności.  
+            </p>
+            <p>Narzędzie to korzysta z permutacji, ustalając, w jaki spos&oacute;b zależności występujące w danych r&oacute;żnią się od zależności przypadkowych. Zwiększenie liczby permutacji powoduje zwiększenie dokładności, ale także wydłuża czas przetwarzania.  
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Opcje zastępowania</h2></div>
+        <hr/>
+        <div>
+            <p>Narzędzie automatycznie znajduje optymalne wartości domyślne opcji  <b>Wielkość kom&oacute;rki</b> i <b>Pasmo odległości</b> na podstawie cech Twoich danych. Jeśli jednak w przypadku wykonywanej analizy sensowne jest użycie określonych wartości opcji <b>Wielkość kom&oacute;rki</b> lub <b>Pasmo odległości</b>, można je skonfigurować przy użyciu opcji <b>Zastąp opcje</b>.
+            </p>
+            <p>Opcja  <b>Zastąp opcje</b> jest także przydatna podczas analizowania innych zestaw&oacute;w danych, ponieważ umożliwia użycie tych samych wartości opcji <b>Pasmo odległości</b> i <b>Wielkość kom&oacute;rki</b> w wielu zestawach danych.  Następnie można por&oacute;wnać wyniki (na przykład wskaźniki otyłości ze wskaźnikami występowania cukrzycy lub nawet wskaźniki przestępczości dla dw&oacute;ch r&oacute;żnych lat).
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Wielkość komórki</h2></div>
+        <hr/>
+        <div>
+            <p>Wielkość kom&oacute;rek siatki, w kt&oacute;rych będą zliczane punkty.  
+            </p>
+            <p>W przypadku zliczania punkt&oacute;w w siatce sześciokątnej ta wartość jest używana jako wysokość sześciokąt&oacute;w.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Pasmo odległości</h2></div>
+        <hr/>
+        <div>
+            <p>Każdy obiekt jest analizowany w kontekście obiekt&oacute;w sąsiadujących znajdujących się w obszarze o podanym promieniu. Narzędzie oblicza domyślną odległość automatycznie, ale używając tej opcji, można skonfigurować konkretną odległość, kt&oacute;ra ma sens w przypadku wykonywanej analizy. 
+            </p>
+            <p>Jeśli na przykład są badane zależności związane z dojazdami do pracy i wiadomo, że dojeżdżając do pracy pokonuje się średnio 15 mil, można użyć pasma odległości wynoszącego 15 mil.
+            </p>
+        </div>
+    </div>
+    <div id="outlierResultLayer">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Opcja umożliwiająca określenie nazwy warstwy, kt&oacute;ra zostanie utworzona w&nbsp;zakładce  <b>Moje zasoby</b> i&nbsp;dodana do mapy. Warstwa wynikowa będzie zawierać miejsca, w&nbsp;kt&oacute;rych znajdują się statystycznie istotne elementy odstające o&nbsp;wysokich lub niskich wartościach bądź z&nbsp;wysoką lub niską liczbą punkt&oacute;w. Jeśli nazwa warstwy wynikowej już istnieje, zostanie wyświetlony komunikat z&nbsp;prośbą o&nbsp;zmianę nazwy.
+            </p>
+            <p>Używając listy rozwijanej  <b>Zapisz wynik w</b>, można określić nazwę folderu w zakładce <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

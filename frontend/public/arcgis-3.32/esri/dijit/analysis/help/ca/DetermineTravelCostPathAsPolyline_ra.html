@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Determina la ruta de cost de viatge com a polilínia</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Il&middot;lustraci&oacute; de l'eina Determina la ruta de cost de viatge com a polil&iacute;nia"></h2>
+        <hr/>
+    <p>Aquesta eina calcula la ruta de polil&iacute;nia de menor cost entre els or&iacute;gens i les destinacions conegudes.
+    </p>
+    <p>Alguns exemples d'aplicacions s&oacute;n:
+        <ul>
+            <li>Trobeu la millor ruta per a una carretera nova en termes de costos de construcci&oacute;.
+                
+
+            </li>
+            <li>Identifiqueu el cam&iacute; per triar entre diverses ubicacions suburbanes (or&iacute;gens) al centre comercial m&eacute;s proper (destinaci&oacute;).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s s'analitzaran les ubicacions de les capes d'entrada que siguin visibles a l'extensi&oacute; de mapa actual. Si l'opci&oacute; est&agrave; desactivada, s'analitzaran totes les ubicacions d'ambdues capes d'entrada, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Trieu la capa d'origen de ràster o entitat per determinar les rutes d'origen</h2></div>
+        <hr/>
+        <div>
+            <p>Servei d'imatges o servei d'entitats que identifica les cel&middot;les des de les quals es determina la ruta de menor cost a la destinaci&oacute; menys costosa.
+            </p>
+            <p>Si l'entrada &eacute;s un servei d'imatges, estar&agrave; formada per les cel&middot;les que tinguin valors v&agrave;lids (zero &eacute;s un valor v&agrave;lid), i les cel&middot;les restants tindran assignat el valor NoData.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Trieu la capa ràster de cost de viatge</h2></div>
+        <hr/>
+        <div>
+            <p>R&agrave;ster que defineix la imped&agrave;ncia o el cost del moviment planim&egrave;tric a trav&eacute;s de cada cel&middot;la.
+            </p>
+            <p>El valor de cada ubicaci&oacute; de cel&middot;la representa la dist&agrave;ncia de cost per unitat per moure's a trav&eacute;s de la cel&middot;la. Cada valor d'ubicaci&oacute; de cel&middot;la es multiplica per la resoluci&oacute; de la cel&middot;la alhora que es compensa el moviment diagonal per obtenir el cost total de passar a trav&eacute;s de la cel&middot;la.
+            </p>
+            <p>Els valors del r&agrave;ster de costos poden ser enters o punts flotants, per&ograve; no poden ser negatius ni zero (no podeu tenir un cost negatiu ni de zero).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Entitats o ràster de destinació d'entrada</h2></div>
+        <hr/>
+        <div>
+            <p>Entrada que defineix les destinacions utilitzades per calcular la dist&agrave;ncia. La capa pot ser de r&agrave;ster o entitat.
+            </p>
+            <p>Si l'entrada &eacute;s un servei d'imatges, estar&agrave; formada per les cel&middot;les que tinguin valors v&agrave;lids (zero &eacute;s un valor v&agrave;lid), i les cel&middot;les restants tindran assignat el valor NoData.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Nom de la capa de polilínia de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Podeu especificar el nom d'una carpeta de  <b>El meu contingut</b> on es desar&agrave; el resultat mitjan&ccedil;ant el quadre desplegable <b>Desa el resultat a</b>.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Trieu el tipus de rutes que es determinaran</h2></div>
+        <hr/>
+        <div>
+            <p>Defineix de quina manera s'interpretaran els valors i les zones de les dades de destinaci&oacute; d'entrada als c&agrave;lculs de ruta de cost.
+            </p>
+            <ul>
+                <li>L'&uacute;nic millor: per a totes les cel&middot;les o ubicacions de les dades de destinaci&oacute; d'entrada, la ruta de menor cost es deriva de la ubicaci&oacute; amb al m&iacute;nim de rutes de menor cost a la ubicaci&oacute; d'origen. Aquesta &eacute;s l'opci&oacute; per defecte.
+                    
+
+                </li>
+                <li>Per a cada cel&middot;la: per a cada cel&middot;la o ubicaci&oacute; amb valors v&agrave;lids de les dades de destinaci&oacute; d'entrada, es determinar&agrave; una ruta de menor cost i es desar&agrave; al servei d'entitats de sortida. Amb aquesta opci&oacute;, cada cel&middot;la de les dades de destinaci&oacute; d'entrada es tractar&agrave; de manera individual i es determinar&agrave; una ruta de menor cost per a cada cel&middot;la d'origen.
+                    
+
+                </li>
+                <li>Per a cada zona: per a cada zona de les dades de destinaci&oacute; d'entrada, es determinar&agrave; una ruta de menor cost i es desar&agrave; al servei d'entitats de sortida. Amb aquesta opci&oacute;, la ruta de menor cost per a cada zona comen&ccedil;a a la cel&middot;la o la ubicaci&oacute; amb la ponderaci&oacute; de dist&agrave;ncia de menor cost a la zona.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

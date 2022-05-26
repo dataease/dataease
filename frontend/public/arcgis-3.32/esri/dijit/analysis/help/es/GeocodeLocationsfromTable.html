@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Geocodificar ubicaciones de tabla</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Geocodificar ubicaciones de tabla"></h2>
+        <hr/>
+    <p>La geocodificaci&oacute;n es una forma de convertir direcciones en coordenadas. Esta herramienta convierte direcciones de una tabla, un archivo CSV o un archivo de Excel en una capa de entidades o un archivo de salida con las coordenadas como columnas adicionales.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Elegir una tabla de entrada</h2></div>
+        <hr/>
+        <div>
+            <p>La tabla de entrada con las direcciones que se van a geocodificar. La entrada debe ser una tabla, un archivo CSV o un archivo de Excel.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Elegir un localizador</h2></div>
+        <hr/>
+        <div>
+            <p>Elija un servicio de localizador para geocodificar con respecto a &eacute;l. Si el servicio de localizador que desea usar no est&aacute; en el men&uacute; desplegable, contacte con su administrador para que el servicio de localizador se configure para la geocodificaci&oacute;n por lotes.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>País</h2></div>
+        <hr/>
+        <div>
+            <p>Si todas las direcciones son de un pa&iacute;s, seleccione ese pa&iacute;s para garantizar la mayor exactitud posible en los resultados. En caso contrario, deje este par&aacute;metro vac&iacute;o.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Seleccionar campos de datos</h2></div>
+        <hr/>
+        <div>
+            <p>El servicio de localizador espera ciertos campos en los datos, como direcci&oacute;n, ciudad, estado y c&oacute;digo postal. Asigne los campos de datos del archivo o la tabla de entrada a los campos que espera el localizador usando los cuadros desplegables. Cuantos m&aacute;s campos se asignen, m&aacute;s exactos ser&aacute;n los resultados. Si la tabla de entrada tiene todos los datos en una columna, seleccione  <b>Campo simple</b> y elija un campo de datos en el men&uacute; desplegable. De lo contrario, seleccione <b>Varios campos</b> y asigne los campos de localizador correspondientes a las distintas columnas de campos de la tabla.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Elegir un formato de salida</h2></div>
+        <hr/>
+        <div>
+            <p>Formato de los resultados de salida. Si opta por crear un servicio de entidades, las direcciones de la tabla de entrada se agregar&aacute;n al mapa como una capa de entidades de puntos. Las opciones CSV y XLS agregan archivos con los resultados del trabajo de geocodificaci&oacute;n a  <b>Mi contenido</b> cuando el trabajo se ha completado.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre del resultado de salida</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa.  El nombre predeterminado se basa en el nombre de la herramienta y el nombre de la capa de entrada. Si el nombre de capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Con el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

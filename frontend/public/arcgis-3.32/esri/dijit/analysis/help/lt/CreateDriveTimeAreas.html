@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Sukurti važiavimo laikų plotus</h2><p/>
+        <h2><img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" alt="Sukurti važiavimo laikų plotus"></h2>
+        <hr/>
+    <p>Važiavimo laikų plotų kūrimo įrankis suformuoja zonas, kurios gali būti pasiekiamos per nustatytą laiką, nustatytu važiavimo, ėjimo atstumu ir pan. Atstumas matuojamas nuo vieno ar daugiau (iki 1 000) ta&scaron;kų pagal kelius arba pėsčiųjų takus,kad būtų sukuriamas sluoksnis, leidžiantis atsakyti į klausimus:
+        <ul>
+            <li>Kur galiu atsidurti per 30 min?
+            </li>
+            <li>Kur galiu atsidurti per 30 min, i&scaron;važiavęs 5:30 val. popiet, piko metu?
+            </li>
+            <li>Kas yra dviejų kilometrų atstumu nuo mano vie&scaron;bučio?
+            </li>
+            <li>Kokią miesto dalį gali pasiekti gaisrininkai per penkias minutes? 
+            </li>
+            <li>Kaip pagerės prie&scaron;gaisrinė apsauga pastačius naują gaisrinę?
+            </li>
+            <li>Kiek parduotuvė aptarnauja žmonių?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Atsakymas į klausimus pateikiamas grafi&scaron;kai žemėlapyje. Taip pat, naudojant suformuotas zonas, galima atlikti tolesnę analizę. Pavyzdžiui, įrankiu Agreguoti ta&scaron;kus, naudodami važiavimo laikų plotus ir demografinius duomenis, galite nuspręsti, kur tinkamiausia teritorija vystyti verslą. 
+    </p>
+    <p>
+        <table>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        <tr><td valign="baseline"><img src="../images/tip.png"></td><td valign="baseline"><h2>Tip:&ensp;</h2></td>
+        <td valign="baseline">
+            <p>Norėdami sukurti zonas pagal tiesų atstumą, o ne kelių tinklą, naudokite įrankį Kurti buferius.
+            </p>
+        </td></tr>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        </table>
+    </p>
+    <p>Jei  <b>Naudoti esamą žemėlapio aprėptį</b> pažymėtas, važiavimo laiko arba važiavimo atstumo pagrindu apskaičiuojami plotai bus sudaromi naudojant tik į žemėlapio aprėptį pakliūnančius elementus. Jei nepažymėtas, bus panaudoti visi sluoksnio elementai, net jeigu jie nepatrenka į esamą žemėlapio aprėptį.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pasirinkite taškų sluoksnį, pagal kurį bus apskaičiuojami važiavimo laiko plotai</h2></div>
+        <hr/>
+        <div>
+            <p>Ta&scaron;kų elementai, pagal kuriuos bus apskaičiuojami plotai. Galite pasirinkti, kad plotai būtų apskaičiuojami pagal kelionės režimą (važiavimas automobiliu, sunkvežimiu ar ėjimas pėsčiomis) arba pagal pasirinktą matavimą (laiką arba atstumą).
+            </p>
+            <p>Pasirinkę sluoksnį žemėlapyje, galite pasirinkti  <b>Pasirinkite analizės sluoksnį</b>, kurį rasite i&scaron;plečiamo sąra&scaron;o apačioje. &Scaron;i parinktis atidaro galeriją, kurioje galite ie&scaron;koti duomenų rinkinių i&scaron; įvairių &scaron;altinių ir juos pasirinkti naudoti savo analizėje. 
+            </p>
+            <p>Įvesties sluoksnyje gali būti iki 1 000 elementų.
+
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Matavimai</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkite kelionės režimą (važiuoti automobiliu, sunkvežimiu ar eiti pėsčiomis) ir i&scaron;matuokite (laiką arba atstumą). Galimus kelionės režimus nustato jūsų organizacijos administratorius.   Pasirinkę režimą ir matavimą, įveskite trukmę arba atstumą iki  5 val. (300 min.) arba  300 mi. (482,80 km). 
+            </p>
+            <p>Kelionės kryptis ( <b>Nuo objekto</b> ar <b>link objekto</b>) gali paveikti tai, kaip generuojamos teritorijos. Pasiekiamumo teritorijų kūrimo įrankis paisys vienakrypčių kelių, vengs neteisėtų posūkių ir laikysis kitų taisyklių, atsižvelgiant į kelionės kryptis. Kelionės kryptį turėtumėte pasirinkti pagal įvesties padėčių tipą ir analizės turinį. Pavyzdžiui, picos pristatančios picerijos pasiekiamumo teritoriją reikia kurti pagal parinktį Nuo objekto, tuo tarpu ligoninės pasiekiamumo teritoriją reikia kurti pagal parinktį Link objekto.
+            </p>
+            <p>Kai pasirenkate  <b>Važiavimo laikas</b>, <b>Važiavimo užmiestyje laikas</b> arba <b>Važiavimo sunkvežimiu laikas</b>, galite nurodyti, kaip matuojama važiavimo trukmė.
+                <ul>
+                    <li>
+                        <p>Nuimkite žymėjimą nuo  <b>Naudoti eismo būseną</b>, kad sukurtumėte plotus, pasiekiamus per tam tikrą laiką važiuojant automobiliu, naudojant fiksuotą greitį. &Scaron;i parinktis tinka, jei reikalingi bendro pobūdžio, tam tikru atstumu pasiekiamų teritorijų plotai.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Pažymėkite  <b>Naudoti eismo būseną</b>, jei norite sukurti plotus, pasiekiamus važiuojant automobiliu, naudojant kelionės pradžios laiką ir kintančias transporto sąlygas. Pasirinkus <b>Esamos sąlygos</b>, kelionės pradžios laikai i&scaron; įvestų ta&scaron;kų bus nustatyti į dabartinį laiką, o dabartiniai ir prognozuojami važiavimo greičiai bus nustatyti pagal jutiklių ir sklaidos &scaron;altinių informaciją. &Scaron;iais parametrais remiantis, bus apskaičiuoti plotai, pasiekiami važiuojant automobiliu. Prognozuojamas važiavimo greitis bus apskaičiuotas pagal esamas eismo sąlygas, istorinius greičio duomenis bei einamuosius įvykius, pavyzdžiui, meteorologines sąlygas. Važiavimo greitis prognozuojamas 12 valandų į priekį, todėl kelionės i&scaron;vykimo laiką galite nurodyti iki 12 val.  nuo esamo laiko.
+                        </p>
+                        <p>Naudokite esamas transporto sąlygas, jei norite rasti teritoriją, pasiekiamą i&scaron;vykus &scaron;iuo ar artimu laiku, pavyzdžiui, po valandos.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Pažymėjus  <b>Naudoti eismo sąlygas</b> ir pasirinkus <b>Tipinės eismo sąlygos</b> bei nurodžius dieną ir laiką, įrankis apskaičiuoja plotus, pasiekiamus važiuojant automobiliu, remdamasis istoriniais vidutinio greičio kiekvieną penkių minučių intervalą savaitėje duomenimis. Apskaičiavimas vyks įvertinant eismo sąlygų įtaką, bet ne esamas konkrečias sąlygas; tai gali lemti besiskiriančius rezultatus.
+                        </p>
+                        <p>Galite naudoti &scaron;iuos istorinių eismo sąlygų nustatymus, jei domina teritorija, pasiekiama i&scaron;vykus, pavyzdžiui, trečiadienį 11:30. 
+                        </p>
+                        <p>Laikas priklauso nuo pradiniams ta&scaron;kams priskirtos laiko zonos. Taigi, jei laikas bus nurodytas 8:00 ir pasirinkti du ta&scaron;kai, vienas Niujorke, o kitas &ndash; Los Andžele, įrankis apskaičiuos teritoriją pagal i&scaron;vykimą 8:00. Rytų pakrantės laiku ir 8:00 Ramiojo vandenyno pakrantės laiku
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Atkreipkite dėmesį, kad automobiliui judant i&scaron; ta&scaron;ko, bėga laikas ir eismo sąlygos kinta. Važiavimo laikų plotų įrankis įvertins sąlygas pasirinkus  <b>Važiavimo laiką</b> ir pažymėjus <b>Naudoti eismo būseną</b>, tačiau eismo sąlygos vertinamos ne visuose regionuose. Paspauskite <b>Tikrinti prieinamumą</b>, jei norite sužinoti, ar duomenys prieinami jūsų regione.
+            </p>
+            <p> <b>Važiavimo sunkvežimiu laikas</b> galite naudoti dinaminį važiavimo greitį, pagrįstą eismo sąlygomis, bet nevir&scaron;ijančio leistino sunkvežimių greičio. Pavyzdžiui, jeigu dinaminis greitis kelyje, atsižvelgiant į eismą, yra 105 km/h, o leistinas sunkvežimių greitis tame kelyje &ndash; 90 km/h, &scaron;iame kelyje skaičiuojant bus naudojamas 90 km/h greitis.
+            </p>
+            <p>Naudojama fiksuota  <b>Ėjimo pėsčiomis laiko</b> ir <b>Ėjimo pėsčiomis atstumo</b> greičio reik&scaron;mė 5 kilometrais per valandą (3,1 myliomis per valandą) ir vedama pėsčiųjų takais bei nurodytomis gatvėmis (nepaisant taisyklių, taikomų automobiliams, pvz., vienpusio eismo gatvių). </p>
+            <p> <b>Važiavimo sunkvežimiu atstumas</b> naudoja fiksuotą greitį ir laikosi sunkvežimiams taikomų taisyklių, o <b>Važiavimo atstumas</b> ir <b>Važiavimo atstumas užmiestyje</b> naudoja fiksuotą greitį ir laikosi transporto priemonėms, pvz., automobiliams, taikomų taisyklių.
+            </p> 
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Pasirinkti kliūčių sluoksnius</h2></div>
+        <hr/>
+        <div>
+            <p> Vienas ar daugiau elementų, kurie veikia kaip laikini apribojimai (kliūtys) keliaujant esamomis gatvėmis. Kliūtis galite nurodyti naudodami ta&scaron;ko, linijos arba ploto elementus.
+            </p>
+            <p>Ta&scaron;kinė kliūtis gali reik&scaron;ti nukritusį medį, avariją, nukritusį elektros laidą ar bet kokį kitą objektą, kuris visi&scaron;kai užblokavęs eismą konkrečioje gatvės vietoje. Galima judėti gatve, tačiau ne per &scaron;ią kliūtį. Galite nurodyti iki 250 elementų, rei&scaron;kiančių ta&scaron;kines kliūtis.
+            </p>
+            <p>Linijinė kliūtis neleidžia keliauti niekur, kur &scaron;i kliūtis kerta gatves. Pavyzdžiui, kaip linijinė kliūtis gali būti pažymėtas paradas ar protestas, blokuojantis eismą keliuose gatvės segmentuose. Jei visų linijinių kliūčių kertamų gatvių elementų skaičius vir&scaron;ija 500, įrankis pateikia klaidą.
+            </p>
+            <p>Plotinė kliūtis neleidžia keliauti niekur, kur &scaron;is plotas kerta gatves. Vienas i&scaron; galimų tokio tipo kliūties panaudojimų yra pažymėti potvynius, apimančius tam tikras gatvių tinklo dalis ir neleidžiančius jomis keliauti. Jei visų poligono kliūčių kertamų gatvių elementų skaičius vir&scaron;ija 2 000, įrankis pateikia klaidą.
+            </p>
+        </div>
+    </div>
+    <div id="DissolveType">
+        <div><h2>Plotai iš skirtingų taškų</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkite, kaip bus apdorojamos besikertančios zonos. Galimos funkcijos:
+                <ul>
+                    <li> <b>Perdengti</b> &ndash; plotai, suformuoti pagal skirtingus įvesties ta&scaron;kus, gali apimti tą patį kelią. Gali būti naudinga, jei domina visi ta&scaron;kai, i&scaron; kurių i&scaron;vykus galima pasiekti norimą objektą per tam tikrą laiką ar nuvažiavus tam tikrą atstumą.
+                    </li>
+                    <li> <b>Sulieti</b> &ndash; besikertantys plotai apjungiami į vieną; bet tam tikroje teritorijoje gali būti tik vienas plotas. &Scaron;i parinktis naudinga, jei jums nebūtina rasti visų pradinių atskaitos ta&scaron;kų, i&scaron; kurių gali būti pasiekta konkreti teritorija, tik svarbu rasti bendrą pasiekiamą teritoriją.
+                    </li>
+                    <li> <b>Dalinti</b> &ndash; plotai i&scaron; skirtingų įvesties vietų, kurie vienas kitą kirstų, padalinami pusiau taip, kad tik ribotųsi. &Scaron;i parinktis naudinga, norint nustatyti, kuris pradinis atskaitos ta&scaron;kas yra artimiausias.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="showHoles">
+        <div><h2>Nepasiekiamas teritorijas rodyti kaip skyles</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkite, ar suformuotos teritorijos apims skyles, jei tam tikrų kelių nepavyks pasiekti dėl  <b>Matavimo</b> laiko ar atstumo, arba dėl kelionės režimui taikomų apribojimų.
+            </p>
+            <p>Pasiekiamumo teritorijoms, sukurtoms naudojant &scaron;į parametrą, taikomas 15 minučių arba 24 kilometrų (15 mylių) apribojimas.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Tai sluoksnio, kuris bus sukurtas ir patalpintas  <b>Turinyje</b> ir pridėtas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnio pavadinimas jau egzistuoja, jūsų papra&scaron;ys pateikti kitą pavadinimą.
+            </p>
+            <p>I&scaron;plečiamajame meniu pasirinkę  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+    <div id="includeReachableStreets">
+        <div><h2>Pasiekiamų gatvių įtraukimas</h2></div>
+        <hr/>
+        <div>
+            <p>Įtraukite gatves, kurios naudojamos pasiekiamumo teritorijoms kurti, kaip i&scaron;vesties sluoksnį. 
+            </p>
+            <p>Pasiekiamumo teritorijų kūrimo įrankis matuoja objekto pasiekiamumą gatvių tinkle, kai kuria pasiekiamumo teritorijas i&scaron; gatvių, kuriomis buvo keliauta. Todėl teritorijos yra nukeliautų gatvių apibendrintas rezultatas. Jei jūsų analizė skirta nustatyti, kurios gatvės apimamos per konkretų atstumą ar laiką iki objekto, pasiekiamos gatvės gali būti sugeneruotos tiksliau, nei naudojant pasiekiamumo teritorijas, skirtas įvertinti, ar konkreti gatvė pasiekiama.
+            </p>
+            <p>Pasiekiamumo teritorijoms, sukurtoms naudojant &scaron;į parametrą, taikomas 15 minučių arba 24 kilometrų (15 mylių) apribojimas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Razgradi meje</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Razgradi meje"></h2>
+        <hr/>
+    <p>Poligoni, ki se prekrivajo ali si delijo skupno mejo, so med seboj združeni v enojen poligon.    
+    </p>
+    <p>Katere meje se združijo lahko nadzirate tako, da navedete polje. Na primer, če imate sloj okrožij in ima vsako okrožje atribut  <i>State_Name</i>, lahko razgradite meje posameznih okrožij s pomočjo atributa <i>State_Name</i>. Sosednja okrožja bodo združena, če imajo enako vrednost atributa <i>State_Name</i>. Končni rezultat je sloj državnih mej.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi poligonski sloj, katerih meje bodo razgrajene</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj, ki vsebuje poligonske geoobjekte, ki bodo razgrajeni. 
+            </p>
+            <p>Poleg izbire sloja s karte lahko izberete  <b>Izberi sloj za analizo</b> ki se nahaja v spodnjem delu spustnega menija. Ta možnost odpre galerijo, kjer lahko brskate in izberete sklope podatkov iz različnih virov za uporabo v svoji analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Izberi način razgradnje</h2></div>
+        <hr/>
+        <div>
+            <p>Izberete lahko eno od dveh metod za združevanje poligonskih geoobjektov:
+                <ul>
+                    <li> <b>Poligoni, ki se prekrivajo ali so sosednji</b> &ndash; Dva ali več poligonov, katerih meje se prekrivajo, bo združenih v en poligon. Poleg tega bodo sosednji poligoni (ki si delijo skupno mejo), združeni v en poligon.
+                    </li>
+                    <li> <b>Poligoni z enako vrednostjo polja</b> &ndash; Poligoni, ki se prekrivajo ali si delijo skupno mejo, bodo združeni v en poligon, če imajo enako vrednost polja.
+                        <p>Na primer, če imate sloj okrožij in ima vsako okrožje polje  <i>State_Name</i>, lahko razgradite meje posameznih okrožij s pomočjo polja <i>State_Name</i>. Sosednja okrožja bodo združena, če imajo enako vrednost atributa <i>State_Name</i>. Končni rezultat je sloj državnih mej.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Če je obkljukano  <b>Uporabi trenutni obseg karte</b>, bodo razgrajeni samo geoobjekti vhodnega sloja, ki so vidni znotraj trenutnega obsega karte. Če je možnost odkljukana, bodo razgrajeni vsi geoobjekti v vhodnem sloju, tudi če so zunaj trenutnega obsega karte.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Ustvari mnogodelne geoobjekte</h2></div>
+        <hr/>
+        <div>
+            <p>V ArcGIS-u je digitalna predstavitev kraja ali elementa, ki ima več kot en del, določena kot en geoobjekt, saj se sklicuje na en niz atributov. Tako se na sloju z državami, na primer, država Havaji lahko &scaron;teje kot mnogodelni geoobjekt, ker so njeni ločeni geometrijski deli klasificirani kot ena država. Ta boolov parameter ponuja dve možnosti:
+                <ul>
+                    <li>Resnično (obkljukano): izhodna storitev lahko vsebuje mnogodelne geoobjekte.
+                    </li>
+                    <li>Neresnično (odkljukano): izhodna storitev bo vsebovala samo enodelne geoobjekte, posamezni geoobjekti pa bodo ustvarjeni za vsak del posebej.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Dodaj statistiko</h2></div>
+        <hr/>
+        <div>
+            <p>Kjer so območja združena, lahko povzamete njihove atribute. Na primer, če razgrajujete mejo med okrožji na podlagi  <i>State_Name</i> in ima vsako okrožje polje <i>Population</i>, lahko izračunate vsoto polja <i>Population</i> za državo.
+            </p>
+            <p>Razpoložljivi tipi statistik so:
+            </p>
+            <ul>
+                <li> <b>Vsota</b> &ndash; Skupna vrednost določenega polja
+                    
+
+                </li>
+                <li> <b>Povprečje</b> &ndash; Izračuna povprečje navedenega polja
+                    
+
+                </li>
+                <li> <b>Minimum</b> &ndash; Najde najmanj&scaron;o vrednost za vse zapise navedenega polja
+                    
+
+                </li>
+                <li> <b>Maksimum</b> &ndash; Najde največjo vrednost za vse zapise navedenega polja
+                    
+
+                </li>
+                <li> <b>St. odklon</b> &ndash; Najde standardni odklon od vrednosti v navedenem polju
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>To je ime sloja, ki bo ustvarjen v  <b>Moji vsebini</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če ime sloja že obstaja, boste morali vnesti drugo ime.
+            </p>
+            <p>S pomočjo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

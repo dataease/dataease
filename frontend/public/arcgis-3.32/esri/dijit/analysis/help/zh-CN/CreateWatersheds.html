@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>创建流域</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="创建流域"></h2>
+        <hr/>
+    <p>此工具针对输入图层中的每个点确定流域或上游汇流区域。
+    </p>
+    <p>例如，假设您具有表示水源性污染位置的点要素，并且您想要找出可能的污染源。由于污染源一定位于该点流域上游的某处，您将要使用此工具定义包含污染源的流域。
+    </p>
+    <p>输入点的位置非常重要。如果输入点未精确位于水系线上，则生成的流域可能会非常小，对您的分析也没有用处。 <b>搜索到最近水系的距离</b>可用于调整输入点的位置，使其准确落在水系线上，以便找到流入水系线上的点的流域。将用于查找流域的调整后的位置写入输出图层 - 未修改您的输入点。
+    </p>
+    <p>结果为包含两个图层的图层组：流域和用于计算流域的已校正点。
+    </p>
+    <p>得到的流域将具有输入点的所有属性和以下附加属性：     
+        <ul>
+            <li> <i>PourPtID</i> - 包含输入点的 ID 值
+            </li>
+            <li> <i>Area Square Kilometers</i> - 包含上游流域的面积（平方公里）
+            </li>
+            <li> <i>Description</i> 和 <i>DataResolution</i> - 包含与用于计算追踪的水文数据相关的信息
+            </li>
+        </ul>
+        
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则仅使用当前地图范围内的要素计算流域。如果未选中，则将分析输入图层中的所有要素，包括超出当前地图范围的要素。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>用于计算流域的点要素</h2></div>
+        <hr/>
+        <div>
+            <p>将针对每个点计算流域（上游汇流区域）。
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>搜索到最近水系的距离</h2></div>
+        <hr/>
+        <div>
+            <p>如果您的输入点位于水系线之外，则得到的流域很可能会非常小，而且对于分析（如确定上游污染源）也没多大用处。很多情况下，您想要将输入点捕捉到最近水系线以便找出流入水系线上的点的流域。要查找最近水系线，请指定搜索距离。如果不指定搜索距离，该工具将计算并使用保守搜索距离。
+            </p>
+            <p>要使用输入点的准确位置，请将搜索距离指定为 0。
+            </p>
+            <p>出于分析目的，已由 Esri 使用标准水文模型对水系线进行了预计算。如果搜索距离范围内不存在水系线，则使用搜索距离范围内累积流量最大的位置。
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该图层名称已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉菜单，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+            <p> 运行此工具不会消耗配额。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Loo puhvrid</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Loo puhvrid"></h2>
+        <hr/>
+    <p>Puhver on ala, mis katab lausaliselt etteantud vahemaa punktist, joonest v&otilde;i pindobjektist. 
+    </p>
+    <p>Puhvreid kasutatakse tavaliselt alade loomiseks, mida anal&uuml;&uuml;sitakse edasi teiste t&ouml;&ouml;riistadega nagu n&auml;iteks kattuvate kihtidega. Kui n&auml;iteks k&uuml;simus on stiilis &quot;Millised hooned asuvad 1 km koolist?&quot;, siis vastuse leiab n&auml;iteks 1 km puhvri tekitamise abil ja kasutades puhverkihti ning hoonete kihiga kattuvust. L&otilde;pptulemuseks on kiht nende hoonetega, mis j&auml;&auml;vad 1 km raadiusesse koolist.  
+    </p>
+    <p>Kui ruut  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, luuakse puhver ainult objektidele, mis on kaardil praegu n&auml;htavad.  Kui see ruut pole m&auml;rgitud, kasutatakse puhvri loomisel k&otilde;iki sisendkihis olevaid objekte ka siis, kui neid pole praegu kaardil n&auml;ha.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vali kiht, mis sisaldab puhvri loomiseks kasutatavaid objekte</h2></div>
+        <hr/>
+        <div>
+            <p>Punkt-, joon- v&otilde;i pindobjektid, mida puhvri loomiseks kasutatakse. 
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Sisesta puhvri suurus</h2></div>
+        <hr/>
+        <div>
+            <p>V&otilde;ite sisestada &uuml;he vahemaa v&auml;&auml;rtuse v&otilde;i mitu v&auml;&auml;rtust, eraldades need t&uuml;hikutega. Samuti saate m&auml;&auml;rata sisendkihi atribuudi, mis sisaldab vahemaa v&auml;&auml;rtust, kl&otilde;psates valikul  <b>V&auml;li</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>Valikud</h2></div>
+        <hr/>
+        <div>
+            <p>Valige kattuvate puhvrite k&auml;itumisviis. Iga teisega kattuva puhvri kattuvad alad v&otilde;ib s&auml;ilitada (&uuml;lekate) v&otilde;i kombineerida (sulandamine). Valiku  <b>Liidetud</b> korral liidetakse k&otilde;ik puhvrid &uuml;heks mitmeosaliseks objektiks ja k&otilde;ik &uuml;lekatted eemaldatakse.
+            </p>  
+            <p> Kasutades mitut vahemaad v&otilde;ite valida kuidas esitada vahemaa viimase puhvri vahemaast &ndash; n&auml;iteks kui vahemaad on 10 ja 14:
+                <ul>
+                    <li>valides  <b>Ringid</b>, tekivad puhvrid vahemikus 0&ndash;10 ja 10&ndash;14;
+                    </li>
+                    <li>valides  <b>Kettad</b>, tekivad puhvrid vahemikus 0&ndash;10 ja 0&ndash;14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>Valikud</h2></div>
+        <hr/>
+        <div>
+            <p>Valige kattuvate puhvrite k&auml;itumisviis. Iga teisega kattuva puhvri kattuvad alad v&otilde;ib s&auml;ilitada (&Uuml;lekate) v&otilde;i kombineerida (Sulandamine). Valiku  <b>Liidetud</b> korral liidetakse k&otilde;ik puhvrid &uuml;heks mitmeosaliseks objektiks ja k&otilde;ik &uuml;lekatted eemaldatakse.
+            </p>
+            <p>Kui loote lihtsat &uuml;hekordset puhvrit ala &uuml;mber, v&otilde;ite valida, kas objekt ise arvatakse puhvri hulka v&otilde;i mitte.
+            </p>
+            <p>Kui kasutate mitut vahemaad, saate valida, kuidas esitada vahemaad viimasest puhveralast; nt kui vahemaad on 10 ja 14:
+                <ul>
+                    <li>valides  <b>Ringid</b>, tekivad puhvrid vahemikus 0&ndash;10 ja 10&ndash;14;
+                    </li>
+                    <li>valides  <b>Kettad</b>, tekivad puhvrid vahemikus 0&ndash;10 ja 0&ndash;14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>Valikud</h2></div>
+        <hr/>
+        <div>
+            <p>Valige kattuvate puhvrite k&auml;itumisviis. Iga teisega kattuva puhvri kattuvad alad v&otilde;ib s&auml;ilitada (&uuml;lekate) v&otilde;i kombineerida (sulandamine). Valiku  <b>Liidetud</b> korral liidetakse k&otilde;ik puhvrid &uuml;heks mitmeosaliseks objektiks ja k&otilde;ik &uuml;lekatted eemaldatakse.
+            </p>
+            <p>Kui loote lihtsat &uuml;htset puhvrit &uuml;mber joonte, v&otilde;ite valida, millisele joone k&uuml;ljele puhver luuakse. Reeglina tekitatakse puhver m&otilde;lemas suunas. Parem ja vasak suund m&auml;&auml;ratakse joone esimesest x, y algkoordinaadist viimase x, y l&otilde;pukoordinaadi suhtes. Parema v&otilde;i vasaku suuna valimine t&auml;hendab tavaliselt seda, et te teate, et joonobjektid loodi ja salvestati teatud suunaga (n&auml;iteks j&otilde;et&uuml;&uuml;pi v&otilde;rgustikus &uuml;les- v&otilde;i allavoolu). Joone l&otilde;pus v&otilde;ib puhver olla &uuml;mmargune v&otilde;i kandiline.
+            </p>
+            <p>Kui loote mitu puhvrit (rohkem kui &uuml;he vahemaa puhul), saate valida, kuidas esitada vahemaad viimasest puhveralast; nt kui vahemaad on 10 ja 14:
+                <ul>
+                    <li>valides  <b>Ringid</b>, tekivad puhvrid vahemikus 0&ndash;10 ja 10&ndash;14;
+                    </li>
+                    <li>valides  <b>Kettad</b>, tekivad puhvrid vahemikus 0&ndash;10 ja 0&ndash;14.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>Valikud</h2></div>
+        <hr/>
+        <div>
+            <p>P&auml;rast puhvri jaoks kihi valimist saate valida &uuml;lekattega puhvrite k&auml;sitlemise viisi. Iga teisega kattuva puhvri kattuvad alad v&otilde;ib s&auml;ilitada (&uuml;lekate) v&otilde;i kombineerida (sulandamine). Valiku  <b>Liidetud</b> korral liidetakse k&otilde;ik puhvrid &uuml;heks mitmeosaliseks objektiks ja k&otilde;ik &uuml;lekatted eemaldatakse. Lisaks saate m&auml;&auml;rata mitme vahemaa esitamise viisi.   Joonobjekte sisaldavate kihtide osas saate valida, kummale poole joonest puhver tekitatakse.  Pindobjekte sisaldavate kihtide osas saate valida, kas puhverdatav objekt kaasatakse tulempuhvrisse v&otilde;i j&auml;etakse sellest v&auml;lja.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Vaikenimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui samanimeline kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemused</b> kaudu saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemus salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

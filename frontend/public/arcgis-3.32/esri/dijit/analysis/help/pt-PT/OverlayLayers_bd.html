@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Sobrepor Camadas</h2><p/>
+        <h2><img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" alt="Sobrepor Camadas"></h2>
+        <hr/>
+    <p>A ferramenta Sobrepor camadas combina duas ou mais camadas numa &uacute;nica camada. Pode pensar na sobreposi&ccedil;&atilde;o como um conjunto de mapas e cria&ccedil;&atilde;o de um &uacute;nico mapa que cont&eacute;m todas as informa&ccedil;&otilde;es encontradas nesse conjunto de mapas. A sobreposi&ccedil;&atilde;o &eacute; muito mais do que uma convers&atilde;o de dados, todos os atributos dos elementos que participam na sobreposi&ccedil;&atilde;o s&atilde;o transportados para o produto final. A sobreposi&ccedil;&atilde;o &eacute; utilizada para responder a uma das perguntas mais b&aacute;sicas da geografia, O que &eacute; que est&aacute; por cima de qu&ecirc;? Os seguintes s&atilde;o exemplos:
+        <ul>
+            <li>Que parcelas est&atilde;o dentro da &aacute;rea de inunda&ccedil;&atilde;o de 100 anos? (Dentro &eacute; outra forma de dizer em cima de.)
+                  
+            </li>
+            <li>Que uso do solo se encontra naquele tipo de solo?
+                 
+            </li>
+            <li>Que po&ccedil;os est&atilde;o dentro de bases militares abandonadas?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se a op&ccedil;&atilde;o  <b>Utilizar a extens&atilde;o atual do mapa</b> se encontrar selecionada, apenas os elementos na camada de entrada e de sobreposi&ccedil;&atilde;o que s&atilde;o vis&iacute;veis na extens&atilde;o atual do mapa ser&atilde;o sobrepostos. Se n&atilde;o validado, todos os elementos dentro da camada de ponto de entrada e de sobreposi&ccedil;&atilde;o ser&atilde;o sobrepostos, mesmo que estejam fora da extens&atilde;o de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolher camada de entrada</h2></div>
+        <hr/>
+        <div>
+            <p>O ponto, linha, ou camada de &aacute;rea que ser&atilde;o sobrepostos.
+            </p>
+            <p class="OnlineOnly">Al&eacute;m de escolher uma camada para o seu mapa, pode selecionar  <b>Escolher Camada de An&aacute;lise do Living Atlas</b> ou <b>Escolher Camada de An&aacute;lise</b> que se encontra no final da lista. Esta abre uma galeria contendo um conjunto de camadas &uacute;teis para v&aacute;rias an&aacute;lises. 
+            </p>
+        </div>
+    </div>
+    <div id="overlayLayer">
+        <div><h2>Escolher camada de sobreposição</h2></div>
+        <hr/>
+        <div>
+            <p>A camada para sobrepor na camada de entrada.  
+            </p>
+            <p>Para al&eacute;m de escolher uma camada do seu mapa, pode escolher  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista pendente para navegar at&eacute; aos seus conte&uacute;dos de um conjunto de dados de partilha de ficheiros de big data ou camada de elementos.
+            </p>
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Escolher método de sobreposição</h2></div>
+        <hr/>
+        <div>
+            <p>O m&eacute;todo de sobreposi&ccedil;&atilde;o define como a camada de entrada e de sobreposi&ccedil;&atilde;o s&atilde;o combinados.  
+
+                <ul>
+                    <li> <b>Intersectar</b>&mdash;O resultado ir&aacute; conter apenas aqueles elementos ou por&ccedil;&otilde;es de elementos na camada de sobreposi&ccedil;&atilde;o que sobrep&otilde;em com elementos na camada de entrada. Quando se cruzam elementos de linhas ou de &aacute;reas, tem a op&ccedil;&atilde;o de especificar o tipo de caracter&iacute;sticas que deseja como sa&iacute;da.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Pontos com Pontos
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Pontos com entrada de pontos">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Pontos e pontos com sa&iacute;da de ponto">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Linhas com Linhas 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Linhas com entrada de linhas">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Linhas e linhas com a linha de sa&iacute;da ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>&Aacute;reas com &Aacute;reas
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="&Aacute;reas e entradas de &aacute;reas">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="&Aacute;reas e &aacute;reas com sa&iacute;da de &aacute;reas">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Apagar</b>&mdash;O resultado ir&aacute; conter elementos ou partes de elementos na camada de sobreposi&ccedil;&atilde;o que n&atilde;o se sobrep&otilde;em com as &aacute;reas na camada de entrada.   A camada de sobreposi&ccedil;&atilde;o pode conter elementos de &aacute;rea, linha ou ponto.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. Ter&aacute; o mesmo tipo de elemento (&aacute;reas, linhas ou pontos) que a camada de entrada e a de sobreposi&ccedil;&atilde;o. O nome padr&atilde;o &eacute; baseado no m&eacute;todo de sobreposi&ccedil;&atilde;o e no nome da camada de entrada. Se a camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>Ao utilizar a caixa suspensa  <b>Guardar resultado em</b> pode definir o nome da pasta em <b>O Meu Conte&uacute;do</b> onde o resultado ser&aacute; guardado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

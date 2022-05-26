@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Поиск кластеров точек</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Поиск кластеров точек"></h2>
+        <hr/>
+    <p>Инструмент находит кластеры среди точечных объектов в окружающем шуме на основе их пространственного распределения.
+    </p>
+    <p>Если отмечен экстент  <b>Использовать текущую карту</b>, то изучаться будут только объекты входного слоя точек в пределах экстента карты. Если отметку снять, то будут проанализированы все объекты входного слоя точек, даже если они находятся вне текущего экстента карты.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Выберите слой, для которого будут найдены кластеры</h2></div>
+        <hr/>
+        <div>
+            <p>Точечный слой, в котором нужно выявить кластеры. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Минимальное число точек, которые будут считаться кластером</h2></div>
+        <hr/>
+        <div>
+            <p>Минимальное число объектов для включения в кластер. Любой кластер с меньшим числом объектом будет учитываться как шум. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Ограничить диапазон поиска до (дополнительно)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Максимальное расстояние между объектами, которые могут быть включены в один кластер. Если значение пустое, инструмент запустит HDBSCAN, который использует различные расстояния для отделения кластеров с различными плотностями от окружающего шумe. Если значение задано, инструмент запустит DBSCAN, который использует указанное расстояние для отделения плотных кластеров от окружающего шума.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Имя слоя результата</h2></div>
+        <hr/>
+        <div>
+            <p>Это имя слоя, который будет создан в разделе  <b>Мои ресурсы</b> и добавлен на карту.  Имя слоя по умолчанию зависит от имени инструмента и имени входного слоя. Если имя слоя уже используется, появится запрос ввести новое имя.
+            </p>
+            <p>С помощью ниспадающего списка поля  <b>Сохранить результат в</b> вы можете задать имя папки в разделе <b>Мои ресурсы</b>, в которую будет записан результат.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

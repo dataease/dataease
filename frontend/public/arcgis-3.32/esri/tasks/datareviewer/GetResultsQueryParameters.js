@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/tasks/datareviewer/GetResultsQueryParameters",["dojo/_base/declare","dojo/json","dojo/has","dojo/_base/lang","../../kernel"],function(a,b,c,d,e){a=a(null,{declaredClass:"esri.tasks.datareviewer.GetResultsQueryParameters",pageSize:5,pageNumber:0,sortBy:null,sortDescending:!1,returnFields:null,constructor:function(){},toJSON:function(){var a={pageSize:this.pageSize,pageNumber:this.pageNumber};null!==this.sortBy&&0<this.sortBy.length&&(a.sortBy=this.sortBy);!0===this.sortDescending&&(a.sortDescending=
+!0);null!==this.returnFields&&0<this.returnFields.length&&(a.returnFields=this.returnFields);return b.stringify(a)}});c("extend-esri")&&d.setObject("tasks.datareviewer.GetResultsQueryParameters",a,e);return a});

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>中心と分散の集計</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="中心と分散の集計"></h2>
+        <hr/>
+    <p>このツールは、中心フィーチャおよび分布指向性を検出します。
+次のような質問に答えるために使用できます。
+        <ul>
+            <li>中心はどこか。
+            </li>
+            <li>他のすべてのフィーチャから最もアクセスしやすいのはどのフィーチャか。
+            </li>
+            <li>フィーチャはどれほど分散しているか、どれほどコンパクトであるか、またはどれほど融合しているか。
+            </li>
+            <li>方向トレンドがあるか。
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>[現在のマップ範囲を使用]</b> がオンの場合、現在のマップ範囲に表示される入力レイヤーのフィーチャだけが解析されます。オフの場合、入力レイヤーのすべてのフィーチャが、現在のマップ範囲内になくても解析されます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>説明するレイヤーを選択</h2></div>
+        <hr/>
+        <div>
+            <p>中心フィーチャおよび分布指向性の検出に使用されるポイント レイヤー、ライン レイヤー、またはエリア レイヤー。
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>サマリー タイプ</h2></div>
+        <hr/>
+        <div>
+            <p>中心と分散の集計の方法。
+            </p>
+            <ul>
+                <li>中心フィーチャ - データセット内で最も中心に位置しているフィーチャを特定します。
+                </li>
+                <li>地理的中心 - 一連のフィーチャの地理的中心 (または濃度の中心) を特定します。
+                </li>
+                <li>地理的中間地点 - データセット内のフィーチャまでの全体のユークリッド距離が最小になる位置を特定します。
+                </li>
+                <li>楕円 - 標準偏差楕円を作成して、中心傾向、分散、指向性傾向といった、地理フィーチャの空間特性をまとめます。楕円のサイズは、1、2、または 3 の標準偏差です。
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>重み付け (オプション)</h2></div>
+        <hr/>
+        <div>
+            <p>相対的重要性に応じて位置にウェイトを付けるために使用されるフィールドです。
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>グループ化 (オプション)</h2></div>
+        <hr/>
+        <div>
+            <p>中心フィーチャまたは分散の個別計算のためのフィーチャのグループ化に使用されるフィールドです。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p>これは、 <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前です。デフォルト名は、ツール名と入力レイヤー名に基づいて設定されます。レイヤー名がすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存先]</b> ドロップダウン メニューを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

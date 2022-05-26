@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Geokode-positioner fra tabel</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Geokode-positioner fra tabel"></h2>
+        <hr/>
+    <p>Geokodning er en m&aring;de at konvertere adresser til koordinater p&aring;. Dette v&aelig;rkt&oslash;j konverterer adresser fra en tabel, en CSV-fil eller en Excel-fil til et vektorlag eller en outputfil med koordinater som ekstra kolonner.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Vælg en inputtabel</h2></div>
+        <hr/>
+        <div>
+            <p>Inputtabel med de adresser, der skal geokodes. Inputtabellen skal v&aelig;re en tabel, en CSV-fil eller en Excel-fil.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Vælg en lokator</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg en lokatortjeneste, der skal geokodes op imod. Hvis den lokatortjeneste, som du vil anvende, ikke findes p&aring; rullemenuen, skal du kontakte din administrator for at f&aring; lokatortjenesten konfigureret til batch-geokodning.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Land</h2></div>
+        <hr/>
+        <div>
+            <p>Hvis alle dine adresser er fra &eacute;t land, skal du v&aelig;lge det p&aring;g&aelig;ldende land for at sikre mere pr&aelig;cise resultater. Eller skal du lade denne parameter st&aring; tom.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Vælg datafelter</h2></div>
+        <hr/>
+        <div>
+            <p>Lokatortjenesten forventer, at der er bestemte felter i dataene, f.eks. adresse, by, land og postnummer. Match datafelterne i din inputfil eller -tabel til de felter, som lokatoren forventer, ved hj&aelig;lp af rullelisterne. Jo flere felter du matcher, jo mere pr&aelig;cise bliver dine resultater. Hvis inputtabellen har alle sine data i &eacute;n kolonne, skal du v&aelig;lge  <b>Enkelt felt</b> og v&aelig;lge et datafelt p&aring; rullemenuen. Ellers skal du v&aelig;lge <b>Flere felter</b> og matche de relevante lokatorfelter til kolonnerne med flere felter i din tabel.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Vælg et outputformat</h2></div>
+        <hr/>
+        <div>
+            <p>Format for outputresultaterne. Hvis du v&aelig;lger at oprette en featuretjeneste, vil adresserne fra inputtabellen blive f&oslash;jet til kortet som et lag med punktobjekter. CSV- og XLS-valgmulighederne vil tilf&oslash;je filer med resultaterne fra geokodningsjobbet til  <b>Mit indold</b>, n&aring;r jobbet er fuldf&oslash;rt.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Output-resultatnavn</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

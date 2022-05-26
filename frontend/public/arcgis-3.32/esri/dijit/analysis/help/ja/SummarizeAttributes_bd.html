@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>属性の集計 (Summarize Attributes)</h2><p/>
+        <h2><img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" alt="[属性の集計] 図"></h2>
+        <hr/>
+    <p> このツールは、1 つまたは複数のフィールドから一致する値をすべて集計し、これらの値の統計情報を計算します。最も基本的な統計情報は集計されたフィーチャの個数ですが、より詳細な統計情報を計算することもできます。
+    </p>
+    <p>たとえば、店舗の場所のポイント フィーチャに  <i>[DISTRICT_MANAGER_NAME]</i> フィールドがあり、マネージャー別にコーヒーの売上を集計するとします。 <i>[DISTRICT_MANAGER_NAME]</i> フィールドをディゾルブ対象のフィールドとして指定すると、個々のマネージャーを表すデータのすべての行が集計されます。これは、 <pre>Manager1</pre> が管理しているすべての店舗の場所が 1 行に集計され、統計情報のサマリーが算出されることを意味します。この例では、店舗の数や <pre>Manager1</pre> が管理しているすべての店舗の <i>TOTAL_SALES</i> の合計などの統計情報だけでなく、 <i>[DISTRICT_MANAGER_NAME]</i> フィールドに記載された他のすべてのマネージャーに関する統計情報も計算されます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>集計する入力を選択</h2></div>
+        <hr/>
+        <div>
+            <p>集計するフィールドを含むレイヤー。
+            </p>
+            <p>マップからレイヤーを選択できるだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択し、ビッグ データ ファイル共有データセットまたはフィーチャ レイヤーのコンテンツを参照して選択することもできます。
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>データを集計する方法の選択</h2></div>
+        <hr/>
+        <div>
+            <p>このような場合、データを集計するには 2 つの方法があります。
+                <ul>
+                    <li> <b>[すべてのフィーチャを 1 つのフィーチャに統合]</b> - すべてのフィーチャの統計情報を計算します。
+                    </li>
+                    <li> <b>[フィールド別]</b> - 指定したフィールドの同様の値別にフィールドをグループ化します。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>たとえば、 <code>[Maple]</code>、 <code>[Fir]</code>、 <code>[Pine]</code> という値を持つ <i>[treetype]</i> というフィールドと <i>[treeheight]</i> というフィールドを含む樹木のデータセットがあり、 <i>[treeheight]</i> の平均を求めるとします。すべてのフィーチャを 1 つのフィーチャに集計すると、すべての樹木の高さ平均が求められ、これは 1 つの平均値になります。フィールド <i>[treeheight]</i> 別に集計した場合には、カエデ (maple) の平均、モミ (fir) の平均、マツ (pine) の平均を求めることになります。
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>統計情報の追加 (オプション)</h2></div>
+        <hr/>
+        <div>
+            <p> 集計されたフィーチャの統計情報を計算することができます。数値フィールドに対して、以下を計算できます。
+                <ul>
+                    <li>個数 - NULL 値でない値の数を計算します。数値フィールドまたは文字列に使用できます。 [null, 0, 2] のデータの個数は 2 です。
+                    </li>
+                    <li>合計 - フィールド内の数値の合計。[null, null, 3] を合計すると 3 になります。
+                    </li>
+                    <li>平均 - 数値の平均。[0, 2, null] の平均値は 1 です。
+                    </li>
+                    <li>最小 - 数値フィールドの最小値。[0, 2, null] の最小値は 0 です。
+                    </li>
+                    <li>最大 - 数値フィールドの最大値。[0, 2, null] の最大値は 2 です。
+                    </li>
+                    <li>範囲 - 数値フィールドの範囲。これは、最大値から最小値を減算して計算されます。[0, null, 1] の範囲は 1 です。[null, 4] の範囲は 0 です。
+                    </li>
+                    <li>分散 - トラッキング データの数値フィールドの分散。[1] の分散は NULL です。[null, 1,0,1,1] の分散は 0.25 です。
+                    </li>
+                    <li>標準偏差 - 数値フィールドの標準偏差。[1] の標準偏差は NULL です。[null, 1,0,1,1] の標準偏差は 0.5 です。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>文字列フィールドに対して、以下を計算できます。
+                <ul>
+                    <li>個数 - 非 NULL 文字列の数。
+                    </li>
+                    <li>すべて - この統計情報は、指定のフィールドからランダムにサンプリングされた文字列値です。
+                    </li>
+                </ul>
+                すべての統計情報は、NULL 以外の値で計算されます。結果レイヤーには、計算された各統計情報の新しいフィールドが含まれます。属性と統計情報を選択することで、任意の数の統計情報を追加できます。 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>データストアの選択</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics の結果はデータ ストアに保存され、フィーチャ レイヤーとして  Portal for ArcGIS に公開されます。 多くの場合、結果はビッグ データ ストアに保存され、これがデフォルトとなっています。結果をリレーショナル データ ストアに保存したほうがよい場合もあります。 結果をリレーショナル データ ストアに保存する理由は以下のとおりです。 
+                <ul>
+                    <li>結果をポータル間のコラボレーションにおいて使用できます。
+                    </li>
+                    <li>結果との同期機能を有効化することができます。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p> 作成されるレイヤーの名前。 ArcGIS Data Store に書き込んでいる場合、結果は  <b>[マイ コンテンツ]</b> に保存され、マップに追加されます。ビッグ データ ファイル共有に書き込んでいる場合、結果はビッグ データ ファイル共有に格納され、そのマニフェストに追加されます。この場合、結果はマップに追加されません。 デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合、このツールは正常に実行されません。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して ArcGIS Data Store (リレーショナル データ ストアまたはビッグ データ ストア) に書き込むときは、結果が保存される  <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

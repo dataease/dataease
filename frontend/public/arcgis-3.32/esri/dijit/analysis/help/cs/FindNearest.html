@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Najít nejbližší (Find Nearest)</h2><p/>
+        <h2><img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="Naj&iacute;t nejbliž&scaron;&iacute;"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj vyhled&aacute;v&aacute; nejbliž&scaron;&iacute; prvky, vytv&aacute;ř&iacute; přehledy a seřazuje vzd&aacute;lenosti k nejbliž&scaron;&iacute;m prvkům. Za &uacute;čelem nalezen&iacute; nejbliž&scaron;&iacute;ch prvků lze měřit vzd&aacute;lenost vzdu&scaron;nou čarou nebo podle vybran&eacute;ho způsobu přepravy. K dispozici jsou možnosti pro omezen&iacute; počtu hledan&yacute;ch nejbliž&scaron;&iacute;ch prvků nebo omezen&iacute; rozmez&iacute; pro vyhled&aacute;v&aacute;n&iacute;. V&yacute;sledky anal&yacute;zy tohoto n&aacute;stroje mohou zodpovědět např&iacute;klad na n&aacute;sleduj&iacute;c&iacute; ot&aacute;zky:
+        <ul>
+            <li>Kter&yacute; park je odsud nejbl&iacute;že?
+            </li>
+            <li>Do kter&eacute; nemocnice se dostanu za nejkrat&scaron;&iacute; dobu j&iacute;zdy? Jak dlouho by tato cesta trvala v&nbsp;17:30 v&nbsp;&uacute;ter&yacute; v&nbsp;dopravn&iacute; &scaron;pičce?
+            </li>
+            <li>Jak&aacute; je silničn&iacute; vzd&aacute;lenost mezi těmito hlavn&iacute;mi městy?
+            </li>
+            <li>Kteř&iacute; z&nbsp;těchto pacientů bydl&iacute; ve vzd&aacute;lenosti do dvou kilometrů od těchto chemick&yacute;ch z&aacute;vodů?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Funkce Naj&iacute;t nejbliž&scaron;&iacute; vr&aacute;t&iacute; vrstvu obsahuj&iacute;c&iacute; nejbliž&scaron;&iacute; prvky a vrstvu lini&iacute;, kter&aacute; spojuje poč&aacute;tečn&iacute; um&iacute;stěn&iacute; s&nbsp;př&iacute;slu&scaron;n&yacute;mi nejbliž&scaron;&iacute;mi um&iacute;stěn&iacute;mi. Tato vrstva lini&iacute; obsahuje informace o poč&aacute;tečn&iacute;ch bodech a nejbliž&scaron;&iacute;ch um&iacute;stěn&iacute;ch a jejich vz&aacute;jemn&yacute;ch vzd&aacute;lenostech.
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t aktu&aacute;ln&iacute; rozsah mapy</b>, budou jako poč&aacute;tečn&iacute; a potenci&aacute;ln&iacute; nejbliž&scaron;&iacute; prvky považov&aacute;ny pouze prvky viditeln&eacute; v&nbsp;aktu&aacute;ln&iacute;m rozsahu mapy.  Pokud pole za&scaron;krtnuto nen&iacute;, budou použity v&scaron;echny prvky ve vstupn&iacute; vrstvě, včetně těch, kter&eacute; se nach&aacute;z&iacute; mimo aktu&aacute;ln&iacute; rozsah mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Zadat počáteční umístění</h2></div>
+        <hr/>
+        <div>
+            <p>Funkce Naj&iacute;t nejbliž&scaron;&iacute; měř&iacute; vzd&aacute;lenost od prvků ve vrstvě, kterou zde urč&iacute;te (poč&aacute;tečn&iacute; um&iacute;stěn&iacute;), k um&iacute;stěn&iacute;m, kter&eacute; urč&iacute;te v&nbsp;n&aacute;sleduj&iacute;c&iacute;m parametru. N&aacute;stroj podporuje až  5 000 prvků v každ&eacute; vrstvě. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>Najít nejbližší lokality v</h2></div>
+        <hr/>
+        <div>
+            <p>Funkce Naj&iacute;t nejbliž&scaron;&iacute; měř&iacute; vzd&aacute;lenost od jednotliv&yacute;ch prvků v&nbsp;prvn&iacute; vrstvě k um&iacute;stěn&iacute;m v&nbsp;t&eacute;to vrstvě. N&aacute;stroj podporuje až  5 000 um&iacute;stěn&iacute; v každ&eacute; vrstvě. </p>
+            <p>Vrstvu můžete vybrat ze sv&eacute; mapy nebo můžete zvolit možnost  <b>Vybrat vrstvu anal&yacute;zy</b>, kter&aacute; se nach&aacute;z&iacute; na konci rozbalovac&iacute;ho seznamu. Pomoc&iacute; t&eacute;to možnosti se otevře galerie, kde můžete proch&aacute;zet a&nbsp;vyb&iacute;rat datov&eacute; sady z&nbsp;různ&yacute;ch vrstev, kter&eacute; můžete použ&iacute;t ve sv&eacute; anal&yacute;ze. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Měření</h2></div>
+        <hr/>
+        <div>
+            <p>Zvolte, zda maj&iacute; b&yacute;t nejbliž&scaron;&iacute; um&iacute;stěn&iacute; hled&aacute;na na z&aacute;kladě vzd&aacute;lenosti vzdu&scaron;nou čarou nebo vybran&eacute;ho způsobu přepravy. Způsoby přepravy lze použ&iacute;t pouze v&nbsp;př&iacute;padě, že vstupn&iacute; vrstva obsahuje body. Dostupn&eacute; způsoby přepravy jsou určeny administr&aacute;torem organizace.  Při použit&iacute; jednoho ze způsobů přepravy je vzd&aacute;lenost měřena pod&eacute;l silnic nebo chodn&iacute;ků a jsou respektov&aacute;na př&iacute;slu&scaron;n&aacute; pravidla, např&iacute;klad jednosměrn&eacute; ulice, nepovolen&eacute; man&eacute;vry atd.
+            </p>
+            <p>Pokud měř&iacute;te mezi liniemi nebo plochami, je hled&aacute;na vzd&aacute;lenost od nejbliž&scaron;&iacute;ho bodu nebo do něj pod&eacute;l linie nebo hranice plochy. 
+            </p> 
+            <p>Pokud zvol&iacute;te  <b>Dobu j&iacute;zdy</b>, <b>Dobu j&iacute;zdy ve venkovsk&yacute;ch oblastech</b> nebo <b>Dobu j&iacute;zdy n&aacute;kladn&iacute;m vozidlem</b>, m&aacute;te k dispozici několik možnost&iacute;, jak dobu j&iacute;zdy měřit.
+                <ul>
+                    <li>
+                        <p>Chcete-li vyhledat nejbliž&scaron;&iacute; prvky na z&aacute;kladě pevn&yacute;ch rychlost&iacute;, jako jsou např&iacute;klad rychlostn&iacute; omezen&iacute;, a nikoliv na z&aacute;kladě proměnliv&yacute;ch rychlost&iacute; způsoben&yacute;ch měn&iacute;c&iacute;mi se dopravn&iacute;mi podm&iacute;nkami, zru&scaron;te za&scaron;krtnut&iacute; pole  <b>Použ&iacute;t provoz</b>.
+                        </p>
+                        <p>Neza&scaron;krtnut&iacute; t&eacute;to možnosti je vhodn&eacute; v&nbsp;př&iacute;padě, že chcete zjistit, kter&eacute; prvky jsou obecně nejbl&iacute;že, nikoliv kter&eacute; prvky jsou nejbl&iacute;že podle dan&yacute;ch dopravn&iacute;ch podm&iacute;nek a určen&eacute;ho času a dne.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Chcete-li vyhledat nejbliž&scaron;&iacute; prvky na z&aacute;kladě dan&eacute;ho poč&aacute;tečn&iacute;ho času a měn&iacute;c&iacute;ch se dopravn&iacute;ch podm&iacute;nek, za&scaron;krtněte možnost  <b>Použ&iacute;t provoz</b>. Pokud tak&eacute; zvol&iacute;te možnost <b>Živ&yacute; provoz</b>, bude čas odjezdu z&nbsp;poč&aacute;tečn&iacute;ch um&iacute;stěn&iacute; nastaven na aktu&aacute;ln&iacute; čas a při určov&aacute;n&iacute; nejbliž&scaron;&iacute;ch prvků budou použ&iacute;v&aacute;ny aktu&aacute;ln&iacute; a předpov&iacute;dan&eacute; rychlosti dopravy z&iacute;skan&eacute; ze zdrojů a čidel. Předpov&iacute;dan&eacute; rychlosti dopravy jsou vypočteny na z&aacute;kladě aktu&aacute;ln&iacute;ch rychlost&iacute; provozu, historick&yacute;ch rychlost&iacute; a aktu&aacute;ln&iacute;ch ud&aacute;lost&iacute;, např&iacute;klad podle stavu počas&iacute;. Rychlosti dopravy jsou předpov&iacute;d&aacute;ny na 12 hodin dopředu, takže můžete pomoc&iacute; posuvn&iacute;ku nastavit čas odjezdu až o 12 hodin vpřed.
+                        </p>
+                        <p>Tato nastaven&iacute; aktu&aacute;ln&iacute; dopravy jsou vhodn&aacute;, chcete-li zjistit, ke kter&yacute;m prvkům se lze dostat v&nbsp;nejkrat&scaron;&iacute;m možn&eacute;m čase, vyjedete-li okamžitě, za jednu hodinu atd.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Pokud za&scaron;krtnete pole  <b>Použ&iacute;t provoz</b> a vyberete možnost <b>Provoz založen&yacute; na typick&yacute;ch podm&iacute;nk&aacute;ch pro</b> den a čas, vyhled&aacute; n&aacute;stroj nejbliž&scaron;&iacute; prvky na z&aacute;kladě průměru historick&yacute;ch &uacute;dajů rychlosti v&nbsp;pětiminutov&yacute;ch intervalech v&nbsp;průběhu běžn&eacute;ho t&yacute;dne. V&yacute;sledky přihl&iacute;žej&iacute; k hustotě dopravy, neberou v&scaron;ak v&nbsp;potaz vliv aktu&aacute;ln&iacute;ch dopravn&iacute;ch podm&iacute;nek a ud&aacute;lost&iacute;, kter&eacute; se mohou v&yacute;razně li&scaron;it od norm&aacute;lu.
+                        </p>
+                        <p>Pomoc&iacute; nastaven&iacute; těchto historick&yacute;ch dopravn&iacute;ch informac&iacute; se např&iacute;klad můžete zeptat na ot&aacute;zku, &bdquo;Ke kter&yacute;m prvkům se mohu obyčejně nejrychleji dostat, pokud vyjedu v&nbsp;11:30 ve středu?&ldquo; 
+                        </p>
+                        <p>Nastaven&yacute; čas se ř&iacute;d&iacute; časov&yacute;m p&aacute;smem, ve kter&eacute;m se nach&aacute;z&iacute; poč&aacute;tečn&iacute; prvky. Pokud tedy nastav&iacute;te čas na 8:00 a m&aacute;te dva poč&aacute;tečn&iacute; prvky tras, jeden v&nbsp;New York City a druh&yacute; v&nbsp;Los Angeles, budou nejbliž&scaron;&iacute; um&iacute;stěn&iacute; hled&aacute;ny pro předpokl&aacute;dan&yacute; čas odjezdu 8:00 v&yacute;chodn&iacute;ho času a 8:00 tichomořsk&eacute;ho času.
+                        </p>
+                    </li>
+                </ul>
+                Mějte na paměti, že jak se vozidlo vzdaluje z&nbsp;v&yacute;choz&iacute;ho bodu, plyne i čas a dopravn&iacute; podm&iacute;nky se měn&iacute;. Tento n&aacute;stroj k tomu přihl&iacute;ž&iacute;, za&scaron;krtnete-li pole <b>Použ&iacute;t provoz</b>. Ne v&scaron;echny regiony v&scaron;ak podporuj&iacute; dopravn&iacute; data. Chcete-li zjistit, zda jsou tato data dostupn&aacute; ve va&scaron;&iacute; z&aacute;jmov&eacute; oblasti, klikněte v&nbsp;n&aacute;stroji na odkaz <b>Zobrazit dostupnost</b>. 
+            </p>
+            <p> <b>Doba j&iacute;zdy n&aacute;kladn&iacute;m vozidlem</b> může použ&iacute;vat dynamick&eacute; rychlosti cestov&aacute;n&iacute; vych&aacute;zej&iacute;c&iacute; z hustoty dopravy s omezen&iacute;m do maxim&aacute;ln&iacute; povolen&eacute; rychlosti pro n&aacute;kladn&iacute; vozidla. Pokud je např&iacute;klad dynamick&aacute; rychlost ulice na z&aacute;kladě živ&eacute;ho provozu 65 mil za hodinu, ale maxim&aacute;ln&iacute; povolen&aacute; rychlost pro n&aacute;kladn&iacute; vozidla pro tuto ulici je 55 mil za hodinu, použije v&yacute;počet pro tuto ulici 55 mil za hodinu.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Vybrat vrstvy překážek</h2></div>
+        <hr/>
+        <div>
+            <p> Jeden nebo v&iacute;ce prvků budou sloužit jako dočasn&aacute; omezen&iacute; (přek&aacute;žky) pohybu po př&iacute;slu&scaron;n&yacute;ch pozemn&iacute;ch komunikac&iacute;ch. Přek&aacute;žky můžete zadat pomoc&iacute; bodov&yacute;ch, liniov&yacute;ch nebo polygonov&yacute;ch prvků.
+            </p>
+            <p>Bodovou přek&aacute;žku lze použ&iacute;t k modelov&aacute;n&iacute; spadl&eacute;ho stromu, nehody, spadl&eacute;ho elektrick&eacute;ho veden&iacute; nebo jak&eacute;koli př&iacute;činy zastaven&iacute; dopravy v konkr&eacute;tn&iacute;m m&iacute;stě komunikace. Pohyb je povolen po komunikaci, zat&iacute;mco pohyb skrz přek&aacute;žku nen&iacute; možn&yacute;. Můžete určit až 250 prvků, kter&eacute; budou sloužit jako bodov&eacute; přek&aacute;žky.
+            </p>
+            <p>Liniov&aacute; přek&aacute;žka br&aacute;n&iacute; pohybu v&scaron;ude tam, kde prot&iacute;n&aacute; komunikace. Např&iacute;klad, průvod nebo protest, kter&yacute; zablokuje dopravu např&iacute;č několika ulicemi, může b&yacute;t modelov&aacute;n pomoc&iacute; liniov&eacute; přek&aacute;žky. Pokud v&scaron;echny liniov&eacute; přek&aacute;žky prot&iacute;naj&iacute; dohromady v&iacute;ce než 500 prvků pozemn&iacute; komunikace, n&aacute;stroj vr&aacute;t&iacute; chybu.
+            </p>
+            <p>Polygonov&aacute; přek&aacute;žka br&aacute;n&iacute; pohybu v&scaron;ude tam, kde polygon prot&iacute;n&aacute; komunikace. Př&iacute;kladem použit&iacute; tohoto typu přek&aacute;žky je modelov&aacute;n&iacute; z&aacute;plav, jež postihuj&iacute; č&aacute;sti komunikačn&iacute; s&iacute;tě takov&yacute;m způsobem, že pohyb v těchto &uacute;sec&iacute;ch je znemožněn. Pokud v&scaron;echny polygonov&eacute; přek&aacute;žky prot&iacute;naj&iacute; dohromady v&iacute;ce než 2 000 prvků pozemn&iacute; komunikace, n&aacute;stroj vr&aacute;t&iacute; chybu.
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>Pro každou lokalitu ve vstupní vrstvě</h2></div>
+        <hr/>
+        <div>
+            <p>K dispozici jsou dvě možnosti pro omezen&iacute; vyhled&aacute;v&aacute;n&iacute; nejbliž&scaron;&iacute;ch lokalit. Prvn&iacute; možnost&iacute; je omezen&iacute; maxim&aacute;ln&iacute;ho počtu nejbliž&scaron;&iacute;ch um&iacute;stěn&iacute;, kter&eacute; chcete naj&iacute;t pro jedno poč&aacute;tečn&iacute; um&iacute;stěn&iacute;. Můžete tak např&iacute;klad zvolit, aby byl vyhled&aacute;v&aacute;n jeden nejbliž&scaron;&iacute; park, dva nejbliž&scaron;&iacute; parky atd. Druhou možnost&iacute; je nastaven&iacute; maxim&aacute;ln&iacute; j&iacute;zdn&iacute; vzd&aacute;lenosti nebo doby j&iacute;zdy.
+            </p>
+            <p>Pokud tyto možnosti neza&scaron;krtnete, bude maxim&aacute;ln&iacute; počet nejbliž&scaron;&iacute;ch hledan&yacute;ch lokalit nastaven na 100 (maximum n&aacute;stroje) a maxim&aacute;ln&iacute; rozmez&iacute; pro vyhled&aacute;v&aacute;n&iacute; bude neomezen&eacute;.
+            </p>
+            <p>Doba zpracov&aacute;n&iacute; z&aacute;lež&iacute; na počtu poč&aacute;tečn&iacute;ch bodů, počtu nejbliž&scaron;&iacute;ch bodů a maxim&aacute;ln&iacute;m rozmez&iacute; pro vyhled&aacute;v&aacute;n&iacute;. Vět&scaron;&iacute; množstv&iacute; bodů nebo rozs&aacute;hlej&scaron;&iacute; rozmez&iacute; pro vyhled&aacute;v&aacute;n&iacute; prodlužuj&iacute; dobu zpracov&aacute;n&iacute;.
+            </p>
+            <p>Berte na vědom&iacute;, že pokud je nastaveno omezen&iacute; rozmez&iacute; pro vyhled&aacute;v&aacute;n&iacute;, může se st&aacute;t, že n&aacute;stroj v&nbsp;dan&eacute;m rozsahu nenalezne ž&aacute;dn&aacute; nejbliž&scaron;&iacute; um&iacute;stěn&iacute; nebo že nalezne m&eacute;ně um&iacute;stěn&iacute;, než je v&aacute;mi nastaven&yacute; maxim&aacute;ln&iacute; počet nejbliž&scaron;&iacute;ch um&iacute;stěn&iacute;.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy prvků, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy. Pokud vrstva prvků již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu. Vrstva prvků bude obsahovat dvě vrstvy: jednu reprezentuj&iacute;c&iacute; nejbliž&scaron;&iacute; m&iacute;sta a druhou reprezentuj&iacute;c&iacute; linie spojuj&iacute;c&iacute; vstupn&iacute; um&iacute;stěn&iacute; s&nbsp;nejbliž&scaron;&iacute;mi m&iacute;sty.
+            </p>
+            <p>Pokud vyberete  <b>Zahrnout vrstvy tras</b>, každ&aacute; trasa z&nbsp;v&yacute;sledku bude tak&eacute; uložena jako vrstva trasy. Vrstva trasy obsahuje v&scaron;echny informace konkr&eacute;tn&iacute; trasy, např. zast&aacute;vky přiřazen&eacute; k trase a směrov&eacute; pokyny. Vytv&aacute;řen&iacute; vrstev tras je užitečn&eacute;, pokud chcete sd&iacute;let jednotliv&eacute; trasy s&nbsp;ostatn&iacute;mi členy ve va&scaron;&iacute; organizaci nebo chcete trasy d&aacute;le upravovat pomoc&iacute; tlač&iacute;tka <b>Navigace</b> v&nbsp;prohl&iacute;žeči map. Vrstvy tras použ&iacute;vaj&iacute; n&aacute;zev vrstvy prvků jako předponu, ke kter&eacute; je přid&aacute;n n&aacute;zev trasy vygenerovan&yacute; v&nbsp;r&aacute;mci anal&yacute;zy. Každ&aacute; vrstva trasy tak m&aacute; jedinečn&yacute; n&aacute;zev.
+            </p>
+            <p>Maxim&aacute;ln&iacute; počet vrstev tras, kter&eacute; lze vytvořit, je  1 000. Pokud v&yacute;sledek obsahuje v&iacute;ce než  1 000 tras a je za&scaron;krtnuto  <b>Zahrnout vrstvy tras</b>, n&aacute;stroj vytvoř&iacute; jen v&yacute;stupn&iacute; feature službu.
+            </p>
+            <p>V&nbsp;rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se maj&iacute; uložit vrstva prvků a vrstvy tras, budou-li vytvořeny.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

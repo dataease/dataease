@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Centroidok keresése</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Centroidok keres&eacute;se"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z egy multipoint, vonal vagy ter&uuml;let vektoros elemeket tartalmaz&oacute; r&eacute;teggel meghat&aacute;rozza az egyes vektoros elemek reprezentat&iacute;v k&ouml;z&eacute;ppontj&aacute;t.
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;s haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel a program csak a bemenő multipoint, vonal vagy ter&uuml;let r&eacute;tegnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen l&aacute;that&oacute; vektoros elemeit elemzi.  Ha nincs bejel&ouml;lve, akkor a bemenő r&eacute;teg &ouml;sszes vektoros elem&eacute;t elemzi, akkor is, ha azok k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Centroidok létrehozására használt vektoros elemek rétegének kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p> A multipoint, vonal, vagy ter&uuml;let r&eacute;teg, amelyet centroidok keres&eacute;s&eacute;hez fog haszn&aacute;lni.
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Kimeneti helyek megjelenítése</h2></div>
+        <hr/>
+        <div>
+            <p> Ha a <b>Val&oacute;s centroidn&aacute;l</b> lehetős&eacute;g be van jel&ouml;lve (alap&eacute;rtelmez&eacute;s), a kimenet az egyes bemenő vektoros elemek centroidj&aacute;nak val&oacute;s hely&eacute;t adja vissza. A centroidok az al&aacute;bbi helyeken tal&aacute;lhat&oacute;k:
+                <ul>
+                    <li>Multipoint vektoros elemek &ndash; a kimeneti centroid a multipoint vektoros elem &ouml;sszes pontj&aacute;nak &aacute;tlagos x &eacute;s y koordin&aacute;t&aacute;in&aacute;l tal&aacute;lhat&oacute;k.
+                    </li>
+                    <li>Vonal vektoros elemek &ndash; a kimeneti centroid a vonalas vektor elem &ouml;sszes szegmens s&uacute;lyozott &aacute;tlagos k&ouml;z&eacute;ppontj&aacute;nak  x &eacute;s y koordin&aacute;tahely&eacute;n tal&aacute;lhat&oacute;. A s&uacute;lyoz&aacute;s a szegmens hossz&uacute;s&aacute;g&aacute;n alapul.
+                    </li>
+                    <li>Ter&uuml;let vektoros elemek &ndash; a kimeneti centroid a ter&uuml;let k&ouml;z&eacute;ppontj&aacute;ban tal&aacute;lhat&oacute;.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ha a  <b>bemenő vektoros elemek szerint tartalmazott</b> lehetős&eacute;g be van jel&ouml;lve, akkor a kimeneti pontszerű vektoros elemeket az egyes bemenő vektoros elemek tartalmazz&aacute;k, vagy azokon bel&uuml;l tal&aacute;lhat&oacute;k. Az eredm&eacute;nyk&eacute;nt kapott pontszerű vektoros elemek az al&aacute;bbiak szerint jelennek meg:
+                <ul>
+                    <li>Multipoint vektoros elemek &ndash; a kimeneti centroid egybev&aacute;g a multipoint csoport pontjainak egyik&eacute;vel.
+                    </li>
+                    <li>Vonalas vektoros elemek &ndash; a kimeneti centroid a vonalon tal&aacute;lhat&oacute;.  Ha a vonal egy g&ouml;rbe, akkor a kimenet a vonal k&ouml;z&eacute;ppontj&aacute;ban lesz. 
+                    </li>
+                    <li>Ter&uuml;let vektoros elemek &ndash; a kimeneti pont a ter&uuml;let vektoros elemen bel&uuml;l lesz.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Tổng hợp Độ tập trung và Phân tán</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Tổng hợp Độ tập trung v&agrave; Ph&acirc;n t&aacute;n"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y t&igrave;m c&aacute;c đối tượng trung t&acirc;m v&agrave; ph&acirc;n phối định hướng. C&oacute; thể sử dụng c&ocirc;ng cụ n&agrave;y để trả lời c&aacute;c c&acirc;u hỏi như:
+        <ul>
+            <li>T&acirc;m ở đ&acirc;u?
+            </li>
+            <li>Đối tượng n&agrave;o c&oacute; khả năng tiếp cận nhất từ tất cả c&aacute;c đối tượng kh&aacute;c?
+            </li>
+            <li>C&aacute;c đối tượng ph&acirc;n t&aacute;n, nhỏ gọn hoặc t&iacute;ch hợp như thế n&agrave;o?
+            </li>
+            <li>C&oacute; xu hướng c&oacute; định hướng n&agrave;o kh&ocirc;ng?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c đối tượng nh&igrave;n thấy trong lớp đầu v&agrave;o v&agrave; phạm vi bản đồ hiện tại sẽ được ph&acirc;n t&iacute;ch. Nếu bỏ chọn, tất cả đối tượng trong lớp đầu v&agrave;o sẽ được ph&acirc;n t&iacute;ch, ngay cả khi ch&uacute;ng ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Chọn lớp để mô tả</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp điểm, đường hoặc v&ugrave;ng sẽ được sử dụng để t&igrave;m c&aacute;c đối tượng trung t&acirc;m v&agrave; ph&acirc;n phối định hướng.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Loại tóm tắt</h2></div>
+        <hr/>
+        <div>
+            <p>Phương ph&aacute;p tổng hợp độ tập trung v&agrave; ph&acirc;n t&aacute;n. 
+            </p>
+            <ul>
+                <li>Đối tượng trung t&acirc;m - X&aacute;c định đối tượng nằm ở trung t&acirc;m nhất trong tập dữ liệu.
+                </li>
+                <li>Độ tập trung trung b&igrave;nh - X&aacute;c định trung t&acirc;m địa l&yacute; (hoặc trung t&acirc;m của độ tập trung) cho một tập hợp c&aacute;c đối tượng.
+                </li>
+                <li>Độ tập trung b&igrave;nh qu&acirc;n - X&aacute;c định vị tr&iacute; tối thiểu h&oacute;a khoảng c&aacute;ch Euclid tổng thể đến c&aacute;c đối tượng trong bộ dữ liệu.
+                </li>
+                <li>H&igrave;nh elip - Tạo c&aacute;c h&igrave;nh elip lệch t&acirc;m ti&ecirc;u chuẩn để tổng hợp c&aacute;c đặc t&iacute;nh kh&ocirc;ng gian của c&aacute;c đối tượng địa l&yacute;: xu hướng trung t&acirc;m, ph&acirc;n t&aacute;n v&agrave; xu hướng định hướng. C&oacute; thể định cỡ h&igrave;nh elip l&agrave; 1, 2, hoặc 3 độ lệch chuẩn.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Trọng lượng bằng (tùy chọn)</h2></div>
+        <hr/>
+        <div>
+            <p>Trường được sử dụng để định vị c&aacute;c vị tr&iacute; theo mức độ quan trọng tương đối của ch&uacute;ng. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Nhóm theo (tùy chọn)</h2></div>
+        <hr/>
+        <div>
+            <p>Trường được sử dụng để nh&oacute;m c&aacute;c đối tượng cho c&aacute;c t&iacute;nh to&aacute;n đối tượng trung t&acirc;m hoặc ph&acirc;n t&aacute;n ri&ecirc;ng. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu t&ecirc;n lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> menu thả xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

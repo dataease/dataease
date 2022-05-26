@@ -1,0 +1,195 @@
+<div class="feedEntryViewer">
+    <table border="0" width="100%" class="feedEntryViewerMenuTable" dojoAttachPoint="feedEntryViewerMenu" style="display: none;">
+        <tr width="100%"  dojoAttachPoint="entryCheckBoxDisplayOptions">
+        	<td align="left" dojoAttachPoint="entryNewButton">
+                <span class="feedEntryViewerMenu" dojoAttachPoint="doNew" dojoAttachEvent="onclick:_toggleNew"></span>
+        	</td>
+            <td align="left" dojoAttachPoint="entryEditButton" style="display: none;">
+                <span class="feedEntryViewerMenu" dojoAttachPoint="edit" dojoAttachEvent="onclick:_toggleEdit"></span>
+            </td>
+            <td align="left" dojoAttachPoint="entrySaveCancelButtons" style="display: none;">
+                <span class="feedEntryViewerMenu" dojoAttachPoint="save" dojoAttachEvent="onclick:saveEdits"></span>
+                <span class="feedEntryViewerMenu" dojoAttachPoint="cancel" dojoAttachEvent="onclick:cancelEdits"></span>
+            </td>
+            <td align="right">
+                <span class="feedEntryViewerMenu" dojoAttachPoint="displayOptions" dojoAttachEvent="onclick:_toggleOptions"></span>
+            </td>
+        </tr>
+        <tr class="feedEntryViewerDisplayCheckbox" dojoAttachPoint="entryCheckBoxRow" width="100%" style="display: none;">
+            <td dojoAttachPoint="feedEntryCelltitle">
+                <input type="checkbox" name="title" value="Title" dojoAttachPoint="feedEntryCheckBoxTitle" dojoAttachEvent="onclick:_toggleCheckbox"/>
+				<label for="title" dojoAttachPoint="feedEntryCheckBoxLabelTitle"></label>
+            </td>
+            <td dojoAttachPoint="feedEntryCellauthors">
+                <input type="checkbox" name="authors" value="Authors" dojoAttachPoint="feedEntryCheckBoxAuthors" dojoAttachEvent="onclick:_toggleCheckbox"/>
+				<label for="title" dojoAttachPoint="feedEntryCheckBoxLabelAuthors"></label>
+            </td>
+            <td dojoAttachPoint="feedEntryCellcontributors">
+                <input type="checkbox" name="contributors" value="Contributors" dojoAttachPoint="feedEntryCheckBoxContributors" dojoAttachEvent="onclick:_toggleCheckbox"/>
+				<label for="title" dojoAttachPoint="feedEntryCheckBoxLabelContributors"></label>
+            </td>
+            <td dojoAttachPoint="feedEntryCellid">
+                <input type="checkbox" name="id" value="Id" dojoAttachPoint="feedEntryCheckBoxId" dojoAttachEvent="onclick:_toggleCheckbox"/>
+				<label for="title" dojoAttachPoint="feedEntryCheckBoxLabelId"></label>
+            </td>
+            <td rowspan="2" align="right">
+                <span class="feedEntryViewerMenu" dojoAttachPoint="close" dojoAttachEvent="onclick:_toggleOptions"></span>
+            </td>
+		</tr>
+		<tr class="feedEntryViewerDisplayCheckbox" dojoAttachPoint="entryCheckBoxRow2" width="100%" style="display: none;">
+            <td dojoAttachPoint="feedEntryCellupdated">
+                <input type="checkbox" name="updated" value="Updated" dojoAttachPoint="feedEntryCheckBoxUpdated" dojoAttachEvent="onclick:_toggleCheckbox"/>
+				<label for="title" dojoAttachPoint="feedEntryCheckBoxLabelUpdated"></label>
+            </td>
+            <td dojoAttachPoint="feedEntryCellsummary">
+                <input type="checkbox" name="summary" value="Summary" dojoAttachPoint="feedEntryCheckBoxSummary" dojoAttachEvent="onclick:_toggleCheckbox"/>
+				<label for="title" dojoAttachPoint="feedEntryCheckBoxLabelSummary"></label>
+            </td>
+            <td dojoAttachPoint="feedEntryCellcontent">
+                <input type="checkbox" name="content" value="Content" dojoAttachPoint="feedEntryCheckBoxContent" dojoAttachEvent="onclick:_toggleCheckbox"/>
+				<label for="title" dojoAttachPoint="feedEntryCheckBoxLabelContent"></label>
+            </td>
+        </tr>
+    </table>
+    
+    <table class="feedEntryViewerContainer" border="0" width="100%">
+        <tr class="feedEntryViewerTitle" dojoAttachPoint="entryTitleRow" style="display: none;">
+            <td>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr class="graphic-tab-lgray">
+						<td class="lp2">
+							<span class="lp" dojoAttachPoint="entryTitleHeader"></span>
+						</td>
+                    </tr>
+                    <tr>
+                        <td>
+                        	<select dojoAttachPoint="entryTitleSelect" dojoAttachEvent="onchange:_switchEditor" style="display: none">
+                        		<option value="text">Text</option>
+								<option value="html">HTML</option>
+								<option value="xhtml">XHTML</option>
+                        	</select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" dojoAttachPoint="entryTitleNode">
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr class="feedEntryViewerAuthor" dojoAttachPoint="entryAuthorRow" style="display: none;">
+            <td>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr class="graphic-tab-lgray">
+						<td class="lp2">
+							<span class="lp" dojoAttachPoint="entryAuthorHeader"></span>
+						</td>
+                    </tr>
+                    <tr>
+                        <td dojoAttachPoint="entryAuthorNode">
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr class="feedEntryViewerContributor" dojoAttachPoint="entryContributorRow" style="display: none;">
+            <td>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr class="graphic-tab-lgray">
+						<td class="lp2">
+							<span class="lp" dojoAttachPoint="entryContributorHeader"></span>
+						</td>
+                    </tr>
+                    <tr>
+                        <td dojoAttachPoint="entryContributorNode" class="feedEntryViewerContributorNames">
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        
+        <tr class="feedEntryViewerId" dojoAttachPoint="entryIdRow" style="display: none;">
+            <td>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr class="graphic-tab-lgray">
+						<td class="lp2">
+							<span class="lp" dojoAttachPoint="entryIdHeader"></span>
+						</td>
+                    </tr>
+                    <tr>
+                        <td dojoAttachPoint="entryIdNode" class="feedEntryViewerIdText">
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    
+        <tr class="feedEntryViewerUpdated" dojoAttachPoint="entryUpdatedRow" style="display: none;">
+            <td>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr class="graphic-tab-lgray">
+						<td class="lp2">
+							<span class="lp" dojoAttachPoint="entryUpdatedHeader"></span>
+						</td>
+                    </tr>
+                    <tr>
+                        <td dojoAttachPoint="entryUpdatedNode" class="feedEntryViewerUpdatedText">
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    
+        <tr class="feedEntryViewerSummary" dojoAttachPoint="entrySummaryRow" style="display: none;">
+            <td>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr class="graphic-tab-lgray">
+						<td class="lp2" colspan="2">
+							<span class="lp" dojoAttachPoint="entrySummaryHeader"></span>
+						</td>
+                    </tr>
+                    <tr>
+                        <td>
+                        	<select dojoAttachPoint="entrySummarySelect" dojoAttachEvent="onchange:_switchEditor" style="display: none">
+                        		<option value="text">Text</option>
+								<option value="html">HTML</option>
+								<option value="xhtml">XHTML</option>
+                        	</select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td dojoAttachPoint="entrySummaryNode">
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    
+        <tr class="feedEntryViewerContent" dojoAttachPoint="entryContentRow" style="display: none;">
+            <td>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr class="graphic-tab-lgray">
+						<td class="lp2">
+							<span class="lp" dojoAttachPoint="entryContentHeader"></span>
+						</td>
+                    </tr>
+                    <tr>
+                        <td>
+                        	<select dojoAttachPoint="entryContentSelect" dojoAttachEvent="onchange:_switchEditor" style="display: none">
+                        		<option value="text">Text</option>
+								<option value="html">HTML</option>
+								<option value="xhtml">XHTML</option>
+                        	</select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td dojoAttachPoint="entryContentNode">
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>

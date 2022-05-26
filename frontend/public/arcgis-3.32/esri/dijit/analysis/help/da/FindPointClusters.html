@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Find punktklynger</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Find punktklynger"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j finder klynger af punktobjekter inden for omgivende st&oslash;j baseret p&aring; deres spatiale distribution.
+    </p>
+    <p>Hvis feltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, er det kun objekterne i det inputpunktlag, der er synligt inden for den aktuelle kortudstr&aelig;kning, der analyseres. Hvis markeringen fjernes, analyseres alle objekter i inputpunktlaget, ogs&aring; selvom de er placeret uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Vælg det lag, som der skal findes klynger for.</h2></div>
+        <hr/>
+        <div>
+            <p>Punktlaget, hvor klyngerne findes. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimalt antal punkter for at blive anset for at være en klynge</h2></div>
+        <hr/>
+        <div>
+            <p>Det mindste antal objekter, der kan betragtes som en klynge. Enhver klynge med f&aelig;rre objekter end den angivne vil blive betragtet som st&oslash;j. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Begræns søgeområdet til (valgfri)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Den maksimale afstand, inden for hvilken objekter kan betragtes som en del af samme klynge. Hvis feltet er tomt, vil v&aelig;rkt&oslash;jet k&oslash;re HDBSCAN, som anvender forskellige afstande til at adskille klynger af varierende t&aelig;thed fra mere spredt st&oslash;j. Hvis der er angivet en v&aelig;rdi, vil v&aelig;rkt&oslash;jet k&oslash;re DBSCAN, som anvender en bestemt afstand til at adskille t&aelig;tte klynger fra mere spredt st&oslash;j.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

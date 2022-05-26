@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Izveidot ūdensšķirtnes</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Izveidot ūdens&scaron;ķirtnes"></h2>
+        <hr/>
+    <p>&Scaron;is rīks katram ievades slāņa punktam nosaka ūdens&scaron;ķirtnes vai aug&scaron;teces apgabalu. 
+    </p>
+    <p>Piemēram, pieņemsim, ka jums ir punktu elementi, kas apzīmē ūdens piesārņojuma vietas, un jūs vēlaties noskaidrot &scaron;ī piesārņojuma iespējamos avotus. Tā kā piesārņojuma avotam ir jābūt kaut kur ūdensgūtves baseina tuvumā aug&scaron;tecē no &scaron;ī punkta, varat izmantot &scaron;o rīku, lai noteiktu ūdensgūtves baseinus, kuros ir piesārņojuma avoti.
+    </p>
+    <p>Ir svarīga jūsu ievades punktu atra&scaron;anās vieta.  Ja tie neatrodas precīzi uz ūdens noteces kanāla, rezultātā iegūtie ūdensgūtves baseini var būt ļoti mazi un nederīgi analīzes veik&scaron;anai. Funkciju  <b>Meklēt attālumu līdz tuvākajam ūdens noteces kanālam</b> var izmantot, lai pielāgotu savu ievades punktu atra&scaron;anās vietu tā, lai tā precīzi sakristu ar ūdens noteces kanālu un tādējādi varētu atrast ūdensgūtves baseinus, no kuriem ūdens ieplūst noteces kanālā eso&scaron;ā punktā.  Pielāgotās atra&scaron;anās vietas, kas tiek izmantotas, lai noteiktu ūdensgūtves baseinus, tiek ierakstītas izvades slānī&nbsp;&mdash; jūsu ievades punkti netiek mainīti.
+    </p>
+    <p>Rezultāts ir slāņu grupa, kurā ir divi slāņi: ūdensgūtves baseini un pielāgotie punkti, kas izmantoti, lai aprēķinātu ūdensgūtves baseinus.     
+    </p>
+    <p>Rezultāta ūdensgūtves baseiniem būs visi jūsu ievades punktu atribūti, kā arī &scaron;ādi papildu atribūti:     
+        <ul>
+            <li> <i>PourPtID</i>&nbsp;&mdash; satur ID vērtību no ievades punkta
+            </li>
+            <li> <i>Area Square Kilometers</i>&nbsp;&mdash; satur aug&scaron;teces ūdens&scaron;ķirtnes baseina apgabalu kvadrātkilometros
+            </li>
+            <li> <i>Description</i> un <i>DataResolution</i>&nbsp;&mdash; satur informāciju, kas attiecas uz hidroloģiskajiem datiem, kas tika izmantoti, lai aprēķinātu ceļu
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ja ir atzīmēta opcija  <b>Lietot pa&scaron;reizējo kartes pārklājumu</b>, ūdensgūtves baseinu aprēķinā&scaron;anai tiks izmantoti tikai pa&scaron;reizējā kartes pārklājuma elementi. Ja iespēja nav atzīmēta, tad tiks analizēti visi ievades slāņa elementi&nbsp;&mdash; arī tie, kuri atrodas ārpus pa&scaron;reizējā kartes pārklājuma.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punktu elementi, ko izmantot ūdensšķirtņu aprēķināšanai</h2></div>
+        <hr/>
+        <div>
+            <p>Katram punktam tiks aprēķināts ūdensgūtves baseins (aug&scaron;teces apgabals).  
+            </p>
+            <p>Papildus slāņa izvēlei no kartes varat atlasīt opciju  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta lejasdaļā. &Scaron;ī opcija atver galeriju, kurā varēsiet pārlūkot un atlasīt datu kopas no dažādiem avotiem un izmantot savā analīzē. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Meklēt attālumu līdz tuvākajam ūdens noteces kanālam</h2></div>
+        <hr/>
+        <div>
+            <p>Ja jūsu ievades punkti atrodas tālu prom no ūdens noteces kanāla, rezultāta ūdensgūtves baseini visdrīzāk būs ļoti mazi un nebūs īpa&scaron;i noderīgi, lai noteiktu aug&scaron;teces piesārņojuma avotu.  Vairākumā gadījumu ieteicams pārspraust ievades punktus pie tuvākā ūdens noteces kanāla, lai noskaidrotu ūdensgūtves baseinus, kuru ūdens plūst uz noteces kanālā eso&scaron;u punktu.  Lai atrastu tuvāko ūdens noteces kanālu, norādiet meklē&scaron;anas attālumu. Ja nenorādīsiet meklē&scaron;anas attālumu, rīks veiks aprēķinus un izmantos mērenu meklē&scaron;anas attālumu.  
+            </p>
+            <p>Lai izmantotu precīzu sava ievades punkta atra&scaron;anās vietu, kā meklē&scaron;anas attālumu norādiet nulli.  
+            </p>
+            <p>Analīzes nolūkā Esri ir sākotnēji aprēķinājis ūdens noteces kanālus, izmantojot standarta hidroloģiskos modeļus. Ja meklē&scaron;anas attālumā nav neviena ūdens noteces kanāla, tiek izmantota meklē&scaron;anas attālumā eso&scaron;a atra&scaron;anās vieta ar visaugstāko plūsmas akumulē&scaron;anas rādītāju.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slāņa nosaukums jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta izvēlnē, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+            <p> &Scaron;ī rīka izmanto&scaron;ana nepatērē kredītu.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

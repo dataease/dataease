@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Otsi punktklastreid</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Otsi punktklastreid"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist leiab &uuml;mbritseva m&uuml;ra hulgast punktobjektide klastrid nende ruumilise jaotuse p&otilde;hjal.
+    </p>
+    <p>Kui ruut  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, kasutatakse anal&uuml;&uuml;simiseks ainult neid sisendkihi punktobjekte, mis on praegu kaardil n&auml;ha. Kui see ruut pole m&auml;rgitud, kasutatakse anal&uuml;&uuml;si koostamisel k&otilde;iki sisendkihis olevaid objekte ka siis, kui neid pole praegu kaardil n&auml;ha.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Valige kiht klastrite otsimiseks</h2></div>
+        <hr/>
+        <div>
+            <p>Punktikiht, kus klastrid leitakse. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimaalne punktide arv, mida käsitletakse klastrina</h2></div>
+        <hr/>
+        <div>
+            <p>Klastri loomiseks vajalik minimaalne objektide arv. K&otilde;ik klastrid, millel on etten&auml;htust v&auml;hem objekte, loetakse m&uuml;raks. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Piira otsinguvahemikku (valikuline)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Maksimaalne kaugus, et kaaluda objekte, mis kuuluvad samasse klastrisse Kui see v&auml;li t&uuml;hjaks j&auml;tta, k&auml;ivitab t&ouml;&ouml;riist HDBSCAN-i, mis kasutab erinevaid vahemaid selleks, et eraldada erineva tihedusega klastrid h&otilde;redamast m&uuml;rast. V&auml;&auml;rtuse sisestamise korral k&auml;ivitab t&ouml;&ouml;riist DBSCAN-i, mis kasutab m&auml;&auml;ratud vahemaad, et eraldada tihedad klastrid h&otilde;redamast m&uuml;rast.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Vaikenimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui samanimeline kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemused</b> kaudu saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemus salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

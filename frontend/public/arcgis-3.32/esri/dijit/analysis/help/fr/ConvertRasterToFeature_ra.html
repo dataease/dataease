@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Convertir le raster en entité</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Outil Convertir le raster en entit&eacute;"></h2>
+        <hr/>
+    <p>Cet outil permet de convertir un raster en jeu de donn&eacute;es d'entit&eacute;, tel que des points, lignes ou polygones.
+    </p>
+    <p>Le param&egrave;tre  <b>Choisir un champ</b> vous permet de choisir quel champ attributaire du jeu de donn&eacute;es raster en entr&eacute;e deviendra un attribut de la classe d'entit&eacute;s en sortie. Ce param&egrave;tre est disponible uniquement pour les rasters entiers qui poss&egrave;dent des attributs suppl&eacute;mentaires dans la table associ&eacute;e.
+    </p>
+    <p>Le raster en entr&eacute;e peut avoir n'importe quelle taille de cellule.
+    </p>
+    <p>Les rasters entiers peuvent &ecirc;tre convertis en entit&eacute;s ponctuelles, lin&eacute;aires ou surfaciques. Cependant, les rasters &agrave; virgule flottante peuvent uniquement &ecirc;tre convertis en entit&eacute;s ponctuelles.
+    </p>
+    <p>Si l'option  <b>Utiliser l'&eacute;tendue actuelle de la carte</b> est s&eacute;lectionn&eacute;e, seules les cellules raster qui sont visibles au sein de l'&eacute;tendue actuelle de la carte seront converties. Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les cellules de la couche raster seront converties, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue actuelle de la carte. Tenez compte de cette information si la couche raster est volumineuse ou si sa r&eacute;solution est tr&egrave;s &eacute;lev&eacute;e.
+    </p>
+    <p>Voici certains cas d'utilisation de cet outil&nbsp;:
+ 
+        <ul>
+            <li>Cr&eacute;ez des entit&eacute;s surfaciques &agrave; partir d&rsquo;un raster de classification de l&rsquo;utilisation du sol.
+                
+ 
+            </li>
+            <li>Les cours d'eau identifi&eacute;s dans un MNT peuvent &ecirc;tre convertis en entit&eacute;s lin&eacute;aires.
+                
+
+            </li>
+            <li>Un MNT peut &ecirc;tre converti en entit&eacute;s ponctuelles pouvant servir dans un workflow non raster.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisir la couche raster à convertir</h2></div>
+        <hr/>
+        <div>
+            <p>La couche raster en entr&eacute;e qui sera convertie en couches d'entit&eacute;s.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Choisir un champ</h2></div>
+        <hr/>
+        <div>
+            <p>Indiquez un champ qui pr&eacute;cise les valeurs &agrave; utiliser pour la conversion.
+            </p>
+            <p>Il peut s'agir d'un entier ou d'une valeur textuelle.
+            </p>
+            <p>Un champ contenant des valeurs &agrave; virgule flottante peut uniquement servir si la sortie est destin&eacute;e &agrave; &ecirc;tre un jeu de donn&eacute;es ponctuelles.
+            </p>
+            <p>Le choix par d&eacute;faut consiste &agrave; utiliser le champ  <i>Value</i> qui contient la valeur dans chaque cellule raster.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Choisir le type en sortie</h2></div>
+        <hr/>
+        <div>
+            <p>Choisissez le type de g&eacute;om&eacute;trie parmi le point, la ligne ou le polygone.
+            </p>
+            <ul>
+                <li>Point&nbsp;: le raster sera converti en jeu de donn&eacute;es ponctuelles.
+                    
+ 
+                </li>
+                <li>Ligne&nbsp;: le raster sera converti en jeu de donn&eacute;es d'entit&eacute; lin&eacute;aires.
+                    
+ 
+                </li>
+                <li>Polygone&nbsp;: le raster sera converti en jeu de donn&eacute;es d'entit&eacute; surfaciques.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Simplifier des lignes ou des polygones</h2></div>
+        <hr/>
+        <div>
+            <p>Indiquez si les entit&eacute;s doivent &ecirc;tre simplifi&eacute;es.
+            </p>
+            <p>Si cette option est s&eacute;lectionn&eacute;e (par d&eacute;faut), les entit&eacute;s lin&eacute;aires ou surfaciques sont liss&eacute;es pour produire un r&eacute;sultat plus g&eacute;n&eacute;ralis&eacute;. Si cette option n'est pas s&eacute;lectionn&eacute;e, les entit&eacute;s lin&eacute;aires suivent les limites des cellules du jeu de donn&eacute;es raster.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

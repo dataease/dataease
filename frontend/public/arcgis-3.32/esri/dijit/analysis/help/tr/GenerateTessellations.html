@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Mozaikler Oluştur</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Mozaikler Oluştur"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, belirtilen şekil ve b&uuml;y&uuml;kl&uuml;ğe bağlı olarak &ccedil;alışma alanı &uuml;zerinde mozaik oluşturur.
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> onay kutusu, bu ara&ccedil; i&ccedil;in devre dışı bırakılmıştır, &ccedil;&uuml;nk&uuml; mozaikler oluşturmak i&ccedil;in kullanılan yayılım, <b>Yayılımı tanımla</b> parametresi tarafından kontrol edilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Şekil seç</h2></div>
+        <hr/>
+        <div>
+            <p>Oluşturmak istediğiniz mozaiklerin şekli veya geometrisi. Mevcut şekiller  <code>Kare</code>, <code>Altıgen</code>, <code>Ters Altıgen</code>, <code>&Uuml;&ccedil;gen</code> ve <code>Eşkenar D&ouml;rtgen</code>&rsquo;dir.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Çalışma alanı tanımla</h2></div>
+        <hr/>
+        <div>
+            <p>Mozaiklerin kapsayacağı alan veya yayılım.  Yayılım, mevcut harita yayılımı, mevcut bir katmanın yayılımı kullanılarak veya yayılım olarak kullanılacak bir alanın etkileşimli olarak &ccedil;izilmesiyle belirlenebilir.
+            </p>
+            <p>Yayılımı belirlemek i&ccedil;in bir detay katmanı se&ccedil;ildiyse, yalnızca kesişen mozaikleri tutma se&ccedil;eneği etkinleştirilecektir. İşaretli ise, sonu&ccedil; mozaik katmanında, yalnızca belirtilen yayılım katmandaki detaylarla &ouml;rt&uuml;şen veya kesişen mozaikler &uuml;retilir. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>İşaretli değil
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Tam Yayılımlı Kapsam">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>İşaretli
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Detay Kapsamı">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Kutu boyutunu belirterek tanımla</h2></div>
+        <hr/>
+        <div>
+            <p>Her h&uuml;crenin boyutu. H&uuml;cre boyutu, kare birimler belirtilerek veya aşağıdaki &ouml;l&ccedil;&uuml;mler kullanılarak hesaplanan bir mesafe belirtilerek belirlenebilir (d = Mesafe): 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Kare
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Kare Mozaik">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Altıgen
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Altıgen Mozaik">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Ters Altıgen
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Ters Altıgen Mozaik">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>&Uuml;&ccedil;gen
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="&Uuml;&ccedil;gen Mozaik">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Eşkenar D&ouml;rtgen
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Eşkenar D&ouml;rtgen Mozaik">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adıdır.  Katman zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

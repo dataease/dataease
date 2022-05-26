@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Determinar Melhor Rede de Custo da Viagem</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="Ilustra&ccedil;&atilde;o da ferramenta Determinar Melhor Rede de Custo da Viagem"></h2>
+        <hr/>
+    <p>Esta ferramenta calcula a rede de custo favor&aacute;vel de um conjunto de regi&otilde;es de entrada.
+    </p>
+    <p>Uma aplica&ccedil;&atilde;o de exemplo desta ferramenta &eacute; encontrar a melhor rede para ve&iacute;culos de emerg&ecirc;ncia.
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente estes locais na camada de entrada que s&atilde;o vis&iacute;veis dentro da extens&atilde;o de mapa atual ser&atilde;o analisados. Se n&atilde;o selecionada, todos os locais na camada de entrada ser&atilde;o analisadas, mesmo que estiverem fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Escolha camada de localização de feição ou raster para determinar caminhos de viagem entre</h2></div>
+        <hr/>
+        <div>
+            <p>As regi&otilde;es de entrada que devem ser conectadas pela rede de menor custo.
+            </p>
+            <p>As regi&otilde;es podem ser definidas por um servi&ccedil;o de imagem ou por um servi&ccedil;o da fei&ccedil;&atilde;o.
+            </p>
+            <p>Para servi&ccedil;o de imagem, as regi&otilde;es s&atilde;o definidas por grupos de c&eacute;lulas cont&iacute;guas (adjacentes) do mesmo valor. Cada regi&atilde;o deve ser numerada com exclusividade. As c&eacute;lulas que n&atilde;o fazem parte de nenhuma regi&atilde;o devem ser NoData. O tipo de raster deve ser inteiro e os valores podem ser positivos ou negativos.
+            </p>
+            <p>Para servi&ccedil;o da fei&ccedil;&atilde;o, a entrada pode ser ponto, linha ou pol&iacute;gono.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Escolher camada de raster de custo da viagem</h2></div>
+        <hr/>
+        <div>
+            <p>Um raster definindo o custo ou imped&acirc;ncia para mover planimetricamente atrav&eacute;s de cada c&eacute;lula.
+            </p>
+            <p>O valor de cada localiza&ccedil;&atilde;o da c&eacute;lula representa a dist&acirc;ncia de unidade por custo para mover pela c&eacute;lula. Cada valor de localiza&ccedil;&atilde;o de c&eacute;lula &eacute; multiplicado pela resolu&ccedil;&atilde;o de pixel, enquanto tamb&eacute;m compensando por movimento diagonal para obter o custo total de passagem pela c&eacute;lula.
+            </p>
+            <p>Os valores do custo de raster podem ser inteiros ou pontos flutuantes, mas eles n&atilde;o podem ser negativos ou zero (voc&ecirc; n&atilde;o pode ter um custo  negativo ou zero).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Nome da camada de polilinha de caminhos favoráveis resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Voc&ecirc; pode especificar o nome de uma pasta em  <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo utilizando a caixa suspensa <b>Salvar resultados em</b> .
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Nome da camada de polilinha de caminhos da vizinhança resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Voc&ecirc; pode especificar o nome de uma pasta em  <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo utilizando a caixa suspensa <b>Salvar resultados em</b> .
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Ustvari obrise</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="Ustvari obrise"></h2>
+        <hr/>
+    <p>Obris je območje, ki pokriva dano razdaljo od točkovnega, linijskega ali poligonskega geoobjekta. 
+    </p>
+    <p>Obrisi se običajno uporabljajo za ustvarjanje poligonov, ki jih je mogoče nadalje analizirati z drugimi orodji. Na primer, če je vpra&scaron;anje &raquo;Katere stavbe so znotraj enega kilometra od &scaron;ole?&laquo; je odgovor mogoče najti tako, da ustvarite obris enega kilometra okrog &scaron;ole in da prekrijete obris s slojem, ki vsebuje kataster stavb. Končni rezultat je sloj stavb, ki so znotraj enega kilometra od &scaron;ole.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi sloj za katerega je treba uporabiti obris</h2></div>
+        <hr/>
+        <div>
+            <p>Točkovni, linijski ali poligonski geoobjekti, ki bodo obrisani. Vhodni sloji morajo biti v projiciranem koordinatnem sistemu ali mora biti procesni koordinatni sistem nastavljen na projiciran koordinatni sistem s pomočjo  <b>okolj analize</b>.
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>Izberite vrsto obrisa za uporabo</h2></div>
+        <hr/>
+        <div>
+            <p>Obstajajo trije načini, kako lahko navedete velikost obrisa za svoje vhodne geoobjekte: 
+                <ul>
+                    <li>Navedite razdaljo, ki bo veljala za vse geoobjekte.
+                    </li>
+                    <li>Navedite polje na vhodnem sloju, ki vsebuje vrednost razdalje. Lahko uporabite besedilno ali &scaron;tevilsko polje. Če linearna enota ni določena, bodo uporabljene enote koordinatnega sistema. Če uporabljate geografski koordinatni sistem, se bo za polja brez enot &scaron;telo, da so metri. 
+                    </li>
+                    <li>Izdelajte izraz z več polji in matematičnimi operacijami. Na primer, za ustvarjanje obrisa, 10-krat večjega od vrednosti polja z imenom  <i>wind_speed</i>, dodajte izraz <i>$feature[&quot;wind_speed&quot;] x 10</i>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Izberite metodo izdelave obrisa</h2></div>
+        <hr/>
+        <div>
+            <p>Lahko izberete  <b>planarno</b> ali <b>geodetsko</b> metodo. <b>Planarna</b> metoda je lahko hitrej&scaron;a in je primerna za lokalno analizo projiciranih podatkov. <b>Geodetska</b> metoda je primerna za velika območja in kateri koli geografski koordinatni sistem.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>Izberite tip metode ukinjanja</h2></div>
+        <hr/>
+        <div>
+            <p>Možnosti za določanje metode razgradnje. Če je izbrana metoda razgradnje, vam bo omogočena možnost ustvarjanja večdelnih ali enodelnih območij, statistiko pa boste lahko izračunali na podlagi razpoložljivih polj.
+                <ul>
+                    <li> <b>Vsi</b> &ndash; vsi geoobjekti bodo razgrajeni. Če so omogočeni večdelni geoobjekti, bodo vsi geoobjekti razgrajeni v en geoobjekt. Če večdelni geoobjekti niso omogočeni, bodo razgrajeni sosednji ali prekrivajoči se geoobjekti.
+                    </li>
+                    <li> <b>Polja</b> &ndash; razgrajeni bodo geoobjekti, ki imajo enako navedeno polje ali kombinacijo navedenih polj. Če so omogočeni večdelni geoobjekti, bodo vsi geoobjekti z istim poljem razgrajeni v en geoobjekt. Če večdelni geoobjekti niso omogočeni, bodo razgrajeni sosednji ali prekrivajoči se geoobjekti z isto vrednostjo polja.
+                    </li>
+                    <li> <b>Noben</b> &ndash; noben geoobjekt ne bo razgrajen. To je privzeto.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Omogoči geoobjekte iz več delov</h2></div>
+        <hr/>
+        <div>
+            <p>Možnost za navedbo, ali bo va&scaron; rezultat sestavljen iz enodelnih ali večdelnih geoobjektov. 
+
+            </p>
+            <p>
+                <ul>
+                    <li>Obkljukano &ndash; rezultati va&scaron;e analize bodo vsebovali večdelne geoobjekte.   
+                    </li>
+                    <li>Odkljukano &ndash; rezultati va&scaron;e analize bodo vsebovali enodelne geoobjekte. To je privzeto.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Dodaj statistiko (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p> Statistiko lahko izračunate na povzetih geoobjektih.Na &scaron;tevilskih poljih lahko izračunate naslednje:
+                <ul>
+                    <li>&Scaron;tetje &ndash; Izračuna &scaron;tevilo nepraznih vrednosti. Uporabljeno je lahko za  &scaron;tevilska ali besedilna polja. &Scaron;tetje za [null, 0, 2] je 2.
+                    </li>
+                    <li>Vsota &ndash; vsota &scaron;tevilskih vrednosti v polju. Vsota [null, null, 3] je 3.
+                    </li>
+                    <li>Srednja vrednost &ndash; srednja vrednost &scaron;tevilčnih vrednosti. Srednja vrednost za [0, 2, null] je 1.
+                    </li>
+                    <li>Minimum &ndash; minimalna vrednost &scaron;tevilskega polja. Minimum za [0, 2, null] je 0. 
+                    </li>
+                    <li>Maksimum &ndash; maksimalna vrednost &scaron;tevilskega polja. Maksimalna vrednost za [0, 2, null] je 2.
+                    </li>
+                    <li>Razpon &ndash; razpon &scaron;tevilskega polja. Izračuna se tako, da se minimalne vrednosti od&scaron;tejejo od maksimalne vrednosti. Razpon za [0, null, 1] je 1. Razpon za [null, 4] je 0.
+                    </li>
+                    <li>Varianca &ndash; varianca &scaron;tevilskega polja v sledi. Varianca za [1] je brez vrednosti. Varianca za [null, 1,0,1,1] je 0,25.
+                    </li>
+                    <li>Standardni odklon &ndash; standardni odklon &scaron;tevilskega polja. Standardni odklon za [1] je brez vrednosti. Standardni odklon [brez vrednosti, 1,0,1,1] je 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Na &scaron;tevilskih polji lahko izračunate naslednje:
+                <ul>
+                    <li>&Scaron;tetje &ndash; &scaron;tevilo nizov, ki imajo neničelno vrednost.
+                    </li>
+                    <li>Kateri koli &ndash; ta statistika je naključni vzorec besedilne vrednosti v navedenem polju.
+                    </li>
+                </ul>
+                Vsa statistika bo izračunana na neničelnih vrednostih. Sloj z rezultati bo vseboval nova polja za vsako izračunano statistiko. Z izbiro atributov in statistik je mogoče dodati katerokoli statistiko. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Izberite ArcGIS Data Store za shranjevanje rezultatov v</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultati GeoAnalytics so shranjeni v shrambo podatkov in prikazani kot geoobjektni sloj v  Portal for ArcGIS. V večini primerov je treba rezultate shraniti v prostorsko-časovno shrambo podatkov, kar je privzeto. V nekaterih primerih je dobra možnost hramba podatkov v relacijskih shrambi podatkov. V nadaljevanju so navedeni razlogi, zakaj bi morda želeli shraniti rezultate v relacijsko shrambo podatkov: 
+                <ul>
+                    <li>Rezultate lahko uporabite za sodelovanjeprekportala.
+                    </li>
+                    <li>Pri rezultatih lahkoomogočite možnosti sinhronizacije.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relacijske shrambe podatkov ne smete uporabljati, če pričakujete, da se bodo va&scaron;i rezultati GeoAnalytics povečali in želite izkoristiti možnosti velike prostorsko-časovne shrambe podatkov za obdelavo velikih količin podatkov.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen. Če zapisujete v ArcGIS Data Store, bodo va&scaron;i rezultati shranjeni v  <b>Moji vsebini</b> in dodani na karto. Če zapisujete v delitev datotek velikih podatkov, bodo va&scaron;i rezultati shranjeni v delitev datotek velikih podatkov in dodani v njen manifest. Ne bodo dodani v skupino. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, orodje ne bo uspe&scaron;no.
+            </p>
+            <p>Ko zapisujete v  ArcGIS Data Store (relacijsko ali prostorsko-časovno shrambo velikih podatkov) s pomočjo spustnega menija  <b>Shrani rezultat v</b>, lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

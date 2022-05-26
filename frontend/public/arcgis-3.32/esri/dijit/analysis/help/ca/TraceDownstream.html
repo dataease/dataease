@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Traçat aigua avall</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Tra&ccedil;at aigua avall"></h2>
+        <hr/>
+    <p>Aquesta eina determina el tra&ccedil;at, o el recorregut del flux, en direcci&oacute; aigua avall des dels punts de la vostra capa d'entrada.
+    </p>
+    <p>Per exemple, suposeu que teniu entitats de punts que representen fonts de contaminaci&oacute; i voleu determinar a quin lloc de la vostra &agrave;rea d'estudi fluir&agrave; la contaminaci&oacute;. Podeu fer servir Tra&ccedil;at aigua avall per identificar quin recorregut seguir&agrave; la contaminaci&oacute;. Si especifiqueu un valor i les unitats de dist&agrave;ncia, aquest tra&ccedil;at tamb&eacute; es pot dividir en segments de l&iacute;nia individuals. La l&iacute;nia que es retornar&agrave; pot ser la longitud total del recorregut del flux, una longitud de tra&ccedil;at m&agrave;xima que s'hagi especificat o una longitud retallada a entitats d'&agrave;rees, com ara la vostra &agrave;rea d'estudi. En molts casos, si es retorna la longitud total de la ruta del tra&ccedil;at, ser&agrave; des de l'origen fins a l'oce&agrave;.
+    </p>
+    <p>El resultat &eacute;s una l&iacute;nia que representa el tra&ccedil;at aigua avall. Si s'especifica una dist&agrave;ncia per a l'opci&oacute;  <b>Divideix el tra&ccedil;at en segments de l&iacute;nia</b>, la l&iacute;nia del tra&ccedil;at es dividir&agrave; en diverses l&iacute;nies, cadascuna amb la longitud especificada. Per exemple, si el punt d'entrada representa un vessament de contaminaci&oacute; i el riu al qual flueix es mou a un ritme de 0,6 milles per hora (o 15 milles per dia), &eacute;s possible que vulgueu dividir el riu en segments de 15 milles. Si dividiu el tra&ccedil;at en intervals de 15 milles, es mostrar&agrave; el recorregut que far&agrave; el vessament cada dia aproximadament. La l&iacute;nia se simbolitzar&agrave; amb colors graduats en funci&oacute; de la dist&agrave;ncia i s'etiquetar&agrave; amb la dist&agrave;ncia des de l'inici del tra&ccedil;at.
+    </p>
+    <p>El tra&ccedil;at resultant tindr&agrave; tots els atributs dels punts d'entrada i atributs addicionals. 
+        <ul>
+            <li> <i>PointID</i>PointID: cont&eacute; el valor d'ID del punt d'entrada.
+                
+
+            </li>
+            <li> <i>LengthKm</i>: Cont&eacute; la longitud en quil&ograve;metres del tra&ccedil;at aigua avall total.
+                
+
+            </li>
+            <li> <i>Description</i> i <i>DataResolution</i>: contenen informaci&oacute; que pertany a les dades hidrol&ograve;giques que s'han fet servir per calcular el tra&ccedil;at.
+                
+
+            </li>
+            <li> <i>FromDistance</i> i <i>ToDistance</i>: contenen la dist&agrave;ncia des de i fins a cada segment de l&iacute;nia. Aquests atributs s'escriuen si es fa servir <b>Divideix el tra&ccedil;at en segments de l&iacute;nia</b>.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s s'analitzaran les entitats de punts de la capa d'entrada que siguin visibles a l'extensi&oacute; de mapa actual. Si l'opci&oacute; est&agrave; desactivada, s'utilitzaran totes les entitats de la capa d'entrada, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Entitats de punts que es faran servir com a ubicacions d'inici per a cada traçat aigua avall</h2></div>
+        <hr/>
+        <div>
+            <p>Entitats de punts que es faran servir com a ubicaci&oacute; d'inici del tra&ccedil;at aigua avall. La sortida contindr&agrave; una l&iacute;nia per a cada punt d'entrada.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b>, que es troba al final de la llista desplegable. Aquesta opci&oacute; obre una galeria on podeu cercar i seleccionar datasets de diversos or&iacute;gens per u utilitzar-los a l'an&agrave;lisi. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Divideix el traçat en segments de línia</h2></div>
+        <hr/>
+        <div>
+            <p>La l&iacute;nia del tra&ccedil;at es dividir&agrave; en diverses l&iacute;nies, cadascuna amb la longitud especificada. Per exemple, si el punt d'entrada representa un vessament de contaminaci&oacute; i el riu al qual flueix es mou a un ritme de 0,6 milles per hora (o 15 milles per dia), &eacute;s possible que vulgueu dividir el riu en segments de 15 milles. Si dividiu el tra&ccedil;at en intervals de 15 milles, es mostrar&agrave; el recorregut que far&agrave; el vessament cada dia aproximadament. La l&iacute;nia se simbolitzar&agrave; amb colors graduats en funci&oacute; de la dist&agrave;ncia i s'etiquetar&agrave; amb la dist&agrave;ncia des de l'inici del tra&ccedil;at. El tra&ccedil;at resultat tindr&agrave; diversos segments de l&iacute;nia, cadascun amb camps  <i>FromDistance</i> i <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Distància màxima del traçat</h2></div>
+        <hr/>
+        <div>
+            <p>Determina la longitud total de la l&iacute;nia que es retornar&agrave;. Si proporcioneu entitats d'&agrave;rees per retallar el tra&ccedil;at, el resultat es retallar&agrave; a l'entitat d'&agrave;rea, independentment de la dist&agrave;ncia que introdu&iuml;u aqu&iacute;.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Retalla la sortida a</h2></div>
+        <hr/>
+        <div>
+            <p>Dibuixeu o proporcioneu una capa de l'&agrave;rea on voleu que es retalli el tra&ccedil;at. Per exemple, si voleu que el resultat del tra&ccedil;at estigui nom&eacute;s dins de l'&agrave;rea d'estudi, com ara un comtat, feu servir l'entitat de comtat com a entrada perqu&egrave; el tra&ccedil;at s'aturi al l&iacute;mit del comtat.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa.  El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si el nom de la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Mitjan&ccedil;ant el men&uacute; desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desar&agrave; el resultat.
+            </p>
+            <p> L'execuci&oacute; d'aquesta eina no consumeix cr&egrave;dits.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

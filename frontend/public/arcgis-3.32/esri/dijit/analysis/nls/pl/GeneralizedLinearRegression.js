@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/pl/GeneralizedLinearRegression",{modifiedTitle:"Generalizowana regresja liniowa - ${goal}",fit:"Dopasuj",fitAndPredict:"Dopasuj i prognozuj",selectGoal:"Co chcesz zrobi\u0107?",fitGoal:"Dopasuj model, aby oceni\u0107 jego wydajno\u015b\u0107",fitAndPredictGoal:"Dopasuj model i prognozuj warto\u015bci",inputLayerLabel:"Wybierz warstw\u0119, na podstawie kt\u00f3rej zostanie wygenerowany model",chooseDependentField:"Wybierz pole do modelowania",chooseDataType:"Wybierz typ danych, kt\u00f3re modelujesz",
+continuousData:"Ci\u0105g\u0142y",binaryData:"Binarny",countData:"Liczba",chooseExplanatoryField:"Wybierz pola opisuj\u0105ce",chooseFeaturesToPredict:"Wybierz warstw\u0119, dla kt\u00f3rej b\u0119d\u0105 prognozowane warto\u015bci",chooseExplainMatch:"Wybierz spos\u00f3b dopasowywania p\u00f3l opisuj\u0105cych",outputLayerName:"GLR ${inputLayerName}",itemDescription:"Warstwa obiektowa utworzona w wyniku uruchomienia rozwi\u0105za\u0144 generalizowanej regresji liniowej ${goal}.",itemTags:"Wynik analizy, generalizowana regresja liniowa, ${inputLayerName}, ${goal}",
+itemSnippet:"Warstwa obiektowa wygenerowana na podstawie generalizowanej regresji liniowej ${goal}"});

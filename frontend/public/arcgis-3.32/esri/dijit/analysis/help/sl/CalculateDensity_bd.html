@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Izračun gostote</h2><p/>
+        <h2><img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" alt="Izračun gostote"></h2>
+        <hr/>
+    <p>Orodje za izračun gostote ustvari karto gostote iz točkovnih geoobjektov s &scaron;irjenjem znanih količin nekaterih pojavov (predstavljenih kot atributi točk) na karti. Rezultat je poligonski sloj, klasificiran od največje do najmanj&scaron;e gostote.   
+
+    </p>
+    <p>Pri vhodnih točkah mora vsaka točka predstavljali lokacijo nekega dogodka, sloj z rezultati pa predstavlja &scaron;tevilo dogodkov na posamezno območje. Vi&scaron;ja vrednost gostote na novi lokaciji pomeni, da je v bližini te lokacije več točk. V veliko primerih je sloj z rezultati mogoče interpretirati kot območje tveganja za prihodnje dogodke. Na primer, če vhodne točke predstavljajo lokacije udarov strele, je sloj z rezultati mogoče interpretirati kot območje tveganja za prihodnje udare strele.
+    </p>
+    <p>Drugi primeri uporabe tega orodja vključujejo:
+        <ul>
+            <li>Ustvarjanje kart gostote kriminala, ki pomagajo policiji ustrezno razporediti vire na območja z visoko stopnjo kriminala.
+            </li>
+            <li>Izračunavanje gostote porazdelitve bolni&scaron;nic v okrožju. Sloj z rezultati bo prikazoval območja z dobro in slabo dostopnostjo do bolni&scaron;nic, te informacije pa je mogoče uporabiti pri odločitvah o kraju gradnje novih bolni&scaron;nic.
+            </li>
+            <li>Identifikacija območij, za katere obstaja visoko tveganje gozdnih požarov glede na pretekle lokacije gozdnih požarov.
+            </li>
+            <li>Lociranje prebivalstva, ki je daleč od avtocest za načrtovanje poteka novih cest.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi točkovni sloj, iz katerega je treba izračunati gostoto</h2></div>
+        <hr/>
+        <div>
+            <p>Točkovni sloj, iz katerega bo izračunana gostota.
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Izberi enega ali več polj za izračun gostote (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p>Vnesite eno ali več polj, ki določajo &scaron;tevilo incidentov na posamezni lokaciji. Na primer, če imate točke, ki predstavljajo mesta, lahko uporabite polje, ki predstavlja prebivalstvo mesta kot polje &scaron;tetja. Sloj gostote prebivalstva bo izračunal večje gostote prebivalstva v bližini mest z več prebivalci.
+            </p>
+            <p>Gostota &scaron;tevila točk bo vedno izračunana. Če nobeno polje ni izbrano, bo posamezna lokacija &scaron;tela za eno.
+            </p>
+        </div>
+    </div>
+    <div id="binType">
+        <div><h2>Izberi obliko celice</h2></div>
+        <hr/>
+        <div>
+            <p>Oblika celic, v katero bodo točke agregirane in se bodo uporabljale za izračun gostote.
+            </p>
+            <p>Za analizo s  <b>&scaron;tirikotnimi</b> ali <b>&scaron;estkotnimi</b> celicami je zahtevan projiciran koordinatni sistem. <b>Procesni koordinatni sistem</b> lahko nastavite v <b>okoljih analize</b>. Če va&scaron; delovni koordinatni sistem ni nastavljen na projiciran koordinatni sistem, bo to od vas zahtevano, ko boste <b>Zagnali analizo</b> .
+            </p>
+        </div>
+    </div>
+    <div id="binSizing">
+        <div><h2>Izberi velikost celice za agregacijo</h2></div>
+        <hr/>
+        <div>
+            <p>Velikost ustvarjenih celic. Za &scaron;tirikotno celico predstavlja velikost vi&scaron;ino &scaron;tirikotnika. Za &scaron;estkotno celico predstavlja velikost vi&scaron;ino &scaron;estkotnika (od vzporednih stranic).
+            </p>
+        </div>
+    </div>
+    <div id="weight">
+        <div><h2>Izberi metodo obtežitve gostote</h2></div>
+        <hr/>
+        <div>
+            <p>Tip obtežitve, ki se uporablja pri izračunu gostote. Na voljo sta dve možnosti:
+                <ul>
+                    <li> <b>Enotna</b>&ndash; izračunava razsežnost na posamezni poligon.
+                    </li>
+                    <li> <b>Jedro</b>&ndash; uporablja funkcijo jedra za prilagajanje gladke stožčaste povr&scaron;ine na vsako točko.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Izberi velikost soseske</h2></div>
+        <hr/>
+        <div>
+            <p>Velikost poligona, ki se uporablja za izračun gostote. Velikost soseske mora biti večja od velikosti celice.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Izberi izhodne enote za gostoto</h2></div>
+        <hr/>
+        <div>
+            <p>Želene izhodne enote vrednosti gostote. Privzeto je to nastavljeno na kvadratne kilometre ali kvadratne milje glede na privzete enote, določene v va&scaron;em profilu. Če so vrednosti gostote zelo majhne, lahko povečate velikost povr&scaron;inskih enot (na primer kvadratne metre v kvadratne kilometre), da se vrnejo večje vrednosti. Vrednosti samo skalirajo rezultat.  
+
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Izračunaj gostoto s pomočjo časovnih korakov (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p>Če je čas na vhodnem točkovnem sloju omogočen in predstavlja trenutek v času, analizo lahko izvedete s časovnimi koraki. Pri uporabi časa lahko nastavite tri parametre:
+                <ul>
+                    <li> <b>Interval časovnih korakov</b>
+                    </li>
+                    <li> <b>Kako pogosto ponoviti časovni korak</b>
+                    </li>
+                    <li> <b>Čas za poravnavo časovnih korakov z</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Na primer, če imatepodatke, ki predstavljajo eno leto in jih želite analizirati s tedenskimi koraki, nastavite  <b>interval časovnih korakov</b> na <code>1 teden</code>. 
+            </p>
+            <p>Na primer, če imatepodatke, ki predstavljajo eno leto in jih želite analizirati glede na prvi teden v mesecu, , nastavite  <b>interval časovnih korakov</b> na <code>1 teden</code>, <b>pogostost ponavljanja časovnega koraka</b> na <code>1 mesec</code> in <b>čas za uskladitev časovnih korakov</b> na <code>1. januar ob 12.00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Interval časovnih korakov</h2></div>
+        <hr/>
+        <div>
+            <p>Časovniinterval, uporabljen za ustvarjanje korakov.  <b>Interval časovnega koraka</b> je mogoče uporabiti samostojno ali skupaj s <b>pogostostjo ponavljanja intervala časovnega koraka</b> ali <b>časom za uskladitev časovnih korakov s</b> parametrom.
+            </p>
+            <p>Na primer, če želite ustvariti časovne korake, kise odvijejo vsak ponedeljek od 9.00 do 10.00, nastavite  <b>Časovni korak</b> na <code>1 urp</code>, <b>Pogostost ponavljanja časovnega koraka</b> na <code>1 teden</code> in <b>Čas za uskladitev časovnih korakov na</b> <code>9.00 v ponedeljek</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Kako pogosto ponoviti časovni korak</h2></div>
+        <hr/>
+        <div>
+            <p> Korak, uporabljen za izračun časovnega koraka. <b>Pogostost ponavljanja časovnega koraka</b> je mogoče uporabiti samostojno, z <b>intervalom časovnega koraka</b>, z <b>referenčnim časom</b> ali tako z <b>intervalom časovnega koraka</b> kot <b>časom za uskladitev časovnih korakov na</b>.
+            </p>
+            <p> Na primer, če želite ustvariti časovne korake, ki se odvijejo vsak ponedeljek od 9.00 do 10.00, nastavite <b>interval časovnega koraka</b> na <code>1 uro</code>, <b>pogostost ponavljanja časovnih korakov</b> na <code>1 teden</code> in <b>čas za uskladitev časovnih korakov</b> na <code>9.00 v ponedeljek</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Čas za poravnavo časovnih korakov z</h2></div>
+        <hr/>
+        <div>
+            <p>Datum in čas, ki se uporabljata za poravnavo časovnih izsekov. Časovni koraki se bodo začeli ob in nadaljevali od tega časa naprej. Če ni izbran noben referenčni čas, se bo časovni korak poravnal na 1. januar 1970. 
+            </p>
+            <p> Na primer, čeželite ustvariti časovne korake, ki se odvijejo vsak ponedeljek od 9.00 do 10.00, nastavite <b>interval časovnega koraka</b> na <code>1 uro</code>, <b>pogostost ponavljanja časovnih korakov</b> na <code>1 teden</code> in <b>čas za uskladitev časovnih korakov</b> na <code>9.00 v ponedeljek</code>.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Koordinatni sistem (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Gre za začasni parameter za predizdajno različico za nastavljanje procesnega koordinatnega sistema. Veliko orodij velikih podatkov zahteva, da se projiciran koordinatni sistem uporablja kot koordinatni sistem za procesiranje. Privzeto bo orodje uporabljalo vhodni koordinatni sistem, vendar pa uporaba ne bo uspe&scaron;na v primeru geografskega koordinatnega sistema. Za nastavitev projiciranega koordinatnega sistema vnesite WKID. Na primer,  <b>Web Mercator</b> je treba vnesti kot <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Izberite shrambo podatkov</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultati GeoAnalytics so shranjeni v shrambo podatkov in prikazani kot geoobjektni sloj v  Portal for ArcGIS. V večini primerov je treba rezultate shraniti v prostorsko-časovno shrambo podatkov, kar je privzeto. V nekaterih primerih je dobra možnost hramba podatkov v relacijskih shrambi podatkov. V nadaljevanju so navedeni razlogi, zakaj bi morda želeli shraniti rezultate v relacijsko shrambo podatkov: 
+                <ul>
+                    <li>Rezultate lahko uporabite za sodelovanjeprekportala.
+                    </li>
+                    <li>Pri rezultatih lahkoomogočite možnosti sinhronizacije.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relacijske shrambe podatkov ne smete uporabljati, če pričakujete, da se bodo va&scaron;i rezultati GeoAnalytics povečali in želite izkoristiti možnosti velike prostorsko-časovne shrambe podatkov za obdelavo velikih količin podatkov.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen. Če zapisujete v ArcGIS Data Store, bodo va&scaron;i rezultati shranjeni v  <b>Moji vsebini</b> in dodani na karto. Če zapisujete v delitev datotek velikih podatkov, bodo va&scaron;i rezultati shranjeni v delitev datotek velikih podatkov in dodani v njen manifest. Ne bodo dodani v skupino. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, orodje ne bo uspe&scaron;no.
+            </p>
+            <p>Ko zapisujete v  ArcGIS Data Store (relacijsko ali prostorsko-časovno shrambo velikih podatkov) s pomočjo spustnega menija  <b>Shrani rezultat v</b>, lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

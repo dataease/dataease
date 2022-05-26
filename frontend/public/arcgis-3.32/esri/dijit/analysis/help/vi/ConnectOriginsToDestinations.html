@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Kết nối Điểm đầu với Điểm đến</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="Kết nối Điểm đầu với Điểm đến"></h2>
+        <hr/>
+    <p>Kết nối Điểm đầu với Điểm đến gi&uacute;p đo thời gian đi lại hoặc khoảng c&aacute;ch giữa c&aacute;c cặp điểm. C&ocirc;ng cụ n&agrave;y c&oacute; thể b&aacute;o c&aacute;o c&aacute;c khoảng c&aacute;ch theo đường thẳng; khoảng c&aacute;ch theo phương thức đi lại; v&iacute; dụ như đi bộ hoặc l&aacute;i xe; hoặc khoảng thời gian của chuyến đi theo phương thức đi lại. Sử dụng c&ocirc;ng cụ n&agrave;y, bạn c&oacute; thể l&agrave;m c&aacute;c việc sau:
+    </p>
+    <p>
+        <ul>
+            <li>T&iacute;nh to&aacute;n tổng khoảng c&aacute;ch hoặc khoảng thời gian m&agrave; người đi l&agrave;m di chuyển tr&ecirc;n tuyến đường từ nh&agrave; đến cơ quan.
+            </li>
+            <li>Đo qu&atilde;ng đường m&agrave; kh&aacute;ch h&agrave;ng đang đến mua sắm tại cửa h&agrave;ng của bạn. Sử dụng th&ocirc;ng tin n&agrave;y để x&aacute;c định c&aacute;ch tiếp cận thị trường, đặc biệt khi hướng đến c&aacute;c chiến dịch quảng c&aacute;o hoặc lựa chọn vị tr&iacute; x&acirc;y dựng cửa h&agrave;ng mới.
+            </li>
+            <li>T&iacute;nh to&aacute;n tổng số chiều d&agrave;i đường đi dự t&iacute;nh cho phương tiện của bạn. Sau đ&oacute;, chạy c&ocirc;ng cụ Tổng kết trong Phạm vi để b&aacute;o c&aacute;o số dặm theo quận hoặc khu vực kh&aacute;c.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Bạn cung cấp c&aacute;c điểm bắt đầu, kết th&uacute;c v&agrave; c&ocirc;ng cụ n&agrave;y sẽ trả về một lớp c&oacute; chứa c&aacute;c tuyến đường, bao gồm c&aacute;c ph&eacute;p đo, giữa cặp điểm đầu v&agrave; điểm đến. 
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c đối tượng được nh&igrave;n thấy trong phạm vi bản đồ hiện tại mới được xem x&eacute;t khi ph&acirc;n t&iacute;ch. Nếu bỏ chọn, tất cả c&aacute;c đối tượng trong lớp đầu v&agrave;o sẽ được xem x&eacute;t, ngay cả khi ch&uacute;ng nằm ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Chọn lớp điểm đại diện cho các điểm đầu</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn lớp điểm đại diện cho một điểm đầu hoặc nhiều điểm đầu C&ocirc;ng cụ n&agrave;y hỗ trợ tối đa  5.000 điểm đầu v&agrave;  5.000 điểm đến. </p>
+            <p>Nếu bạn chọn một lớp c&oacute; đ&uacute;ng một điểm gốc, n&oacute; sẽ kết nối với tất cả c&aacute;c điểm đến đ&oacute;.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Chọn lớp điểm đến</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn lớp đại diện cho điểm đến hoặc c&aacute;c điểm đến m&agrave; điểm đầu n&ecirc;n kết nối. C&ocirc;ng cụ n&agrave;y hỗ trợ tối đa  5.000 điểm đầu v&agrave;  5.000 điểm đến. </p>
+            <p>Nếu bạn chọn một lớp c&oacute; đ&uacute;ng một điểm đến, tất cả c&aacute;c điểm đầu sẽ kết nối tới điểm đến đ&oacute;. 
+            </p>
+            <p>Nếu c&oacute; một điểm đầu v&agrave; nhiều điểm đến, c&ocirc;ng cụ kết nối điểm đầu tới từng điểm đến trong đ&oacute;.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+            <p> Nếu c&oacute; nhiều điểm đầu v&agrave; nhiều điểm đến, bạn cần phải c&oacute; hai trường m&ocirc; tả c&aacute;c cặp điểm đầu - điểm đến: <b>Trường ID tại điểm đầu</b> v&agrave; <b>Trường ID Tương ứng tại điểm đến</b>. C&ocirc;ng cụ kết nối c&aacute;c cặp điểm đầu - điểm đến trong khi ph&acirc;n t&iacute;ch. V&iacute; dụ: tưởng tượng bạn c&oacute; hai điểm đầu với c&aacute;c gi&aacute; trị trường ID l&agrave; <code>Rosie</code> v&agrave; <code>Harold</code> v&agrave; hai điểm đến với c&aacute;c gi&aacute; trị ID tương tự. Điểm đầu <code>Rosie</code> sẽ kết nối với điểm đến <code>Rosie</code> v&agrave; <code>Harold</code> sẽ kết nối với <code>Harold</code>. Kh&ocirc;ng thực hiện c&aacute;c kết nối hoặc ph&eacute;p đo kh&aacute;c.
+            </p>
+            <p>Nếu c&oacute; số lượng điểm đầu v&agrave; điểm đến bằng nhau, c&aacute;c gi&aacute; trị ID phải duy nhất trong từng lớp, v&iacute; dụ: lớp điểm đến kh&ocirc;ng thể c&oacute; hai gi&aacute; trị  <code>Rosie</code>. C&aacute;c gi&aacute; trị trong lớp điểm đầu v&agrave; điểm đến phải ho&agrave;n to&agrave;n ph&ugrave; hợp để tạo c&aacute;c cặp; <code>Harold</code> sẽ kh&ocirc;ng kết nối với gi&aacute; trị viết sai, <code>Harodl</code>. 
+            </p>
+            <p>C&ocirc;ng cụ n&agrave;y cũng hỗ trợ kết nối m điểm gốc với nhiều điểm đến hoặc một điểm đến với nhiều điểm gốc. Trong c&aacute;c trường hợp như vậy, bạn vẫn cần c&oacute; hai trường m&ocirc; tả c&aacute;c cặp điểm gốc-điểm đến. Tuy nhi&ecirc;n, chỉ một trong c&aacute;c lớp (c&oacute; thể l&agrave; lớp điểm gốc hoặc lớp điểm đến) cần c&oacute; c&aacute;c gi&aacute; trị ID duy nhất.
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Đo lường</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Chọn kết nối điểm đầu với điểm đến bằng khoảng c&aacute;ch theo đường thẳng hoặc phương thức đi lại. C&aacute;c tuyến đường đầu ra sẽ đi theo c&aacute;c con đường hoặc lối đi bộ v&agrave; sẽ tu&acirc;n theo c&aacute;c quy tắc hiện h&agrave;nh, v&iacute; dụ như đường một chiều, cấm quay đầu xe đối với người l&aacute;i xe hơi hoặc xe tải. Người quản trị của tổ chức của bạn c&oacute; thể x&aacute;c định phương thức đi lại n&agrave;o l&agrave; khả dụng.  
+            </p>
+            <p>Nếu bạn chọn t&ugrave;y chọn  <b>Thời gian L&aacute;i xe</b>, <b>Thời gian L&aacute;i xe ở N&ocirc;ng th&ocirc;n</b> hoặc <b>Thời gian Vận chuyển bằng Xe tải</b>, bạn sẽ c&oacute; th&ecirc;m c&aacute;c t&ugrave;y chọn kh&aacute;c về c&aacute;ch đo khoảng thời gian l&aacute;i xe.
+                <ul>
+                    <li>
+                        <p>Bỏ chọn  <b>Sử dụng Giao th&ocirc;ng</b> để t&igrave;m c&aacute;c tuyến đường nhanh nhất dựa tr&ecirc;n tốc độ cố định.
+                        </p>
+                        <p>Đ&acirc;y l&agrave; t&ugrave;y chọn để lựa chọn nếu bạn muốn c&oacute; một ph&eacute;p đo thời gian l&aacute;i xe th&ocirc;ng thường, kh&ocirc;ng phải c&aacute;ch t&iacute;nh to&aacute;n bằng c&aacute;c điều kiện giao th&ocirc;ng thay đổi trong một thời gian khởi h&agrave;nh cụ thể.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Chọn chức năng  <b>Sử dụng Th&ocirc;ng tin Giao th&ocirc;ng</b> để t&igrave;m ra c&aacute;c tuyến đường nhanh nhất dựa tr&ecirc;n thời gian bắt đầu cho trước với điều kiện giao th&ocirc;ng thay đổi. Đồng thời bằng c&aacute;ch chọn t&ugrave;y chọn <b>Giao th&ocirc;ng trực tiếp</b>, thời gian khởi h&agrave;nh từ điểm đầu được đặt đến thời gian hiện tại, v&agrave; tốc độ giao th&ocirc;ng hiện tại v&agrave; dự t&iacute;nh được tham chiếu từ bộ cảm biến v&agrave; nguồn cung cấp dữ liệu để tạo ra c&aacute;c tuyến đường. Tốc độ giao th&ocirc;ng dự kiến được t&iacute;nh to&aacute;n bằng c&aacute;ch tham chiếu đến tốc độ giao th&ocirc;ng hiện tại, tốc độ giao th&ocirc;ng trong lịch sử v&agrave; c&aacute;c điều kiện xảy ra hiện tại chẳng hạn như t&igrave;nh h&igrave;nh thời tiết. Tốc độ giao th&ocirc;ng c&oacute; thể dự kiến đến 12 giờ trong tương lai, do đ&oacute; bạn c&oacute; thể di chuyển thanh trượt để thiết lập trước thời gian khởi h&agrave;nh l&ecirc;n tới  12 giờ. </p>
+                        <p>Sử dụng c&aacute;c thiết lập giao th&ocirc;ng trực tiếp n&agrave;y để t&igrave;m ra thời gian l&aacute;i xe để khởi h&agrave;nh ngay b&acirc;y giờ hay khởi h&agrave;nh trong một giờ nữa, v.v.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Bằng c&aacute;ch chọn  <b>Sử dụng Giao th&ocirc;ng</b> v&agrave; chọn <b>th&ocirc;ng tin Giao th&ocirc;ng dựa tr&ecirc;n điều kiện điển h&igrave;nh theo</b> ng&agrave;y v&agrave; thời gian, c&ocirc;ng cụ sẽ tạo c&aacute;c khu vực thời gian l&aacute;i xe nhanh nhất dựa tr&ecirc;n tốc độ trung b&igrave;nh lưu trong lịch sử theo từng khoảng thời gian năm ph&uacute;t trong v&ograve;ng một tuần. C&aacute;c kết quả bao gồm th&ocirc;ng tin giao th&ocirc;ng nhưng loại bỏ đi sự ảnh hưởng của c&aacute;c điều kiện giao th&ocirc;ng v&agrave; c&aacute;c sự kiện hiện tại, c&oacute; thể sẽ l&agrave;m thay đổi đ&aacute;ng kể so với kết quả ban đầu.
+                        </p>
+                        <p>Bạn c&oacute; thể sử dụng c&aacute;c thiết lập giao th&ocirc;ng lịch sử để hỏi, v&iacute; dụ: &quot;Thường mất bao l&acirc;u để tới c&aacute;c điểm đến n&agrave;y khi khởi h&agrave;nh v&agrave;o l&uacute;c 11:30 s&aacute;ng v&agrave;o thứ tư?&quot;
+                        </p>
+                        <p>Thời gian bạn thiết lập li&ecirc;n quan đến m&uacute;i giờ nơi đặt điểm đầu. V&igrave; vậy, nếu bạn thiết lập thời gian đến 8:00 s&aacute;ng v&agrave; c&oacute; hai điểm đầu, một ở Th&agrave;nh phố New York v&agrave; một ở Los Angeles, c&aacute;c tuyến đường sẽ được tạo ra cho thời gian 8:00 s&aacute;ng Theo Giờ ph&iacute;a Đ&ocirc;ng v&agrave; 8:00 s&aacute;ng theo Giờ Th&aacute;i B&igrave;nh Dương tương ứng.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Lưu &yacute; rằng khi một phương tiện được l&aacute;i đi từ điểm đầu, thời gian tr&ocirc;i qua v&agrave; điều kiện giao th&ocirc;ng sẽ thay đổi. C&ocirc;ng cụ Kết nối Điểm đầu với Điểm đến xem x&eacute;t c&aacute;c thay đổi n&agrave;y khi bạn chọn  <b>Sử dụng giao th&ocirc;ng</b>; tuy nhi&ecirc;n, th&ocirc;ng tin giao th&ocirc;ng kh&ocirc;ng được hỗ trợ cho tất cả c&aacute;c v&ugrave;ng. Bấm v&agrave;o li&ecirc;n kết <b>Xem t&iacute;nh khả dụng</b> tr&ecirc;n c&ocirc;ng cụ để t&igrave;m xem liệu t&iacute;nh năng c&oacute; được cung cấp tại khu vực nghi&ecirc;n cứu của bạn kh&ocirc;ng.
+            </p>
+            <p> <b>Thời gian Vận chuyển bằng Xe tải</b> c&oacute; thể sử dụng tốc độ di chuyển động dựa tr&ecirc;n lưu lượng v&agrave; điều kiện giao th&ocirc;ng, nhưng tốc độ tối đa phải ph&ugrave; hợp với giới hạn cho ph&eacute;p d&agrave;nh cho xe tải. Chẳng hạn, nếu tốc độ động cho một con đường dựa tr&ecirc;n điều kiện giao th&ocirc;ng thực tế l&agrave; 65 dặm/giờ, nhưng giới hạn tốc độ xe tải tr&ecirc;n đường đ&oacute; l&agrave; 55 dặm/giờ, th&igrave; giới hạn 55 dặm/giờ cho đường đ&oacute; sẽ được d&ugrave;ng để t&iacute;nh to&aacute;n.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Chọn lớp rào cản</h2></div>
+        <hr/>
+        <div>
+            <p> Một hoặc nhiều đối tượng hoạt động như c&aacute;c vị tr&iacute; hạn chế tạm thời (r&agrave;o cản) khi di chuyển tr&ecirc;n c&aacute;c đường phố b&ecirc;n dưới. Bạn c&oacute; thể chọn r&agrave;o cản dạng điểm, đường hoặc v&ugrave;ng.
+            </p>
+            <p>Một r&agrave;o cản dạng điểm c&oacute; thể m&ocirc; phỏng cho một vị tr&iacute; c&oacute; c&acirc;y đổ, một vụ tai nạn, một đường d&acirc;y điện bị rơi, hoặc bất cứ sự việc n&agrave;o l&agrave;m tr&igrave; ho&atilde;n t&igrave;nh h&igrave;nh giao th&ocirc;ng tại một vị tr&iacute; cụ thể dọc theo đường phố. Di chuyển được cho ph&eacute;p tr&ecirc;n đường nhưng kh&ocirc;ng được đi qua r&agrave;o cản. Bạn c&oacute; thể chỉ định tối đa 250 đối tượng để hoạt động như c&aacute;c r&agrave;o cản dạng điểm.
+            </p>
+            <p>Một r&agrave;o cản dạng đường cấm di chuyển bất cứ nơi n&agrave;o m&agrave; n&oacute; với đường giao nhau. V&iacute; dụ: một cuộc diễu h&agrave;nh hoặc biểu t&igrave;nh l&agrave;m chặn việc giao th&ocirc;ng tr&ecirc;n một số đoạn đường c&oacute; thể được m&ocirc; h&igrave;nh h&oacute;a bằng một r&agrave;o cản dạng đường. Nếu số lượng giao nhau giữa c&aacute;c đối tượng đường phố với tất cả c&aacute;c r&agrave;o cản dạng đường vượt qu&aacute; 500 điểm, c&ocirc;ng cụ sẽ trả về lỗi.
+            </p>
+            <p>Một r&agrave;o cản dạng v&ugrave;ng cấm di chuyển bất cứ nơi n&agrave;o m&agrave; n&oacute; với đường giao nhau. Một ứng dụng thực tiễn của loại r&agrave;o cản n&agrave;y l&agrave; để m&ocirc; h&igrave;nh h&oacute;a khu vực lũ lụt tr&ecirc;n một mạng lưới đường phố l&agrave;m cho c&aacute;c con đường ở đ&oacute; kh&ocirc;ng thể lưu th&ocirc;ng. Nếu số lượng giao nhau giữa c&aacute;c đối tượng đường phố với tất cả c&aacute;c r&agrave;o cản dạng v&ugrave;ng vượt qu&aacute; 2000 điểm, c&ocirc;ng cụ sẽ trả về lỗi.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Hình dạng tuyến đường</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn h&igrave;nh dạng của tuyến đường kết nối từng điểm gốc với điểm đến của n&oacute; khi sử dụng một phương thức đi lại:
+            </p>
+            <ul>
+                <li> <b>Theo h&igrave;nh dạng con đường</b> - H&igrave;nh dạng được dựa tr&ecirc;n mạng lưới đường phố cơ sở. T&ugrave;y chọn n&agrave;y l&agrave; hợp l&yacute; nhất khi bạn muốn tạo c&aacute;c tuyến đường giữa điểm gốc v&agrave; điểm đến.
+                </li>
+                <li> <b>Đường thẳng</b> - H&igrave;nh dạng l&agrave; một đường thẳng kết nối cặp điểm gốc-v&agrave; điểm đến. T&ugrave;y chọn n&agrave;y l&agrave; hợp l&yacute; nhất khi bạn muốn tạo biểu đồ mạng nhện hoặc đường mong muốn (v&iacute; dụ: để hiển thị cửa h&agrave;ng n&agrave;o kh&aacute;ch h&agrave;ng đang gh&eacute; đến).
+                </li>
+            </ul>
+            
+            <p>Tuyến đường tốt nhất giữa một điểm gốc v&agrave; điểm đến ph&ugrave; hợp lu&ocirc;n được t&iacute;nh to&aacute;n căn cứ v&agrave;o phương thức đi lại, bất kể h&igrave;nh dạng tuyến đường được chọn.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp đối tượng sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. Nếu lớp đối tượng đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n mới. Lớp đối tượng sẽ chứa một lớp cho mỗi mục sau: tuyến đường, điểm đầu chưa g&aacute;n v&agrave; điểm cuối chưa g&aacute;n khi một số điểm đầu kh&ocirc;ng thể kết nối với c&aacute;c điểm cuối của n&oacute;.
+            </p>
+            <p>Nếu bạn chọn  <b>Bao gồm c&aacute;c lớp tuyến đường</b>, mỗi tuyến đường trong kết quả sẽ đồng thời được lưu th&agrave;nh một lớp tuyến đường. Lớp tuyến đường bao gồm mọi th&ocirc;ng tin d&agrave;nh cho một tuyến đường cụ thể như c&aacute;c điểm dừng được g&aacute;n cho tuyến đường cũng như chiều di chuyển. Việc tạo c&aacute;c lớp tuyến đường sẽ hữu &iacute;ch nếu bạn muốn chia sẻ c&aacute;c tuyến đường ri&ecirc;ng với những th&agrave;nh vi&ecirc;n kh&aacute;c trong tổ chức hoặc chỉnh sửa th&ecirc;m tuyến đường bằng c&aacute;ch d&ugrave;ng n&uacute;t <b>Chỉ đường</b> trong tr&igrave;nh xem bản đồ. Lớp tuyến đường sử dụng t&ecirc;n được cung cấp d&agrave;nh cho lớp đối tượng như một tiền tố v&agrave; t&ecirc;n tuyến đường đ&atilde; tạo như một phần của ph&acirc;n t&iacute;ch, được th&ecirc;m để tạo ra t&ecirc;n duy nhất cho mỗi lớp tuyến đường.
+            </p>
+            <p>Số lớp tuyến đường tối đa c&oacute; thể được tạo ra l&agrave;  1.000 Nếu kết quả c&oacute; nhiều hơn  1.000 tuyến đường v&agrave;  <b>bao gồm c&aacute;c lớp tuyến đường</b> kh&ocirc;ng được kiểm tra, c&ocirc;ng cụ sẽ chỉ tạo ra dịch vụ đối tượng đầu ra.
+            </p>
+            <p>Sử dụng menu thả xuống  <b>Lưu kết quả trong</b>, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ lớp đối tượng v&agrave; lớp tuyến đường, nếu được tạo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

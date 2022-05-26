@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Criar Panorama</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Criar Panorama"></h2>
+        <hr/>
+    <p>A ferramenta Criar Panorama cria &aacute;reas onde um observador pode visualizar objetos na superf&iacute;cie. Os pontos do observador de entrada podem representar observadores (como as pessoas na superf&iacute;cie ou vigias em uma torre de inc&ecirc;ndio) ou objetos observados (como turbinas e&oacute;licas, torres de &aacute;gua, ve&iacute;culos ou outras pessoas). As &aacute;reas resultantes s&atilde;o aquelas &aacute;reas onde os observadores podem visualizar os objetos observados e vice-versa: os objetos observados podem visualizar os observadores.
+    </p>
+    <p>Ambos os observadores e os objetos observados podem ter uma altura acima da superf&iacute;cie e estas alturas s&atilde;o utilizadas para determinar a visibilidade. Por exemplo, um panorama computado de turbinas de ventos de 400 p&eacute;s e pessoas de seis p&eacute;s de altura no solo normalmente ser&atilde;o maiores que um panorama computado para turbinas de 200 p&eacute;s e pessoas de seis p&eacute;s de altura.
+    </p>
+    <p>Note que o c&aacute;lculo do panorama n&atilde;o leva em conta as obstru&ccedil;&otilde;es tais como, &aacute;rvores ou edif&iacute;cios. Voc&ecirc; pode pensar sobre o c&aacute;lculo como acontecendo na superf&iacute;cie destitu&iacute;da de qualquer coisa exceto o observador e os objetos observados.
+    </p>
+    <p>A camada resultante cont&eacute;m fei&ccedil;&otilde;es de &aacute;rea representando &aacute;reas vis&iacute;veis. O campo  <i>Frequency</i> registra o n&uacute;mero de pontos do observador que pode visualizar cada &aacute;rea. Por exemplo, se voc&ecirc; tiver cinco pontos de entrada, cada um representando uma torre de vigia de inc&ecirc;ndio, o campo <i>Frequency</i> ter&aacute; valores entre um e cinco; &aacute;reas com um valor de um podem somente ser visualizadas por uma torre e &aacute;reas com um valor de cinco podem ser visualizadas por todas as torres. A camada resultante tamb&eacute;m cont&eacute;m o campo <i>DEMResolution</i>, que registra a resolu&ccedil;&atilde;o do modelo de eleva&ccedil;&atilde;o digital (DEM) utilizado para criar o panorama.
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente os pontos do observador que s&atilde;o vis&iacute;veis dentro da extens&atilde;o de mapa atual ser&atilde;o analisados.  Se n&atilde;o selecionada, todos os pontos do observador na camada de entrada ser&atilde;o analisados, mesmo que estiverem fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Feições de ponto que representam locais do observador</h2></div>
+        <hr/>
+        <div>
+            <p>As fei&ccedil;&otilde;es de ponto para utilizar como os locais do observador. 
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> localizado na parte inferior da lista suspensa. Esta op&ccedil;&atilde;o abre uma galeria onde voc&ecirc; pode procurar e selecionar conjunto de dados de v&aacute;rias fontes para utilizar em sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Altura de locais do observador</h2></div>
+        <hr/>
+        <div>
+            <p>Esta &eacute; a altura acima da superf&iacute;cie dos seus locais do observador.    O padr&atilde;o &eacute; aproximadamente a altura m&eacute;dia de uma pessoa.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Altura de outros objetos no solo</h2></div>
+        <hr/>
+        <div>
+            <p>Esta &eacute; a altura de estruturas ou pessoas na superf&iacute;cie para estabelecer a visibilidade. O panorama resultante s&atilde;o as &aacute;reas onde um ponto do observador pode visualizar estes outros objetos.  O inverso tamb&eacute;m &eacute; verdadeiro; os outros objetos podem visualizar um ponto do observador. 
+            </p>
+            <p>
+                <ul>
+                    <li>Se os seus pontos do observador representarem turbinas e&oacute;licas e voc&ecirc; deseja determinar onde as pessoas que est&atilde;o na superf&iacute;cie podem visualizar as turbinas, insira a altura m&eacute;dia de uma pessoa (aproximadamente 6 p&eacute;s).  O resultado &eacute; que estas &aacute;reas onde uma pessoa est&aacute; em p&eacute; na superf&iacute;cie pode visualizar as turbinas de vento.
+                    </li>
+                    <li>Se os seus pontos do observador representarem torres de vigia de inc&ecirc;ndios e voc&ecirc; deseja determinar quais torres de vigia podem visualizar uma plumagem de fuma&ccedil;a de 20 p&eacute;s de altura ou mais altas, insira 20 p&eacute;s para a altura.  O resultado &eacute; que estas &aacute;reas onde uma torre de vigia de inc&ecirc;ndio podem visualizar uma plumagem de fuma&ccedil;a pelo menos 20 p&eacute;s de altura.
+                    </li>
+                    <li>Se os seus pontos do observador representarem pontos de visualiza&ccedil;&atilde;o altos ao longo das estradas e trilhas e voc&ecirc; deseja determinar onde as turbinas e&oacute;licas de 400 p&eacute;s de altura ou mais altas podem ser visualizadas, insira 400 p&eacute;s para a altura.  O resultado s&atilde;o estas &aacute;reas onde uma pessoa de p&eacute; em um ponto de visualiza&ccedil;&atilde;o alto pode visualizar uma turbina de vento pelo menos a 400 p&eacute;s de altura.
+                    </li>
+                    <li>Se os seus pontos do observador representarem pontos de visualiza&ccedil;&atilde;o altos e voc&ecirc; deseja determinar a quantidade de &aacute;rea na superf&iacute;cie que as pessoas em p&eacute; podem visualizar nos pontos de visualiza&ccedil;&atilde;o, insira zero.  O resultado s&atilde;o estas &aacute;reas que podem ser visualizadas a partir dos pontos de visualiza&ccedil;&atilde;o altos.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Distância de visualização máxima</h2></div>
+        <hr/>
+        <div>
+            <p>Esta &eacute; uma dist&acirc;ncia de corte onde o c&aacute;lculo de &aacute;reas vis&iacute;veis p&aacute;ra. Al&eacute;m desta dist&acirc;ncia, isto &eacute; desconhecido se os pontos do observador e os outros objetos puderem visualizar uns aos outros. O tempo de c&aacute;lculo aumenta com valores grandes. O valor m&aacute;ximo permitido &eacute; 31 milhas (50 quil&ocirc;metros).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa.  O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se o nome da camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Salvar resultado em</b>, &eacute; poss&iacute;vel especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+            <p> A execu&ccedil;&atilde;o desta ferramenta n&atilde;o consome cr&eacute;ditos.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

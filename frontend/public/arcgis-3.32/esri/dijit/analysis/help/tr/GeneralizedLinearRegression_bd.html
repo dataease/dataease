@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Genelleştirilmiş Doğrusal Regresyon</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Genelleştirilmiş Doğrusal Regresyon iş akışı diyagramı"></h2>
+        <hr/>
+    <p>Tahminler oluşturmak ya da bir dizi a&ccedil;ıklayıcı değişkenle ilişkisi a&ccedil;ısından bağımlı bir değişken modeli oluşturmak i&ccedil;in Genelleştirilmiş Doğrusal Regresyon (GLR) &ccedil;alıştırır. Bu ara&ccedil; s&uuml;rekli (Gaussian), ikili (lojistik) ve sayım (Poisson) modellerine uyması i&ccedil;in kullanılabilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analiz Türü</h2></div>
+        <hr/>
+        <div>
+            <p>Aracın işlem modunu belirtir. Ara&ccedil;, bir modeli yalnızca performansı değerlendirmek i&ccedil;in eğitmek veya bir modeli eğiterek detayları tahmin etmek i&ccedil;in &ccedil;alıştırılabilir. Tahmin t&uuml;rleri aşağıdaki gibidir:
+                <ul>
+                    <li> <b>Model performansını değerlendirmek i&ccedil;in bir model uydur</b>&mdash;Bir model uydurulur ve girdi verilerine uygulanır. Yeni bir veri k&uuml;mesinde tahminler oluşturmadan &ouml;nce modelinizin doğruluğunu değerlendirmek veya tahmin edilen değişkeninizin ilişkilerini ve etmenlerini anlamak i&ccedil;in bu se&ccedil;eneği kullanın. Bu se&ccedil;eneğin &ccedil;ıktısı, uydurulan verilerinizin ve model teşhisinin bir detay servisidir.
+                    </li>
+                    <li> <b>Bir model uydur ve değerleri tahmin et</b>&mdash; Girdi detayları ve tahmin detayları i&ccedil;in tahminler veya sınıflandırmalar &uuml;retilir. A&ccedil;ıklayıcı değişkenler, hem tahmin detayları hem de tahmin edilecek detaylar i&ccedil;in sağlanmalıdır. Bu se&ccedil;eneğin &ccedil;ıktısı, girdi verilerinize uydurulan modelinizin bir detay servisi, &ouml;ng&ouml;r&uuml;len değerlerin bir detay servisi ve model teşhisi olacaktır.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Model performansını değerlendirmek için bir model uydur</h2></div>
+        <hr/>
+        <div>
+            <p>Bir model uydurmak istiyorsanız bu modu kullanın ve uygunluğunu araştırın.
+            </p>
+            <p>Bu se&ccedil;im ile model bir girdi katmanı kullanılarak eğitilecektir. Yeni bir veri k&uuml;mesinde tahminler oluşturmadan &ouml;nce modelinizin doğruluğunu değerlendirmek i&ccedil;in bu se&ccedil;eneği kullanın. Bu se&ccedil;enek, model teşhisi &ccedil;ıktısını alır ve modeli eğitim verilerinize uygular.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Bir model uydur ve değerleri tahmin et</h2></div>
+        <hr/>
+        <div>
+            <p>Bir model uydurmak istiyorsanız bu modu kullanın ve bu modeli tahminler oluşturmak i&ccedil;in veri k&uuml;mesine uygulayın.
+            </p>
+            <p>Detaylar i&ccedil;in tahminler veya sınıflandırmalar oluşturulur. Bu se&ccedil;eneğin &ccedil;ıktısı bir detay servisi, model teşhisi ve değişken &ouml;nemini g&ouml;steren isteğe bağlı bir tablo olacaktır.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Bir model oluşturmak için bir katman seç</h2></div>
+        <hr/>
+        <div>
+            <p>Bağımlı ve a&ccedil;ıklayıcı değişkenleri i&ccedil;eren nokta, &ccedil;izgi, alan veya tablo detaylarını i&ccedil;eren katman.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Model oluşturulacak alanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Modellenecek g&ouml;zlemlenen değerleri ve modellemekte olduğunuz değerin t&uuml;r&uuml;n&uuml; i&ccedil;eren sayısal alan. Modelleyebileceğiniz &uuml;&ccedil; t&uuml;r değer vardır
+                <ul>
+                    <li>S&uuml;rekli&mdash;S&uuml;rekli değerleri temsil eder. Kullanılan model Gaussian&rsquo;dır ve ara&ccedil; sıradan en k&uuml;&ccedil;&uuml;k kareler regresyonunu ger&ccedil;ekleştirir.
+                    </li>
+                    <li>İkili&mdash;Varlık veya yokluk değerlerini g&ouml;sterir. Bunlar 1&rsquo;ler ve 0&rsquo;lar olmalıdır. Kullanılan model Lojistik Regresyondur.
+                    </li>
+                    <li>Sayım&mdash;&Ouml;rneğin su&ccedil; rakamları, hastalık olayları veya trafik kazaları gibi ayrık olayları temsil eder. Kullanılan model Poisson regresyonudur. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Değerleri tahmin edilecek katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Tahminlerin hesaplanması gereken yerleri temsil eden detaylara sahip bir katman. Bu veri k&uuml;mesindeki her detay, belirtilen t&uuml;m a&ccedil;ıklayıcı değişkenler i&ccedil;in değerler i&ccedil;ermelidir. Bu detaylar i&ccedil;in bağımlı değişken, girdi katmanı i&ccedil;in kalibre edilmiş model kullanılarak tahmin edilecektir.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Açıklayıcı alanları seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Değeri tahmin etmeye yardımcı olan a&ccedil;ıklayıcı değişkenleri temsil eden bir veya daha fazla alan (alanlar). Sadece sayısal alanlar g&ouml;r&uuml;necektir.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Açıklayıcı alanların nasıl eşleştirildiğini seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Girdi katmanındaki ilgili değişkenlerin tahmin katmanındaki değişkenlerle nasıl eşleşeceği. Sadece modelin &uuml;retilmesinde kullanılan değişkenler tabloya dahil edilecektir. Sadece sayısal değerler kullanılabilir. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> Oluşturulacak katmanın adı. Bir ArcGIS Data Store&lsquo;a yazdığınızda, sonu&ccedil;larınız  <b>İ&ccedil;eriğime</b> kaydedilir ve haritaya eklenir. Bir b&uuml;y&uuml;k veri dosya paylaşımına yazdığınızda,  sonu&ccedil;larınız b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;ine kaydedilir ve   manifestosuna eklenir.  haritaya eklenmez. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Detay katmanı zaten varsa ara&ccedil; &ccedil;alışmaz.
+            </p>
+            <p>Getirilen sonu&ccedil;lar analiz t&uuml;r&uuml;ne bağlı olacaktır. Model uyumunu değerlendirmek i&ccedil;in uyduruyorsanız, sonu&ccedil;lar modele uygun bir girdi verileri katmanı ve model uyumunu değerlendiren sonu&ccedil; bilgilerini i&ccedil;erir. Eğer uyduruyor ve tahmin ediyorsanız, sonu&ccedil;lar modele uygun bir girdi verileri katmanı, tahmin edilen sonu&ccedil;ların olduğu bir katman ve model uyumunu değerlendiren sonu&ccedil; bilgilerini i&ccedil;erir.
+            </p>
+            <p> ArcGIS Data Store&lsquo;a yazarken (ilişkisel ya da mekan-zamansal b&uuml;y&uuml;k veri deposu)  <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

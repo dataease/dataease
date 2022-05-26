@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calcola Campo</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Calcola Campo"></h2>
+        <hr/>
+    <p> Questo strumento funziona con un layer di input per calcolare i valori per un campo nuovo o esistente. Creare un&rsquo;espressione arcade per calcolare i valori con cui popolare le feature. Se i dati sono abilitati per variazioni temporali e di tipo istante di tempo, opzionalmente &egrave; possibile creare espressioni che prendono in considerazione le tracce.
+    </p>
+    <p>Si supponga, ad esempio, di voler modificare un campo esistente denominato  <i>TotalSales</i>. Si desidera che il campo venga rappresentato dalla somma di vendite totali nel 2016 e nel 2017. Utilizzando questi campo nell&rsquo;espressione, si calcola il valore di campo come <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>Utilizzando un altro esempio, si supponga di disporre di misurazioni GPS che registrano posizione, tempo, ID bus e velocit&agrave; degli autobus in una citt&agrave;. Si desidera creare un nuovo campo denominato  <i>SpeedFrom3</i> che calcola la media di velocit&agrave; delle ultime 3 misurazioni GPS registrate per ogni feature. Per questo calcolo, si utilizza un calcolo che prende in considerazione le tracce, in cui la traccia &egrave; un autobus contrassegnato dall&rsquo;ID bus. Il calcolo per determinare la velocit&agrave; media dei 3 precedenti passaggi temporali e il passaggio temporale attuale &egrave; <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegliere un layer per calcolare i valori dei campi per</h2></div>
+        <hr/>
+        <div>
+            <p>Punti, linee, aree o tabella utilizzati che presentano valori del campo calcolati.  
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Calcola valori del campo per il campo</h2></div>
+        <hr/>
+        <div>
+            <p>Il campo nuovo o esistente che presenta valori calcolati e il tipo di dati di quel campo. Se si calcolano valori su un campo gi&agrave; presente, non &egrave; necessario far corrispondere il tipo di dati. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Costruire un'espressione per calcolare i valori del campo</h2></div>
+        <hr/>
+        <div>
+            <p>Aggiungere un&rsquo;espressione utilizzando il generatore di espressioni per calcolare i valori del campo. 
+            </p>
+            <p>Si supponga, ad esempio, di voler aggiungere i valori di un campo denominato  <i>income</i> e <i>bonus</i>. A tal fine, aggiungere l'espressione <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;] </code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>L'espressione prende in considerazione le tracce</h2></div>
+        <hr/>
+        <div>
+            <p>Specificare se l'espressione prende in considerazione le tracce. Una espressione prende in considerazione le tracce include formattazione, quale       <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. Le espressioni che prendono in considerazione le tracce richiedono campi per identificare singole tracce. Le tracce possono essere composte da punti, linee, aree o tabelle e richiedono solo che l&rsquo;input presenti un identificatore di tracce e i dati siano abilitati per variazioni temporali e di tipo di tempo istantaneo.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analizzare dati con intervalli di tempo</h2></div>
+        <hr/>
+        <div>
+            <p>Specificare se si desiderano calcolare i valori per le tracce usando intervalli di tempo che segmentano gli input per l'analisi. Se si utilizzano intervalli di tempo, &egrave; necessario impostare l'intervallo di tempo da usare e, facoltativamente, impostare un riferimento temporale. Se non si imposta un riferimento temporale, si user&agrave; il 1 gennaio 1970. 
+            </p>
+            <p>Ad esempio, se si imposta come confine temporale 1 giorno, a partire dalle 9:00 del 1&ordm; gennaio 1990, ogni traccia sar&agrave; troncata alle 9:00 di ogni giorno e analizzata all'interno di tale segmento. 
+            </p>
+            <p>L'utilizzo di intervalli di tempo &egrave; un modo rapido per accelerare il tempo di calcolo, perch&eacute; crea rapidamente tracce pi&ugrave; piccole per l'analisi. Se per l'analisi &egrave; conveniente dividere in base a un intervallo di tempo ricorrente, si consiglia per l'elaborazione di Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p> Il nome del layer che verr&agrave; creato.  Se si scrive su un ArcGIS Data Store, i risultati saranno salvati in  <b>I miei contenuti</b> e aggiunti alla mappa. Se si scrive su una condivisione file Big Data, i risultati saranno memorizzati nella condivisione file Big Data e aggiunti al suo Manifest. Non saranno aggiunti alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, lo strumento non verr&agrave; eseguito.
+            </p>
+            <p>Quando si scrive su  ArcGIS Data Store (data store relazionale o Spatiotemporal Big Data Store) usando la casella a discesa  <b>Salva risultato in</b>, &egrave; possibile specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

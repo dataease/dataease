@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Yhdistä karttatasot</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Yhdist&auml; karttatasot"></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu yhdist&auml;&auml; kaksi karttataso yhden tulosaineiston karttatason luontia varten.    Yhdistett&auml;vien karttatasojen geometriatyypin ja aikatyypin on oltava sama.  Voit m&auml;&auml;ritt&auml;&auml;, miten l&auml;ht&ouml;tason kent&auml;t yhdistet&auml;&auml;n ja kopioidaan. Esimerkki:
+        <ul>
+            <li>Haluan yhdist&auml;&auml; tasot Englanti, Wales ja Skotlanti yhdeksi Iso-Britannia-nimiseksi tasoksi. 
+            </li>
+            <li>Minulla on 2 tasoa, ja jokainen sis&auml;lt&auml;&auml; kaupunkien katkeamattomat kiinteist&ouml;tiedot. Haluan yhdist&auml;&auml; ne yhdeksi tasoksi ja s&auml;ilytt&auml;&auml; vain sellaiset tasot, joilla on sama nimi ja tyyppi 2 l&auml;ht&ouml;tasossa.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse karttataso</h2></div>
+        <hr/>
+        <div>
+            <p>Karttataso, jossa on taulukkomuotoisia, piste-, viiva- tai aluekohteita ja johon toinen kohdekarttataso yhdistet&auml;&auml;n. Kaikki t&auml;m&auml;n karttatason kent&auml;t sis&auml;llytet&auml;&auml;n tulostasoon.
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>Valitse yhdistettävä karttataso</h2></div>
+        <hr/>
+        <div>
+            <p>L&auml;ht&ouml;aineiston karttatasoon yhdistett&auml;v&auml; kohdekarttataso. Yhdistett&auml;v&auml;n karttatason geometriatyypin ja aikatyypin on oltava sama kuin l&auml;ht&ouml;aineiston karttatasossa.
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>Muokkaa yhdistämiskenttiä</h2></div>
+        <hr/>
+        <div>
+            <p>Oletusasetuksen mukaan molempien l&auml;ht&ouml;aineiston karttatasojen kent&auml;t sis&auml;ltyv&auml;t tulosaineistoon. Voit muuttaa sit&auml;, miten yhdistett&auml;v&auml;n karttatason kent&auml;t sis&auml;llytet&auml;&auml;n tulosaineistoon, seuraavien asetusten avulla:
+                <ul>
+                    <li> <b>Nime&auml; uudelleen</b> &ndash; nime&auml;&auml; kent&auml;n uudelleen tulosaineistossa.
+                    </li>
+                    <li> <b>Poista</b> &ndash; poistaa kent&auml;n tulosaineistosta.
+                    </li>
+                    <li> <b>T&auml;sm&auml;&auml;</b> &ndash; muuttaa kenttien nimet samoiksi. Yhdistett&auml;v&auml;n tason kent&auml;n arvot kopioidaan t&auml;sm&auml;ytettyyn tuloskentt&auml;&auml;n.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jos molemmat karttatasot sis&auml;lt&auml;v&auml;t kent&auml;n, jonka nimi ja tietotyyppi on sama, kummankin kent&auml;n sis&auml;ll&ouml;t yhdistet&auml;&auml;n yhteen, samannimiseen kentt&auml;&auml;n. T&auml;m&auml; ei p&auml;de kentille, joissa  <b>Vastaava</b>-vaihtoehtoa k&auml;ytet&auml;&auml;n <b>Muokkaa yhdist&auml;miskentti&auml;</b> -parametrissa.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+            <p>Kun kirjoitat kohteeseen  ArcGIS Data Store  (relaatiotietokantaan perustuvaan tai spatiotemporaaliseen Big Data -s&auml;il&ouml;&ouml;n) k&auml;ytt&auml;m&auml;ll&auml; avattavaa  <b>Tallenna tulos kohteeseen</b> -luetteloa, voit m&auml;&auml;ritt&auml;&auml; kansion nimen <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

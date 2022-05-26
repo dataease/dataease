@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Géocoder des emplacements à partir d’une table</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="G&eacute;ocoder des emplacements &agrave; partir d'une table"></h2>
+        <hr/>
+    <p>Le g&eacute;ocodage convertit des adresses en coordonn&eacute;es. Cet outil convertit les adresses d&rsquo;une table de partage de fichiers Big Data en une couche d&rsquo;entit&eacute;s avec les coordonn&eacute;es dans des colonnes suppl&eacute;mentaires.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Sélectionner une table en entrée</h2></div>
+        <hr/>
+        <div>
+            <p>La table en entr&eacute;e avec les adresses &agrave; g&eacute;ocoder. 
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Choisissez un localisateur</h2></div>
+        <hr/>
+        <div>
+            <p>Choisissez un service de localisation pour proc&eacute;der au g&eacute;ocodage. Si le service de localisation que vous souhaitez utiliser ne figure pas dans le menu d&eacute;roulant, contactez votre administrateur afin qu'il soit configur&eacute; pour le g&eacute;ocodage par lots.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Pays</h2></div>
+        <hr/>
+        <div>
+            <p>Si toutes vos adresses proviennent d'un pays, s&eacute;lectionnez ce pays pour optimiser la pr&eacute;cision des r&eacute;sultats. Sinon, laissez ce param&egrave;tre vide.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Sélectionner les champs de données</h2></div>
+        <hr/>
+        <div>
+            <p>Le service de localisation attend certains champs dans les donn&eacute;es, tels que l&rsquo;adresse, la ville, l&rsquo;&Eacute;tat et le code postal. Appariez les champs de donn&eacute;es dans votre fichier ou table en entr&eacute;e aux champs que le localisateur attend &agrave; l&rsquo;aide des zones de liste d&eacute;roulante. Plus vous appariez de champs et plus les r&eacute;sultats sont pr&eacute;cis. Si toutes les donn&eacute;es de la table en entr&eacute;e se trouvent dans une colonne, s&eacute;lectionnez  <b>Single Field (Champ unique)</b> et choisissez un champ de donn&eacute;es dans le menu d&eacute;roulant. Dans le cas contraire, s&eacute;lectionnez <b>Multiple Fields (Champs multiples)</b> et appariez les champs du localisateur appropri&eacute;s aux diff&eacute;rentes colonnes de champs de votre table.
+            </p>
+        </div>
+    </div>
+    <div id="includeAttributes">
+        <div><h2>Pour chaque emplacement</h2></div>
+        <hr/>
+        <div>
+            <p>Incluez les fichiers suppl&eacute;mentaires renvoy&eacute;s par le service de localisation. Si cette option est s&eacute;lectionn&eacute;e, tous les champs cr&eacute;&eacute;s par le localisateur sont renvoy&eacute;s. Si elle n&rsquo;est pas s&eacute;lectionn&eacute;e, vos donn&eacute;es en entr&eacute;e sont renvoy&eacute;es avec les coordonn&eacute;es g&eacute;ocod&eacute;es. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom du résultat en sortie</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la couche &agrave; cr&eacute;er. Si vous &eacute;crivez sur une instance ArcGIS Data Store, les r&eacute;sultats seront enregistr&eacute;s dans  <b>My Content (Mon contenu)</b> et ajout&eacute;s &agrave; la carte. Si vous &eacute;crivez sur un partage de fichiers Big Data, les r&eacute;sultats seront enregistr&eacute;s dans le partage de fichiers Big Data et ajout&eacute;s &agrave; son manifeste. Il ne sera pas ajout&eacute; &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, l'outil &eacute;choue.
+            </p>
+            <p>Lors de l&rsquo;&eacute;criture sur  ArcGIS Data Store (r&eacute;pertoire de donn&eacute;es relationnelles ou spatio-temporelles) via la zone de liste d&eacute;roulante  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>, vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> o&ugrave; le r&eacute;sultat sera enregistr&eacute;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Predict Using Trend Raster</h2><p/>
+        <h2><img src="./images/GUID-2C2320A3-EC6E-4FFC-B59B-9551BB02C545-web.png" alt="Generate Trend Raster"></h2>
+        <hr/>
+    <p>Computes a forecasted multidimensional raster using the output trend raster from the  Generate Trend Raster tool.
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, variables of the layer that are  visible within the current map extent will be analyzed. If unchecked, variables of the full layer will be analyzed, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputMultidimensionalRaster">
+        <div><h2>Choose multidimensional imagery layer to predict</h2></div>
+        <hr/>
+        <div>
+            <p>The input multidimensional trend raster from the  Generate Trend Raster tool.
+            </p>
+        </div>
+    </div>
+    <div id="variables">
+        <div><h2>Choose variable(s) that will be predicted</h2></div>
+        <hr/>
+        <div>
+            <p>The variable or variables 
+that will be predicted in the analysis. If no variables are specified, all variables will be used.
+            </p>
+        </div>
+    </div>
+    <div id="dimensionDefinition">
+        <div><h2>Choose the method used to provide prediction dimension values</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the method used to provide prediction dimension values.
+                <ul>
+                    <li> <b>By Value</b>&mdash;The  prediction will be calculated for a single dimension value or a list of dimension values specified in the next step. This is the default. For example, you want to predict yearly precipitation for the years 2050, 2100, and 2150.
+                    </li>
+                    <li> <b>By Interval</b>&mdash;The prediction will be calculated for an interval of the dimension defined by a start and an end value. For example, you want to predict yearly precipitation for every year between 2050 and 2150.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="dimensionValues">
+        <div><h2>Specify dimension value(s) for prediction</h2></div>
+        <hr/>
+        <div>
+            <p>The dimension value or values to be used in the prediction.
+            </p>
+            <p>The format of the time, depth, and height values must match the format of the dimension values used to generate the trend raster. If the trend raster was generated for the StdTime dimension, the format should be  YYYY-MM-DDTHH:MM:SS, for example  2050-01-01T00:00:00. Multiple values are separated with a semicolon.
+            </p>
+            <p>This parameter is required when the  <b>By value</b> method is selected to define dimension values for prediction.
+            </p>
+        </div>
+    </div>
+    <div id="dimensionInterval">
+        <div><h2>Define the dimension interval for prediction</h2></div>
+        <hr/>
+        <div>
+            <p>Define the start and end date, height, or depth of the dimension interval to be used in the prediction.
+            </p>
+        </div>
+    </div>
+    <div id="intervalValue">
+        <div><h2>Specify the number of steps between the start and end values</h2></div>
+        <hr/>
+        <div>
+            <p>The number of steps between two dimension values to be included in the prediction. 
+The default value is 1.
+            </p>
+            <p>For example, to predict temperature values every five years, use a value of 5.
+            </p>
+        </div>
+    </div>
+    <div id="intervalUnit">
+        <div><h2>Choose the unit that will be used for the time value interval</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the unit that will be used for the value interval. This only applies when the dimension of analysis is a time dimension.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map. The default name is based on the tool name and the input layer name. If the layer already exists, you will be prompted to provide another name.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

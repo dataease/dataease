@@ -1,0 +1,43 @@
+<div data-dojo-attach-point="containerNode">
+  <div class="${css.symbolPreviewContainer}">
+    <div class="${css.symbolPreview}" data-dojo-attach-point="dap_symbolPreview"></div>
+  </div>
+  <div data-dojo-type="dijit/layout/StackController" class="${css.tabBar}" data-dojo-props="containerId:'${id}_stackContainer'" data-dojo-attach-point="dap_stackController"></div>
+  <div data-dojo-type="dijit/layout/StackContainer" id="${id}_stackContainer" data-dojo-attach-point="dap_stackContainer" data-dojo-props="doLayout: false" class="${css.content}">
+    <div data-dojo-type="dijit/layout/ContentPane" title="${labels.shape}" data-dojo-attach-point="dap_shapeContainer">
+      <div data-dojo-attach-point="dap_symbolPicker"></div>
+      <div data-dojo-attach-point="dap_useImageContent">
+        <div class="${css.link}" data-dojo-attach-point="dap_addImage" tabindex="0">${labels.useImage}</div>
+        <div data-dojo-attach-point="dap_shapeImageUrlContainer" class="${css.shapeImageUrlContainer}">
+          <div data-dojo-type="dijit/form/TextBox" data-dojo-attach-point="dap_shapeImageUrlInput" class="${css.urlInput} dijitInline"></div>
+          <div data-dojo-attach-point="dap_loadShapeImageUrl" class="dijitInline ${css.addIcon}" tabindex="0"></div>
+          <div data-dojo-attach-point="dap_shapeImageUrlErrorDisplay" class="${css.errorDisplay}"></div>
+        </div>
+      </div>
+      <div data-dojo-attach-point="dap_shapeSizeLabel" class="${css.label}">${labels.symbolSize}</div>
+      <div class="${css.symbolSizeInput} ${css.inlineInput}" data-dojo-attach-point="dap_symbolSizeOptions">
+        <div data-dojo-type="esri/dijit/HorizontalSlider" data-dojo-attach-point="dap_shapeSizeSlider"></div>
+        <div data-dojo-type="dijit/form/NumberSpinner"  data-dojo-attach-point="dap_shapeSizeTextBox"></div>
+        <span class="${css.text}">${labels.px}</span>
+      </div>
+    </div>
+    <div data-dojo-type="dijit/layout/ContentPane" title="${labels.fill}" data-dojo-attach-point="dap_fillContainer">
+      <div data-dojo-type="esri/dijit/ColorPicker" data-dojo-attach-point="dap_fillColorPicker" data-dojo-props="showSuggestedColors: true"></div>
+      <div data-dojo-type="esri/dijit/SymbolStyler/ColorRampPicker" data-dojo-attach-point="dap_fillColorRampPicker" class="${css.hidden}"></div>
+    </div>
+    <div data-dojo-type="dijit/layout/ContentPane" title="${labels.outline}" data-dojo-attach-point="dap_outlineContainer">
+      <div data-dojo-type="esri/dijit/ColorPicker" data-dojo-attach-point="dap_outlineColorPicker" data-dojo-props="showSuggestedColors: true"></div>
+      <div data-dojo-type="esri/dijit/SymbolStyler/ColorRampPicker" data-dojo-attach-point="dap_outlineColorRampPicker" class="${css.hidden}"></div>
+      <div data-dojo-attach-point="dap_lineWidthLabel" class="${css.label}">${labels.lineWidth}</div>
+      <div class="${css.lineWidthInput} ${css.inlineInput}" data-dojo-attach-point="dap_lineWidthOptions">
+        <div data-dojo-type="esri/dijit/HorizontalSlider" data-dojo-attach-point="dap_lineWidthSlider"></div>
+        <select data-dojo-attach-point="dap_lineWidthTextBox"><!--values added dynamically--></select>
+        <span class="${css.text}">${labels.px}</span>
+      </div>
+      <div class="${css.label}" data-dojo-attach-point="dap_linePatternSelectLabel">${labels.pattern}</div>
+      <div data-dojo-attach-point="dap_linePatternSelect"></div>
+      <div class="${css.label}" data-dojo-attach-point="dap_arrowPatternSelectLabel">${labels.arrow}</div>
+      <div data-dojo-attach-point="dap_arrowPatternSelect"></div>
+    </div>
+  </div>
+</div>

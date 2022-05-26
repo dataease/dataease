@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Phát hiện Đối tượng sử dụng Deep Learning</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="Ph&aacute;t hiện Đối tượng sử dụng Deep Learning"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y chạy một m&ocirc; h&igrave;nh deep learning được đ&agrave;o tạo tr&ecirc;n một raster đầu v&agrave;o để tạo ra một lớp đối tượng chứa c&aacute;c đối tượng m&agrave; n&oacute; t&igrave;m thấy. Đối tượng c&oacute; thể l&agrave; c&aacute;c v&ugrave;ng bao hoặc polygon quanh c&aacute;c đối tượng t&igrave;m thấy, hoặc c&aacute;c điểm ở t&acirc;m của đối tượng.
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ v&ugrave;ng raster nh&igrave;n thấy được trong phạm vi bản đồ hiện tại mới được ph&acirc;n t&iacute;ch. Nếu bỏ chọn, to&agrave;n bộ raster sẽ được ph&acirc;n t&iacute;ch, ngay cả khi n&oacute; nằm ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Chọn hình ảnh được dùng để phát hiện đối tượng</h2></div>
+        <hr/>
+        <div>
+            <p>H&igrave;nh ảnh đầu v&agrave;o được d&ugrave;ng để ph&aacute;t hiện đối tượng.
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Chọn mô hình Deep Learning được dùng để phát hiện đối tượng</h2></div>
+        <hr/>
+        <div>
+            <p>G&oacute;i deep learning đầu v&agrave;o mục ( <code>.dlpk</code>).
+            </p>
+            <p>G&oacute;i deep learning bao gồm tệp JSON định nghĩa m&ocirc; h&igrave;nh Esri ( <code>.emd</code>), tệp m&ocirc; h&igrave;nh nhị ph&acirc;n deep learning v&agrave; c&oacute; thể c&oacute; h&agrave;m raster Python sẽ được sử dụng.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Xác định đối số mô hình Deep Learning</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c đối số của h&agrave;m được x&aacute;c định trong lớp h&agrave;m raster Python được tham chiếu bởi m&ocirc; h&igrave;nh đầu v&agrave;o. Đ&acirc;y l&agrave; nơi bạn liệt k&ecirc; c&aacute;c tham số v&agrave; đối số deep learning bổ sung cho c&aacute;c thử nghiệm v&agrave; s&agrave;ng lọc, chẳng hạn như ngưỡng tin cậy để điều chỉnh độ nhạy.
+            </p>
+            <p>T&ecirc;n của c&aacute;c đối số được c&ocirc;ng cụ điền v&agrave;o từ việc đọc m&ocirc;-đun Python tr&ecirc;n m&aacute;y chủ ph&acirc;n t&iacute;ch raster.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>Xóa đối tượng trùng lặp khỏi kết quả (tùy chọn)</h2></div>
+        <hr/>
+        <div>
+            <p>Thực hiện triệt ti&ecirc;u kh&ocirc;ng tối đa, để x&aacute;c định c&aacute;c đối tượng tr&ugrave;ng lặp v&agrave; đối tượng tr&ugrave;ng lặp c&oacute; gi&aacute; trị độ tin cậy thấp hơn sẽ bị x&oacute;a. 
+                <ul>
+                    <li>Kh&ocirc;ng được chọn&mdash;Tất cả c&aacute;c đối tượng được ph&aacute;t hiện sẽ nằm trong lớp đối tượng đầu ra. Điều n&agrave;y l&agrave; mặc định.
+                        
+
+                    </li>
+                    <li>Được chọn&mdash;X&oacute;a c&aacute;c đối tượng tr&ugrave;ng lặp ph&aacute;t hiện được.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>Trường điểm số mức độ tự tin</h2></div>
+        <hr/>
+        <div>
+            <p>Trường trong dịch vụ đối tượng c&oacute; chứa điểm tin cậy l&agrave; kết quả của phương ph&aacute;p ph&aacute;t hiện đối tượng.
+            </p>
+            <p>Khi bạn đ&aacute;nh dấu chọn th&ocirc;ng số  <b>Kh&ocirc;ng Triệt ti&ecirc;u Tối đa</b> th&igrave; bắt buộc phải c&oacute; th&ocirc;ng số n&agrave;y.
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>Trường giá trị lớp</h2></div>
+        <hr/>
+        <div>
+            <p>Trường gi&aacute; trị lớp trong dịch vụ đối tượng đầu ra. Nếu kh&ocirc;ng được quy định th&igrave; c&ocirc;ng cụ sẽ sử dụng c&aacute;c trường gi&aacute; trị lớp ti&ecirc;u chuẩn,  <i>Classvalue</i> v&agrave; <i>Value</i>. Nếu c&aacute;c trường n&agrave;y kh&ocirc;ng tồn tại, tất cả c&aacute;c đối tượng sẽ được coi l&agrave; c&ugrave;ng một lớp đối tượng.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>Tỷ lệ chồng lấp tối đa</h2></div>
+        <hr/>
+        <div>
+            <p>Tỷ lệ chồng lấp tối đa cho hai đối tượng chồng l&ecirc;n nhau, được x&aacute;c định l&agrave; tỷ lệ của khu vực giao cắt tr&ecirc;n v&ugrave;ng hợp nhất. Gi&aacute; trị mặc định l&agrave; 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Bạn c&oacute; thể chỉ định t&ecirc;n của một thư mục trong  <b>Nội dung của t&ocirc;i</b> m&agrave; tại đ&oacute; kết quả sẽ được lưu bằng c&aacute;ch sử dụng hộp xổ xuống <b>Lưu kết quả v&agrave;o</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

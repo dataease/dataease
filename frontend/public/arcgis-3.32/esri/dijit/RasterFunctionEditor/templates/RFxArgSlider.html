@@ -1,0 +1,31 @@
+<div class="esriRFxArgSlider">
+	<table class="esriRFxArgsEditor__table">
+		<col class="${baseClass}SliderCell">
+		<col class="${baseClass}NumberSpinnerCell">
+		<tr colspan="2">
+			<th class="${baseClass}LabelCell" align="left">
+				<div class="${baseClass}Label" data-dojo-attach-point="labelNode">
+				</div>
+			</th>
+		</tr>
+		<tr>
+			<td class="${baseClass}SliderCell">
+				<input data-dojo-type="dijit/form/HorizontalSlider" data-dojo-props="
+							intermediateChanges: true,
+							style:'width: 100%',
+							showButtons: false" data-dojo-attach-event="onChange: _onSliderChange" data-dojo-attach-point="slider" />
+				<ol data-dojo-type="dijit/form/HorizontalRule" data-dojo-props="
+							container: 'bottomDecoration',
+							count: 11," style="height: 5px; margin: 2px 9px;" data-dojo-attach-point="sliderRuleNode">
+				</ol>
+
+			</td>
+			<td class="${baseClass}NumberSpinnerCell">
+				<input data-dojo-type="dijit/form/NumberSpinner" data-dojo-props="smallDelta:1,
+				intermediateChanges: true,
+				constraints:{min:0,max:10,places:3}" data-dojo-attach-event="onChange: _onNumberSpinnerChange" data-dojo-attach-point="spinner"
+				 class="${baseClass}NumberSpinner" />
+			</td>
+		</tr>
+	</table>
+</div>

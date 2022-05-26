@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>最適な移動コスト ネットワークの決定</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="[最適移動コスト ネットワークの決定 (Determine Optimum Travel Cost Network)] ツールの図"></h2>
+        <hr/>
+    <p>このツールは、入力地域から、最適コスト ネットワークを計算します。
+    </p>
+    <p>このツールの応用例として、緊急車両用に最適なネットワークを探すことが挙げられます。
+    </p>
+    <p> <b>[現在のマップ範囲を使用]</b> をオンにすると、現在のマップ範囲内に表示されている入力レイヤー内の位置だけが解析されます。オフの場合、入力レイヤー内のすべての位置が、現在のマップ範囲内になくても解析されます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>移動経路を決定するラスターまたはフィーチャ位置レイヤーを選択</h2></div>
+        <hr/>
+        <div>
+            <p>最小コストネットワークで接続される入力領域。
+            </p>
+            <p>領域は、イメージ サービスまたはフィーチャ サービスによって定義できます。
+            </p>
+            <p>イメージ サービスの場合、領域は同じ値を持つ連続 (隣接) するセルのグループによって定義されます。各領域には一意の番号を付ける必要があります。領域の一部でないセルは NoData にする必要があります。ラスター タイプは整数である必要があり、正または負の値を指定できます。
+            </p>
+            <p>フィーチャ サービスの場合、入力はポイント、ライン、ポリゴンです。
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>移動コスト ラスター レイヤーの選択</h2></div>
+        <hr/>
+        <div>
+            <p>各セル内を平面的に通過するときにかかるインピーダンスまたはコストを定義するラスター。
+            </p>
+            <p>各セル位置の値は、そのセル上を通過するための単位距離あたりのコストを表します。セル内を通過する総コストを取得するために、各セル位置の値にセル解像度を乗算して、対角移動についても補正します。
+            </p>
+            <p>コスト ラスターとして、整数値または浮動小数点値を使用できますが、負の値や 0 は使用できません (負またはゼロのコストは指定できません)。
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>結果最適経路ポリライン レイヤーの名前</h2></div>
+        <hr/>
+        <div>
+            <p> <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前。デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>結果隣接経路ポリライン レイヤーの名前</h2></div>
+        <hr/>
+        <div>
+            <p> <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前。デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

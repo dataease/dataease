@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Selectare cele mai bune centre</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Selectare cele mai bune centre"></h2>
+        <hr/>
+    <p>Selectare cele mai bune centre vă permite să selectați cele mai bune locații pentru centre. Instrumentul alocă locații cu cerere pentru centre &icirc;ntr-un mod care satisface obiectivul specificat.
+    </p>
+    <p>Centrele reprezintă locații care oferă un anumit tip de serviciu, de exemplu, stații de pompieri, școli, biblioteci, magazine sau centre de distribuție. Locațiile cu cerere reprezintă locații care dispun de cerere pentru serviciile oferite de centre, de exemplu, puncte de arii de circumscripție care rezumă populația dintr-o anumită zonă.
+    </p>
+    <p>Instrumentul Selectare cele mai bune centre vă poate ajuta să răspundeți la &icirc;ntrebări precum:
+        <ul>
+            <li>&Icirc;n cazul unei urgențe, cum pot fi domiciliile atribuite centrului corect de asistență &icirc;n caz de dezastru, c&acirc;nd numărul de paturi este limitat și nu trebuie depășit?
+            </li>
+            <li>Cum pot fi atribuite cartierele celei mai apropiate filiale a unei biblioteci și cum se poate determina numărul de clienți potențiali pe care fiecare filială &icirc;i deservește? 
+            </li>
+            <li>Cum puteți determina cea mai bună locație pentru un centru de distribuție de produse alimentare astfel &icirc;nc&acirc;t să minimizați timpul total de deplasare (și, &icirc;n consecință, costurile) pentru distribuția către un lanț de magazine alimentare?
+            </li>
+            <li>Unde ar fi localizat un nou parc pentru a asigura faptul că un număr maxim de rezidenți ai localității locuiesc la cel mult cinci minute de mers pe jos de un parc?
+            </li>
+            <li>Care sunt cele mai bune locații pentru c&acirc;teva magazine pentru animale de companie &icirc;ntr-o zonă, astfel &icirc;nc&acirc;t 40 la sută dintre proprietarii de animale de companie din respectiva zonă să nu se afle la mai mult de zece minute de mers cu mașina de unul dintre aceste magazine?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Obiectiv</h2></div>
+        <hr/>
+        <div>
+            <p>Specificați obiectivul care trebuie satisfăcut la alocarea locațiilor de cerere pe centre.
+            </p>
+            <p>Cu Selectare cele mai bune centre puteți specifica tipul problemei pe care o rezolvați &mdash; Obiectivul. Instrumentul este optimizat pentru a furniza o soluție pentru acel obiectiv specific. Indiferent de obiectiv, este utilizată, &icirc;n esență, aceeași metodă de bază pentru identificarea unei soluții &mdash; volumul cererii dintr-o locație de cerere dată este alocat celui mai apropiat centru. Obiectivele variază &icirc;n funcție de modul &icirc;n care combinația dintre distanță (sau timp) și cerere este tratată. Instrumentul ia &icirc;n calcul at&acirc;t distanța/timpul de deplasare, c&acirc;t și volumul cererii și &mdash; &icirc;n anumite cazuri &mdash; capacitatea centrelor. Dacă un obiectiv favorizează, de exemplu, minimizarea timpului de deplasare, instrumentul va &icirc;ncerca &icirc;n același timp, &icirc;n secundar, să maximizeze cererea alocată. &Icirc;n același mod, dacă obiectivul este de a maximiza cererea alocată, instrumentul va rezolva aceasta prin minimizarea timpului de deplasare (prin atribuirea locațiilor de cerere celui mai apropiat centru și nu oricărui centru).
+            </p>
+            <p>&Icirc;n funcție de datele dvs. și de setările pe care le utilizați, obiective diferite pot produce același rezultat sau rezultate similare. Totuși, ar trebui să specificați obiectivul care este cel mai potrivit pentru analiza dvs.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Alocare către centrele existente</h2></div>
+        <hr/>
+        <div>
+            <p>Utilizați acest obiectiv dacă nu doriți să localizați centre noi și dacă doriți să atribuiți cererea centrelor existente, care pot avea o capacitate limitată sau nelimitată.    
+            </p>
+            <p>Acest obiectiv atribuie cererea centrelor pe baza capacității existente la centru și volumului cererii din zona &icirc;nconjurătoare. Cererea este alocată celui mai apropiat centru, p&acirc;nă c&acirc;nd este atinsă capacitatea disponibilă. Dacă specificați un interval maxim de deplasare, orice locații de cerere aflate dincolo de acel interval nu vor fi atribuite unui centru, chiar dacă nu a fost alocată complet cererea.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Minimizare deplasare</h2></div>
+        <hr/>
+        <div>
+            <p>Utilizați acest obiectiv dacă doriți să localizați centre astfel &icirc;nc&acirc;t timpul total de deplasare, sau distanța de deplasare, &icirc;ntre locațiile de cerere și centre să fie minime.
+            </p>
+            <p>Acest obiectiv este frecvent aplicabil &icirc;n cazul &icirc;n care se realizează &icirc;n mod regulat deplasarea &icirc;ntre centru și toate locațiile de cerere. De exemplu, ați utiliza acest obiectiv pentru a minimiza distanța totală de deplasare pentru transportul de bunuri de la centre de distribuție la magazine sau pentru a selecta o locație pentru o conferință, &icirc;ntr-un mod &icirc;n care să minimizați timpul de deplasare pentru toți participanții.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Maximizare acoperire</h2></div>
+        <hr/>
+        <div>
+            <p>Utilizați acest obiectiv dacă doriți să maximizați volumul de cerere acoperit &icirc;ntr-un timp sau o distanță anume de centre.    
+            </p>
+            <p>Acest obiectiv selectează centre astfel &icirc;nc&acirc;t să fie alocat un volum maxim al cererii, cu fiecare cerere din fiecare locație de cerere alocată unui singur centru, care se află cel mai aproape de aceasta.
+            </p>
+            <p>Pentru acest obiectiv este necesar un interval finit, maxim de deplasare; &icirc;n caz contrar, este posibil ca toată cererea să fie atribuită unui singur centru. Locațiile de cerere care sunt dincolo de distanța sau timpul oricărui centru, nu vor fi alocate (astfel se poate observa unde nu este acoperită cererea și unde este necesară existența unor centre suplimentare).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Maximizare acoperire cu capacitate</h2></div>
+        <hr/>
+        <div>
+            <p>Utilizați acest obiectiv dacă doriți să maximizați volumul de cerere acoperit de centre, dar centrele au o capacitate limitată.    
+            </p>
+            <p>Acest obiectiv selectează centre astfel &icirc;nc&acirc;t să fie alocat un volum maxim al cererii fără a depăși capacitatea vreunui centru. Toată cererea de la fiecare locație de cerere este alocată unui singur centru, care se află cel mai aproape de aceasta, care are capacitate disponibilă (adică, dacă prin atribuirea unei cereri către un centru se depășește capacitatea centrului, locația de cerere nu va fi atribuită &icirc;n totalitate, &icirc;n loc să fie atribuită doar o parte a cererii).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Acoperirea unui procent din cerere</h2></div>
+        <hr/>
+        <div>
+            <p>Utilizați acest obiectiv dacă doriți să aflați numărul minim de centre de care aveți nevoie pentru a acoperi un anumit procent din cerere.
+            </p>
+            <p>Acest obiectiv selectează numărul minim de centre necesare pentru a atinge procentul din cerere specificat. O locație de cerere care se află &icirc;n intervalul maxim de deplasare a două sau mai multe centre, va avea cererea distribuită proporțional &icirc;ntre centre, pe baza distanței p&acirc;nă la fiecare dintre acestea. Acest obiectiv este utilizat adesea c&acirc;nd persoanele pot alege centrul pe care să &icirc;l viziteze și se presupune că, &icirc;n general, vor vizita centrul cel mai apropiat (toate celelalte elemente fiind egale).
+            </p>
+            <p>Spre deosebire de celelalte obiective care selectează centre, &icirc;n cadrul cărora dvs. specificați c&acirc;te centre să fie selectate, acest obiectiv selectează numărul de centre pentru dvs., pe baza procentului din cerere pe care doriți să-l acoperiți. Acesta presupune că centrele nu au o capacitate limitată.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Măsurați</h2></div>
+        <hr/>
+        <div>
+            <p>Ca și &icirc;n cazul altor instrumente care implică deplasare &icirc;n cadrul analizei, puteți specifica dacă deplasarea este măsurată ca distanță sau ca timp, și puteți selecta dintre diferite moduri de deplasare, de exemplu, timp de mers pe jos, timp deplasare cu autoturismul, distanță de deplasare &icirc;n mediul rural etc. Modurile de deplasare disponibile sunt determinate de administratorul organizației dvs. La utilizarea opțiunilor  <b>Timp de deplasare</b>, <b>Timp de deplasare &icirc;n mediul rural</b> sau <b>Timp de deplasare cu camionul</b> puteți include, opțional, traficul pentru o anumită zi a săptăm&acirc;nii și momentul zilei.
+            </p>
+            <p> Pentru a aloca &icirc;n mod precis locațiile de cerere către centre, dvs. specificați dacă deplasarea este realizată de la centre la locațiile de cerere (de la stații de pompieri la locuințe, de exemplu) sau de la locațiile de cerere la centre (ca &icirc;n cazul clienților care se deplasează spre biblioteci). Selectare cele mai bune centre va lua &icirc;n calcul direcția de deplasare pe străzi cu sens unic, dacă este posibilă virarea de pe o stradă pe alta, dacă intersecțiile nu permit virarea la st&acirc;nga etc., depinz&acirc;nd de faptul că deplasarea se realizează &icirc;n afară, de la un centru către locațiile de cerere sau &icirc;n interior, de la locațiile de cerere către centre.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Strat tematic locații cerere</h2></div>
+        <hr/>
+        <div>
+            <p>Obiectele spațiale de tip punct care reprezintă locații care dispun de cerere pentru serviciile oferite de centre. Instrumentul atribuie aceste locații de cerere către centrele corespunzătoare pe baza obiectivului selectat.
+            </p>
+            <p>Locațiile de cerere au asociat un volum al cererii. Dacă toate locațiile de cerere au același volum al cererii, utilizați o constantă pentru a specifica valoarea. Dacă volumul cererii variază &icirc;n funcție de locația de cerere, utilizați un c&acirc;mp din Stratul tematic locații de cerere pentru a specifica valoarea pentru fiecare locație de cerere.
+            </p>
+            <p>Cererea va fi alocată către centre p&acirc;nă c&acirc;nd toată cererea a fost alocată, indiferent de c&acirc;t de departe se află locațiile de centre. Puteți stabili un interval maxim de deplasare Stratului tematic locații de cerere pentru a crea o distanță sau un timp limită &mdash; orice locații de cerere aflate dincolo de valoarea limită, nu vor fi alocate. Dacă toate locațiile de cerere au același interval maxim de deplasare, utilizați o constantă pentru a specifica valoarea. Dacă intervalul maxim de deplasare variază &icirc;n funcție de locația de cerere, utilizați un c&acirc;mp din Stratul tematic locații de cerere pentru a specifica valoarea pentru fiecare locație de cerere.
+            </p>
+            <p>Dacă tipul obiectivului este  <b>Acoperirea unui procent din cerere</b>, trebuie să specificați procentul minim din cerere pe care doriți să-l capteze centrele.
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+            <p>Instrumentul acceptă p&acirc;nă la 10.000 de obiecte spațiale &icirc;n Stratul tematic locații de cerere.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Strat tematic centre necesare</h2></div>
+        <hr/>
+        <div>
+            <p>Obiectele spațiale de tip punct care reprezintă locații care acționează ca centre, furniz&acirc;nd un anumit tip de servicii. Centrele necesare reprezintă &icirc;n mod normal locații care există deja, spre deosebire de centrele candidat care, &icirc;n mod normal, reprezintă locații &icirc;n care vor fi construite sau amplasate centre noi. La alocarea locațiilor de cerere, instrumentul utilizează centrele din  <b>Strat tematic centre necesare</b> &icirc;naintea oricăror centre din <b>Strat tematic centre candidat</b>.
+            </p>
+            <p>Centrele necesare pot dispune de o capacitate nelimitată (adică pot deservi toată cererea atribuită acestora) sau pot dispune de o capacitate limitată. Dacă toate centrele dispun de aceeași capacitate limitată (de exemplu, numărul de locuințe care pot fi deservite de o stație de pompieri &mdash; să zicem, 4.000), specificați o valoare constantă. Dacă această capacitate variază &icirc;ntre centre (de exemplu, numărul de locuri disponibile pentru anul &icirc;nt&acirc;i la fiecare liceu), specificați un c&acirc;mp care conține valoarea capacității pentru fiecare centru.
+            </p>
+            <p>Instrumentul acceptă p&acirc;nă la 100 de obiecte spațiale &icirc;n  <b>Strat tematic centre necesare</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Strat tematic centre candidat</h2></div>
+        <hr/>
+        <div>
+            <p>Obiectele spațiale de tip punct care reprezintă locații care acționează ca centre, furniz&acirc;nd un anumit tip de servicii. Centrele candidat reprezintă &icirc;n mod normal locații &icirc;n care vor fi construite sau amplasate centre noi, spre deosebire de centrele necesare care, &icirc;n mod normal, reprezintă locații care există deja.
+            </p>
+            <p>&Icirc;n funcție de obiectivul analizei dvs., trebuie să specificați numărul de centre candidat ce trebuiesc selectate din mulțimea de centre candidat. Dacă specificați at&acirc;t centre necesare, c&acirc;t și centre candidat, instrumentul utilizează centrele din  <b>Strat tematic centre necesare</b> &icirc;naintea oricăror centre din <b>Strat tematic centre candidat</b>.
+            </p>
+            <p>Centrele candidat pot dispune de o capacitate nelimitată (adică pot deservi toată cererea atribuită acestora) sau pot dispune de o capacitate limitată. Dacă toate centrele dispun de aceeași capacitate limitată (de exemplu, numărul de locuințe care pot fi deservite de o stație de pompieri &mdash; să zicem, 4.000), specificați o valoare constantă. Dacă această capacitate variază &icirc;ntre centre (de exemplu, numărul de locuri disponibile pentru anul &icirc;nt&acirc;i la fiecare liceu), specificați un c&acirc;mp care conține valoarea capacității pentru fiecare centru.
+            </p>
+            <p>Instrumentul acceptă p&acirc;nă la 1.000 de obiecte spațiale &icirc;n  <b>Strat tematic centre candidat</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Selectare straturi tematice tip barieră</h2></div>
+        <hr/>
+        <div>
+            <p> Unul sau mai multe obiecte spațiale care acționează ca restricții temporare (bariere) atunci c&acirc;nd vă deplasați pe străzile subiacente. Puteți specifica barierele utiliz&acirc;nd obiecte spațiale de tip punct, linie sau poligon.
+            </p>
+            <p>O barieră de tip punct poate reprezenta modelul unui copac căzut, al unui accident, al unui cablu electric căzut sau al oricărui element care blochează complet traficul &icirc;ntr-o anumită poziție de pe stradă. Deplasarea este permisă pe stradă, dar nu &icirc;n afara barierei. Puteți specifica p&acirc;nă la 250 de obiecte spațiale care să acționeze ca bariere tip punct.
+            </p>
+            <p>O barieră tip linie interzice deplasarea &icirc;n orice punct &icirc;n care bariera se intersectează cu străzile. De exemplu, o paradă sau un protest care blochează traficul pe mai multe segmente de stradă pot fi modelate cu o barieră tip linie. Dacă numărul de obiecte spațiale de stradă intersectate de toate barierele tip linie depășește 500, instrumentul returnează o eroare.
+            </p>
+            <p>O barieră tip poligon interzice deplasarea &icirc;n orice punct &icirc;n care poligonul se intersectează cu străzile. Un mod de utilizare a acestui tip de barieră este să se modeleze inundațiile care acoperă suprafețele rețelei de străzi și să se facă imposibilă deplasarea pe traseul respectiv. Dacă numărul de obiecte spațiale de stradă intersectate de toate barierele tip poligon depășește 2000, instrumentul returnează o eroare.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic care va fi creat &icirc;n  <b>Resursele mele</b> și adăugat &icirc;n hartă.  Numele implicit se bazează pe numele instrumentului și numele stratului tematic de intrare. Dacă numele stratului tematic rezultat există deja, vi se va solicita să furnizați un alt nume.
+            </p>
+            <p>Stratul tematic rezultat va conține un strat tematic pentru fiecare dintre următoarele: centre care au atribuită cerere, locații de cerere care sunt atribuite unor centre și linii de alocare, care conectează locațiile de cerere cu centrele cărora le sunt alocate. Liniile de alocare sunt trasate ca linii drepte; cu toate acestea, timpul de deplasare sau distanța de deplasare dintre centru și locația de cerere sunt &icirc;ntotdeauna calculate pe baza modului de deplasare pe care dvs. &icirc;l specificați și nu utiliz&acirc;nd distanțe &icirc;n linie dreaptă.
+            </p>
+            <p>Utiliz&acirc;nd meniul derul&acirc;nd  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Ekstrahuj podatke</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Ekstrahuj podatke"></h2>
+        <hr/>
+    <p>Pomoću ove alatke možete da izaberete i preuzmete podatke za određenu oblast interesovanja. Slojevi koje selektujete biće dodati u ZIP, CSV ili KMZ datoteku.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Slojevi za ekstrakciju</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo su slojevi u va&scaron;em sadržaju iz kojih možete da izdvojite geoobjekte. Slojevi koji su označeni su izdvojeni i obuhvaćeni rezultujućom ZIP ili CSV datotekom.
+            </p>
+            <p>Da bi se sloj prikazao na listi slojeva za ekstrakciju, vi morate da posedujete podatke ili vlasnik podataka mora da omogući izvoz podataka. Da biste samostalno omogućili izvoz podataka: 
+                <ul>
+                    <li>Otvorite stavku opisa za podatke.
+                    </li>
+                    <li>Kliknite na karticu  <b>Postavke</b>.
+                    </li>
+                    <li>Pomerite nadole na odeljak  <b>Izvezi podatke</b>.
+                    </li>
+                    <li>Potvrdite izbor  <b>Omogući drugima da izvezu u druge formate</b>.  Kliknite na <b>Sačuvaj</b> kada zavr&scaron;ite.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ako va&scaron; sloj analize sadrži priloge, imajte u vidu da će prilozi biti izdvojeni samo ako je izlazni format podataka fajl geobaza, a opcija  <b>Ograniči geoobjekte</b> nije izabrana.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Oblast ispitivanja</h2></div>
+        <hr/>
+        <div>
+            <p>Oblast koja defini&scaron;e koji će geoobjekti biti obuhvaćeni u izlaznoj ZIP ili CSV datoteci. Možete da odaberete od sledećeg:
+                <ul>
+                    <li>Trenutni vidljivi obuhvat va&scaron;e mape ( <b>Isto kao Prikaz</b>).
+                    </li>
+                    <li>Jedan od slojeva u va&scaron;em sadržaju. Ako je izabrani sloj tačkasti ili linijski geoobjekat, obuhvat sloja će se koristiti kao oblast ispitivanja.
+                    </li>
+                    <li>Nacrtajte oblast da biste definisali oblast ispitivanja.
+                    </li>
+                </ul>
+                 Svi geoobjekti potpuno unutar obuhvata mape biće izdvojeni. Za geoobjekte koji prelaze ili presecaju granicu obuhvata mape, ali nisu potpuno unutar obuhvata, imate dve opcije:
+                <ul>
+                    <li> <b>Selektuj geoobjekte</b> &ndash; biće izdvojeni čitavi geoobjekti koji prelaze granicu oblasti ispitivanja.
+                    </li>
+                    <li> <b>Ograniči geoobjekte</b> &ndash; biće izdvojeni samo oni delovi geoobjekata koji su unutar oblasti ispitivanja.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Format izlaznih podataka</h2></div>
+        <hr/>
+        <div>
+            <p>Format podataka koji će biti izdvojeni. Kada izvozite linijske geoobjekte ili geoobjekte oblasti u CSV datoteke, biće izdvojeni samo neprostorni atributi. Kada izvozite tačkaste geoobjekte, biće izdvojeni prostorni i neprostorni atributi.  
+            </p>
+            <p>Izdvojeni podaci će koristiti Web Mercator 1984 projekciju.  Za CSV datoteke, polja  <i>Lat</i> i <i>Long</i> će se primenjivati na podatke sa koordinatama u Web Mercator 1984.
+            </p> 
+            <p>Podržani su sledeći formati izlaznih rezultata:
+                <ul>
+                    <li>Vrednosti razdvojene zarezom (CSV) &ndash;  <code>.csv</code> ili <code>.zip</code>
+                    </li>
+                    <li>Baza geopodataka datoteke &ndash;  <code>.zip</code>
+                    </li>
+                    <li>Keyhole Markup Language (KML) &ndash;  <code>.kmz</code> ili <code>.zip</code>
+                    </li>
+                    <li>Shapefile datoteka &ndash;  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Ime datoteke izlaza</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je ime stavke koja će biti dodata u  <b>Moj sadržaj</b>.  Ime stavke je zasnovano na izabranom <b>Formatu izlaznih podataka</b>. Ako stavka već postoji, bićete upitani da unesete drugo ime.
+            </p>
+            <p>Koristeći  <b>Sačuvaj rezultat u</b> padajućem polju, možete da navedete ime fascikle u <b>Mom sadržaju</b> u kojoj će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

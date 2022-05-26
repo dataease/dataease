@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/infographics/simpleInfographic/dataDrilling/panels/US/JourneyToWork",["../../ChartBuilder"],function(b){var a={};a.jorneyToWork={states:"n,p",defaultState:"p",stateSettings:{n:{yAxisTitle:"Number of adults 16+"},p:{yAxisTitle:"Percent of adults 16+"}},fieldInfo:{isChart:!0,chartJson:b.createChart({title:"Journey to Work (ACS)",points:[{label:"Drove Alone",fullName:"commute.ACSDRALONE"},{label:"Carpooled",fullName:"commute.ACSCARPOOL"},{label:"Public Transportation",
+fullName:"commute.ACSPUBTRAN"},{label:"Bus",fullName:"commute.ACSBUS"},{label:"Streetcar",fullName:"commute.ACSSTRTCAR"},{label:"Subway",fullName:"commute.ACSSUBWAY"},{label:"Railroad",fullName:"commute.ACSRAILRD"},{label:"Ferryboat",fullName:"commute.ACSFERRY"},{label:"Taxicab",fullName:"commute.ACSTAXICAB"},{label:"Motorcycle",fullName:"commute.ACSMCYCLE"},{label:"Bicycle",fullName:"commute.ACSBICYCLE"},{label:"Walked",fullName:"commute.ACSWALKED"},{label:"Other Means",fullName:"commute.ACSOTHTRAN"},
+{label:"Worked at Home",fullName:"commute.ACSWRKHOME"}],visualProps:{sorting:"Descending"}})}};return a});

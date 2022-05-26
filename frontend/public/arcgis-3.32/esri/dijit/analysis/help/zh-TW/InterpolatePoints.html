@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>插值點</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="插值點"></h2>
+        <hr/>
+    <p>   「插值點」工具讓您根據一組點的測量結果，預測新位置上的值。 該工具在每個點取具有數值的點資料，幷傳回按預測值分類的區域。 例如
+        <ul>
+            <li>一處空氣質量管理區安裝有用於測量污染等級的感應器。 「插值點」可用於預測沒有安裝感應器位置處的污染等級，如學校或醫院等高風險人群聚集的地區。
+            </li>
+            <li>根據從單株植物採集到的樣本來預測農作物的重金屬濃度。
+            </li>
+            <li>預測土壤養分含量（氮、磷、鉀等）和其他指標（如導電性），以便研究它們與作物産量的關係，幷規定田間各處的精確化肥用量。
+
+            </li>
+            <li>氣象應用包括溫度、降雨和相關的變數（例如酸雨）的預測。 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇包含具有已知值的位置的點圖層</h2></div>
+        <hr/>
+        <div>
+            <p>用作插值基礎的點圖層。  
+
+            </p>
+            <p>除了從地圖選擇圖層，您也可以選擇下拉清單底部的 <b>選擇分析圖層</b>。此選項將開啟圖庫，可讓您瀏覽並選擇各種來源中的資料集，以便在您的分析中使用該資料集。 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>選擇待插值的欄位</h2></div>
+        <hr/>
+        <div>
+            <p>選擇包含待插值的值之欄位。  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>最佳化</h2></div>
+        <hr/>
+        <div>
+            <p>根據您的偏好選擇「快速」或「精確」。 預測結果越精確，所需的計算時間就越長。
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>輸出預測錯誤</h2></div>
+        <hr/>
+        <div>
+            <p> 勾選後，將建立一個插值預測的標準誤差圖層。 輸出圖層的名稱爲結果圖層名稱後加&ldquo;Errors&rdquo;。
+            </p>
+            <p>標準誤差可提供有關預測值的可靠性資訊，因此非常有用。 簡單的經驗法則是真值落在兩個預測值標準誤差之間的機率為 95% 。 例如，假設一個新地區的預測值是 50，標準誤差是 5。 這表示利用該工具預測出此地區的真值是 50，但是低至 40 或高至 60 也是合理的。 爲計算此合理值的範圍，可先用標準誤差乘以 2，然後將此值加上預測值以取得範圍上限，再減去預測值以取得範圍下限。
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>分類依據</h2></div>
+        <hr/>
+        <div>
+            <p>選擇將預測值分類為各個區域的方法。
+                <ul>
+                    <li>幾何間隔 - 根據具有幾何級數的級距建立分類區域。 此方法可確保每個類別的類別範圍所擁有的值數量大致相同，且間隔之間的變化一致。
+                    </li>
+                    <li>等間隔 - 建立區域使每個區域的預測值範圍相等。
+                    </li>
+                    <li>等面積 - 建立區域使每個區域中的資料值數量相等。 例如，如果資料的較大值多於較小值，則會為較大值建立更多的區域。
+                    </li>
+                    <li>手動 - 此選項用於自定義各區域的值範圍。 這些值將輸入到下面的 <b>類別斷點值</b>參數中。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>類別數量</h2></div>
+        <hr/>
+        <div>
+            <p>指定結果圖層中的類別數量（預測值的範圍）。 每個類別定義了區域的邊界。 這些類別的值將由以上 <b>分類方法</b>參數確定。
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>類別斷點值</h2></div>
+        <hr/>
+        <div>
+            <p>輸入所需的類別斷點值，以空格分隔。 例如，如果想要類別斷點值位於值 1.5、3 和 7，請輸入  <code>1.5 3 7</code>。 這些值用於定義每個類別的上限，所以類別數量等於所輸入值的數量。 如果某位置的預測值大於所輸入的最大斷點值，則不會為該位置建立區域。 必須輸入至少兩個不大於 32 的值。
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>將輸出結果裁剪至</h2></div>
+        <hr/>
+        <div>
+            <p>繪製或提供一個圖層，以指定用於繪製結果的區域。 例如，如果您要對湖泊污染的測量結果進行插值，則可以使用湖的邊界，使輸出結果僅局限於湖的邊界內。
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>在這些位置進行預測</h2></div>
+        <hr/>
+        <div>
+            <p>繪製或提供一個圖層，以指定用於計算預測值的點位置。 由此可以對感興趣的特定位置進行預測。 例如，如果輸入圖層表示污染級別的測量結果，則可以使用此參數来預測學校或醫院等高危人群聚集區域的污染級別。  然後便可以利用此資訊向這些地區的衛生部門提出建議。
+            </p>
+            <p>如有需要，此工具可在所指定的位置輸出預測結果的點圖層。 輸出圖層的名稱爲結果圖層名稱後加&ldquo;Points&rdquo;。  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層名稱已存在，系統將提示您提供其他名稱。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式功能表，可以在 <b>我的內容</b>中指定儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

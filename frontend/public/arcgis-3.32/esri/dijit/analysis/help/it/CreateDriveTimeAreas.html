@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Crea Drive-Time Areas</h2><p/>
+        <h2><img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" alt="Crea Drive-Time Areas"></h2>
+        <hr/>
+    <p>La funzione Drive-Time Areas consente di creare aree raggiungibili entro un tempo o una distanza di guida o una distanza a piedi specifici. La misurazione viene effettuata da uno o pi&ugrave; punti (fino a 1.000), lungo le strade o i passaggi pedonali, per creare un layer che possa aiutare l'utente a rispondere a domande quali:
+        <ul>
+            <li>Dove &egrave; possibile andare da qui guidando per 30 minuti?
+            </li>
+            <li>Dove &egrave; possibile andare da qui guidando per 30 minuti alle 17.30 in ora di punta?
+            </li>
+            <li>Che cosa si trova a una distanza di 2 chilometri a piedi da questo albergo?
+            </li>
+            <li>Quali zone della citt&agrave; sono raggiungibili dai pompieri entro cinque minuti? 
+            </li>
+            <li>Quale sarebbe l'impatto di una nuova caserma dei vigili del fuoco in termini di copertura anti-incendio?
+            </li>
+            <li>Quali aree commerciali riguardano una determinata attivit&agrave;?
+            </li>
+        </ul>
+        
+    </p>
+    <p>&Egrave; possibile rispondere a queste domande solo mediante la visualizzazione delle aree di output. In alternativa, &egrave; possibile effettuare un'ulteriore analisi spaziale utilizzando le aree di output. Ad esempio, l'esecuzione della funzione Aggrega Punti utilizzando le Drive-Time Areas con dati demografici pu&ograve; aiutare a determinare quale potenziale posizione di un negozio potrebbe probabilmente fornire la migliore clientela per il proprio tipo di attivit&agrave;. 
+    </p>
+    <p>
+        <table>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        <tr><td valign="baseline"><img src="../images/tip.png"></td><td valign="baseline"><h2>Tip:&ensp;</h2></td>
+        <td valign="baseline">
+            <p>Per creare aree mediante la misurazione della distanza in linea retta anzich&eacute; lungo le strade, utilizzare invece lo strumento Crea Buffer.
+            </p>
+        </td></tr>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        </table>
+    </p>
+    <p>Se si seleziona  <b>Usa estensione mappa corrente</b>, vengono utilizzate solo le feature visibili all'interno dell'estensione mappa corrente per creare le Drive-Time Areas o Drive-Distance-Based Areas. Se questa opzione &egrave; deselezionata, vengono utilizzate tutte le feature presenti nel layer di input, anche se esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegli il layer puntuale per calcolare le aree del tempo di guida nei dintorni</h2></div>
+        <hr/>
+        <div>
+            <p>Le feature puntuale intorno alle quali verranno calcolate le aree. &Egrave; possibile scegliere come vengono calcolate le aree in base alla modalit&agrave; di viaggio (in auto, con camion o a piedi) e al tipo di misurazione (tempo o distanza).
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+            <p>Lo strumento supporta fino a 1000 feature nel layer di input.
+
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Misura</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere la modalit&agrave; di viaggio (in auto, con camion o a piedi) e il tipo di misurazione (tempo o distanza). Le modalit&agrave; di viaggio disponibili sono determinate dall'amministratore dell'organizzazione.   Dopo aver selezionato modalit&agrave; e tipo di misurazione, immettere una durata o una distanza pari a un massimo di  5 ore (300 minuti) o  300 miglia (482.80 chilometri). 
+            </p>
+            <p>La direzione di viaggio ( <b>Lontano dalla struttura</b> o <b>Verso la struttura</b>) pu&ograve; influenzare il modo in cui vengono generate le aree. Create Drive-Time Areas rispetter&agrave; le strade a senso unico, eviter&agrave; svolte illegali e seguir&agrave; altre regole basate sulle indicazioni di viaggio. &Egrave; necessario selezionare le indicazioni di viaggio basate sul tipo di posizioni di input e sul contesto della propria analisi. Ad esempio, la drive-time area per una pizzeria a domicilio dovrebbe essere creata lontano dalla struttura, mentre la drive-time area per un ospedale dovrebbe essere creata verso la struttura.
+            </p>
+            <p>Quando si sceglie  <b>Tempo di guida</b>, <b>Tempo di guida in aree non urbane</b>, o <b>Tempo di guida in camion</b> vi sono diverse opzioni per misurare il tempo di guida.
+                <ul>
+                    <li>
+                        <p>Deselezionare  <b>Usa traffico</b> per creare Drive-Time Areas basate su velocit&agrave; fisse. Si tratta dell'opzione da scegliere se si desidera ottenere una Drive-Time Area generica e non una calcolata utilizzando condizioni di traffico variabili per un'ora di partenza specifica.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Selezionare  <b>Usa traffico</b> per creare Drive-Time Areas basate su un orario di partenza specifico e su condizioni di traffico variabili. Inoltre, selezionando l'opzione <b>Traffico in tempo reale</b>, l'orario di partenza dai punti di input viene impostato sull'ora corrente e le velocit&agrave; di traffico corrente e previsto in futuro fanno riferimento a sensori e feed per creare le Drive-Time Areas. Le velocit&agrave; di traffico previsto vengono calcolate facendo riferimento a velocit&agrave; di traffico in tempo reale, velocit&agrave; storiche ed eventi correnti (ad esempio condizioni meteorologiche). Le velocit&agrave; di traffico sono previste con 12 ore di anticipo, quindi &egrave; possibile spostare il cursore per impostare l'orario di partenza fino a 12 ore in avanti.
+                        </p>
+                        <p>Utilizzare queste impostazioni del traffico in tempo reale per scoprire quali aree sono raggiungibili partendo adesso, tra un'ora da adesso, ecc.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Se si seleziona  <b>Usa traffico</b> e quindi <b>Traffico basato su condizioni tipiche per</b> giorno e ora, &egrave; possibile creare Drive-Time Areas basate su medie storiche delle velocit&agrave; per ogni intervallo di cinque minuti in una settimana standard. Nei risultati &egrave; incluso il traffico, ma non &egrave; inclusa l'influenza delle condizioni di traffico e degli eventi correnti che possono variare in modo significativo rispetto alla norma.
+                        </p>
+                        <p>&Egrave; possibile utilizzare queste impostazioni del traffico storico per rispondere ad esempio alla domanda &quot;Quali aree sono in genere raggiungibili se si parte alle 11.30 di mercoled&igrave;?&quot;. 
+                        </p>
+                        <p>L'orario impostato fa riferimento al fuso orario in cui si trovano i punti di input. Pertanto, se si imposta l'orario alle 8:00 e si dispone di due punti, uno nella citt&agrave; di New York e l'altro a Los Angeles, le Drive-Time Areas verranno generate per le 8:00. nel fuso orario orientale e le 8:00 nel fuso orario del Pacifico.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Si noti che quando una vettura si allontana da un punto, il tempo passa e le condizioni di traffico cambiano. Lo strumento Drive-Time Areas tiene conto di queste variazioni quando si sceglie  <b>Tempo di guida</b> e si seleziona <b>Usa traffico</b>; tuttavia, tale funzione non &egrave; supportata per tutte le regioni. Fare clic sul collegamento <b>Visualizza disponibilit&agrave;</b> sullo strumento per scoprire se la funzione &egrave; supportata nella propria area di studio.
+            </p>
+            <p> <b>Tempo di guida in camion</b> pu&ograve; utilizzare velocit&agrave; di viaggio dinamiche basate sul traffico ma che non eccedano i limiti di velocit&agrave; consentiti per i camion. Per esempio, se la velocit&agrave; dinamica basata sul traffico in tempo reale in una determinata strada &egrave; di 65 miglia per ora, ma il limite di velocit&agrave; del camion per quella strada &egrave; di 55 miglia per ora, il calcolo utilizzer&agrave; 55 miglia per ora per quella strada.
+            </p>
+            <p>Con  <b>Tempo a piedi</b> e <b>Distanza a piedi</b> viene utilizzata una velocit&agrave; fissa pari a 5 chilometri orari (3.1 miglia orarie) e vengono seguiti percorsi pedonali oltre alle normali strade indicate, ignorando invece le regole previste per le automobili, ad esempio le strade a senso unico. </p>
+            <p> <b>Distanza di guida in camion</b> utilizza delle velocit&agrave; fisse e segue le regole applicabili ai camion pesanti , mentre <b>Distanza di guida</b> e <b>Distanza di guida in aree non urbane</b> utilizzano velocit&agrave; fisse e seguono regole applicabili a veicoli come le automobili.
+            </p> 
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Seleziona i layer delle barriere</h2></div>
+        <hr/>
+        <div>
+            <p> Una o pi&ugrave; feature che agiscono come restrizioni temporanee (barriere) mentre si viaggia sulle strade sottostanti. &Egrave; possibile specificare le barriere utilizzando feature puntuali, lineari o poligonali.
+            </p>
+            <p>Una barriera puntuale pu&ograve; essere un albero caduto, un incidente, una linea elettrica fuori uso o qualsiasi elemento che blocchi completamente il traffico in un punto specifico sulla strada. &Egrave; possibile viaggiare sulla strada ma non &egrave; possibile attraversare la barriera. &Egrave; possibile specificare fino a 250 feature affinch&eacute; fungano da barriere puntuali.
+            </p>
+            <p>Una barriera lineare impedisce di viaggiare lungo il perimetro di intersezione tra la barriera e le strade. Per esempio, tramite una barriera lineare, &egrave; possibile creare un corteo o una protesta in grado di bloccare il traffico interessando vari segmenti di strade. Se il numero di feature di strade che si intersecano con tutte le barriere lineari supera il numero 500, lo strumento restituir&agrave; un errore.
+            </p>
+            <p>Una barriera poligonale impedisce di viaggiare all&rsquo;interno di tutta l&rsquo;area di intersezione tra il poligono e le strade. &Egrave; possibile utilizzare questo tipo di barriera per creare alluvioni che coprano aree di rete di strade, rendendo impossibile la circolazione stradale. Se il numero di feature di strade che si intersecano con tutte le barriere poligonali supera il numero 2000, lo strumento restituir&agrave; un errore.
+            </p>
+        </div>
+    </div>
+    <div id="DissolveType">
+        <div><h2>Aree da punti diversi</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere come gestire aree condivise quando vengono raggiunte reciprocamente da punti di input differenti. &Egrave; possibile impostare le opzioni seguenti:
+                <ul>
+                    <li> <b>Sovrapponi</b>: aree da punti di input differenti possono includere la stessa strada. Questa funzione &egrave; utile quando si desidera conoscere tutti i punti di input da cui &egrave; possibile raggiungere una posizione specifica entro un dato tempo o distanza.
+                    </li>
+                    <li> <b>Dissolvi</b>: tutte le aree vengono incorporate in un'unica area e una posizione specifica non pu&ograve; essere inclusa in pi&ugrave; aree. Questa funzione &egrave; utile quando si desidera solo sapere se un'area &egrave; raggiungibile entro un dato tempo o una data distanza e non si necessita sapere da quali punti di input specifici &egrave; possibile raggiungere la posizione.
+                    </li>
+                    <li> <b>Dividi</b>: le aree da posizioni di input differenti, che verrebbero sovrapposte una all'altra, vengono divise a met&agrave; in modo da risultare confinanti. Questa funzione &egrave; utile quando si desidera visualizzare le aree raggiungibili entro un dato tempo o una data distanza dai punti di input e, allo stesso tempo, per determinare quale punto di input &egrave; pi&ugrave; vicino a un'area specifica.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="showHoles">
+        <div><h2>Mostrare le aree non raggiungibili come spazi vuoti</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere se le aree di output dovranno includere spazi vuoti se alcune strade non potranno essere raggiunte a causa del tempo  <b>di misurazione</b> o della distanza o a causa di restrizioni imposte dalla modalit&agrave; di viaggio.
+            </p>
+            <p>Le aree drive-time che vengono create utilizzando questo parametro hanno un limite di 15 minuti o di 15 miglia (24 chilometri).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+    <div id="includeReachableStreets">
+        <div><h2>Includere strade raggiungibili</h2></div>
+        <hr/>
+        <div>
+            <p>Includere le strade che vengono utilizzate per creare aree drive-time come un layer di output. 
+            </p>
+            <p>Create Drive-Time Areas misura il raggiungimento di una struttura lungo la rete di strade, quindi crea aree drive-time dalle strade sulle quali si &egrave; effettuato il viaggio. Per questa ragione, le aree sono un'approssimazione delle strade sulle quali si &egrave; effettuato il viaggio. Se si effettua l'analisi per determinare quali strade coprono una distanza di viaggio o di tempo specifica da una struttura, si otterranno risultati pi&ugrave; precisi generando le strade raggiungibili invece di utilizzare le aree drive-time per valutare se una strada in particolare sia raggiungibile o meno.
+            </p>
+            <p>Le aree drive-time che vengono create utilizzando questo parametro hanno un limite di 15 minuti o di 15 miglia (24 chilometri).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Iegūt jaunus novietojumus</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="Iegūt jaunus novietojumus"></h2>
+        <hr/>
+    <p>&Scaron;is rīks jūsu pētāmajā teritorijā iegūst jaunus elementus, kas atbilst virknei norādīto kritēriju. &Scaron;ie kritēriji var tikt balstīti uz atribūtu vaicājumu (piemēram, pieejamos zemes gabalus) un telpiskiem vaicājumiem (piemēram, zemes gabali, kas atrodas plūdu zonā).
+
+    </p>
+    <p>Ja ir izvēlēts  <b>Izmantot pa&scaron;reizējo kartes pārklājumu</b>, tad tikai tie elementi, kas ir redzami pa&scaron;reizējā kartes skatā, tiks analizēti. Ja nav atzīmēts, visi slāņa elementi tiks analizēti, arī tie, kas atrodas ārpus pa&scaron;reizējā kartes pārklājuma.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>Iegūt jaunus novietojumus, kas atbilst sekojošajām izteiksmēm</h2></div>
+        <hr/>
+        <div>
+            <p>Klik&scaron;ķiniet uz pogas  <b>Pievienot izteiksmi</b>, lai definētu izteiksmi. Jūs varat pievienot vairākas izteiksmes. Pēc izteiksmes ievadī&scaron;anas un uzklik&scaron;ķinā&scaron;anas uz pogas <b>Palaist analīzi</b>, elementi analīzes slānī tiek filtrēti pēc katras izteiksmes nosacījumiem. Elementa daļas, kas atbilst visām izteiksmēm tiek rakstītas rezultātu slānī.
+            </p>
+            <p>Divi galvenie veidi, kā Jūs varat izveidot izteiksmes; atribūtu un telpiskās Atribūtu izteiksmes ir vaicājumi par lauku vērtībām, kā piemēram,  <code>kur nosaukums ir 'San Francisco'</code>. Telpiskajām izteiksmēm ir četri veidi:
+                <ul>
+                    <li> <b>attālumā</b>: elementu daļas, kas atrodas noteiktā attālumā no elementa citā slānī.  Piemēram, meklēt parceles daļas, kas atrodas 500 metru attālumā no Losandželosas upes.
+                    </li>
+                    <li> <b>pilnībā satur</b>: elementam jāietver visi cita slāņa elementi.  Piemēram, atrast ūdenskrātuves, kas pilnībā ietver zemes gabalus, kas paredzēti industriālai izmanto&scaron;anai. Zemes gabala daļa nevar būt ārpus ūdenskrātuves.
+                    </li>
+                    <li> <b>pilnībā ietver</b>: elements pilnībā ietver cita slāņa elementus.  Piemēram, meklēt skolu rajonus, kas pilnībā atrodas pilsētas robežās. Neviena daļa no skolu rajoniem nevar atrasties ārpus pilsētas robežām.
+                    </li>
+                    <li> <b>&scaron;ķērso</b>: elementiem vai to daļām ir jāpārklāj vai jā&scaron;ķērso elementi citā slānī.  Piemēram, atrast teritorijas ar izdegu&scaron;u augu valsti no vairākiem ugunsgrēkiem nacionālajā parkā. Izdegu&scaron;ās teritorijas ārpus parka robežām netiks iekļautas.
+                    </li>
+                    <li> <b>tuvākais</b>: elementam jāatrodas vistuvāk kādam elementam citā slānī.  Piemērs: katrai skolai tuvāk eso&scaron;ā zaļā zona.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Katrai telpiskai izteiksmei ir atbilsto&scaron;a negācija, izņemot  <b>tuvākais</b>; <b>neatrodas attālumā</b>, <b>pilnībā neietver</b>, <b>nav pilnībā ietverts</b> un <b>ne&scaron;ķērso</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slāņa nosaukums jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta izvēlnē, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

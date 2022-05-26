@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Ringkas Sekitar</h2><p/>
+        <h2><img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" alt="Ringkas Sekitar"></h2>
+        <hr/>
+    <p>Alat ini mencari dan meringkas fitur yang berada dalam jarak fitur yang ditentukan di layer input pertama.  Jarak dapat diukur sebagai jarak garis lurus atau dengan menggunakan mode perjalanan yang dipilih.  Pilihan mode perjalanan adalah jarak mengemudi, waktu mengemudi, jarak dengan truk, waktu dengan truk, jarak berjalan kaki, atau waktu berjalan kaki. Statistik kemudian dihitung untuk fitur-fitur di sekitarnya.  Contoh
+        <ul>
+            <li>Hitung total populasi dalam waktu lima menit berkendara dari suatu usulan lokasi toko baru.
+            </li>
+            <li>Hitung jumlah ramp akses ke jalan bebas hambatan dalam jarak berkendara satu mil dari suatu usulan lokasi toko baru untuk digunakan sebagai ukuran aksesibilitas toko.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, yang akan dianalisis serta diringkas hanya fitur-fitur pada layer input dan layer yang terlihat di jangkauan peta saat ini. Jika tidak dicentang, semua fitur pada layer input dan layer yang akan diringkas akan dianalisis meskipun berada di luar jangkauan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumNearbyLayer">
+        <div><h2>Pilih layer yang terdapat jarak yang akan diukur ke fitur yang akan diringkas dalam layer.</h2></div>
+        <hr/>
+        <div>
+            <p>Layer titik, garis, atau area yang akan dipakai sebagai lokasi awal untuk meringkas fitur-fitur sekitar.
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p>
+            <p>Alat ini mendukung hingga 1.000 fitur dalam layer ini. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Pilih layer untuk diringkas</h2></div>
+        <hr/>
+        <div>
+            <p>Fitur-fitur pada layer ini, yang masuk dalam jarak tertentu di fitur-fitur pada layer yang dimaksud, akan diringkas. 
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Ringkas fitur terdekat menggunakan</h2></div>
+        <hr/>
+        <div>
+            <p> Anda dapat menentukan jenis pengukuran jarak apa yang ingin Anda gunakan, bisa jarak garis lurus atau moda perjalanan yang dipilih. Moda Perjalanan hanya diaktifkan ketika layer input pertama (layer dari mana jarak diukur) memuat titik.  Mode perjalanan yang tersedia ditentukan oleh administrator organisasi Anda. Ketika menggunakan salah satu mode perjalanan, pengukuran dilakukan di sepanjang jalan raya atau jalan untuk pejalan kaki, dengan mematuhi aturan-aturan yang berlaku seperti jalan satu arah, larangan berputar, dan sebagainya. <b>Waktu Mengemudi</b>, <b>Waktu Mengemudi Pedesaan</b>, dan <b>Waktu Mengemudi Truk</b> mengikuti pilihan Anda terkait kecepatan perjalanan, baik yang berdasarkan lalu lintas pada saat itu atau situasi lalu lintas pada umumnya. Kecepatan sesungguhnya (live speeds) diketahui melalui pembacaan sensor pada saat itu dan kecepatan lazim yang dihitung dari rata-rata historis.
+            </p>
+            <p>Anda dapat memasukkan banyak jarak.  Fitur-fitur yang berada di dalam (atau sama dengan) jarak yang Anda masukkan akan diringkas.  
+            </p>
+            <p>Kotak centang  <b>Munculkan area sekeliling</b>, jika dicentang, akan memunculkan layer area hasil yang ditetapkan melalui pengukuran jarak yang sudah ditentukan. Layer hasil meliputi semua informasi ringkasan yang diminta. Sebagai contoh, ketika meringkas titik-titik di sekitar, jika menggunakan <b>Jarak garis</b> 5 mil, hasil Anda akan memuat area dengan radius 5 mil di sekitar fitur input dan semua ringkasan informasi seperti jumlah titik dan statistik apa pun yang telah ditambahkan. Jika tidak dicentang, layer hasil akan memunculkan fitur-fitur yang sama dari layer input pertama dengan semua informasi ringkasan yang diminta.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Tambahkan statistik dari layer yang akan diringkas</h2></div>
+        <hr/>
+        <div>
+            <p>Anda dapat memilih untuk menghitung statistik untuk atribut numerik dari titik-titik di sekitar. 
+            </p>
+            <p>Kotak centang  <b>Jumlah titik</b>, jika dicentang, akan menghitung total jumlah titik di sekitar.  Selain itu, Anda dapat menghitung statistik untuk kolom numerik dari titik-titik di sekitar.
+            </p>
+            <ul>
+                <li> <b>Jumlah</b>&mdash;Total nilai untuk kolom yang dimaksud
+                </li>
+                <li> <b>Rata-Rata</b>&mdash;Rata-rata atau mean untuk kolom yang dimaksud
+                </li>
+                <li> <b>Minimum</b>&mdash;Nilai terkecil pada kolom yang dimaksud
+                </li>
+                <li> <b>Maksimum</b>&mdash;Nilai terbesar pada kolom yang dimaksud
+                </li>
+                <li> <b>Simpangan Baku</b>&mdash;Simpangan baku dari nilai-nilai pada kolom yang ditentukan
+                </li>
+            </ul>
+            
+            <p>Jika layer yang akan diringkas tidak memiliki kolom angka apa pun, statistik tambahan tidak akan tersedia.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Tambahkan statistik dari layer yang akan diringkas</h2></div>
+        <hr/>
+        <div>
+            <p>Anda dapat memilih untuk menghitung statistik untuk atribut numerik dari garis-garis di sekitar. 
+            </p>
+            <p>Jika kotak centang  <b>Total panjang</b> dicentang, maka akan menghitung total panjang garis sekitar. Selain itu, Anda dapat menghitung statistik untuk kolom numerik dari garis-garis di sekitar.
+            </p>
+            <ul>
+                <li> <b>Jumlah</b>&mdash;Total nilai untuk kolom yang dimaksud
+                </li>
+                <li> <b>Rata-Rata</b>&mdash;Rata-rata atau mean untuk kolom yang dimaksud
+                </li>
+                <li> <b>Minimum</b>&mdash;Nilai terkecil pada kolom yang dimaksud
+                </li>
+                <li> <b>Maksimum</b>&mdash;Nilai terbesar pada kolom yang dimaksud
+                </li>
+                <li> <b>Simpangan Baku</b>&mdash;Simpangan baku dari nilai-nilai pada kolom yang ditentukan
+                </li>
+            </ul>
+            
+            <p>Jika layer yang akan diringkas tidak memiliki kolom angka apa pun, statistik tambahan tidak akan tersedia.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Tambahkan statistik dari layer yang akan diringkas</h2></div>
+        <hr/>
+        <div>
+            <p>Anda dapat secara opsional menghitung statistik untuk setiap atribut numerik dari area di sekitar. 
+            </p>
+            <p>Jika kotak centang  <b>Total area</b> dicentang, maka akan menghitung total panjang garis sekitar. Selain itu, Anda dapat menghitung statistik untuk kolom numerik dari fitur-fitur di sekitar.
+            </p>
+            <ul>
+                <li> <b>Jumlah</b>&mdash;Total nilai untuk kolom yang dimaksud
+                </li>
+                <li> <b>Rata-Rata</b>&mdash;Rata-rata atau mean untuk kolom yang dimaksud
+                </li>
+                <li> <b>Minimum</b>&mdash;Nilai terkecil pada kolom yang dimaksud
+                </li>
+                <li> <b>Maksimum</b>&mdash;Nilai terbesar pada kolom yang dimaksud
+                </li>
+                <li> <b>Simpangan Baku</b>&mdash;Simpangan baku dari nilai-nilai pada kolom yang ditentukan
+                </li>
+            </ul>
+            
+            <p>Jika layer yang akan diringkas tidak memiliki kolom angka apa pun, statistik tambahan tidak akan tersedia.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Tambahkan statistik dari layer yang akan diringkas</h2></div>
+        <hr/>
+        <div>
+            <p>Begitu Anda memilih layer untuk diringkas, Anda dapat memilih untuk menghitung statistik dari setiap atribut numerik dari titik, garis, atau area sekitar. 
+            </p>
+            <ul>
+                <li> <b>Jumlah</b>&mdash;Total nilai untuk kolom yang dimaksud
+                </li>
+                <li> <b>Rata-Rata</b>&mdash;Rata-rata atau mean untuk kolom yang dimaksud
+                </li>
+                <li> <b>Minimum</b>&mdash;Nilai terkecil pada kolom yang dimaksud
+                </li>
+                <li> <b>Maksimum</b>&mdash;Nilai terbesar pada kolom yang dimaksud
+                </li>
+                <li> <b>Simpangan Baku</b>&mdash;Simpangan baku dari nilai-nilai pada kolom yang ditentukan
+                </li>
+            </ul>
+            
+            <p>Bergantung pada jenis fitur yang Anda ringkas, Anda dapat menghitung total jumlah titik di sekitarnya, total panjang garis di sekitar, atau total area sekitar.
+            </p>
+            <p>Jika layer yang akan diringkas tidak memiliki kolom angka apa pun, statistik tambahan tidak akan tersedia.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Pilih kolom untuk dikelompokkan</h2></div>
+        <hr/>
+        <div>
+            <p> Ini adalah atribut dari fitur di sekitar yang dapat Anda gunakan untuk menghitung statistik secara terpisah untuk setiap nilai atribut yang unik. Sebagai contoh, misalkan layer input pertama Anda (layer dari mana jarak diukur) memuat bagian wilayah lahan kosong yang akan dijual dan fitur-fitur sekitar Anda adalah jejak bangunan. Salah satu atribut dari jejak bangunan tersebut adalah <i>UseType</i>, yang mengandung nilai-nilai seperti RITEL, TEMPAT TINGGAL, PABRIK, PUBLIK, dan sebagainya.  Untuk mencirikan berbagai jenis penggunaan bangunan di sekitar persil kosong, Anda dapat menghitung total area dari setiap jenis yang unik dari penggunaan bangunan pada jarak dua kilometer dari setiap persil yang kosong dengan menggunakan <i>UseType</i> sebagai atribut pengelompokan.   Statistik untuk setiap kelompok serta jumlah fitur sekitar akan ditampilkan di pop-up layer hasil.
+            </p>    
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Tambahkan minoritas, mayoritas</h2></div>
+        <hr/>
+        <div>
+            <p>Kotak centang ini aktif bila Anda memilih kolom untuk pengelompokan. Jika Anda ingin mengetahui nilai atribut mana di dalam setiap kelompok yang merupakan minoritas (paling tidak dominan) atau mayoritas (paling dominan) dalam jarak atau waktu yang Anda tentukan, pilih  <b>Tambahkan minoritas, mayoritas</b>. Ketika Anda memilih <b>Tambahkan minoritas, mayoritas</b>, dua kolom baru telah ditambahkan ke layer hasil Anda. Jika Anda juga memilih <b>Tambahkan persentase</b>, dua kolom tambahan ditambahkan ke layer hasil berisi persentase nilai atribut minoritas dan mayoritas dalam setiap kelompok.
+            </p>
+            <ul>
+                <li>Jika Anda menringkas titik-titik sekitar, nilai minoritas dan mayoritas dihitung berdasarkan jumlah titik sesuai jarak atau waktu yang telah Anda tetapkan.
+                </li>
+                <li>Jika Anda meringkas garis-garis sekitar, nilai minoritas dan mayoritas dihitung berdasarkan panjang garis sesuai jarak atau waktu yang telah Anda tetapkan.  
+                </li>
+                <li>Jika Anda meringkas area-area sekitar, nilai minoritas dan mayoritas dihitung berdasarkan area sesuai jarak atau waktu yang telah Anda tetapkan.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Tambahkan persentase</h2></div>
+        <hr/>
+        <div>
+            <p>Kotak centang ini aktif bila Anda memilih kolom untuk pengelompokan. Pilih  <b>Tambahkan persentase</b> jika Anda ingin melihat nilai persentase dari setiap nilai atribut di dalam setiap kelompok. Kolom baru telah ditambahkan ke dalam tabel hasil yang memuat nilai persentase dari masing-masing nilai atribut di dalam setiap kelompok. Jika <b>Tambahkan minoritas, mayoritas</b> juga dicentang, dua kolom lagi akan ditambahkan ke layer hasil yang memuat persentase dari nilai atribut minoritas dan mayoritas di dalam setiap kelompok.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta.  Nama default ditetapkan berdasarkan nama layer input. Jika nama layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Dengan menggunakan  <b>Simpan hasil di</b> menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

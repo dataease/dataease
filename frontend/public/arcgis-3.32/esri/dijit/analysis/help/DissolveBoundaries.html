@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Dissolve Boundaries</h2><p/>
+        <h2><img src="./images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Dissolve Boundaries"></h2>
+        <hr/>
+    <p>Areas that overlap or share a common boundary are merged together to form a single area.    
+    </p>
+    <p>You can control which boundaries are merged by specifying a field. For example, if you have a layer of counties, and each county has a  <i>State_Name</i> attribute, you can dissolve boundaries using the <i>State_Name</i> attribute.  Adjacent counties will be merged together if they have the same value for <i>State_Name</i>.  The end result is a layer of state boundaries.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose area layer whose boundaries will be dissolved</h2></div>
+        <hr/>
+        <div>
+            <p>The layer containing area features that will be dissolved.
+
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Choose dissolve method</h2></div>
+        <hr/>
+        <div>
+            <p>You can choose one of two methods for merging area features:
+                <ul>
+                    <li> <b>Areas that overlap or are adjacent</b>&mdash;Two or more areas whose boundaries overlap each other will be merged into one area.  In addition, areas that are adjacent (that is, they share a common boundary) will be merged into one area.
+                    </li>
+                    <li> <b>Areas with the same field value</b>&mdash;Areas that overlap or share a common boundary will be merged into one area if they have the same field value.
+                        <p>For example, if you have a layer of counties, and each county has a  <i>State_Name</i> field, you can dissolve boundaries using the <i>State_Name</i> field.  Adjacent counties will be merged together if they have the same value for <i>State_Name</i>.  The end result is a layer of state boundaries.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>If  <b>Use current map extent</b> is checked, only the features in the input layer that are visible within the current map extent will be dissolved.  If unchecked, all features in  the input layer will be dissolved, even if they are outside the current map extent.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Create Multipart Features</h2></div>
+        <hr/>
+        <div>
+            <p>In ArcGIS, a digital representation of a place or thing that has
+more than one part but is defined as one feature because it
+references one set of attributes. In a layer of states, for
+example, the state of Hawaii could be considered a multipart
+feature because its separate geometric parts are classified as a
+single state. This boolean parameter offers two options:
+                <ul>
+                    <li>True (checked): the output service can contain multipart features.
+                    </li>
+                    <li>False (unchecked): the output service will only contain single-part features, and individual features will be created for each part.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Add statistic</h2></div>
+        <hr/>
+        <div>
+            <p>When areas are merged, you can summarize their attributes.  For example, if you are dissolving the boundary between counties based on  <i>State_Name</i>, and each county has a <i>Population</i> field, you could calculate the sum of <i>Population</i> for the state.
+            </p>
+            <p>Available statistics types are:
+            </p>
+            <ul>
+                <li> <b>Sum</b>&mdash;Adds the total value for the specified field
+                    
+
+                </li>
+                <li> <b>Average</b>&mdash;Calculates the average for the specified field
+                    
+
+                </li>
+                <li> <b>Minimum</b>&mdash;Finds the smallest value for all records of the specified field
+                    
+
+                </li>
+                <li> <b>Maximum</b>&mdash;Finds the largest value for all records of the specified field
+                    
+
+                </li>
+                <li> <b>Std. Deviation</b>&mdash;Finds the standard deviation on values in the specified field
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Result layer
+name</h2></div>
+        <hr/>
+        <div>
+            <p>This is the name of the layer that will be created in  <b>My Content</b>  and added to the map.  The default  name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down menu, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Sažmi u blizini</h2><p/>
+        <h2><img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" alt="Sažmi u blizini"></h2>
+        <hr/>
+    <p>Ovaj alat pronalazi i sažima geoobjekte koji se nalaze unutar određene udaljenosti od geoobjekata u prvom ulaznom sloju. Udaljenost se može mjeriti kao udaljenost zračne linije ili pomoću odabranog načina putovanja. Opcije načina putovanja jesu udaljenost vožnje, vrijeme vožnje, udaljenost vožnje kamionom, vrijeme vožnje kamionom, udaljenost hodanja ili vrijeme hodanja. Tada se izračunavaju statistike za obližnje geoobjekte. Na primjer
+        <ul>
+            <li>Izračunajte ukupnu populaciju unutar pet minuta vremena vožnje predložene lokacije nove trgovine.
+            </li>
+            <li>Izračunajte broj pristupnih rampi za autocestu unutar udaljenosti vožnje od jedne milje do predložene lokacije nove trgovine kako biste to iskoristili kao mjeru pristupačnosti trgovine.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, analizirat će se samo geoobjekti u ulaznom sloju i sloju koji će se sažeti, a koji su vidljivi unutar trenutačnog obuhvata karte. Ako opcija nije označena, analizirat će se svi geoobjekti u ulaznom sloju i sloju koji će se sažeti, čak i ako se nalaze izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumNearbyLayer">
+        <div><h2>Izaberite sloj iz kojeg će se mjeriti udaljenosti do geoobjekata u sloju za sažimanje</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti, linijski ili poligonalni sloj koji će se upotrijebiti kao početne lokacije za sažimanje obližnjih geoobjekata.
+            </p>
+            <p>Osim odabira sloja iz karte, možete odabrati opciju  <b>Izaberi sloj za analizu</b> koja se nalazi na dnu popisa padajućeg izbornika. Ova opcija otvara galeriju u kojoj možete pretraživati i odabrati skupove podataka iz raznih izvora te ih koristiti u svojoj analizi. 
+            </p>
+            <p>Alat podržava do 1.000 geoobjekata u ovom sloju. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Izaberite sloj za sažimanje</h2></div>
+        <hr/>
+        <div>
+            <p>Sažet će se geoobjekti u ovom sloju koji se nalaze unutar određene udaljenosti do geoobjekata u sloju određenom iznad. 
+            </p>
+            <p>Osim odabira sloja iz karte, možete odabrati opciju  <b>Izaberi sloj za analizu</b> koja se nalazi na dnu popisa padajućeg izbornika. Ova opcija otvara galeriju u kojoj možete pretraživati i odabrati skupove podataka iz raznih izvora te ih koristiti u svojoj analizi. 
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Sažmi najbliže geoobjekte pomoću</h2></div>
+        <hr/>
+        <div>
+            <p> Možete definirati koju vrstu mjerenja udaljenosti želite upotrijebiti, udaljenost zračne linije ili odabrani način putovanja. Načini putovanja omogućeni su samo kada prvi ulazni sloj (sloj u kojem se mjere udaljenosti) sadrži točke. Dostupne načine putovanja određuje administrator va&scaron;e organizacije. Prilikom upotrebe jednog od načina putovanja, mjerenja se rade uz ceste ili staze i po&scaron;tuju primjenjiva pravila, kao &scaron;to su jednosmjerne ulice, zabranjena skretanja itd. <b>Vrijeme vožnje</b>, <b>vrijeme vožnje ruralnim područjem</b> i <b>vrijeme vožnje kamionom</b> po&scaron;tuju va&scaron; izbor brzina putovanja, one na temelju prometa uživo ili tipičnog prometa. Brzine uživo prikupljaju se putem aktualnih očitanja senzora, a tipične brzine izračunavaju se od povijesnih prosjeka.
+            </p>
+            <p>Možete unijeti vi&scaron;e udaljenosti. Sažet će se geoobjekti koji su unutar (ili jednaki) udaljenostima koje unesete.  
+            </p>
+            <p>Ako je označen potvrdni okvir opcije  <b>Vrati granična područja</b>, dobit će se sloj rezultata područja definiranih određenim mjerenjem udaljenosti. Sloj rezultata uključit će sve zatražene sažete informacije. Primjerice, prilikom sažimanja obližnjih točaka, ako upotrebljavate <b>linijsku udaljenost</b> od 5 milja, va&scaron; će rezultat sadržavati povr&scaron;ine s polumjerom od 5 milja oko ulaznih geoobjekata i sve sažete informacije kao &scaron;to su broj točaka i sve dodane statistike. Ako opcija nije označena, sloj rezultata imat će iste geoobjekte kao i prvi ulazni sloj sa svim zatraženim sažetim informacijama.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Dodaj statistiku iz sloja za sažimanje</h2></div>
+        <hr/>
+        <div>
+            <p>Možete pored toga izračunati statistike svih brojčanih atributa obližnjih točaka. 
+            </p>
+            <p>Ako se označi potvrdni okvir  <b>Broj točaka</b>, izračunat će se ukupni broj obližnjih točaka. Pored toga možete izračunati statistike za brojčana polja obližnjih točaka.
+            </p>
+            <ul>
+                <li> <b>Zbroj</b> &ndash; ukupna vrijednost za određeno polje
+                </li>
+                <li> <b>Prosjek</b> &ndash; prosjek ili srednja vrijednost za određeno polje
+                </li>
+                <li> <b>Minimum</b> &ndash; najmanja vrijednost u određenom polju
+                </li>
+                <li> <b>Maksimum</b> &ndash; najveća vrijednost u određenom polju
+                </li>
+                <li> <b>Standardno Odstupanje</b> &ndash; standardno odstupanje vrijednosti u naznačenom polju
+                </li>
+            </ul>
+            
+            <p>Ako sloj za sažimanje nema polja s brojevima, dodatna statistika neće biti dostupna.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Dodaj statistiku iz sloja za sažimanje</h2></div>
+        <hr/>
+        <div>
+            <p>Možete pored toga izračunati statistike svih brojčanih atributa obližnjih linija. 
+            </p>
+            <p>Ako se označi potvrdni okvir  <b>Ukupna duljina</b>, izračunat će se ukupna duljina obližnjih linija. Pored toga možete izračunati statistike za brojčana polja obližnjih linija.
+            </p>
+            <ul>
+                <li> <b>Zbroj</b> &ndash; ukupna vrijednost za određeno polje
+                </li>
+                <li> <b>Prosjek</b> &ndash; prosjek ili srednja vrijednost za određeno polje
+                </li>
+                <li> <b>Minimum</b> &ndash; najmanja vrijednost u određenom polju
+                </li>
+                <li> <b>Maksimum</b> &ndash; najveća vrijednost u određenom polju
+                </li>
+                <li> <b>Standardno Odstupanje</b> &ndash; standardno odstupanje vrijednosti u naznačenom polju
+                </li>
+            </ul>
+            
+            <p>Ako sloj za sažimanje nema polja s brojevima, dodatna statistika neće biti dostupna.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Dodaj statistiku iz sloja za sažimanje</h2></div>
+        <hr/>
+        <div>
+            <p>Možete pored toga izračunati statistike svih brojčanih atributa obližnjih poligona. 
+            </p>
+            <p>Ako se označi potvrdni okvir  <b>Ukupna povr&scaron;ina</b>, izračunat će se ukupna povr&scaron;ina obližnjih geoobjekata. Pored toga možete izračunati statistike za brojčana polja obližnjih geoobjekata.
+            </p>
+            <ul>
+                <li> <b>Zbroj</b> &ndash; ukupna vrijednost za određeno polje
+                </li>
+                <li> <b>Prosjek</b> &ndash; prosjek ili srednja vrijednost za određeno polje
+                </li>
+                <li> <b>Minimum</b> &ndash; najmanja vrijednost u određenom polju
+                </li>
+                <li> <b>Maksimum</b> &ndash; najveća vrijednost u određenom polju
+                </li>
+                <li> <b>Standardno Odstupanje</b> &ndash; standardno odstupanje vrijednosti u naznačenom polju
+                </li>
+            </ul>
+            
+            <p>Ako sloj za sažimanje nema polja s brojevima, dodatna statistika neće biti dostupna.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Dodaj statistiku iz sloja za sažimanje</h2></div>
+        <hr/>
+        <div>
+            <p>Kada odaberete sloj za sažimanje, možete ako želite izračunati statistike bilo kojeg brojčanog atributa obližnjih točaka, linija ili poligona. 
+            </p>
+            <ul>
+                <li> <b>Zbroj</b> &ndash; ukupna vrijednost za određeno polje
+                </li>
+                <li> <b>Prosjek</b> &ndash; prosjek ili srednja vrijednost za određeno polje
+                </li>
+                <li> <b>Minimum</b> &ndash; najmanja vrijednost u određenom polju
+                </li>
+                <li> <b>Maksimum</b> &ndash; najveća vrijednost u određenom polju
+                </li>
+                <li> <b>Standardno Odstupanje</b> &ndash; standardno odstupanje vrijednosti u naznačenom polju
+                </li>
+            </ul>
+            
+            <p>Ovisno o vrstama geoobjekata koje sažimate, možete izračunati ukupni broj obližnjih točaka, ukupnu duljinu obližnjih linija ili ukupnu povr&scaron;inu obližnjih poligonalnih geoobjekata.
+            </p>
+            <p>Ako sloj za sažimanje nema polja s brojevima, dodatna statistika neće biti dostupna.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Odaberite polje za grupiranje</h2></div>
+        <hr/>
+        <div>
+            <p> Ovo je atribut obližnjih geoobjekata koji možete upotrijebiti za računanje statistika zasebno za svaku jedinstvenu atributnu vrijednost. Primjerice, pretpostavimo da prvi ulazni sloj (sloj u kojem se mjere udaljenosti) sadrži prazne parcele zemlji&scaron;ta za prodaju i obližnji geoobjekti jesu otisci zgrada. Jedan od atributa otiska zgrade jest <i>UseType</i>, koji sadrži vrijednosti kao &scaron;to su MALOPRODAJNI, STAMBENI, PROIZVODNI, JAVNI itd. Kako biste karakterizirali tip građevinskog područja blizu svake prazne parcele, mogli biste izračunati ukupno područje svakog jedinstvenog tipa unutar dva kilometara od praznih parcela pomoću atributa <i>UseType</i> kao grupu po atributu. Statistike za svaku grupu, kao i zbroj obližnjih geoobjekata, prikazat će se u skočnom prozoru sloja rezultata.
+            </p>    
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Dodaj manjinu, većinu</h2></div>
+        <hr/>
+        <div>
+            <p>Ovaj se potvrdni okvir omogući kada odaberete polje za grupiranje. Ako želite saznati koje su vrijednosti atributa unutar svake grupe manjina (najmanje prevladavaju) ili većina (najvi&scaron;e prevladavaju) unutar udaljenosti ili vremena koje ste odredili, odaberite  <b>Dodaj manjinu, većinu</b>. Kada odaberete <b>Dodaj manjinu, većinu</b>, va&scaron;em sloju rezultata dodaju se dva nova polja. Ako također odaberete <b>Dodaj postotke</b>, dodat će se dva dodatna polja sloju rezultata koji će sadržavati postotke manjine i većine vrijednosti atributa unutar svake grupe.
+            </p>
+            <ul>
+                <li>Ako sažimate obližnje točke, vrijednosti manjine i većine računaju se na temelju zbroja točaka unutar udaljenosti ili vremena koje ste odredili.
+                </li>
+                <li>Ako sažimate obližnje linije, vrijednosti manjine i većine računavaju se na temelju duljine linija unutar udaljenosti ili vremena koje ste odredili.  
+                </li>
+                <li>Ako sažimate obližnje poligone, vrijednosti manjine i većine računavaju se na temelju poligona unutar udaljenosti ili vremena koje ste odredili.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Dodaj postotke</h2></div>
+        <hr/>
+        <div>
+            <p>Ovaj se potvrdni okvir omogući kada odaberete polje za grupiranje. Odaberite opciju  <b>Dodaj postotke</b> ako želite pronaći postotak svake vrijednosti atributa unutar svake grupe.  Dodaje se novo polje tablici rezultata koja sadrži postotke svake vrijednosti atributa unutar svake grupe.   Ako označite i opciju <b>Dodaj manjinu, većinu</b>, dodat će se dva dodatna polja sloju rezultata koji sadrži postotke manjine i većine vrijednosti atributa unutar svake grupe.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Naziva sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će se stvoriti u dijelu  <b>Moj sadržaj</b> i dodati karti.  Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako naziv sloja već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

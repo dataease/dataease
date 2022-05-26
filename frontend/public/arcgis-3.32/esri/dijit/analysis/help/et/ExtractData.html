@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Andmete väljavõte</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Andmete v&auml;ljav&otilde;te"></h2>
+        <hr/>
+    <p>Selle t&ouml;&ouml;riistaga saate valida ja alla laadida Teile huvipakkuva piirkonna andmed. Valitud kihid lisatakse ZIP, CSV v&otilde;i KMZ faili.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Kihid väljavõtmiseks</h2></div>
+        <hr/>
+        <div>
+            <p>Need on sisukorras olevad kihid, millelt saab objekte v&auml;lja v&otilde;tta. Valitud kihtidest v&otilde;etakse andmed v&auml;lja ja lisatakse ZIP v&otilde;i CSV faili.
+            </p>
+            <p>Selleks, et kiht kuvataks v&auml;ljav&otilde;tteks sobivate kihtide loendis, peavad andmed Teile kuuluma v&otilde;i peab andmete omanik andmete ekspordi lubama. Teile kuuluvate andmete ekspordi lubamiseks tehke j&auml;rgmist. 
+                <ul>
+                    <li>Avage andmete sisukirjeldus.
+                    </li>
+                    <li>Kl&otilde;psake vahekaarti  <b>Seaded</b>.
+                    </li>
+                    <li>Liikuge kerides jaotiseni   <b>Andmete eksportimine</b>.
+                    </li>
+                    <li>M&auml;rgi ruut  <b>V&otilde;imalda kasutajail erinevatesse formaatidesse eksportimist</b>.  Kui olete l&otilde;petanud, valige <b>Salvesta</b>.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Kui Teie anal&uuml;&uuml;sikihil on manuseid, ekstraktitakse need manused &uuml;ksnes juhul, kui v&auml;ljundandmete vorming on faili geoandmebaas ja ruut  <b>L&otilde;ika objekte</b> pole m&auml;rgitud.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Uuringuala</h2></div>
+        <hr/>
+        <div>
+            <p>Ala, mis m&auml;&auml;ratleb, millised objektid kaasatakse ZIP- v&otilde;i CSV-v&auml;ljundfaili. Valikuv&otilde;imalused on j&auml;rgmised.
+                <ul>
+                    <li>Hetkel n&auml;htav kaardiv&auml;lja ulatus ( <b>Sama, mis on kuvaulatus</b>).
+                    </li>
+                    <li>&Uuml;ks sisukorras olevatest kihtidest. Kui valitud kiht on punkt- v&otilde;i joonobjekt, siis kasutatakse uuritava alana kihi ulatust.
+                    </li>
+                    <li>M&auml;rgista vastav ala ise.
+                    </li>
+                </ul>
+                 V&auml;ljav&otilde;te tehakse k&otilde;igi kaardiv&auml;ljal n&auml;htavate objektide alusel. Objektidele, mis ristuvad v&otilde;i l&otilde;ikuvad kaardiv&auml;lja &auml;&auml;rmise osaga, kuid ei j&auml;&auml; t&auml;ielikult sinna alla, saate kasutada j&auml;rgnevaid valikuid:
+                <ul>
+                    <li> <b>Vali objektid</b> &ndash; v&auml;ljav&otilde;ttesse lisatakse k&otilde;ik objektid, mis l&otilde;ikuvad uuringuala piiridega.
+                    </li>
+                    <li> <b>L&otilde;ika objektid</b> &ndash; v&auml;ljav&otilde;ttesse lisatakse ainult objektide need osad, mis j&auml;&auml;vad uuringuala sisse.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Väljundandmete formaat</h2></div>
+        <hr/>
+        <div>
+            <p>Formaat, millesse andmed v&auml;ljastatakse. Joon- v&otilde;i pindobjektide eksportimisel CSV faili v&auml;ljastatakse ainult mitteruumilised atribuudid. Punktobjektide eksportimisel v&auml;ljastatakse nii ruumilised kui ka mitteruumilised atribuudid.  
+            </p>
+            <p>Ekstraktitud andmed kasutavad koordinaats&uuml;steemi Web Mercator 1984 projektsiooni.  CSV-failide korral lisatakse andmetesse v&auml;ljad  <i>Lat</i> ja <i>Long</i>, kasutades Web Mercator 1984 koordinaate.
+            </p> 
+            <p>Toetatud on j&auml;rgmised v&auml;ljundvormingud:
+                <ul>
+                    <li>komaeraldusega v&auml;&auml;rtused (CSV) &ndash;  <code>.csv</code> v&otilde;i <code>.zip</code>
+                    </li>
+                    <li>faili geoandmebaas &ndash;  <code>.zip</code>
+                    </li>
+                    <li>Keyhole Markup Language (KML)&mdash; <code>.kmz</code> v&otilde;i <code>.zip</code>
+                    </li>
+                    <li>Shape-fail &ndash;  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Väljundfaili nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on kausta  <b>Minu sisu</b> lisatava sisu&uuml;ksuse nimi. Sisu&uuml;ksuse nimi p&otilde;hineb valitud vormingul ( <b>V&auml;ljundandmete formaat</b>).     Kui see sisu&uuml;ksus juba eksisteerib, palutakse Teil esitada m&otilde;ni muu nimi.
+            </p>
+            <p>Kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemused salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

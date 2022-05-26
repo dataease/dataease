@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Elérési-idő térkép létrehozása</h2><p/>
+        <h2><img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" alt="El&eacute;r&eacute;siidő-t&eacute;rk&eacute;p l&eacute;trehoz&aacute;sa"></h2>
+        <hr/>
+    <p>Az El&eacute;r&eacute;siidő-t&eacute;rk&eacute;pek l&eacute;trehoz&aacute;sa eszk&ouml;z l&eacute;trehozza a megadott utaz&aacute;si időn, utaz&aacute;si t&aacute;vols&aacute;gon, gyalogos t&aacute;vols&aacute;gon stb. bel&uuml;l el&eacute;rhető ter&uuml;leteket. Egy vagy t&ouml;bb (1000) pontb&oacute;l k&ouml;zutak vagy gyalogutak ment&eacute;n t&ouml;rt&eacute;nő m&eacute;r&eacute;ssel l&eacute;trehoz egy r&eacute;teget, amely seg&iacute;thet v&aacute;laszt tal&aacute;lni az al&aacute;bbiakhoz hasonl&oacute; k&eacute;rd&eacute;sekre:
+        <ul>
+            <li>Hov&aacute; juthatok el 30 perces vezet&eacute;ssel a jelenlegi tart&oacute;zkod&aacute;si helyemről?
+            </li>
+            <li>Hov&aacute; juthatok el 30 perces vezet&eacute;ssel a jelenlegi tart&oacute;zkod&aacute;si helyemről, ha d.e. 5:30 &oacute;rakor, cs&uacute;csforgalomban indulok?
+            </li>
+            <li>Mi tal&aacute;lhat&oacute; k&eacute;t kilom&eacute;teres s&eacute;t&aacute;ra a sz&aacute;llod&aacute;mt&oacute;l?
+            </li>
+            <li>A v&aacute;ros mely ter&uuml;leteit &eacute;rhetik el a tűzolt&oacute;k &ouml;t percen bel&uuml;l? 
+            </li>
+            <li>Hogyan javulna a tűzolt&aacute;si lefedetts&eacute;g, ha egy &uacute;j tűzolt&oacute;&aacute;llom&aacute;s &eacute;p&uuml;lne a megadott helyen?
+            </li>
+            <li>Milyen piaci ter&uuml;leteket fed le az &uuml;zleti tev&eacute;kenys&eacute;gem?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Lehet, hogy puszt&aacute;n a kimeneti ter&uuml;letek szem&uuml;gyre v&eacute;tel&eacute;vel is v&aacute;laszt kap a k&eacute;rd&eacute;seire. Ehelyett tov&aacute;bbi t&eacute;rbeli elemz&eacute;seket is v&eacute;gezhet a kimeneti ter&uuml;letek haszn&aacute;lat&aacute;val. Az el&eacute;r&eacute;siidő-t&eacute;rk&eacute;pek &eacute;s a demogr&aacute;fiai adatok haszn&aacute;latakor p&eacute;ld&aacute;ul a Pontok &ouml;sszevon&aacute;sa eszk&ouml;z futtat&aacute;sa seg&iacute;thet meghat&aacute;rozni, hogy egy &uuml;zlet sz&aacute;m&aacute;ra melyik hely fogja potenci&aacute;lisan az &uuml;zleti v&aacute;llalkoz&aacute;sa t&iacute;pus&aacute;hoz legjobb vevőb&aacute;zist k&iacute;n&aacute;lni. 
+    </p>
+    <p>
+        <table>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        <tr><td valign="baseline"><img src="../images/tip.png"></td><td valign="baseline"><h2>Tip:&ensp;</h2></td>
+        <td valign="baseline">
+            <p>Ha a k&ouml;zutak ment&eacute;n t&ouml;rt&eacute;nő m&eacute;r&eacute;s helyett a l&eacute;gvonalbeli t&aacute;vols&aacute;g m&eacute;r&eacute;s&eacute;vel k&iacute;v&aacute;n ter&uuml;leteket l&eacute;trehozni, akkor haszn&aacute;lja ink&aacute;bb a Bufferek l&eacute;trehoz&aacute;sa eszk&ouml;zt.
+            </p>
+        </td></tr>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        </table>
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;s haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel a program csak az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen l&aacute;that&oacute; vektoros elemek haszn&aacute;lat&aacute;val hoz l&eacute;tre el&eacute;r&eacute;si időn vagy el&eacute;r&eacute;si t&aacute;vols&aacute;gon alapul&oacute; ter&uuml;leteket. Ha nincs bejel&ouml;lve, akkor a bemenő r&eacute;teg &ouml;sszes vektoros elem&eacute;t haszn&aacute;lja, akkor is, ha azok k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pont réteg kiválasztása a körülötte lévő elérésiidő-térképek kiszámításához</h2></div>
+        <hr/>
+        <div>
+            <p>A pontszerű vektoros elemek, amelyek k&ouml;r&uuml;l a ter&uuml;letek sz&aacute;m&iacute;t&aacute;sa t&ouml;rt&eacute;nik. Kiv&aacute;laszthatja a ter&uuml;letek sz&aacute;m&iacute;t&aacute;s&aacute;nak m&oacute;dj&aacute;t az utaz&aacute;si m&oacute;d (vezet&eacute;s, tehersz&aacute;ll&iacute;t&aacute;s vagy gyalogl&aacute;s) &eacute;s a m&eacute;r&eacute;s (idő vagy t&aacute;vols&aacute;g) alapj&aacute;n.
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p>
+            <p>Az eszk&ouml;z legfeljebb 1000 vektoros elemet t&aacute;mogat a bemenő r&eacute;tegen.
+
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Mérés</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki az utaz&aacute;si m&oacute;dot (vezet&eacute;s, tehersz&aacute;ll&iacute;t&aacute;s vagy gyalogl&aacute;s) &eacute;s a m&eacute;r&eacute;st (idő vagy t&aacute;vols&aacute;g).  Az el&eacute;rhető utaz&aacute;si m&oacute;dokat a szervezet adminisztr&aacute;tora hat&aacute;rozza meg.   Miut&aacute;n kiv&aacute;lasztotta a m&oacute;dot &eacute;s a m&eacute;r&eacute;st, adjon meg egy időtartamot vagy t&aacute;vols&aacute;got: legfeljebb  5 &oacute;r&aacute;t (300 percet) vagy  300 m&eacute;rf&ouml;ldet (482,80 kilom&eacute;tert). 
+            </p>
+            <p>Az utaz&aacute;s ir&aacute;nya ( <b>A l&eacute;tes&iacute;tm&eacute;nytől t&aacute;volodva</b> vagy <b>A l&eacute;tes&iacute;tm&eacute;ny fel&eacute;</b>) befoly&aacute;solja, hogy a ter&uuml;letek hogyan j&ouml;nnek l&eacute;tre. Az El&eacute;r&eacute;siidő-z&oacute;na l&eacute;trehoz&aacute;sa figyelembe veszi az egyir&aacute;ny&uacute; utc&aacute;kat, a bekanyarod&aacute;si szab&aacute;lyokat &eacute;s k&ouml;veti az utaz&aacute;s sor&aacute;n alkalmazand&oacute; szab&aacute;lyokat. Az utaz&aacute;s ir&aacute;ny&aacute;t a beviteli helyek t&iacute;pusa &eacute;s az elemz&eacute;s eredm&eacute;nye alapj&aacute;n v&aacute;lassza ki. P&eacute;ld&aacute;ul, egy h&aacute;zhozsz&aacute;ll&iacute;t&aacute;ssal foglalkoz&oacute; pizz&eacute;ria el&eacute;r&eacute;siidő-z&oacute;n&aacute;j&aacute;t a l&eacute;tes&iacute;tm&eacute;nytől t&aacute;volodva, m&iacute;g egy korh&aacute;z el&eacute;r&eacute;siidő-z&oacute;n&aacute;j&aacute;t a l&eacute;tes&iacute;tm&eacute;ny fel&eacute; kell l&eacute;trehozni.
+            </p>
+            <p>Az  <b>Utaz&aacute;si idő</b>, <b>Vid&eacute;ki utaz&aacute;si idő</b>, vagy <b>Tehersz&aacute;ll&iacute;t&aacute;si idő</b> lehetős&eacute;g kiv&aacute;laszt&aacute;sakor v&aacute;laszthat, hogyan k&iacute;v&aacute;nja m&eacute;rni az utaz&aacute;si időt.
+                <ul>
+                    <li>
+                        <p>A  <b>Forgalom haszn&aacute;lata</b> jel&ouml;lőn&eacute;gyzet jel&ouml;l&eacute;s&eacute;nek megsz&uuml;ntet&eacute;s&eacute;vel el&eacute;r&eacute;siidő-t&eacute;rk&eacute;pek hozhat&oacute;k l&eacute;tre &aacute;lland&oacute; sebess&eacute;gek alapj&aacute;n. V&aacute;lassza ezt a lehetős&eacute;get, ha az utaz&aacute;si idő ter&uuml;letet &aacute;ltal&aacute;noss&aacute;gban k&iacute;v&aacute;nja meghat&aacute;rozni, &eacute;s nem egy meghat&aacute;rozott indul&aacute;si idő v&aacute;ltoz&oacute; k&ouml;zleked&eacute;si helyzete alapj&aacute;n.
+                        </p>
+                    </li>
+                    <li>
+                        <p>A  <b>Forgalom haszn&aacute;lata</b> jel&ouml;lőn&eacute;gyzet bejel&ouml;l&eacute;s&eacute;vel l&eacute;trehozhat el&eacute;r&eacute;siidő-t&eacute;rk&eacute;peket egy megadott indul&aacute;si idő &eacute;s v&aacute;ltoz&oacute; k&ouml;zleked&eacute;si helyzet alapj&aacute;n. Ha a <b>Val&oacute;s idejű forgalom</b> lehetős&eacute;get is bejel&ouml;li, akkor a bemenő pontokon az indul&aacute;si idő az aktu&aacute;lis idő lesz, &eacute;s az utaz&aacute;si idő ter&uuml;letek &eacute;rz&eacute;kelők &eacute;s h&iacute;rfolyamok &aacute;ltal szolg&aacute;ltatott, aktu&aacute;lis &eacute;s a v&aacute;rhat&oacute; forgalmon alapul&oacute; sebess&eacute;g alapj&aacute;n j&ouml;nnek l&eacute;tre. Az eszk&ouml;z a v&aacute;rhat&oacute; forgalmon alapul&oacute; sebess&eacute;get val&oacute;s idejű forgalom szerinti, kor&aacute;bbi sebess&eacute;gek &eacute;s aktu&aacute;lis, p&eacute;ld&aacute;ul időj&aacute;r&aacute;si esem&eacute;nyek alapj&aacute;n sz&aacute;m&iacute;tja ki. A forgalom v&aacute;rhat&oacute; sebess&eacute;ge 12 &oacute;r&aacute;val jelezhető előre, azaz a cs&uacute;szka elh&uacute;z&aacute;s&aacute;val 12 &oacute;r&aacute;val &aacute;ll&iacute;thatja előr&eacute;bb az indul&aacute;si időt.
+                        </p>
+                        <p>A fenti val&oacute;s idejű forgalmi be&aacute;ll&iacute;t&aacute;sok haszn&aacute;lat&aacute;val megkeresheti az azonnali indul&aacute;ssal, egy &oacute;r&aacute;n bel&uuml;li indul&aacute;ssal stb. el&eacute;rhető ter&uuml;leteket.
+                        </p>
+                    </li>
+                    <li>
+                        <p>A  <b>Forgalom haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel &eacute;s a <b>Időszak jellemző viszonyain alapul&oacute; forgalom</b> v&aacute;laszt&aacute;s&aacute;val kiv&aacute;laszthatja a napot &eacute;s az időpontot, az eszk&ouml;z pedig l&eacute;trehozza az el&eacute;r&eacute;siidő-t&eacute;rk&eacute;peket a kor&aacute;bbi &aacute;tlagsebess&eacute;gek alapj&aacute;n egy szok&aacute;sos h&eacute;t &ouml;tperces intervallumaira vet&iacute;tve. Az eredm&eacute;nyek tartalmazz&aacute;k a forgalmat, de kiszűrve az aktu&aacute;lis k&ouml;zleked&eacute;si helyzet &eacute;s az olyan esem&eacute;nyek hat&aacute;s&aacute;t, amelyek jelentősen elt&eacute;rhetnek a szok&aacute;sost&oacute;l.
+                        </p>
+                        <p>A kor&aacute;bbi forgalmi be&aacute;ll&iacute;t&aacute;sok haszn&aacute;lat&aacute;val v&aacute;laszt kaphat p&eacute;ld&aacute;ul arra a k&eacute;rd&eacute;sre, hogy &bdquo;Milyen ter&uuml;leteket &eacute;rhetek el &aacute;ltal&aacute;ban, szerda d.e. 11:30 &oacute;rai indul&aacute;ssal?&rdquo; 
+                        </p>
+                        <p>A be&aacute;ll&iacute;tott idő annak az időz&oacute;n&aacute;nak felel meg, amelyben a megadott bemenő pontok tal&aacute;lhat&oacute;k. Ha teh&aacute;t p&eacute;ld&aacute;ul d.e. 8:00 &oacute;r&aacute;ra &aacute;ll&iacute;tja az időt, &eacute;s k&eacute;t pontot ad meg, az egyik New York, a m&aacute;sik Los Angeles, akkor az el&eacute;r&eacute;siidő-t&eacute;rk&eacute;pek d.e. 8:00 &oacute;r&aacute;ra vonatkoztatva j&ouml;nnek l&eacute;tre. Keleti idő szerinti d.e. 8:00 &oacute;rai indul&aacute;si idővel, a m&aacute;sik a csendes-&oacute;ce&aacute;ni idő szerinti d.e. 8:00 &oacute;rai indul&aacute;si idővel.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>&Uuml;gyeljen arra, hogy mik&ouml;zben a j&aacute;rmű kifel&eacute; halad egy pontt&oacute;l, az idő m&uacute;lt&aacute;val a k&ouml;zleked&eacute;si helyzet v&aacute;ltozik. Az El&eacute;r&eacute;siidő-ter&uuml;letek eszk&ouml;z figyelembe veszi ezeket a vari&aacute;ci&oacute;kat, ha r&aacute;kattint az  <b>Utaz&aacute;si idő</b> lehetős&eacute;gre, &eacute;s bejel&ouml;li a <b>Forgalom haszn&aacute;lata</b> lehetős&eacute;get, azonban nem minden r&eacute;gi&oacute; t&aacute;mogatja a forgalmat. Az eszk&ouml;zben az <b>El&eacute;rhetős&eacute;g megtekint&eacute;se</b> hivatkoz&aacute;sra kattintva megtekintheti, hogy el&eacute;rhető-e a minta ter&uuml;leten.
+            </p>
+            <p>A  <b>Tehersz&aacute;ll&iacute;t&aacute;si idő</b> k&eacute;pes forgalmon alapul&oacute; dinamikus utaz&aacute;si sebess&eacute;get haszn&aacute;lni, de legfeljebb a teheraut&oacute;k t&ouml;rv&eacute;nyben megengedett maxim&aacute;lis sebess&eacute;ghat&aacute;r&aacute;ig. Ha p&eacute;ld&aacute;ul a dinamikus sebess&eacute;g egy k&ouml;z&uacute;ton a val&oacute;s idejű forgalom alapj&aacute;n 65 m&eacute;rf&ouml;ld/&oacute;ra, de a teherg&eacute;pj&aacute;rművekre &eacute;rv&eacute;nyes sebess&eacute;gkorl&aacute;toz&aacute;s az adott k&ouml;z&uacute;ton 55 m&eacute;rf&ouml;ld/&oacute;ra, akkor a sz&aacute;m&iacute;t&aacute;s az 55 m&eacute;rf&ouml;ld/&oacute;ra sebess&eacute;get veszi figyelembe ezen a k&ouml;z&uacute;ton.
+            </p>
+            <p>A  <b>Gyalogl&aacute;si idő</b> &eacute;s a <b>Gyalogt&aacute;vols&aacute;g</b> &oacute;r&aacute;nk&eacute;nt 5 kilom&eacute;ter (&oacute;r&aacute;nk&eacute;nt  3.1 m&eacute;rf&ouml;ld) &aacute;lland&oacute; sebess&eacute;get haszn&aacute;l, &eacute;s gyalogos k&ouml;zlekedőutakat, valamint kijel&ouml;lt utc&aacute;kat k&ouml;vet (figyelmen k&iacute;v&uuml;l hagyva ugyanakkor az aut&oacute;kra vonatkoz&oacute; szab&aacute;lyokat, p&eacute;ld&aacute;ul az egyir&aacute;ny&uacute; utakat). </p>
+            <p>A  <b>Tehersz&aacute;ll&iacute;t&aacute;si t&aacute;vols&aacute;g</b> &aacute;lland&oacute; sebess&eacute;get haszn&aacute;l, &eacute;s a neh&eacute;z teheraut&oacute;kra vonatkoz&oacute; szab&aacute;lyokat k&ouml;veti, m&iacute;g a <b>Vezet&eacute;si t&aacute;vols&aacute;g</b> &eacute;s <b>Vid&eacute;ki vezet&eacute;si t&aacute;vols&aacute;g</b> &aacute;lland&oacute; sebess&eacute;get haszn&aacute;l, &eacute;s az aut&oacute;kra, p&eacute;ld&aacute;ul szem&eacute;lyaut&oacute;kra vonatkoz&oacute; szab&aacute;lyokat k&ouml;veti.
+            </p> 
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Határrétegek kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p> Egy vagy t&ouml;bb olyan funkci&oacute;, ami ideiglenes korl&aacute;toz&aacute;sk&eacute;nt műk&ouml;dik (hat&aacute;rk&eacute;nt), amikor az &eacute;rintett utc&aacute;kon k&ouml;zlekedik. A korl&aacute;tokat a pontok, vonalak vagy polygon tulajdons&aacute;gaival hat&aacute;rozhatja meg.
+            </p>
+            <p>Egy korl&aacute;t pont lehet egy let&ouml;r&ouml;tt fa&aacute;g, egy k&ouml;zleked&eacute;si baleset, egy leszakadt elektromos vezet&eacute;k, vagy b&aacute;rmi, ami egy adott helyen teljes m&eacute;rt&eacute;kben megakad&aacute;lyozza az utcai k&ouml;zleked&eacute;st. A k&ouml;zleked&eacute;s enged&eacute;lyezett az utc&aacute;n, de a korl&aacute;t ponton t&uacute;l m&aacute;r nem. Legfeljebb 250 olyan funkci&oacute;t hat&aacute;rozhat meg, ami hat&aacute;rk&eacute;nt műk&ouml;dhet.
+            </p>
+            <p>A korl&aacute;t vonal megakad&aacute;lyozza a k&ouml;zleked&eacute;st minden olyan ponton, ahol az keresztezi az utc&aacute;t. P&eacute;ld&aacute;ul egy felvonul&aacute;s vagy t&uuml;ntet&eacute;s megakad&aacute;lyozza a k&ouml;zleked&eacute;st t&ouml;bb utca szakaszon is, ez&eacute;rt ezt korl&aacute;t vonallal lehet modellezni. Ha az utc&aacute;t keresztező korl&aacute;t vonalak sz&aacute;ma meghaladja az 500-at, akkor az eszk&ouml;z hiba&uuml;zenetet ad.
+            </p>
+            <p>A polygon korl&aacute;t megakad&aacute;lyozza a k&ouml;zleked&eacute;st minden olyan ponton, ahol az keresztezi az utc&aacute;t. Ilyen jellegű korl&aacute;t lehet p&eacute;ld&aacute;ul egy &aacute;rad&aacute;s, ami utc&aacute;k eg&eacute;sz h&aacute;l&oacute;zat&aacute;t fedi le, &iacute;gy megakad&aacute;lyozva a k&ouml;zleked&eacute;st. Ha az utc&aacute;t keresztező polygonok sz&aacute;ma meghaladja az 2000-et, akkor az eszk&ouml;z hiba&uuml;zenetet ad.
+            </p>
+        </div>
+    </div>
+    <div id="DissolveType">
+        <div><h2>Területek különböző pontokból</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki, hogyan k&iacute;v&aacute;nja kezelni a k&uuml;l&ouml;nb&ouml;ző bemenő pontokb&oacute;l sz&aacute;rmaz&oacute;, megosztott ter&uuml;leteket, amikor azok el&eacute;rik egym&aacute;st. A ter&uuml;letek az al&aacute;bbiakat tehetik:
+                <ul>
+                    <li> <b>&Aacute;tfed&eacute;s</b> &ndash; a k&uuml;l&ouml;nb&ouml;ző bemenő pontokb&oacute;l sz&aacute;rmaz&oacute; ter&uuml;letek lefedhetik ugyanazt a k&ouml;zutat. Ez olyankor hasznos, ha ismernie kell az &ouml;sszes bemenő pontot, amely el&eacute;rhet egy adott helyet az adott időn vagy t&aacute;vols&aacute;gon bel&uuml;l.
+                    </li>
+                    <li> <b>&Ouml;sszeolvaszt&aacute;s</b> &ndash; minden ter&uuml;let egy ter&uuml;lett&eacute; olvad &ouml;ssze, &eacute;s csak egyetlen ter&uuml;let fedhet le egy bizonyos helyet. Ez olyankor hasznos, ha csak annyit kell tudnia, hogy egy ter&uuml;let el&eacute;rhető adott időn vagy t&aacute;vols&aacute;gon bel&uuml;l, de nem kell tudnia, hogy konkr&eacute;tan melyik bemenő pontok &eacute;rhetik el a helyet.
+                    </li>
+                    <li> <b>Feloszt&aacute;s</b> &ndash; a k&uuml;l&ouml;nb&ouml;ző bemenő helyekből sz&aacute;rmaz&oacute; ter&uuml;letek, amelyek &aacute;tfedn&eacute;k egym&aacute;st, ehelyett k&ouml;z&eacute;pen kett&eacute;oszlanak, &eacute;s hat&aacute;rosak lesznek egym&aacute;ssal. Ez olyankor hasznos, ha szeretn&eacute; l&aacute;tni, hogy melyik ter&uuml;letek tal&aacute;lhat&oacute;k adott időn vagy t&aacute;vols&aacute;gon bel&uuml;l a bemenő pontokt&oacute;l, &eacute;s egyidejűleg meghat&aacute;rozhatja, hogy melyik bemenő pont tal&aacute;lhat&oacute; a legk&ouml;zelebb a ter&uuml;lethez.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="showHoles">
+        <div><h2>A nem elérhető területeket üres hézagként jeleníti meg.</h2></div>
+        <hr/>
+        <div>
+            <p>Ha egyes utc&aacute;k a  <b>M&eacute;r&eacute;si</b> idők, a t&aacute;vols&aacute;g vagy az utaz&aacute;si m&oacute;d korl&aacute;toz&aacute;sai miatt nem &eacute;rhetők el, akkor v&aacute;lassza ki, hogy a kimeneti ter&uuml;letek tartalmazzanak-e h&eacute;zagokat.
+            </p>
+            <p>Az ezzel a param&eacute;terrel l&eacute;trehozott el&eacute;r&eacute;siidő-z&oacute;n&aacute;k 15 perces vagy 15 m&eacute;rf&ouml;ldes (24 km) korl&aacute;ttal rendelkeznek.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Eredményréteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+    <div id="includeReachableStreets">
+        <div><h2>Tartalmazza az elérhető utcákat</h2></div>
+        <hr/>
+        <div>
+            <p>Tartalmazza azokat az utc&aacute;kat, melyeket el&eacute;r&eacute;siidő-z&oacute;na l&eacute;trehoz&aacute;s&aacute;hoz kimeneti r&eacute;tegk&eacute;nt haszn&aacute;ltak. 
+            </p>
+            <p>Az el&eacute;r&eacute;siidő-z&oacute;na l&eacute;trehoz&aacute;sa művelet a k&ouml;z&uacute;ti h&aacute;l&oacute;zat szerint &aacute;llap&iacute;tja meg egy l&eacute;tes&iacute;tm&eacute;ny el&eacute;r&eacute;s&eacute;t, majd a m&aacute;r bej&aacute;rt utc&aacute;k alapj&aacute;n hozza l&eacute;tre az el&eacute;r&eacute;siidő-z&oacute;n&aacute;kat. Ez&eacute;rt a z&oacute;n&aacute;k megk&ouml;zel&iacute;tőleg a m&aacute;r bej&aacute;rt utc&aacute;k lesznek. Ha a vizsg&aacute;lat&aacute;nak c&eacute;lja annak meg&aacute;llap&iacute;t&aacute;sa, hogy egy l&eacute;tes&iacute;tm&eacute;nytől mely utc&aacute;k tal&aacute;lhat&oacute;k egy adott t&aacute;vols&aacute;gon vagy utaz&aacute;si időn bel&uuml;l, akkor annak meghat&aacute;roz&aacute;s&aacute;hoz, hogy egy utca el&eacute;rhető-e, az el&eacute;rhető utc&aacute;k l&eacute;trehoz&aacute;sa pontosabb eredm&eacute;nyt adhat, mint az el&eacute;r&eacute;siidő-z&oacute;na haszn&aacute;lata.
+            </p>
+            <p>Az ezzel a param&eacute;terrel l&eacute;trehozott el&eacute;r&eacute;siidő-z&oacute;n&aacute;k 15 perces vagy 15 m&eacute;rf&ouml;ldes (24 km) korl&aacute;ttal rendelkeznek.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

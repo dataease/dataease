@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Cuenca hidrográfica</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Tarea Cuenca hidrogr&aacute;fica"></h2>
+        <hr/>
+    <p>Esta herramienta determina el &aacute;rea de cuenca contribuyente sobre un conjunto de celdas de un r&aacute;ster.
+    </p>
+    <p>Una cuenca hidrogr&aacute;fica es el &aacute;rea de pendiente que contribuye con el flujo, generalmente agua, a una salida com&uacute;n como un drenaje concentrado. Puede ser parte de una cuenca hidrogr&aacute;fica m&aacute;s grande y tambi&eacute;n puede contener cuencas hidrogr&aacute;ficas m&aacute;s peque&ntilde;as, denominadas subcuencas.
+    </p>
+    <p>El valor de cada cuenca hidrogr&aacute;fica se tomar&aacute; del valor del origen en la capa de puntos de fluidez de r&aacute;ster o entidad de entrada. Cuando el punto de fluidez es un dataset r&aacute;ster, se utilizan los valores de celda de forma predeterminada. Cuando el punto de fluidez es un dataset de entidad de puntos, los valores provendr&aacute;n del campo especificado.
+    </p>
+    <p>La herramienta Cuenca hidrogr&aacute;fica solo admite una capa r&aacute;ster de direcci&oacute;n del flujo de entrada D8.
+    </p>
+    <p>Al especificar las ubicaciones de punto de fluidez de entrada como datos de entidad, el campo predeterminado ser&aacute; el primer campo v&aacute;lido disponible. Si no existen campos v&aacute;lidos, el campo ObjectID (por ejemplo, OID o FID) ser&aacute; el valor predeterminado.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Elegir capa de dirección del flujo</h2></div>
+        <hr/>
+        <div>
+            <p>R&aacute;ster de entrada que muestra la direcci&oacute;n del flujo de cada celda.
+            </p>
+            <p>El r&aacute;ster de direcci&oacute;n del flujo se puede crear con la herramienta Direcci&oacute;n de flujo o la tarea FlowDirection en el servicio RasterAnalysisTools, ejecutadas con el tipo de direcci&oacute;n de flujo predeterminado,  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Especificar ubicaciones de punto de fluidez de entrada</h2></div>
+        <hr/>
+        <div>
+            <p>Las ubicaciones de punto de fluidez de entrada.
+            </p>
+            <p>Para un r&aacute;ster, esto representa las celdas por sobre las que se determinar&aacute; el &aacute;rea de contribuci&oacute;n o la cuenca. Todas las celdas que no son NoData se utilizar&aacute;n como celdas de origen. Para una entrada de punto, esto representa las ubicaciones sobre las que se determinar&aacute; el &aacute;rea de contribuci&oacute;n o la cuenca.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Elegir campo de punto de fluidez</h2></div>
+        <hr/>
+        <div>
+            <p>El campo que se utiliza para asignar los valores a las ubicaciones de punto de fluidez.
+            </p>
+            <p>Si la capa de puntos de fluidez de entrada es un r&aacute;ster, se utiliza un valor. Si es una entidad, se utiliza un campo num&eacute;rico. Si el campo contiene valores de punto flotante, se truncar&aacute;n en enteros.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>El nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y que se agregar&aacute; al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Puede especificar el nombre de una carpeta de  <b>Mi contenido</b> en la que se guardar&aacute; el resultado con el cuadro desplegable <b>Guardar el resultado en</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

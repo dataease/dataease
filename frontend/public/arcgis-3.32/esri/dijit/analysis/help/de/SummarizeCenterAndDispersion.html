@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Zentrierung und Verteilung zusammenfassen</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Zentrierung und Verteilung zusammenfassen"></h2>
+        <hr/>
+    <p>Mit diesem Werkzeug finden Sie zentrale Features und Richtungsverteilungen.
+Es kann zur Beantwortung verschiedener Fragen verwendet werden, z.&nbsp;B.:
+        <ul>
+            <li>Wo ist der Mittelpunkt?
+            </li>
+            <li>Welches Feature von allen Features ist am besten erreichbar?
+            </li>
+            <li>Wie verteilt, kompakt oder integriert sind die Features?
+            </li>
+            <li>Gibt es Richtungstrends?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features im Eingabe-Layer analysiert, die in der aktuellen Kartenausdehnung sichtbar sind. Wenn diese Option deaktiviert ist, werden alle Features im Eingabe-Layer analysiert, auch diejenigen, die sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Einen zu beschreibenden Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Punkt-, Linien- oder Fl&auml;chen-Layer, der zur Suche nach zentralen Features und Richtungsverteilungen verwendet wird.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Zusammenfassungsarten</h2></div>
+        <hr/>
+        <div>
+            <p>Die Methode der Zusammenfassung von Zentrierung und Verteilung. 
+            </p>
+            <ul>
+                <li>Zentrales Feature: Identifiziert das am zentralsten positionierte Feature in einem Dataset.
+                </li>
+                <li>Mittelwert f&uuml;r Mittelpunkt: Identifiziert den geographischen Mittelpunkt (oder das Schwerpunktzentrum) f&uuml;r einen Satz von Features.
+                </li>
+                <li>Medianwert f&uuml;r Mittelpunkt: Identifiziert die Position, durch die die euklidische Gesamtentfernung zu den Features in einem Dataset minimiert wird.
+                </li>
+                <li>Ellipse: Erstellt Standardabweichungsellipsen, um die r&auml;umlichen Eigenschaften geographischer Features zusammenzufassen: zentrale Tendenz, Verteilung und Richtungstrends. Die Ellipse kann 1, 2 oder 3 Standardabweichungen gro&szlig; sein.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Gewichten nach (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Das Feld, das verwendet wird, um Orte nach ihrer relativen Bedeutung zu gewichten. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Gruppieren nach (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Das Feld, das zur Gruppierung von Features f&uuml;r separate Berechnungen von zentralen Features oder der Verteilung verwendet wird. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

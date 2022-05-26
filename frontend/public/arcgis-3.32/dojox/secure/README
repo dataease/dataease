@@ -1,0 +1,50 @@
+-------------------------------------------------------------------------------
+DojoX Secure
+-------------------------------------------------------------------------------
+Version 0.1
+Release date: 07/04/2008
+-------------------------------------------------------------------------------
+Project state:
+alpha
+-------------------------------------------------------------------------------
+Project authors
+	Kris Zyp (kris@sitepen.com)
+-------------------------------------------------------------------------------
+Project description
+
+DojoX Secure is a collection of tools for security, in particular for working with
+untrusted data and code. The following tools are a part of DojoX Secure:
+
+dojox.secure.capability - Object-capability JavaScript validation. This is 
+a validator to run before eval to ensure that a script can't access or modify
+any objects outside of those specifically provided to it.
+
+dojox.secure.sandbox - Provides support for loading web pages, JSON, and scripts 
+from other domains using XHR (and XHR plugins) with a safe subset library and 
+sandboxed access to the DOM.
+
+dojox.secure.DOM - Provides a DOM facade that restricts access to
+a specified subtree of the DOM. The DOM facade uses getters/setters
+and lettables to emulate the DOM API.
+
+dojox.secure.OAuth - Future project to provide an implementation of OAuth.
+
+
+-------------------------------------------------------------------------------
+Dependencies:
+
+Dojo Core (package loader).
+-------------------------------------------------------------------------------
+Documentation
+
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/secure/*
+
+Install into the following directory structure:
+/dojox/secure/
+
+...which should be at the same level as your Dojo checkout.
+

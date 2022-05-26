@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Superponer capas</h2><p/>
+        <h2><img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" alt="Superponer capas"></h2>
+        <hr/>
+    <p>Superposici&oacute;n combina dos o m&aacute;s capas en una sola capa. La superposici&oacute;n equivale a examinar una pila de mapas y crear un &uacute;nico mapa que contenga toda la informaci&oacute;n encontrada en la pila. La superposici&oacute;n es mucho m&aacute;s que la fusi&oacute;n de las l&iacute;neas; todos los atributos de las entidades que forman parte de la superposici&oacute;n llegan hasta el producto final. La superposici&oacute;n se utiliza para responder a una de las preguntas geogr&aacute;ficas m&aacute;s sencillas: &quot;&iquest;Qu&eacute; est&aacute; encima de qu&eacute;?&quot;Por ejemplo:
+        <ul>
+            <li>&iquest;Qu&eacute; parcelas est&aacute;n dentro de las llanuras aluviales de 100 a&ntilde;os?(Dentro de es solo otra forma de decir encima de.)
+                  
+            </li>
+            <li>&iquest;Qu&eacute; carreteras est&aacute;n dentro de qu&eacute; pa&iacute;ses?
+            </li>
+            <li>&iquest;Qu&eacute; uso del suelo est&aacute; encima de qu&eacute; tipo de suelo?
+                 
+            </li>
+            <li>&iquest;Qu&eacute; pozos est&aacute;n dentro de bases militares abandonadas?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si se ha activado  <b>Usar la extensi&oacute;n del mapa actual</b>, solo se superpondr&aacute;n las entidades de la capa de entrada y la capa de superposici&oacute;n que est&eacute;n visibles en la extensi&oacute;n de mapa actual.  Si la opci&oacute;n est&aacute; desactivada, se superpondr&aacute;n todas las entidades de la capa de entrada y de la capa de superposici&oacute;n, aunque est&eacute;n fuera de la extensi&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elegir capa de entrada</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de puntos, l&iacute;neas o &aacute;reas que se superpondr&aacute;.
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+        </div>
+    </div>
+    <div id="OverlayLayer">
+        <div><h2>Elegir capa de superposición</h2></div>
+        <hr/>
+        <div>
+            <p>La capa que se va a superponer con la capa de entrada.  
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p> 
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Elegir método de superposición</h2></div>
+        <hr/>
+        <div>
+            <p>El m&eacute;todo de superposici&oacute;n define c&oacute;mo se combinan la capa de entrada y la capa de superposici&oacute;n.  
+
+                <ul>
+                    <li> <b>Intersecar</b>: el resultado solo contendr&aacute; aquellas entidades o porciones de entidades de la capa de superposici&oacute;n que se superpongan con entidades de la capa de entrada. Cuando se intersecan entidades de l&iacute;nea o de &aacute;rea, existe la opci&oacute;n de especificar los tipos de entidades que se desea obtener como salida.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Puntos con puntos
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Entrada de puntos y puntos">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Puntos y puntos con salida de puntos">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Puntos con l&iacute;neas
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-F1E6C6C8-4F51-4063-984D-0FC8D08EB2D2-web.png" alt="Entrada de puntos y l&iacute;neas">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-02CFAFDC-1B3C-4C4B-A58C-7B0B78BA0B56-web.png" alt="Puntos y l&iacute;neas con salida de puntos">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Puntos con &aacute;reas
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-5EE90BD6-CC3D-4E2F-A5D0-DC57298E8416-web.png" alt="Entrada de puntos y &aacute;reas">
+                                </p>
+                            </td>
+                            <td> <img src="../images/GUID-5CCA360F-D4C9-43AB-8FB2-E6E62DE93BD4-web.png" alt="Puntos y &aacute;reas con salida de puntos">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>L&iacute;neas con l&iacute;neas 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Entrada de l&iacute;neas y l&iacute;neas">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-DDCCB226-6490-4914-B87C-299125466256-web.png" alt="L&iacute;neas y l&iacute;neas con salida de puntos">
+                                </p>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="L&iacute;neas y l&iacute;neas con salida de l&iacute;neas ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>L&iacute;neas con &aacute;reas
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-E38EB7D6-9D35-4E0D-937A-9FEC4144AF2E-web.png" alt="Entrada de l&iacute;neas y &aacute;reas">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-639F492C-BEE7-4A5F-AEBC-325B74FEC766-web.png" alt="L&iacute;neas y &aacute;reas con salida de puntos">
+                                </p>
+                                <p> <img src="../images/GUID-58DF5CF6-0A56-4717-AD9C-C3BEC8EA6906-web.png" alt="L&iacute;neas y &aacute;reas con salida de l&iacute;neas">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>&Aacute;reas con &aacute;reas
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Entrada de &aacute;reas y &aacute;reas">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-3F71AD46-A6A2-436D-8BBA-13E014BB94D0-web.png" alt="&Aacute;reas y &aacute;reas con salida de puntos">
+                                </p>
+                                <p> <img src="../images/GUID-6AF62F09-6D32-4212-97C6-844580E34A22-web.png" alt="&Aacute;reas y &aacute;reas con salida de l&iacute;neas">
+                                </p>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="&Aacute;reas y &aacute;reas con salida de &aacute;reas">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Combinaci&oacute;n</b>: el resultado contendr&aacute; entidades de la capa de entrada y la capa de superposici&oacute;n. La opci&oacute;n Combinaci&oacute;n solo est&aacute; disponible si la capa de entrada y la capa de superposici&oacute;n contienen entidades de &aacute;rea.
+                    </li>
+                    <li> <b>Borrar</b>: el resultado solo contendr&aacute; aquellas entidades o porciones de entidades de la capa de superposici&oacute;n que no se superpongan con las &aacute;reas de la capa de entrada.  La capa de superposici&oacute;n puede contener entidades de &aacute;rea, de l&iacute;nea o de puntos.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Si se ha activado  <b>Usar la extensi&oacute;n del mapa actual</b>, solo se superpondr&aacute;n las entidades de la capa de entrada y la capa de superposici&oacute;n que est&eacute;n visibles en la extensi&oacute;n de mapa actual.  Si la opci&oacute;n est&aacute; desactivada, se superpondr&aacute;n todas las entidades de la capa de entrada y de la capa de superposici&oacute;n, aunque est&eacute;n fuera de la extensi&oacute;n de mapa actual.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p> Este es el nombre de la capa que se crear&aacute; en <b>Mi contenido</b> y se agregar&aacute; al mapa.  Tendr&aacute; el mismo tipo de entidad (&aacute;rea, l&iacute;neas o puntos) que la capa de superposici&oacute;n. El nombre predeterminado se basa en el m&eacute;todo de superposici&oacute;n y en el nombre de la capa de entrada. Si la capa ya existe, se te pedir&aacute; que indiques otro nombre.
+            </p>
+            <p>En el cuadro desplegable  <b>Guardar el resultado en</b>, puedes especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p> 
+        </div>
+    </div>
+</div>
+</html>

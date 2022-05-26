@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Gerar Tesselações</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Gerar Tessela&ccedil;&otilde;es"></h2>
+        <hr/>
+    <p>Esta ferramenta gera tessela&ccedil;&otilde;es sobre uma &aacute;rea de estudo baseada numa forma e tamanho espec&iacute;ficos.
+    </p>
+    <p>A caixa de sele&ccedil;&atilde;o   <b>Utilizar extens&atilde;o do mapa atual</b> est&aacute; desativada para esta ferramenta, porque a extens&atilde;o usada para gerar as tessela&ccedil;&otilde;es &eacute; controlada pelo par&acirc;metro <b>Definir extens&atilde;o</b>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Escolher forma</h2></div>
+        <hr/>
+        <div>
+            <p>A forma ou geometria da tessela&ccedil;&atilde;o que deseja criar.  As formas dispon&iacute;veis s&atilde;o  <code>Quadrado</code>, <code>Hex&aacute;gono</code>, <code>Hex&aacute;gono Transversal</code>, <code>Tri&acirc;ngulo</code> ou <code>Diamante</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Definir a área de estudo</h2></div>
+        <hr/>
+        <div>
+            <p>A extens&atilde;o ou &aacute;rea que ser&aacute; coberta pelas tessela&ccedil;&otilde;es.  A extens&atilde;o pode ser determinada utilizando a extens&atilde;o do mapa atual, a extens&atilde;o de uma camada existente ou desenhando interativamente uma &aacute;rea para ser usada como extens&atilde;o.
+            </p>
+            <p>Se alguma camada de elementos tiver sido selecionada para determinar a extens&atilde;o, a op&ccedil;&atilde;o de apenas manter tessela&ccedil;&otilde;es que se intersetem ser&aacute; ativada.  Se estiverem selecionadas, apenas as tessela&ccedil;&otilde;es que cobrem ou intersetam elementos na camada de extens&atilde;o especificada ser&atilde;o geradas na camada de tessela&ccedil;&atilde;o resultante. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>N&atilde;o selecionadas
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Cobertura da Extens&atilde;o Total">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Selecionadas
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Cobertura de Elementos">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Definir o tamanho da caixa especificando</h2></div>
+        <hr/>
+        <div>
+            <p>O tamanho de cada c&eacute;lula.  O tamanho da c&eacute;lula pode ser determinado especificando unidades quadradas ou especificando a dist&acirc;ncia que &eacute; calculada utilizando as seguintes medidas, onde d = dist&acirc;ncia: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Quadrado
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Tessela&ccedil;&atilde;o Quadrada">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Hex&aacute;gono
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Tessela&ccedil;&atilde;o Hexagonal">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Hex&aacute;gono transversal
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Tessela&ccedil;&atilde;o Hexagonal Transversa">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Tri&acirc;ngulo
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Tessela&ccedil;&atilde;o Triangular">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Diamante
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Tessela&ccedil;&atilde;o em Diamante">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. Se a camada j&aacute; existir, ser-lhe-&aacute; pedido que forne&ccedil;a outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Guardar resultado em</b> pode definir o nome da pasta em <b>O Meu Conte&uacute;do</b> onde o resultado ser&aacute; guardado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

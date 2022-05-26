@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Klasifikasikan Piksel Menggunakan Deep Learning</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Klasifikasikan Piksel Menggunakan Deep Learning"></h2>
+        <hr/>
+    <p>Alat ini menjalankan model deep learning terlatih pada raster input untuk menghasilkan raster yang diklasifikasikan, dan setiap piksel valid memiliki label kelas yang ditetapkan.
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya area raster yang terlihat dalam jangkauan peta saat ini akan dianalisis. Jika tidak dicentang, keseluruhan raster akan dianalisis, bahkan jika raster berada di luar jangkauan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Pilih gambar yang digunakan untuk mengklasifikasikan piksel</h2></div>
+        <hr/>
+        <div>
+            <p>Gambar input yang akan diklasifikasikan.
+            </p>
+            <p>Ini bisa jadi URL layanan gambar, layer raster, atau service layer gambar.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Pilih model deep learning yang digunakan untuk mengklasifikasikan piksel</h2></div>
+        <hr/>
+        <div>
+            <p>Item paket deep learning input ( <code>.dlpk</code>).
+            </p>
+            <p>Paket deep learning terdiri atas file JSON definisi model Esri ( <code>.emd</code>), file model biner deep learning, dan secara opsional, fungsi raster Python yang akan digunakan.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Tentukan argumen model deep learning</h2></div>
+        <hr/>
+        <div>
+            <p>Argumen fungsi yang ditentukan dalam kelas fungsi raster Python direferensikan oleh model input. Ini adalah tempat Anda mencantumkan parameter deep learning tambahan dan argumen untuk eksperimen dan perbaikan, seperti misalnya ambang batas keyakinan untuk menyesuaikan sensitivitas.
+            </p>
+            <p>Nama argumen dikumpulkan oleh alat dari membaca modul Python pada server analisis raster.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Anda dapat menentukan nama folder di  <b>Konten Saya</b> tempat hasil akan disimpan menggunakan kotak drop-down <b>Simpan hasil di</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

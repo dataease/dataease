@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Pievienot datus</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Rīka Pievienot datus darbplūsmas diagramma"></h2>
+        <hr/>
+    <p>&Scaron;is rīks pievieno datus eso&scaron;am viesotam elementu slānim. Rīks Pievienot datus maina oriģinālo ievades slāni un neģenerē jaunu izvades slāni. Jūs varat saskaņot laukus, ņemot vērā lauka nosaukumu un tipu, vai varat lietot uzlabotas saskaņo&scaron;anas metodes.
+    </p>
+    <p>Tālāk sniegtie ir piemēri: 
+        <ul>
+            <li>Jūs esat lielas apdro&scaron;inā&scaron;anas kompānijas darbinieks un katru mēnesi ģenerējat pārdo&scaron;anas ierakstus. Lai izveidotu gada pārskatu, analīzei ir jāapkopo ikmēne&scaron;a dati. Lai sāktu pārdo&scaron;anas datu analīzi, varat izmantot rīku Pievienot datus, lai atjauninātu slāni AnnualReport_2018, tikko ir pieejami kārtējā mēne&scaron;a dati. Tā kā ir zināms, ka jūsu organizācija ik mēnesi izmanto vienu un to pa&scaron;u shēmu, varat izmantot noklusējuma lauku kartē&scaron;anas metodi, lai efektīvi pievienotu elementus pēc to lauka nosaukuma un tipa.
+            </li>
+            <li>Katra no desmit vides grupām savā jurisdikcijā savāc simtiem tūksto&scaron;u klimata mērījumu. &Scaron;īs organizācijas vēlas apkopot savus datus, lai labāk saprastu reģionālos un globālos modeļus. Katra organizācija nosaka savas datu kopas shēmu. Katra no tām ir norādījusi at&scaron;ķirīgus lauku nosaukumus temperatūras un vēja ātruma datiem. Tā kā datu kopās lauku nosaukumi at&scaron;ķiras, lauku kartē&scaron;ana var tikt izmantota, lai norādītu, kā pievienot temperatūras un vēja ātruma mērījumus attiecīgajos laukos.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlēties slāni, pie kura pievienot</h2></div>
+        <hr/>
+        <div>
+            <p>Tabulas, punkta, līnijas vai laukuma elementi, kuriem tiks pievienoti dati.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Slānis, pie kura jāpievieno dati, tiks mainīts rīka darbības laikā. Pirms turpināt, pārliecinieties, vai tie&scaron;ām vēlaties mainīt &scaron;o slāni.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Papildus slāņa izvēlei kartē varat nolaižamā saraksta apak&scaron;ā varat izvēlēties  <b>Izvēlēties analīzes slāni,</b> lai saturā atrastu viesoto elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Izvēlēties slāni, kuru pievienot</h2></div>
+        <hr/>
+        <div>
+            <p>Tabulas, punkta, līnijas vai laukuma elementi, kas jāpievieno ievades slānim.
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Pievienot visus elementus vai definēt apakškopu (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p>Identificē pievienojamos elementus. &Scaron;is ir izvēles parametrs.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Izvēlēties, kā pievienot laukus (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p>Norāda, kā slāņa lauki tiek pievienoti ievades slānim. Pēc noklusējuma tiks pievienoti visi saskaņotie ievades un pievienojamie lauki. Lauki saskan, ja tiem ir viens un tas pats lauka nosaukums un tips. Papildus varat izvēlēties, kā lauki tiek saskaņoti, vai aprēķināt Arcade izteiksmes, lai aizpildītu lauka vērtības.
+            </p>
+            <p>Piemēram, jums ir ievades slānis ar laukiem  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i>, un pievienojamais slānis ar laukiem <i>field_string</i>, <i>field_number</i> un <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>Rīks pēc noklusējuma saskaņo lauku  <i>field_number</i> ievades slānī ar lauku <i>field_number</i> pievienojamajā slānī un lauku <i>field_string</i> ievades slānī ar lauku <i>field_string</i> pievienojamajā slānī.
+                    </li>
+                    <li>Pēc noklusējuma ievades slāņa lauki  <i>date_field</i> un <i>unused_field</i> tiks aizpildīti ar vērtībām <i>null</i>, jo tiem nav saskaņota lauka pievienojamajā slānī.
+                    </li>
+                    <li>Papildus varat pievienot vērtības laukiem, kas netika automātiski saskaņoti pēc noklusējuma. Piemēram, lauku  <i>date_field</i> ievades slānī var saskaņot ar pievienojamo lauku <i>MY_DATE_FIELD</i>. Lai to izdarītu, izmantojiet nolaižamo izvēlni blakus laukam <i>date_field</i> pirmajā kolonnā un izvēlieties <i>MY_DATE_FIELD</i> nolaižamajā izvēlnē otrajā kolonnā.
+                    </li>
+                </ul>
+                 Citā piemērā ievades slānim ir ciparu lauki <i>value_1</i>, <i>value_2</i>, <i>value_3</i> un <i>my_Average</i>, un pievienojamajam slānim ir ciparu lauki <i>value_1</i>, <i>value_2</i> un <i>value_3</i>.
+                <ul>
+                    <li>Pēc noklusējuma lauki  <i>value_1</i>, <i>value_2</i> un <i>value_3</i> tiks saskaņoti un pievienoti.
+                    </li>
+                    <li>Papildus noklusējuma darbībām vērtības var tikt aprēķinātas laukam  <i>my_Average</i>. To varat izdarīt, izmantojot vairākus laukus un matemātiskās darbības, izvēloties nolaižamo opciju <b>Izteiksme</b> kolonnā blakus <i>my_Average</i> un izveidojot pielāgotu Arcade izteiksmi, piemēram, <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,3 @@
+//>>built
+define("dojox/mvc/getPlainValue",["dojo/_base/array","dojo/_base/lang","dojo/Stateful"],function(f,e,g){var c=function(a,b){return(b||c)["getPlain"+(b||c).getType(a).replace(/^[a-z]/,function(a){return a.toUpperCase()})](a)};return e.setObject("dojox.mvc.getPlainValue",e.mixin(c,{getType:function(a){return e.isArray(a)?"array":null!=a&&"[object Object]"=={}.toString.call(a)?"object":"value"},getPlainArray:function(a){return f.map(a,function(a){return c(a,this)},this)},getPlainObject:function(a){var b=
+{},d;for(d in a)d in g.prototype||"_watchCallbacks"==d||(b[d]=c(a[d],this));return b},getPlainValue:function(a){return a}}))});

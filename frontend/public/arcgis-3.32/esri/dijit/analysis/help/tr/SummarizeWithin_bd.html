@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>İçinde Özetle</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="İ&ccedil;inde &Ouml;zetle"></h2>
+        <hr/>
+    <p>Bu ara&ccedil; ilk girdi katmanındaki alanların sınırları dahilinde olan detayları (ve detay kısımlarını) bulur.  
+        <ul>
+            <li>Boşaltma havzası sınırları katmanı ve arazi kullanım sınırları katmanı verildiğinde, her boşaltma havzası i&ccedil;in arazi kullanım t&uuml;r&uuml;n&uuml;n toplam y&uuml;z &ouml;l&ccedil;&uuml;m&uuml;n&uuml; hesaplayın. 
+            </li>
+            <li>Bir il&ccedil;edeki parsellerin bir katmanı ve şehir sınırlarının bir katmanı verildiğinde, her bir şehir sınırı dahilindeki boş parsellerin ortalama değerini &ouml;zetleyin.
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> işaretli ise, yalnızca ge&ccedil;erli harita yayılımında g&ouml;r&uuml;n&uuml;r olan girdi katmanındaki ve &ouml;zetlenecek katmandaki ilgili detaylar analiz edilir.  İşaretli değilse, hem girdi katmanı hem de &ouml;zetlenecek katmandaki t&uuml;m detaylar, ge&ccedil;erli harita yayılımının dışında olsa bile analiz edilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Sınırları içindeki diğer detayları özetlemek için alan katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Sınırları i&ccedil;inde kalan detayları &ouml;zetlemek i&ccedil;in kullanılacak alan katmanıdır. Kendi belirleyeceğiniz bir alan katmanı i&ccedil;inde &ouml;zetleme yapmayı se&ccedil;ebileceğiniz gibi, ara&ccedil; &ccedil;alıştırıldığında oluşturulan kare veya altıgen kutuları da tercih edebilirsiniz.  Kutu oluşturulurken  <b>Kare</b> i&ccedil;in belirtilen sayı ve birim karenin y&uuml;ksekliğini ve uzunluğunu belirler. <b>Altıgen</b> i&ccedil;in ise, belirtilen sayı ve birimler paralel kenarlar arasındaki mesafeyi belirler.
+            </p>
+            <p> <b>Kare</b> veya <b>Altıgen</b> kutu kullanan analiz, izd&uuml;ş&uuml;ml&uuml; bir koordinat sistemi gerektirir. <b>İşlem koordinat sistemini</b> <b>Analiz Ortamları</b> i&ccedil;inden ayarlayabilirsiniz. 
+ İşlem koordinat sisteminiz izd&uuml;ş&uuml;ml&uuml; bir koordinat sistemine ayarlanmamış ise, <b>Analizi &Ccedil;alıştır</b> dığınızda bu ayarlamayı yapmanız istenir.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="summaryLayer">
+        <div><h2>Özetlenecek katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Yukarıda belirtilen girdi katmanındaki veya kutulardaki detayların sınırları i&ccedil;inde kalan bu katmandaki detaylar &ouml;zetlenecek. 
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Depo aralık mesafesini ve birleştirmenin toplanacağı yeri belirleyin</h2></div>
+        <hr/>
+        <div>
+            <p>Kutu oluşturmak i&ccedil;in kullanılan mesafe.  
+            </p>
+            <p>Kutular i&ccedil;in  <b>Kutu Boyutu</b> veya <b>Alan Katmanı</b> ayarlanmalıdır.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Zaman dilimlerini kullanarak kümele (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>Girdi nokta katmanında zaman etkinleştirilmiş ve t&uuml;r&uuml; de anlık ise, zaman adımlamasını kullanarak analiz yapabilirsiniz. Zaman &ouml;gesini kullanırken ayarlayabileceğiniz &uuml;&ccedil; parametre vardır:
+                <ul>
+                    <li> <b>Zaman adımı aralığı</b>
+                    </li>
+                    <li> <b>Zaman adımını yineleme aralığı</b>
+                    </li>
+                    <li> <b>Zaman adımlarını d&uuml;zenleme s&uuml;resi</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>&Ouml;rneğin, bir yılı temsil eden verileriniz varsa ve bu verileri haftalık adımlar kullanarak analiz etmek istiyorsanız,  <b>Zaman adımı aralığı</b> &ouml;ğesini <code>1 hafta</code> olarak ayarlayın. 
+            </p>
+            <p>&Ouml;rneğin, bir yılı temsil eden verileriniz varsa ve bu verileri ayın ilk haftasını kullanarak analiz etmek istiyorsanız,  <b>Zaman adımı aralığı</b> &ouml;ğesini <code>1 hafta</code>, <b>Zaman adımı yineleme sıklığı</b> &ouml;ğesini <code>1 ay</code> ve <b>Zaman adımlarının ayarlanacağı zaman</b> &ouml;ğesini <code>1 Ocak saat g&uuml;nd&uuml;z 12:00</code> olarak ayarlayın.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Birleştirmenin yapılacağı zaman aralığı</h2></div>
+        <hr/>
+        <div>
+            <p>Zaman adımı oluşturmak i&ccedil;in kullanılan zaman aralığı.  <b>Zaman adımı aralığını</b> tek başına veya <b>Zaman adımını tekrarlama sıklığı</b> ya da <b>Zaman adımlarının ayarlanacağı zaman</b> parametresiyle birlikte kullanabilirsiniz.
+            </p>
+            <p>&Ouml;rneğin,her Pazartesi saat 9:00 ile 10:00 arasında ger&ccedil;ekleşen zaman adımları oluşturmak isterseniz ,  <b>Zaman adımı aralığı</b> değerini <code>1 saat</code>, <b>Zaman adımını yineleme aralığı</b> değerini <code>1 hafta</code> ve <b>Zaman adımlarının ayarlanacağı zaman</b> değerini <code>Pazartesi g&uuml;n&uuml; sabah 9:00:00</code> olarak ayarlayın.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Birleştirmede kullanılacak zaman adımı</h2></div>
+        <hr/>
+        <div>
+            <p> Bir zaman adımını hesaplamak i&ccedil;in kullanılan adım. <b>Zaman adımını yineleme aralığı</b>  tek başına, <b>Zaman adımı aralığı</b> ile birlikte veya <b>Referans Zaman</b> ile birlikte ya da <b>Zaman adımı aralığı</b> ve <b>Zaman adımlarının ayarlanacağı zaman</b> parametrelerinin her ikisi ile birlikte kullanılabilir.
+            </p>
+            <p> &Ouml;rneğin, her Pazartesi saat 9:00 ile 10:00 arasında ger&ccedil;ekleşen zaman adımları oluşturmak isterseniz, <b>Zaman adımı aralığı</b> değerini <code>1 saat</code>, <b>Zaman adımını yineleme aralığı</b> değerini <code>1 hafta</code> ve <b>Zaman adımlarının ayarlanacağı zaman</b> değerini <code>Pazartesi g&uuml;n&uuml; sabah 9:00:00</code> olarak ayarlayın.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Zaman dilimlemeyi eşleştirmek için kullanılacak referans süre</h2></div>
+        <hr/>
+        <div>
+            <p>Zaman dilimlemeyi eşleştirmek i&ccedil;in kullanılan tarih ve saat. Zaman adımlaması saatinde başlatılır ve buradan geriye doğru devam eder. Referans saat se&ccedil;ilmezse, zaman adımlaması 1 Ocak 1970&rsquo;ten başlatılır. 
+            </p>
+            <p> &Ouml;rneğin,  her Pazartesi saat 9:00 ile 10:00 arasında ger&ccedil;ekleşen zaman adımları oluşturmak isterseniz, <b>Zaman adımı aralığı</b> değerini <code>1 saat</code>, <b>Zaman adımını yineleme aralığı</b> değerini <code>1 hafta</code> ve <b>Zaman adımlarının ayarlanacağı zaman</b> değerini <code>Pazartesi g&uuml;n&uuml; sabah 9:00:00</code> olarak ayarlayın.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>İstatistik ekle (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p> &Ouml;zetlenen detaylarla ilgili istatistikleri hesaplayabilirsiniz. Aşağıdakileri sayısal alanlarda hesaplayabilirsiniz:
+                <ul>
+                    <li>Sayım&mdash;Null olmayan değerlerin sayısını hesaplar. Sayısal alan veya dizelerde kullanılabilir. [null, 0, 2] sonucu 2&rsquo;dir.
+                    </li>
+                    <li>Toplam; bir alandaki sayısal değerlerin toplamıdır. [null, null, 3] toplamı 3&rsquo;t&uuml;r.
+                    </li>
+                    <li>Ortalama; sayısal değerlerin ortalamasıdır. [0, 2, null] ortalaması 1&rsquo;dir.
+                    </li>
+                    <li>Min; bir sayısal alanın minimum değeridir. [0, 2, null] minimumu 0&rsquo;dır. 
+                    </li>
+                    <li>Maks; bir sayısal alanın maksimum değeridir. [0, 2, null] maksimum değeri 2&rsquo;dir.
+                    </li>
+                    <li>Aralık; bir sayısal alanın aralığıdır. Bu değer, minimum değerlerin maksimum değerlerden &ccedil;ıkartılmasıyla hesaplanır. [0, null, 1] aralığı 1&rsquo;dir. [null, 4] aralığı 0&rsquo;dır.
+                    </li>
+                    <li>Varyans; bir izdeki sayısal değerin sapmasını g&ouml;sterir. [1] sapması null&rsquo;dır. [null, 1,0,1,1] sapması 0,25&rsquo;dir.
+                    </li>
+                    <li>Standart sapma; bir sayısal alanın standart sapmasıdır. [1] standart sapması null&rsquo;dır. [null, 1,0,1,1] standart sapması 0,5&rsquo;dir. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Aşağıdakileri dize alanlarında hesaplayabilirsiniz:
+                <ul>
+                    <li>Sayım; null olmayan dizelerin sayısını hesaplar.
+                    </li>
+                    <li>Herhangi; bu istatistik belirtilen alandaki bir dize değerinin rastgele &ouml;rneğidir.
+                    </li>
+                </ul>
+                T&uuml;m istatistikler null olmayan değerler &uuml;zerinde hesaplanır. Sonu&ccedil; katmanı hesaplanan her istatistik i&ccedil;in yeni bir alan i&ccedil;erir. Herhangi bir sayıda istatistik, &ouml;znitelik ve istatistik se&ccedil;ilerek eklenebilir. 
+            </p>
+            <p>Bu istatistiklere ek olarak, t&uuml;m sayısal alanlardaki orantı istatistikleri de hesaplanır:
+                <ul>
+                    <li>Sayı; her alanın alanlar i&ccedil;indeki &ouml;zet katman oranı ile &ccedil;arpımının sayısıdır. 
+                    </li>
+                    <li>Toplam; her alandaki ağırlıklı değerler toplamıdır. Burada uygulanan ağırlık, alanlar i&ccedil;indeki &ouml;zet katman oranıdır.
+                    </li>
+                    <li>Ortalama Değer; her alandaki değerlerin ağırlıklı ortalamasıdır. Burada uygulanan ağırlık, alanlar i&ccedil;indeki &ouml;zet katman oranıdır.
+                    </li>
+                    <li>Min; her alandaki ağırlıklı değerlerin minimumudur. Burada uygulanan ağırlık, alanlar i&ccedil;indeki &ouml;zet katman oranıdır.
+                    </li>
+                    <li>Maks; her alandaki ağırlıklı değerlerin maksimumudur. Burada uygulanan ağırlık, alanlar i&ccedil;indeki &ouml;zet katman oranıdır.
+                    </li>
+                    <li>Aralık; maksimum ve minimum ağırlıklı değerler arasındaki farktır.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>&Ouml;zetlediğiniz detay t&uuml;rlerine bağlı olarak yakın nokta sayısını, toplam &ccedil;izgi uzunluğunu veya toplam alanı hesaplayabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Gruplanacak alanları seçme kriteri</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>&Ouml;zetle</b> detayının bir &ouml;zniteliğidir ve istatistikleri her bir tek &ouml;znitelik değeri i&ccedil;in ayrı hesaplamak amacıyla kullanılır. &Ouml;rneğin, ilk girdi katmanının şehir sınırlarını i&ccedil;erdiğini ve &ouml;zet detaylarının parseller olduğunu varsayalım.  Parsellerin &ouml;zniteliklerinden biri olan <i>Status</i> iki değer i&ccedil;erir: BOŞ ve DOLU 
+Şehirlerin sınırları dahilinde kalan boş ve dolu parsellerin toplam alanını hesaplamak i&ccedil;in <i>Status</i> &ouml;ğesini gruplandırma &ouml;zniteliği olarak kullanın. Her alan sınırının i&ccedil;indeki detay sayısının yanı sıra, her grubun istatistikleri de a&ccedil;ılan sonu&ccedil; katmanında g&ouml;r&uuml;nt&uuml;lenir.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Azınlık, çoğunluk ekle</h2></div>
+        <hr/>
+        <div>
+            <p>Gruplandırma &ouml;l&ccedil;&uuml;t&uuml; olarak bir alan belirlediğinizde bu onay kutusu etkinleştirilir. Her grupta, ilk girdi katmanının her sınırı i&ccedil;indeki hangi &ouml;znitelik değerlerinin azınlık (en az baskın) veya &ccedil;oğunluk (en baskın) olduğunu bulmak isterseniz,  <b>Azınlık, &ccedil;oğunluk ekle</b> &ouml;ğesini se&ccedil;in. <b>Azınlık, &ccedil;oğunluk ekle</b> &ouml;ğesini se&ccedil;tiğinizde, sonu&ccedil; katmanınıza iki yeni alan eklenir.   Ayrıca <b>Y&uuml;zde ekle</b> &ouml;ğesini de se&ccedil;erseniz, her gruptaki azınlık ve &ccedil;oğunluk &ouml;znitelik değerlerinin y&uuml;zdelerini bulunduran sonu&ccedil; katmanına iki ilave alan eklenir.
+            </p>
+            <ul>
+                <li>Noktaları &ouml;zetliyorsanız, azınlık ve &ccedil;oğunluk değerleri girdi alanı katmanındaki her sınır alanı i&ccedil;indeki nokta sayısına g&ouml;re hesaplanır.  
+                </li>
+                <li>&Ccedil;izgileri &ouml;zetliyorsanız, azınlık ve &ccedil;oğunluk değerleri ilk alan katmanındaki her sınır alanı i&ccedil;indeki &ccedil;izgilerin uzunluğuna g&ouml;re hesaplanır.  
+                </li>
+                <li>Alanları &ouml;zetliyorsanız, azınlık ve &ccedil;oğunluk değerleri girdi alan katmanındaki her sınır alanı i&ccedil;indeki alanlara g&ouml;re hesaplanır.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Yüzde ekle</h2></div>
+        <hr/>
+        <div>
+            <p>Gruplandırma &ouml;l&ccedil;&uuml;t&uuml; olarak bir alan belirlediğinizde bu onay kutusu etkinleştirilir. Her gruptaki her &ouml;znitelik değerinin y&uuml;zdesini bulmak isterseniz,  <b>Y&uuml;zde ekle</b> &ouml;ğesini belirleyin. Her gruptaki her &ouml;znitelik değerinin y&uuml;zdesini i&ccedil;eren sonu&ccedil; tablosuna yeni bir alan eklenir. <b>Azınlık, &ccedil;oğunluk ekle</b> &ouml;ğesi de se&ccedil;ili durumdaysa, her gruptaki azınlık ve &ccedil;oğunluk &ouml;znitelik değerlerinin y&uuml;zdelerini bulunduran sonu&ccedil; katmanına iki ilave alan eklenir.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Veri deposu seç</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics sonu&ccedil;ları,  bir veri deposunda saklanır ve  Portal for ArcGIS i&ccedil;inde bir detay katmanı olarak yansıtılır. Pek &ccedil;ok durumda sonu&ccedil;ların mekan-zamansal b&uuml;y&uuml;k veri deposuna depolanması gerekir ve bu varsayılan ayardır. Bazı durumlarda, sonu&ccedil;ların ilişkisel veri deposuna kaydedilmesi iyi bir se&ccedil;enektir. Sonu&ccedil;ların ilişkisel veri deposuna  saklanmasını isteyebileceğiniz nedenler aşağıda sunulmuştur: 
+                <ul>
+                    <li>Bu sonu&ccedil;ları, portaldan-portala işbirliğinde kullanabilirsiniz.
+                    </li>
+                    <li>Sonu&ccedil;larınızı eşzamanlama &ouml;zellikleriyle etkinleştirebilirsiniz.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>GeoAnalytics sonu&ccedil;larınızın artmasını bekliyorsanız, ilişkisel veri deposunu kullanmamalı ve b&uuml;y&uuml;k miktarda veri s&ouml;z konusu olduğunda bunları işlemek i&ccedil;in mekan-zamansal b&uuml;y&uuml;k veri deposunun avantajından yararlanmalısınız.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> Oluşturulacak katmanın adı. Bir ArcGIS Data Store&lsquo;a yazdığınızda, sonu&ccedil;larınız  <b>İ&ccedil;eriğime</b> kaydedilir ve haritaya eklenir. Bir b&uuml;y&uuml;k veri dosya paylaşımına yazdığınızda,  sonu&ccedil;larınız b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;ine kaydedilir ve   manifestosuna eklenir.  haritaya eklenmez. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Detay katmanı zaten varsa ara&ccedil; &ccedil;alışmaz.
+            </p>
+            <p> ArcGIS Data Store&lsquo;a yazarken (ilişkisel ya da mekan-zamansal b&uuml;y&uuml;k veri deposu)  <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

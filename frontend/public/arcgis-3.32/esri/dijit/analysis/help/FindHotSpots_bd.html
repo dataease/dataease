@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Find Hot Spots</h2><p/>
+        <h2><img src="./images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Find Hot Spots"></h2>
+        <hr/>
+    <p>The Find Hot Spots tool will determine if there is any statistically significant clustering in the spatial pattern of your data. 
+        <ul>
+            <li>Are your points (crime incidents, trees, or traffic accidents) really clustered?  How can you be sure?
+            </li>
+            <li>Have you truly discovered a statistically significant hot spot, or would your map tell a different story if you changed the way it was symbolized?
+            </li>
+        </ul>
+        The Find Hot Spots tool will help you answer these questions with confidence.
+    </p>
+    <p>Even random spatial patterns exhibit some degree of clustering.  In addition, our eyes and brains naturally try to find patterns even when none exist.  Consequently, it can be difficult to know if the patterns in your data are the result of real spatial processes at work or just the result of random chance.  This is why researchers and analysts use statistical methods such as Find Hot Spots (Getis-Ord Gi*) to quantify spatial patterns.  When you do find statistically significant clustering in your data, you have valuable information.  Knowing where and when clustering occurs can provide important clues about the processes promoting the patterns you're seeing.  Knowing that residential burglaries, for example, are consistently higher in particular neighborhoods is vital information if you need to design effective prevention strategies, allocate scarce police resources, initiate neighborhood watch programs, authorize in-depth criminal investigations, or identify potential suspects.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Choose layer for which hot spots will be calculated</h2></div>
+        <hr/>
+        <div>
+            <p>The point layer from which hot and cold spots will be found.
+            </p>
+            <p>This analysis uses bins and requires a projected coordinate system. You can set the processing coordinate system in Analysis Environments. If your processing coordinate system is not set to a projected coordinate system, you will be prompted to set it when you run analysis .
+            </p>
+            <p>In addition to choosing a layer from your map, you can choose  <b>Choose Analysis Layer</b> at the bottom of the drop-down list to browse to your contents for a big data file share dataset or feature layer. You may optionally apply a filter on your input layer or apply a selection on hosted layers added to your map. Filters and selections are only applied for analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Find clusters of high and low</h2></div>
+        <hr/>
+        <div>
+            
+            <p>This analysis answers the question: Where do high and low values cluster spatially?
+            </p>
+            <p>If your data is points and you  choose  <b>Point Counts</b>, this tool will evaluate the spatial arrangement of the point features to answer the question: Where are points unexpectedly clustered or spread out?
+            </p>
+            <p>If you choose a field, this tool will evaluate the spatial arrangement of the values associated with each feature to answer the question: Where are high and low values clustering?
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Select the bin size for aggregation</h2></div>
+        <hr/>
+        <div>
+            <p>The distance used to generate the square bins that will be used to analyze your input points.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Find hot spots using time steps (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>If time is enabled on the point layer, and it's of type instant, you can analyze using time steps.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Time step interval</h2></div>
+        <hr/>
+        <div>
+            <p>Interval of time used for generating time steps. Time can be aligned to the start or end time of the input data or to a specified reference time.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Time step interval</h2></div>
+        <hr/>
+        <div>
+            <p>Interval of time used for generating time steps. Time can be aligned to the start or end time of the input data or to a specified reference time.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Choose how to align time steps</h2></div>
+        <hr/>
+        <div>
+            <p>How time steps are aligned. There are three ways to align time steps:
+                <ul>
+                    <li> <b>Start Time</b>&mdash;Time steps are aligned with the first feature in time.
+                    </li>
+                    <li> <b>End Time</b>&mdash;Time steps are aligned with the last feature in time.
+                    </li>
+                    <li> <b>Reference Time</b>&mdash;Time steps are aligned with a specified time.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Reference time to align time steps to</h2></div>
+        <hr/>
+        <div>
+            <p>The date and time used to align the time steps.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Select the neighborhood size for hot spot calculations</h2></div>
+        <hr/>
+        <div>
+            <p>The distance used to determine the neighborhood used for hot spot calculations. The neighborhood should be larger than the bin size to ensure that each bin has at least one neighbor. Each bin is analyzed and compared to the neighboring bins.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>This is a temporary parameter for prerelease  to set the processing spatial reference. Many big data tools require that a projected coordinate system is used as the spatial reference for processing. By default, the tool will use the input coordinate system but will fail if it's a geographic coordinate system. To set a projected coordinate system, enter the WKID. For example,  <b>Web Mercator</b> would be entered as <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Choose an ArcGIS Data Store to save results to</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics results are stored to an data store and exposed as a feature layer in   Portal for ArcGIS. In most cases, results should be stored to the spatiotemporal data store and this is the default. In some cases, saving results to the  relational data store is a good option. The following are reasons why you may want to store results to the relational data store: 
+                <ul>
+                    <li>You can use results in portal-to-portal collaboration.
+                    </li>
+                    <li>You can enable sync capabilities with your results.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>You should not use the relational data store if you expect your GeoAnalytics results to increase and need to take advantage of the spatiotemporal big data store's capabilities to handle large amounts of data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p> The name of the layer that will be created.  If you are writing to an ArcGIS Data Store, your results will be saved in  <b>My
+Content</b> and added to the map. If you are writing to a big data file share, your results will be stored in the big data file share and added to its manifest. It will not be added to the map. The default name is based on the
+tool name and the input layer name. If the layer already exists, the tool will fail.
+            </p>
+            <p>This result layer will show you statistically significant clusters of high and low values or point counts. If the result layer name already exists, you will be asked to rename it.
+            </p>
+            <p>When writing to   ArcGIS Data Store  (relational or spatiotemporal big data store) using the  <b>Save result in</b> drop-down box, you can specify
+the name of a folder in <b>My Content</b> where the result will be
+saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolar puntos</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Interpolar puntos"></h2>
+        <hr/>
+    <p>   La herramienta Interpolar puntos te permite predecir los valores de las nuevas ubicaciones en funci&oacute;n de las mediciones de un conjunto de puntos. La herramienta toma los datos de puntos con valores en cada punto y devuelve &aacute;reas clasificadas por los valores predichos. Por ejemplo
+        <ul>
+            <li>Un distrito de control de la calidad del aire tiene sensores que miden los niveles de contaminaci&oacute;n. Interpolar puntos se puede usar para predecir los niveles de contaminaci&oacute;n en los puntos que no tienen sensores, como las ubicaciones con poblaciones de riesgo, por ejemplo, colegios u hospitales.
+            </li>
+            <li>Predice las concentraciones de metales pesados de las cosechas en funci&oacute;n de las muestras tomadas de plantas individuales.
+            </li>
+            <li>Predice los niveles de nutrientes del suelo (nitr&oacute;geno, f&oacute;sforo, potasio, etc.) y otros indicadores (como la conductividad el&eacute;ctrica) para estudiar su relaci&oacute;n con la producci&oacute;n de la cosecha y prescribir cantidades exactas para cada ubicaci&oacute;n del campo.
+
+            </li>
+            <li>Las aplicaciones meteorol&oacute;gicas incluyen la predicci&oacute;n de las temperaturas, las precipitaciones y las variables asociadas (como la lluvia &aacute;cida). 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elegir la capa de puntos que contiene las ubicaciones con valores conocidos</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de puntos que se debe usar como base de la interpolaci&oacute;n.  
+
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Elegir el campo a interpolar</h2></div>
+        <hr/>
+        <div>
+            <p>Elige el campo que contiene los valores que deseas interpolar.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Optimizar para</h2></div>
+        <hr/>
+        <div>
+            <p>Elige tu preferencia de velocidad frente a precisi&oacute;n. Las predicciones m&aacute;s precisas tardan m&aacute;s tiempo en calcularse.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Errores de predicción de salida</h2></div>
+        <hr/>
+        <div>
+            <p> Si se activa, se crear&aacute; una capa de errores est&aacute;ndar para las predicciones de interpolaci&oacute;n.  El nombre de la capa de salida ser&aacute; el nombre de la capa de resultados con &quot;Errores&quot; agregado.
+            </p>
+            <p>Los errores est&aacute;ndar resultan &uacute;tiles porque proporcionan informaci&oacute;n sobre la fiabilidad de los valores predichos. Una regla general sencilla es que el verdadero valor estar&aacute; comprendido entre dos errores est&aacute;ndar del valor predicho el 95% del tiempo. Por ejemplo, sup&oacute;n que una nueva ubicaci&oacute;n obtiene un valor predicho de 50 con un error est&aacute;ndar de 5.  Esto significa que la estimaci&oacute;n m&aacute;s aproximada de esta herramienta es que el valor verdadero en esa ubicaci&oacute;n es 50, aunque podr&iacute;a ser de 40 o 60.  Para calcular este rango de valores razonables, multiplica el error est&aacute;ndar por 2, suma este valor al valor predicho para obtener el l&iacute;mite superior del rango y r&eacute;stalo del valor predicho para obtener el l&iacute;mite inferior del rango.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Clasificar por</h2></div>
+        <hr/>
+        <div>
+            <p>Elige c&oacute;mo se clasificar&aacute;n en &aacute;reas los valores predichos.
+                <ul>
+                    <li>Intervalo geom&eacute;trico: las &aacute;reas se basan en intervalos de clase que tienen una serie geom&eacute;trica. Este m&eacute;todo garantiza que cada rango de clase tiene aproximadamente el mismo n&uacute;mero de valores en cada clase y que el cambio entre intervalos es coherente.
+                    </li>
+                    <li>Intervalos iguales: se crean &aacute;reas de modo que el rango de valores predichos sea igual para cada &aacute;rea.
+                    </li>
+                    <li>Equivalente: se crean &aacute;reas de modo que el n&uacute;mero de valores de datos sea igual para cada &aacute;rea. Por ejemplo, si los datos tienen m&aacute;s valores grandes que valores peque&ntilde;os, se crear&aacute;n m&aacute;s &aacute;reas para los valores grandes.
+                    </li>
+                    <li>Manual: esta opci&oacute;n te permite definir tu propio rango de valores para las &aacute;reas. Estos valores se introducir&aacute;n en el par&aacute;metro  <b>Valores de corte de clase</b> que se muestra a continuaci&oacute;n.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Cantidad de clases</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el n&uacute;mero de clases (rango de valores predichos) en la capa de resultados. Cada clase define el l&iacute;mite de las &aacute;reas. Los valores de estas clases vendr&aacute;n determinados por el par&aacute;metro 
+ <b>Clasificar por</b>.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Valores de corte de clase</h2></div>
+        <hr/>
+        <div>
+            <p>Introduce los valores de corte de clase deseados separados por espacios. Por ejemplo, si deseas cortes de clase en los valores 1,5, 3 y 7, introduce  <code>1,5 3 7</code>.  Estos valores definir&aacute;n el l&iacute;mite superior de cada clase, de modo que el n&uacute;mero de clases ser&aacute; igual al n&uacute;mero de valores introducidos. No se crear&aacute;n &aacute;reas para ninguna ubicaci&oacute;n con valores predichos que est&eacute;n por encima del m&aacute;ximo valor de corte introducido. Debes introducir al menos dos valores y no m&aacute;s de 32.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Recortar salida a</h2></div>
+        <hr/>
+        <div>
+            <p>Dibuja o proporciona una capa que especifique el &aacute;rea en la que deseas que se dibuje el resultado. Por ejemplo, si est&aacute;s interpolando mediciones de contaminaci&oacute;n del lago, puedes usar el l&iacute;mite del lago en este par&aacute;metro, y la salida solo se dibujar&aacute; dentro del l&iacute;mite del lago.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Predecir en estas ubicaciones</h2></div>
+        <hr/>
+        <div>
+            <p>Dibuja o proporciona una capa que especifique las ubicaciones de puntos para calcular los valores de predicci&oacute;n. Esto te permite realizar predicciones en ubicaciones de inter&eacute;s espec&iacute;ficas. Por ejemplo, si la capa de entrada representa mediciones de niveles de contaminaci&oacute;n, puedes usar este par&aacute;metro para predecir los niveles de contaminaci&oacute;n de las ubicaciones con grandes poblaciones de riesgo, como colegios u hospitales.  A continuaci&oacute;n, puedes usar esta informaci&oacute;n para hacer recomendaciones a las autoridades sanitarias de esas ubicaciones.
+            </p>
+            <p>Si se proporciona, esta herramienta generar&aacute; una capa de puntos de predicciones en las ubicaciones especificadas. El nombre de la capa de salida ser&aacute; el nombre de la capa de resultados con &quot;Puntos&quot; agregado.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa.  El nombre predeterminado se basa en el nombre de la herramienta y el nombre de la capa de entrada. Si el nombre de capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Con el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

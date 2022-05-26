@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Combiner les couches</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Combiner les couches"></h2>
+        <hr/>
+    <p>Cet outil copie les entit&eacute;s de deux couches dans une nouvelle couche. Les couches &agrave; combiner doivent toutes contenir les m&ecirc;mes types d'entit&eacute;s (points, lignes ou surfaces). Vous pouvez d&eacute;terminer la mani&egrave;re dont les champs des couches en entr&eacute;e sont rassembl&eacute;s et copi&eacute;s. Par exemple&nbsp;:
+        <ul>
+            <li>Vous disposez de trois couches pour l'Angleterre, le pays de Galles et l'Ecosse et vous souhaitez une seule couche pour la Grande-Bretagne. 
+            </li>
+            <li>Vous disposez de 12 couches et chacune contient des informations de parcelle pour les municipalit&eacute;s contigu&euml;s. Vous souhaitez les rassembler en une seule couche, en conservant uniquement les champs qui portent le m&ecirc;me nom et qui ont le m&ecirc;me type sur les 12 couches en entr&eacute;e.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si l'option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s visibles au sein de l'&eacute;tendue courante de la carte seront combin&eacute;es.  Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s des deux couches seront combin&eacute;es, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisir une couche</h2></div>
+        <hr/>
+        <div>
+            <p>Les entit&eacute;s ponctuelles, lin&eacute;aires ou surfaciques &agrave; fusionner avec la couche sp&eacute;cifi&eacute;e ci-dessous. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Choisir la couche à fusionner</h2></div>
+        <hr/>
+        <div>
+            <p>Choisissez la couche &agrave; fusionner avec la premi&egrave;re couche.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Modifier les champs en fusion</h2></div>
+        <hr/>
+        <div>
+            <p>Par d&eacute;faut, tous les champs des deux entr&eacute;es sont report&eacute;s dans la sortie.  Vous pouvez modifier la mani&egrave;re dont les champs sont maintenus dans la sortie de la mani&egrave;re suivante :
+                <ul>
+                    <li> <b>Renommer</b>&nbsp;: le champ est renomm&eacute; dans la sortie.
+                    </li>
+                    <li> <b>Supprimer</b>&nbsp;: le champ est supprim&eacute; de la sortie.
+                    </li>
+                    <li> <b>Apparier</b>&nbsp;: les noms de champs sont rendus &eacute;quivalents.  Les valeurs du champ de la couche &agrave; combiner sont alors copi&eacute;es dans le champ en sortie appari&eacute;.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Si les deux couches contiennent un champ de nom et de type de donn&eacute;es identiques, leur contenu est fusionn&eacute; en un m&ecirc;me champ de ce nom. Cela ne s&rsquo;applique pas aux champs o&ugrave;  <b>Apparier</b> est utilis&eacute; dans le param&egrave;tre <b>Modifier les champs en fusion</b>.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

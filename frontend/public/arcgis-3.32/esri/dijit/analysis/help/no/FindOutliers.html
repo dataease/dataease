@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Finn avvik</h2><p/>
+        <h2><img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" alt="Finn avvik"></h2>
+        <hr/>
+    <p>Finn avvik-verkt&oslash;yet finner ut om det er noen statistisk signifikante avvik i det geografiske m&oslash;nsteret i dataene dine. 
+        <ul>
+            <li>Finnes det anomale omr&aring;der i datam&oslash;nsteret ditt (kriminalitetshendelser, tr&aelig;r, trafikkulykker)?  Hvordan kan du v&aelig;re sikker?
+            </li>
+            <li>Har du virkelig oppdaget et statistisk signifikant avvik (for forbruk, barned&oslash;delighet, konsekvent h&oslash;ye testresultater), eller ville kartet fortelle en annen historie hvis du endret m&aring;ten det symboliseres p&aring;?
+            </li>
+        </ul>
+        Finn avvik-verkt&oslash;yet hjelper deg med &aring; besvare disse sp&oslash;rsm&aring;lene p&aring; en p&aring;litelig m&aring;te.
+    </p>
+    <p>Hver gang vi ser p&aring; et kart, er det naturlig for &oslash;ynene og hjernen &aring; finne m&oslash;nstre der det egentlig ikke er noe m&oslash;nster.  Dermed kan det v&aelig;re vanskelig &aring; vite om m&oslash;nstrene i dataene er resultatet av faktiske geografiske prosesser eller bare tilfeldigheter. Derfor bruker forskere og analytikere statistiske metoder som Finn avvik (Anselin Local Morans I) til &aring; kvantifisere geografiske m&oslash;nstre.  N&aring;r du finner statistisk signifikante avvik eller samlinger i dataene dine, har du verdifull informasjon.  Ved &aring; vite hvor og n&aring;r avvikene forekommer, kan du f&aring; viktige ledetr&aring;der om prosessene som f&oslash;rer til m&oslash;nstrene du ser.  Neste skritt vil v&aelig;re &aring; unders&oslash;ke hvorfor ting er vesentlig forskjellig i de avvikende omr&aring;dene.  Hvis du f.eks. vet at innbrudd i private hjem forekommer vesentlig oftere i et bestemt nabolag til tross for at det er omringet av nabolag med f&aring; innbrudd, er det viktig informasjon hvis du skal iverksette effektive tiltak for &aring; forebygge, utplassere politiressurser, igangsette nabovaktordninger, autorisere grundige etterforskninger eller identifisere mulige mistenkte.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Velg laget det skal beregnes avvik for</h2></div>
+        <hr/>
+        <div>
+            <p>Punkt- eller omr&aring;delaget som det skal finnes avvik i. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Finn avvik i</h2></div>
+        <hr/>
+        <div>
+            <p>Denne analysen besvarer sp&oslash;rsm&aring;let: Hvor er de geografiske avvikene i dataene mine?  
+            </p>
+            <p>Hvis dataene dine er punkter og du velger  <b>punkttellinger</b>, evaluerer dette verkt&oslash;yet den romlige plasseringen til punktgeoobjektene for &aring; besvare f&oslash;lgende sp&oslash;rsm&aring;l: Hvor er punktene uventet samlet eller spredt?
+            </p>
+            <p>Hvis du velger et felt, evaluerer dette verkt&oslash;yet den romlige plasseringen av verdiene som er knyttet til hvert geoobjekt for &aring; besvare f&oslash;lgende sp&oslash;rsm&aring;l: Hvor der det klynger av lave verdier omgitt av h&oslash;ye verdier?  Hvor er det h&oslash;ye verdier omgitt av lave verdier?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Tell punkter innenfor</h2></div>
+        <hr/>
+        <div>
+            <p>Standardinnstillingen er &aring; telle punktene innenfor et rutenett som verkt&oslash;yet oppretter basert p&aring; punktdataene dine. Alternativt kan du velge &aring; telle punkter innenfor et heksagonrutenett eller oppgi et omr&aring;delag (vanligvis viser disse til administrative rapporteringsomr&aring;der, for eksempel et folketellingsomr&aring;de, kommunegrenser eller fylker) for &aring; besvare f&oslash;lgende sp&oslash;rsm&aring;l: Gitt antallet punkter innenfor hvert omr&aring;degeoobjekt, er det lokasjoner som har statistisk signifikante geografiske punkttellinger med et h&oslash;yt eller lavt antall punkter sammenlignet med naboene?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Definer hvor punkter er mulig</h2></div>
+        <hr/>
+        <div>
+            <p>Du m&aring; enten tegne eller angi et lag som definerer hvor hendelser er mulig, for &aring; besvare f&oslash;lgende sp&oslash;rsm&aring;l: Er det noen lokasjoner innenfor omr&aring;dene som har uventet h&oslash;ye eller lave punktkonsentrasjoner?   
+            </p>
+            <p>Omr&aring;degeoobjektene du tegner eller geoobjektene i omr&aring;delaget du angir, b&oslash;r angi hvor punktene kan komme til &aring; oppst&aring;. Du tenger disse omr&aring;dene ved &aring; klikke p&aring;  <b>Tegn</b>-knappen og s&aring; klikke p&aring; en lokasjon i kartet for &aring; lage en omr&aring;deform.  Hvis du vil tegne flere omr&aring;der, klikker du p&aring; tegneknappen en gang til, og deretter klikker du p&aring; en lokasjon i kartet for &aring; fortsette.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Divider med</h2></div>
+        <hr/>
+        <div>
+            <p>Noen ganger vil du kanskje analysere m&oslash;nstre som tar hensyn til underliggende distribusjoner. Hvis punktene for eksempel representerer lovbrudd, vil det &aring; dividere med den totale befolkningen, gi en analyse av lovbrudd per innbygger heller enn rene lovbruddstall. Det &aring; velge et attributt &aring; dividere med refereres ofte til som normalisering.
+            </p>
+            <p> Velger du <i>Esri Population</i>, berikes hvert geoobjektsomr&aring;de med befolkningsverdier som deretter brukes som attributtet det divideres med.  Dette alternativet bruker credits.
+            </p>
+        </div>
+    </div>
+    <div id="permutations">
+        <div><h2>Optimaliser for</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan velge &aring; optimalisere for hastighet eller presisjon.  
+            </p>
+            <p>Dette verkt&oslash;yet bruker permutasjoner til &aring; avgj&oslash;re hvor forskjellige fra tilfeldig det geografiske m&oslash;nsteret i dataene er.  &Oslash;kende antall permutasjoner &oslash;ker presisjonen, men &oslash;ker ogs&aring; behandlingstiden.  
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Overstyr alternativer</h2></div>
+        <hr/>
+        <div>
+            <p>Verkt&oslash;yet finner optimale standardinnstillinger for  <b>Cellest&oslash;rrelse</b>- og <b>Avstandsb&aring;nd</b> p&aring; bakgrunn av dataenes karakteristika. Hvis du har en bestemt <b>Cellest&oslash;rrelse</b> eller <b>Avstandsb&aring;nd</b> som gir mening i analysen din, kan <b>Overstyr alternativer</b> brukes til &aring; angi disse verdiene.
+            </p>
+            <p> <b>Overstyr alternativer</b> er ogs&aring; nyttig n&aring;r du kj&oslash;rer en analyse p&aring; forskjellige datasett, siden den lar deg holde <b>Avstandsb&aring;nd</b> og <b>Cellest&oslash;rrelse</b> konsistente over flere datasett.  Deretter kan du sammenligne resultatene, f.eks. overvekt- og diabetestall eller kriminalitetsstatistikk for to forskjellige &aring;r.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Cellestørrelse</h2></div>
+        <hr/>
+        <div>
+            <p>St&oslash;rrelsen p&aring; rutenettcellene som brukes til &aring; telle punkter mellom.  
+            </p>
+            <p>N&aring;r du bruker et heksagonrutenett &aring; telle punkter innenfor, brukes denne avstanden som h&oslash;yden i heksagonene.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Avstandsbånd</h2></div>
+        <hr/>
+        <div>
+            <p>Hvert geoobjekt analyserer innenfor konteksten av nabogeoobjektene som befinner seg innenfor den avstanden du angir.  Verkt&oslash;yet beregner standardavstanden for deg, eller du kan bruke dette alternativet til &aring; angi en bestemt avstand som gir mening i analysen din. 
+            </p>
+            <p>Et eksempel: Hvis du studerer pendlerm&oslash;nstre, og du vet at den gjennomsnittlige turen til jobb er 15 miles, er det lurt &aring; bruke et avstandsb&aring;nd p&aring; 15 miles.
+            </p>
+        </div>
+    </div>
+    <div id="outlierResultLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Angi et navn p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Resultatlaget viser hvor det finnes statistisk signifikante avvik med h&oslash;ye og lave verdier, eller punktantall. Hvis resultatlaget allerede finnes, blir du bedt om &aring; gi det et nytt navn.
+            </p>
+            <p>Bruk rullegardinlisten  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

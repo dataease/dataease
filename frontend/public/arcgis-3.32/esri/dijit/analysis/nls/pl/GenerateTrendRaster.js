@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/pl/GenerateTrendRaster",{toolDefine:"Generuj raster trendu",outputLayerName:"${layername}_trend",dimensionLabel:"Wybierz wymiar, wzd\u0142u\u017c kt\u00f3rego b\u0119dzie analizowany trend zmiennych",variablesLabel:"Wybierz zmienne na potrzeby analizy trendu",variablesListLabel:"Zmienne [Informacje o wymiarze] (Opis)",trendLineTypeLabel:"Wybierz typ linii dopasowywanej do warto\u015bci zmiennych wzd\u0142u\u017c wymiaru",linear:"Liniowy",harmonic:"Harmoniczne",polynomial:"Wielomianowa",
+frequencyLabel:"Podaj cz\u0119stotliwo\u015b\u0107 na potrzeby harmonicznego dopasowywania trendu",polynomialOrderLabel:"Podaj stopie\u0144 wielomianu na potrzeby dopasowywania trendu",ignoreNodataLabel:"W obliczeniach ignoruj brakuj\u0105ce warto\u015bci",ignore:"Ignoruj",analysisLayerLabel:"Wybierz wielowymiarow\u0105 warstw\u0119 zobrazowa\u0144 na potrzeby analizy trendu",itemDescription:"Us\u0142uga rastrowa analizy wygenerowana za pomoc\u0105 opcji Generuj raster trendu",itemTags:"Wynik analizy rastra, opcja Generuj raster trendu, warstwa ${layername}",
+itemSnippet:"Us\u0142uga rastrowa analizy wygenerowana za pomoc\u0105 opcji Generuj raster trendu"});

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Summer nærliggende</h2><p/>
+        <h2><img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" alt="Summer n&aelig;rliggende"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet finner og oppsummerer geoobjektene som er innenfor en angitt avstand fra geoobjekter i det f&oslash;rste inndatalaget. Avstand kan m&aring;les som luftlinjeavstand eller ved &aring; bruke en angitt reisem&aring;te. Du kan velge kj&oslash;reavstand, kj&oslash;retid, avstand med lastebil, tid med lastebil, g&aring;avstand eller g&aring;tid som reisem&aring;te. Verkt&oslash;yet beregner deretter statistikk for de n&aelig;rliggende geoobjektene. Eksempel:
+        <ul>
+            <li>Du kan beregne hvor mange som bor innenfor en kj&oslash;retid p&aring; fem minutter fra en mulig ny butikkplassering.
+            </li>
+            <li>Du kan finne ut hvor mange motorveiavkj&oslash;rsler det er innenfor en kj&oslash;reavstand p&aring; 1,6 kilometer fra en mulig ny butikkplassering, slik at du kan vurdere tilgjengeligheten.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, er det kun geoobjektene i inndatalaget og laget som skal summeres som vises i gjeldende kartutstrekning, som analyseres.  Hvis det ikke er merket av for dette alternativet, analyseres alle geoobjekter i b&aring;de inndatalaget og laget som skal summeres, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumNearbyLayer">
+        <div><h2>Velg laget som avstandene til geoobjekter i laget som skal summeres, skal måles fra</h2></div>
+        <hr/>
+        <div>
+            <p>Punkt-, linje- eller omr&aring;delaget som brukes som startlokasjoner for summering av n&aelig;rliggende funksjoner.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p>
+            <p>Verkt&oslash;yet st&oslash;tter opptil 1&nbsp;000 geoobjekter i dette laget. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Velg laget som skal summeres</h2></div>
+        <hr/>
+        <div>
+            <p>Geoobjekter i dette laget som er innenfor den angitte avstanden til geoobjekter i laget som er angitt ovenfor, blir summert. 
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Summer nærmeste geoobjekter ved hjelp av</h2></div>
+        <hr/>
+        <div>
+            <p> Du kan definere hvilken avstandsm&aring;ling du vil bruke, og velge luftlinjeavstand eller en angitt reisem&aring;te. Reisem&aring;ter er kun aktivert n&aring;r det f&oslash;rste inndatalaget (laget som avstandene m&aring;les fra) inneholder punkter. Tilgjengelige reisem&aring;ter defineres av administratoren i organisasjonen. N&aring;r du bruker en av reisem&aring;tene, foretas m&aring;lingene langs veier og gangstier, og det tas hensyn til gjeldende regler, for eksempel enveiskj&oslash;rte gater og steder der det ikke er lov &aring; snu. <b>Kj&oslash;retid</b>, <b>Kj&oslash;retid i rurale omr&aring;der</b> og <b>Lastebiltid</b> tar hensyn til valgte kj&oslash;rehastigheter, enten de er basert p&aring; trafikkinformasjon i sanntid eller typiske trafikkforhold. Hastigheter i sanntid hentes fra gjeldende sensoravlesninger, og typiske hastigheter beregnes basert p&aring; historiske gjennomsnittshastigheter.
+            </p>
+            <p>Du kan angi flere avstander. Geoobjekter som er innenfor (eller lik) avstandene du angir, summeres.  
+            </p>
+            <p>Hvis det er merket av for  <b>Returner tilgrensende omr&aring;de</b>, returneres det et resultatlag med omr&aring;der definert av den angitte avstandsm&aring;lingen. Resultatlaget inneholder all sammendragsinformasjon du har bedt om. Hvis du for eksempel summerer punkter i n&aelig;rheten og bruker en <b>linjeavstand</b> p&aring; &aring;tte kilometer, inneholder resultatet omr&aring;dene innenfor en radius p&aring; &aring;tte kilometer rundt inndatageobjektene og all sammendragsinformasjon, for eksempel antall punkter og eventuell statistikk som er lagt til. Hvis det ikke er merket av for dette alternativet, returnerer resultatlaget de samme geoobjektene for det f&oslash;rste inndatalaget med all sammendragsinformasjon du har bedt om.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Legg til statistikk fra laget for å summere</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan ogs&aring; beregne statistikk for eventuelle numeriske attributter for de n&aelig;rliggende punktene. 
+            </p>
+            <p>Hvis det er merket av for  <b>Antall punkter</b>, beregnes totalt antall n&aelig;rliggende punkter. Du kan i tillegg beregne statistikk for numeriske felter for de n&aelig;rliggende punktene.
+            </p>
+            <ul>
+                <li> <b>Sum</b> &ndash; Totalverdien for det angitte feltet.
+                </li>
+                <li> <b>Gjennomsnitt</b> &ndash; Gjennomsnittet eller middelverdien for det angitte feltet.
+                </li>
+                <li> <b>Minimum</b> &ndash; Den minste verdien i det angitte feltet.
+                </li>
+                <li> <b>Maksimum</b> &ndash; Den st&oslash;rste verdien i det angitte feltet.
+                </li>
+                <li> <b>Standard Avvik</b> &ndash; Standardavviket for verdiene i det angitte feltet
+                </li>
+            </ul>
+            
+            <p>Hvis laget som skal summeres, ikke har noen numeriske felter, vil ytterligere statistikk ikke v&aelig;re tilgjengelig.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Legg til statistikk fra laget for å summere</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan ogs&aring; beregne statistikk for eventuelle numeriske attributter for de n&aelig;rliggende linjene. 
+            </p>
+            <p>Hvis det er merket av for  <b>Samlet lengde</b>, beregnes den totale lengden for n&aelig;rliggende linjer. Du kan i tillegg beregne statistikk for numeriske felter for de n&aelig;rliggende linjene.
+            </p>
+            <ul>
+                <li> <b>Sum</b> &ndash; Totalverdien for det angitte feltet.
+                </li>
+                <li> <b>Gjennomsnitt</b> &ndash; Gjennomsnittet eller middelverdien for det angitte feltet.
+                </li>
+                <li> <b>Minimum</b> &ndash; Den minste verdien i det angitte feltet.
+                </li>
+                <li> <b>Maksimum</b> &ndash; Den st&oslash;rste verdien i det angitte feltet.
+                </li>
+                <li> <b>Standard Avvik</b> &ndash; Standardavviket for verdiene i det angitte feltet
+                </li>
+            </ul>
+            
+            <p>Hvis laget som skal summeres, ikke har noen numeriske felter, vil ytterligere statistikk ikke v&aelig;re tilgjengelig.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Legg til statistikk fra laget for å summere</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan ogs&aring; beregne statistikk for eventuelle numeriske attributter for de n&aelig;rliggende omr&aring;dene. 
+            </p>
+            <p>Hvis det er merket av for  <b>Samlet omr&aring;de</b>, beregnes det totale omr&aring;det for n&aelig;rliggende geoobjekter. Du kan i tillegg beregne statistikk for numeriske felter for de n&aelig;rliggende geoobjektene.
+            </p>
+            <ul>
+                <li> <b>Sum</b> &ndash; Totalverdien for det angitte feltet.
+                </li>
+                <li> <b>Gjennomsnitt</b> &ndash; Gjennomsnittet eller middelverdien for det angitte feltet.
+                </li>
+                <li> <b>Minimum</b> &ndash; Den minste verdien i det angitte feltet.
+                </li>
+                <li> <b>Maksimum</b> &ndash; Den st&oslash;rste verdien i det angitte feltet.
+                </li>
+                <li> <b>Standard Avvik</b> &ndash; Standardavviket for verdiene i det angitte feltet
+                </li>
+            </ul>
+            
+            <p>Hvis laget som skal summeres, ikke har noen numeriske felter, vil ytterligere statistikk ikke v&aelig;re tilgjengelig.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Legg til statistikk fra laget for å summere</h2></div>
+        <hr/>
+        <div>
+            <p>N&aring;r du har valgt et lag som skal summeres, kan du eventuelt beregne statistikk for numeriske attributter for de n&aelig;rliggende punktene, linjene eller omr&aring;dene. 
+            </p>
+            <ul>
+                <li> <b>Sum</b> &ndash; Totalverdien for det angitte feltet.
+                </li>
+                <li> <b>Gjennomsnitt</b> &ndash; Gjennomsnittet eller middelverdien for det angitte feltet.
+                </li>
+                <li> <b>Minimum</b> &ndash; Den minste verdien i det angitte feltet.
+                </li>
+                <li> <b>Maksimum</b> &ndash; Den st&oslash;rste verdien i det angitte feltet.
+                </li>
+                <li> <b>Standard Avvik</b> &ndash; Standardavviket for verdiene i det angitte feltet
+                </li>
+            </ul>
+            
+            <p>Avhengig av typen geoobjekter du summerer, kan du beregne samlet antall n&aelig;rliggende punkter, samlet linjelengde for n&aelig;rliggende linjer eller samlet omr&aring;de for n&aelig;rliggende omr&aring;degeoobjekter.
+            </p>
+            <p>Hvis laget som skal summeres, ikke har noen numeriske felter, vil ytterligere statistikk ikke v&aelig;re tilgjengelig.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Velg feltet det skal grupperes etter</h2></div>
+        <hr/>
+        <div>
+            <p> Dette er et attributt for de n&aelig;rliggende geoobjektene som du kan bruke til &aring; beregne statistikk for hver unike attributtverdi for seg. La oss for eksempel si at det f&oslash;rste inndatalaget (laget som avstandene m&aring;les fra) inneholder ledige tomter som er til salgs og de n&aelig;rliggende geoobjektene er bygningsavtrykk. Ett av attributtene for avmerkede bygninger er <i>UseType</i> som inneholder verdiene som RETAIL, RESIDENTIAL, MANUFACTURING, PUBLIC og s&aring; videre. Hvis du vil beskrive bygningsbruken n&aelig;r hver ledige tomt, kan du beregne det totale omr&aring;det for hver unike bygningsbruk innenfor en radius p&aring; to kilometer rundt ledige tomter, ved &aring; gruppere etter attributtet <i>UseType</i>. Statistikken for hver gruppe vises i resultatlagets popupvindu sammen med antall geoobjekter i n&aelig;rheten.
+            </p>    
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Legg til minoritet, majoritet</h2></div>
+        <hr/>
+        <div>
+            <p>Denne boksen er aktivert n&aring;r du velger et felt &aring; gruppere etter. Hvis du &oslash;nsker &aring; finne ut hvilke attributtverdier innenfor hver gruppe som er i minoritet (minst dominerende) eller majoriteten (mest dominerende) innenfor den avstanden eller tiden du har angitt, velger du  <b>Legg til minoritet, majoritet</b>.   N&aring;r du velger <b>Legg til minoritet, majoritet</b>, legges det til to felt i resultatlaget. Hvis du ogs&aring; velger <b>Legg til prosenter</b>, legges det til to ekstra felt i resultatlaget som inneholder prosentene for attributtverdiene for minoritet og majoritet innenfor hver gruppe.
+            </p>
+            <ul>
+                <li>Hvis du summerer punkter i n&aelig;rheten, beregnes minoritets- og majoritetsverdiene p&aring; bakgrunn av telling av punkter innenfor den avstanden eller tiden du har angitt.
+                </li>
+                <li>Hvis du summerer linjer i n&aelig;rheten, beregnes minoritets- og majoritetsverdiene p&aring; bakgrunn av lengden p&aring; linjer innenfor den avstanden eller tiden du har angitt.  
+                </li>
+                <li>Hvis du summerer omr&aring;der i n&aelig;rheten, beregnes minoritets- og majoritetsverdiene p&aring; bakgrunn av omr&aring;der innenfor den avstanden eller tiden du har angitt.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Legg til prosenter</h2></div>
+        <hr/>
+        <div>
+            <p>Denne boksen er aktivert n&aring;r du velger et felt &aring; gruppere etter. Velg  <b>Legg til prosenter</b>  hvis du vil finne prosenten for hver attributtverdi innenfor hver gruppe. Det legges til et nytt felt i resultattabellen som inneholder prosentene for hver attributtverdi innenfor hver gruppe. Hvis det ogs&aring; er merket av for <b>Legg til minoritet, majoritet</b>, legges det til to ekstra felt i resultatlaget som inneholder prosentene for attributtverdiene for minoritet og majoritet innenfor hver gruppe.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis lagnavnet finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

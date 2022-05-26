@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="raToolbox">
+        <p>การวิเคราะห์แรสเตอร์อนุญาตให้คุณวิเคราะห์แรสเตอร์ขนาดใหญ่โดยใช้  ArcGIS Image Server นี่อนุญาตให้คุณวิเคราะห์ข้อมูลเพิ่มขึ้นได้อย่างรวดเร็วโดยการควบคุมของเซิร์ฟเวอร์ ชุดเครื่องมือที่มีให้ใช้ในตอนนี้ผ่านPortal for ArcGIS สำหรับประสบการณ์ผู้ใช้เว็บ  <b>สรุปข้อมูล</b>, <b>วิเคราะห์รูปแบบ</b>, <b>วิเคราะห์ความใกล้เคียง</b>, <b>วิเคราะห์ภาพถ่าย</b>, <b>วิเคราะห์ภูมิประเทศ</b>, <b>จัดการข้อมูล</b>, และ <b>การเรียนรู้เชิงลึก</b>
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="smallsize">
+        <h2>รวมข้อมูล</h2>
+        <hr/>
+        <p>ชุดเครื่องมือนี้ประกอบไปด้วยเครื่องมือสำหรับคำนวณค่าสถิติบางอย่าง สำหรับข้อมูลราสเตอร์ ในของเขตพื้นที่ที่คุณกำหนด 
+            <ul>
+                <li> <b>สรุปราสเตอร์ใน</b>คำนวณค่าสถิติสำหรับเซลล์ราสเตอร์ที่ตกอยู่ในขอบเขตพื้นที่ที่ระบุ
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="SummarizeRasterWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>สรุปแรสเตอร์ที่อยู่ภายใน</h2></td>
+                    <td>
+                    <img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" class="titleImage" alt="สรุปแรสเตอร์ภายในเครื่องมือ">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>คำนวณค่าสถิติบางอย่างสำหรับเซลล์ราสเตอร์ในพื้นที่ที่ระบุ
+            </p>
+            <p>บางตัวอย่างของแอ็ปประกอบไปด้วย 
+
+                <ul>
+                    <li>ได้รับชั้นของพื้นที่ลุ่มน้ำและชั้นความสูงราสตอร์ คำนวณช่วงในแต่ละลุ่มน้ำเพื่อตรวจสอบว่า ลุ่มน้ำใดมีการไหลสูงสุด
+                        
+
+                    </li>
+                    <li>ได้รับข้อมูลของการบริหารจัดการ และข้อมูลราสเตอร์ของการใช้ประโยชน์ที่ดิน , คำนวณค่าความหลากหลายของการใช้ประโยชน์ที่ดิน ในพื้นที่การจัดการเพื่อระบุว่า พื้นที่ใดจำเป็นต้องมีการทำงานมากที่สุดในการกำหนดแผนการจัดการ
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="smallsize">
+        <h2>วิเคราะห์รูปแบบเชิงพื้นที่</h2>
+        <hr/>
+        <p>เครื่องมือเหล่านี้มีหน้าที่ในการระบุตัวตน คำนวณปริมาณ และแสดงผลลัพธ์ข้อมูลของคุณในรูปแบบเชิงพื้นที่ 
+
+            <ul>
+                <li> <b>คำนวณความหนาแน่น</b> ทำการตรวจสอบปริมาณของข้อมูล และสร้างแผนที่ความหนาแน่นโดยการกระจายปริมาณเหล่านั้นลงในแผนที่
+                    
+
+                </li>
+                <li> <b>เพิ่มจุดข้อมูล</b> คาดการณ์ข้อมูลที่จะเกิดขึ้นในตำแหน่งใหม่ๆ โดยอ้างอิงจากระยะข้อมูลที่พบในชุดข้อมูลที่สะสมไว้
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>คำนวณความหนาแน่น</h2></td>
+                    <td>
+                    <img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" class="titleImage" alt="เครื่องมือคำนวณความหนาแน่น">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>การวิเคราะห์ความหนาแน่นของปริมาณข้อมูล และสร้างแผนที่ความหนาแน่นโดยการกระจายปริมาณเหล่านี้ในแผนที่ ตัวอย่างในการใช้เครื่องมือนี้ ได้แก่ การแสดงจำนวนการเกิดฟ้าผ่าหรือพายุทอร์นาโด การเข้าถึงการสิ่งอำนวยความสะดวกในการดูแลสุขภาพ และความหนาแน่นประชากร
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsEBKTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>คำนวณจุด</h2></td>
+                    <td>
+                    <img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" class="titleImage" alt="เครื่องมือการประมาณค่าจุด">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>ด้วยเครื่องมือนี้ คุณสามารถคาดการณ์ข้อมูลที่จะเกิดขึ้นในตำแหน่งใหม่ๆ ได้ โดยอ้างอิงจากระยะข้อมูลที่พบในชุดข้อมูลที่สะสมไว้ โดยเครื่องมือนี้จะนำเอาข้อมูลจุดที่มีค่าตัวแปรแต่ละค่า และแก้ไขพื้นที่ให้เป็นไปตามกลุ่มที่มีการคาดการณ์ค่าตัวแปรไว้ ตัวอย่างในการใช้เครื่องมือนี้ ได้แก่ ใช้คาดการณ์ระดับปริมาณฝนในพื้นที่รับน้ำ โดยอ้างอิงจากปริมาณระดับน้ำฝนที่วัดได้ในแต่ละจุด
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>ใช้การหาด้วยระยะ</h2>
+        <hr/>
+        <p>เครื่องมือเหล่านี้ช่วยให้คุณตอบคำถามที่พบมากที่สุดในการวิเคราะห์เชิงพื้นที่: &ldquo;อะไรคือสิ่งที่อยู่ใกล้&rdquo;
+
+            <ul>
+                <li> <b>คำนวณระยะทาง</b> คำนวณระยะทาง Euclidean, ทิศทางและการจัดสรรจากต้นทางเดียวหรือชุดของต้นทาง
+                    
+
+                </li>
+                <li> <b>กำหนดโครงข่ายต้นทุนการเดินทางที่ดีที่สุด</b> คำนวณโครงข่ายต้นทุนที่ดีที่สุดจากชุดของส่วนอินพุต
+                    
+
+                </li>
+                <li> <b>กำหนดเส้นทางของค่าเดินทางเป็นเส้นรอบ</b> คำนวณเส้นทางเส้นรอบที่มีต้นทุนต่ำที่สุดระหว่างต้นทางและปลายทางที่รู้จัก
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDistanceTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>คำนวณระยะทาง</h2></td>
+                    <td>
+                    <img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" class="titleImage" alt="คำนวณระยะทาง">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>คำนวณระยะทาง Euclidean, ทิศทางและการจัดสรรจากต้นทางเดียวหรือชุดของต้นทาง คุณสามารถใช้เครื่องมือนี้เพื่อกำหนดระยะใกล้ไกลของตำแหน่งที่ตั้งไปยังถนน อาคารหรือสวนสาธารณะ คุณยังสามารถกำหนดว่าคุณต้องใช้ทิศทางใดเพื่อเดินทางจากตำแหน่งหนึ่งกลับไปยังต้นทางโดยใช้เส้นทางที่ตรงมากที่สุด คุณสามารถมองเห็นทุกตำแหน่งในพื้นที่ศึกษาของคุณซึ่งเป็นต้นทางที่ใกล้ที่สุด
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineOptimumTravelCostNetworkTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>กำหนดโครงข่ายต้นทุนการเดินทางที่ดีที่สุด</h2></td>
+                    <td>
+                    <img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" class="titleImage" alt="ภาพประกอบเครื่องมือกำหนดโครงข่ายต้นทุนการเดินทางที่ดีที่สุด">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>คำนวณโครงข่ายต้นทุนที่ดีที่สุดจากชุดของส่วนอินพุต
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineTravelCostPathAsPolylineTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>กำหนดเส้นทางของค่าเดินทางเป็นเส้นรอบ</h2></td>
+                    <td>
+                    <img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" class="titleImage" alt="ภาพประกอบเครื่องมือกำหนดเส้นทางของค่าเดินทางเป็นเส้นรอบ">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>คำนวณเส้นทางเส้นรอบที่มีต้นทุนต่ำที่สุดระหว่างต้นทางและปลายทางที่รู้จัก
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeImageCategory" class="smallsize">
+        <h2>วิเคราะห์ภาพ</h2>
+        <hr/>
+        <p>เครื่องมือต่อไปนี้จะช่วยคุณวิเคราะห์ภาพ 
+            <ul>
+                <li> <b>ใช้เทมเพลตฟังก์ชันราสเตอร์</b> ประมวลผลภาพของคุณด้วยชุดของฟังก์ชันตามที่ระบุไว้โดยเทมเพลตฟังก์ชันราสเตอร์
+                </li>
+                <li> <b>มอนิเตอร์ข้อมูลพืชพันธุ์</b> ตรวจพบพืชพันธุ์ที่อยู่ในภาพ , ขึ้นอยู่กับการดำเนินการทางคณิตศาสตร์ในแบนด์
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ApplyRFxTemplateTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>ใช้เทมเพลตฟังก์ชันแรสเตอร์</h2></td>
+                    <td>
+                    <img src="../images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" class="titleImage" alt="ใช้เทมเพลตฟังก์ชันแรสเตอร์">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>ประมวลผลภาพของคุณด้วยชุดของฟังก์ชันตามที่ระบุไว้โดยเทมเพลตฟังก์ชันราสเตอร์
+            </p>
+            <br/>
+        </div>
+        <div id="MonitorVegetationTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>การตรวจสอบข้อมูลพืช</h2></td>
+                    <td>
+                    <img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" class="titleImage" alt="เครื่องมือตรวจสอบพืชสำหรับพอร์ทัล">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>ดำเนินการทางคณิตศาสตร์ของราสเตอร์หลายๆแบนด์ เพื่อเปิดเผยรายละเอียดของพืชที่ศึกษา
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeTerrainCategory" class="regularsize">
+        <h2>วิเคราะห์ภูมิประเทศ</h2>
+        <hr/>
+        <p>เครื่องมือเหล่านี้ช่วยให้คุณสามารถวิเคราะห์พื้นผิวแรสเตอร์ 
+            <ul>
+                <li> <b>คำนวนความลาดชัน</b> คำนวณความสูงชันของภูมิประเทศ
+                    
+
+                </li>
+                <li> <b>หาทิศทางความลาดชัน</b> คำนวณทิศทางของความลาดชันสำหรับแต่ละสถานที่
+                    
+
+                </li>
+                <li> <b>สร้างทัศนวิสัยการมอง</b> ระบุสิ่งที่สามารถมองเห็นได้จากจุดบนภูมิทัศน์ใด ๆ
+                    
+
+                </li>
+                <li> <b>ลุ่มน้ำ</b> คำนวณพื้นที่การกระจายเหนือตำแหน่งที่ระบุบนพื้นผิว
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateSlopeTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>คำนวณความลาดชัน</h2></td>
+                    <td>
+                    <img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" class="titleImage" alt="เครื่องมือคำนวณความลาดชันสำหรับ Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>ระบุพื้นผิวแสดงให้เห็นความลาดเอียงของข้อมูลระดับความสูงอินพุต ความลาดชันหมายถึงอัตราการเปลี่ยนแปลงของระดับความสูงสำหรับแต่ละเซลล์ค่าความสูงในรูปแบบดิจิตอล (DEM)
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveAspectTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>หาทิศทางของความชัน</h2></td>
+                    <td>
+                    <img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" class="titleImage" alt="เครื่องมือหาทิศทางของความชันสำหรับ Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>ระบุทิศทางของความชัน จากค่าที่มีอัตราการเปลี่ยนแปลงข้อมูลจากเซลล์หนึ่งไปยังเซลลด์ข้างเคียง ทิศทางความชัน อาจกล่าวได้ว่าเป็นทิศทางของความลาดชัน
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>สร้างพื้นที่การมองเห็น</h2></td>
+                    <td>
+                    <img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" class="titleImage" alt="เครื่องมือสร้างทัศนวิสัยการมอง">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>กำหนดสถานที่บนพื้นผิวแรสเตอร์ที่สามารถมองเห็นได้จากจุดสังเกต
+            </p>
+            <br/>
+        </div>
+        <div id="WatershedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>ลุ่มน้ำ</h2></td>
+                    <td>
+                    <img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" class="titleImage" alt="งานลุ่มน้ำ">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>กำหนดพื้นที่การไหลเหนือชุดของเซลล์ในแรสเตอร์
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>จัดการข้อมูล</h2>
+        <hr/>
+        <p>เครื่องมือเหล่านี้ใช้ได้กับทั้งการจัดการข้อมูลทางภูมิศาสตร์แบบวันต่อวันและแบบรวบรวมข้อมูลก่อนที่จะนำไปวิเคราะห์ 
+            <ul>
+                <li> <b>ตัดราสเตอร์</b>คลิปออกมาบางส่วนจากชุดข้อมูลเชิงภาพสำหรับการวิเคราะห์ต่อไป
+                    
+
+                </li>
+                <li> <b>ค่าแผนที่ใหม่</b>กำหนดค่าต่างกันให้กับเซลล์ราสเตอร์
+                    
+
+                </li>
+                <li> <b>แปลงฟีเจอร์เป็นราสเตอร์</b>กระบวนการราสเตอร์จากข้อมูลเวกเตอร์
+                    
+
+                </li>
+                <li> <b>แปลงราสเตอร์เป็นฟีเจอร์</b>กระบวนการเวกเตอร์จากข้อมูลราสเตอร์
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ExtractRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>ดึงข้อมูลแรสเตอร์</h2></td>
+                    <td>
+                    <img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" class="titleImage" alt="เครื่องมือตัดแรสเตอร์สำหรับ portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>ตัดเซลล์จากราสเตอร์ จากค่า , รูปร่าง , หรือขอบเขตกลุ่มข้อมูลที่ต่างกัน
+            </p>
+            <br/>
+        </div>
+        <div id="RemapValuesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>ปรับค่าตามตาราง</h2></td>
+                    <td>
+                    <img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" class="titleImage" alt="เครื่องมือรีแมพข้อมูลสำหรับพอร์ทัล">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>เปลี่ยนค่าเฉพาะ หรือช่วงของค่าเซลล์ไปเป็นค่าใหม่
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertFeatureToRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>แปลงเวกเตอร์เป็นแรสเตอร์</h2></td>
+                    <td>
+                    <img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" class="titleImage" alt="เครื่องมือแปลงเวกเตอร์เป็นแรสเตอร์">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>สร้างกลุ่มข้อมูลราสเตอร์ จากกลุ่มข้อมูลฟีเจอร์เดิมที่มีอยู่
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertRasterToFeatureTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>แปลงแรสเตอร์เป็นเวกเตอร์</h2></td>
+                    <td>
+                    <img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" class="titleImage" alt="เครื่องมือแปลงแรสเตอร์เป็นเวกเตอร์">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>สร้างกลุ่มข้อมูลใหม่ จากข้อมูลราสเตอร์เดิมที่มีอยู่
+            </p>
+            <br/>
+        </div>
+    <div id="DeepLearningCategory" class="regularsize">
+        <h2>ชุดเครื่องมือการเรียนรู้เชิงลึก</h2>
+        <hr/>
+        <p>เครื่องมือเหล่านี้ใช้เพื่อตรวจจับฟีเจอร์เฉพาะในภาพหรือเพื่อจำแนกพิกเซลในชุดข้อมูลแบบแรสเตอร์ การเรียนรู้เชิงลึกเป็นวิธีการเรียนรู้ของเครื่องประดิษฐ์อัจฉริยะที่ตรวจจับฟีเจอร์ในภาพโดยใช้หลายชั้นข้อมูลในเครือข่ายประสาทซึ่งแต่ละชั้นสามารถแยกคุณลักษณะเฉพาะอย่างน้อยหนึ่งอย่างในภาพ เครื่องมือเหล่านี้ใช้โมเดลที่ได้รับการฝึกอบรมเพื่อตรวจสอบคุณลักษณะเฉพาะในกรอบการเรียนรู้เชิงลึกของบุคคลที่สามเช่น TensorFlow, CNTK และ Keras และฟีเจอร์เอาท์พุทหรือแผนที่คลาส
+            <ul>
+                <li> <b>จำแนกพิกเซลโดยใช้การเรียนรู้เชิงลึก</b> สร้างแรสเตอร์ที่จำแนกประเภทโดยใช้โมเดลการเรียนรู้เชิงลึกที่ฝึก
+                </li>
+                <li> <b>ตรวจหาวัตถุโดยใช้การเรียนรู้เชิงลึก</b> สร้างคลาสฟีเจอร์ที่มีวัตถุที่ค้นพบแรสเตอร์อินพุตโดยใช้โมเดลการเรียนรู้เชิงลึกที่ฝึก
+                </li>
+            </ul>
+             
+        </p>
+    </div>
+        <div id="ClassifyPixelsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>จำแนกพิกเซลโดยใช้การเรียนรู้เชิงลึก</h2></td>
+                    <td>
+                    <img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" class="titleImage" alt="จำแนกพิกเซลโดยใช้การเรียนรู้เชิงลึก">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>เรียกใช้งานโมเดลการเรียนรู้เชิงลึกที่ได้รับการฝึกฝนบนแรสเตอร์อินพุตเพื่อสร้างแรสเตอร์แบบแยกประเภทโดยแต่ละพิกเซลที่ถูกต้องจะมีการกำหนดเลเบลของคลาส
+            </p>
+            <br/>
+        </div>
+        <div id="DetectObjectsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>ตรวจหาวัตถุโดยใช้การเรียนรู้เชิงลึก</h2></td>
+                    <td>
+                    <img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="ตรวจหาวัตถุโดยใช้การเรียนรู้เชิงลึก">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>สั่งงานโมเดลการเรียนรู้เชิงลึกที่ได้รับการฝึกฝนบนแรสเตอร์อินพุตเพื่อสร้างคลาสคุณลักษณะที่มีวัตถุที่พบ ฟีเจอร์ดังกล่าวอาจเป็นกล่องตีกรอบหรือรูปหลายเหลี่ยมรอบวัตถุที่พบหรือชี้ไปที่กึ่งกลางของวัตถุ
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

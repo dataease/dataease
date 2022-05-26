@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Välj bästa inrättningar</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="V&auml;lj b&auml;sta inr&auml;ttningar"></h2>
+        <hr/>
+    <p>Med V&auml;lj b&auml;sta inr&auml;ttningar kan du v&auml;lja de b&auml;sta platserna f&ouml;r olika inr&auml;ttningar. Verktyget f&ouml;rdelar de platser som efterfr&aring;gar inr&auml;ttningarna p&aring; ett s&auml;tt som uppfyller det angivna m&aring;let.
+    </p>
+    <p>Inr&auml;ttningar representerar platser som erbjuder n&aring;gon slags tj&auml;nst, till exempel brandstationer, skolor, bibliotek, aff&auml;rer eller distributionscentraler. Efterfr&aring;gansplatser representerar platser som efterfr&aring;gar de tj&auml;nster som erbjuds av inr&auml;ttningarna, till exempel folkr&auml;kningsblockpunkter som sammanfattar befolkningen i ett visst omr&aring;de.
+    </p>
+    <p>Med verktyget V&auml;lj b&auml;sta inr&auml;ttningar kan du f&aring; hj&auml;lp att besvara fr&aring;gor som:
+        <ul>
+            <li>Hur kan hush&aring;llen tilldelas r&auml;tt evakueringscenter i en n&ouml;dsituation n&auml;r s&auml;ngkapaciteten &auml;r begr&auml;nsad och inte f&aring;r &ouml;verskridas?
+            </li>
+            <li>Hur kan du tilldela omr&aring;den till sin n&auml;rmaste biblioteksfilial och ta reda p&aring; antalet m&ouml;jliga bes&ouml;kare som varje filial betj&auml;nar? 
+            </li>
+            <li>Hur kan du hitta b&auml;sta platsen f&ouml;r en distributionscentral f&ouml;r livsmedel som minimerar den &ouml;vergripande restiden (och d&auml;rmed kostnaden) f&ouml;r leveranser till en kedja med livsmedelsbutiker?
+            </li>
+            <li>Var kan en ny park placeras f&ouml;r att s&auml;kerst&auml;lla att s&aring; stor del som m&ouml;jligt av stadens inv&aring;nare bor inom fem minuters promenad fr&aring;n en park?
+            </li>
+            <li>Vilka &auml;r de b&auml;sta platserna f&ouml;r flera djuraff&auml;rer i en kommun s&aring; att 40 procent av kommunens djur&auml;gare inte har mer &auml;n tio minuters k&ouml;rv&auml;g till n&aring;gon av butikerna?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Mål</h2></div>
+        <hr/>
+        <div>
+            <p>Ange vilket m&aring;l som m&aring;ste uppfyllas n&auml;r du tilldelar efterfr&aring;gansplatser till inr&auml;ttningar.
+            </p>
+            <p>Med V&auml;lj b&auml;sta inr&auml;ttningar kan du ange vilken typ av problem du vill l&ouml;sa &ndash; m&aring;let. Verktyget optimeras f&ouml;r att tillhandah&aring;lla en l&ouml;sning f&ouml;r just detta m&aring;l. Oavsett m&aring;let anv&auml;nds i grunden samma underliggande metod f&ouml;r att n&aring; en l&ouml;sning &ndash; efterfr&aring;gat antal fr&aring;n en given efterfr&aring;gansplats tilldelas till n&auml;rmaste inr&auml;ttning. M&aring;len p&aring;verkar hanteringen av samspelet mellan avst&aring;nd (eller tid) och efterfr&aring;gan. Verktyget tar h&auml;nsyn till b&aring;de resavst&aring;nd/tid och efterfr&aring;gat antal, och i en del fall &auml;ven inr&auml;ttningarnas kapacitet. Om ett m&aring;l till exempel betonar att minska restiden, kommer verktyget fortfarande i andra hand att f&ouml;rs&ouml;ka maximera tilldelad efterfr&aring;gan. Om m&aring;let &auml;r att maximera den efterfr&aring;gan som tilldelas, kommer verktyget p&aring; samma s&auml;tt att g&ouml;ra detta genom att minska restiden (genom att tilldela efterfr&aring;gansplatser till den n&auml;rmaste inr&auml;ttningen snarare &auml;n till vilken inr&auml;ttning som helst).
+            </p>
+            <p>Beroende p&aring; dina data och vilka inst&auml;llningar du anv&auml;nder, kan olika m&aring;l leda till samma eller liknande resultat. Du b&ouml;r dock ange det m&aring;l som &auml;r l&auml;mpligast f&ouml;r din analys.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Tilldela till befintliga inrättningar</h2></div>
+        <hr/>
+        <div>
+            <p>Anv&auml;nd det h&auml;r m&aring;let om du inte vill hitta nya inr&auml;ttningar, utan tilldela efterfr&aring;gan till befintliga inr&auml;ttningar som kan ha begr&auml;nsad eller obegr&auml;nsad kapacitet.    
+            </p>
+            <p>Det h&auml;r m&aring;let tilldelar efterfr&aring;gan till inr&auml;ttningar baserat p&aring; kapaciteten vid inr&auml;ttningen och m&auml;ngden efterfr&aring;gan fr&aring;n det omgivande omr&aring;det. Efterfr&aring;gan tilldelas till den n&auml;rmaste inr&auml;ttningen tills den tillg&auml;ngliga kapaciteten &auml;r fylld. Om du anger ett maximalt resavst&aring;nd kommer eventuella efterfr&aring;gansplatser utanf&ouml;r den h&auml;r r&auml;ckvidden inte att tilldelas till en inr&auml;ttning, &auml;ven om hela efterfr&aring;gan inte har tilldelats fullt ut.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Minimera resor</h2></div>
+        <hr/>
+        <div>
+            <p>Anv&auml;nd det h&auml;r m&aring;let om du vill hitta inr&auml;ttningar s&aring; att den totala restiden eller resstr&auml;ckan mellan efterfr&aring;gansplatserna och inr&auml;ttningarna minimeras.
+            </p>
+            <p>M&aring;let passar ofta b&auml;st n&auml;r det kr&auml;vs regelbundna resor mellan inr&auml;ttningen och alla efterfr&aring;gansplatser. Det h&auml;r m&aring;let kan du till exempel anv&auml;nda f&ouml;r att minimera det totala avst&aring;ndet f&ouml;r transport av varor fr&aring;n distributionscentraler till butiker, eller f&ouml;r att v&auml;lja en konferensanl&auml;ggning p&aring; ett s&auml;tt som minimerar restiden f&ouml;r alla deltagare.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Maximera täckning</h2></div>
+        <hr/>
+        <div>
+            <p>Anv&auml;nd det h&auml;r m&aring;let om du vill maximera den efterfr&aring;gan som t&auml;cks inom en specifik tid eller ett specifikt avst&aring;nd fr&aring;n inr&auml;ttningarna.    
+            </p>
+            <p>Med det h&auml;r m&aring;let kan du v&auml;lja inr&auml;ttningar s&aring; att maximal efterfr&aring;gan tilldelas, och att all efterfr&aring;gan fr&aring;n varje efterfr&aring;gansplats tilldelas till den n&auml;rmaste inr&auml;ttningen.
+            </p>
+            <p>Ett begr&auml;nsat maximalt avst&aring;nd kr&auml;vs f&ouml;r det h&auml;r m&aring;let, annars kan hela efterfr&aring;gan tilldelas en enda inr&auml;ttning. Efterfr&aring;gansplatser som ligger utanf&ouml;r avst&aring;ndet eller tiden f&ouml;r samtliga inr&auml;ttningar tilldelas inte (detta visar var efterfr&aring;gan inte uppfylls och var ytterligare inr&auml;ttningar kan beh&ouml;vas).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Maximera täckning med kapacitet</h2></div>
+        <hr/>
+        <div>
+            <p>Anv&auml;nd det h&auml;r m&aring;let om du vill maximera den efterfr&aring;gan som t&auml;cks av inr&auml;ttningarna, men med inr&auml;ttningar som har begr&auml;nsad kapacitet.    
+            </p>
+            <p>Det h&auml;r m&aring;let anv&auml;nds f&ouml;r att v&auml;lja inr&auml;ttningar s&aring; att maximal efterfr&aring;gan tilldelas utan att &ouml;verskrida kapaciteten hos n&aring;gon inr&auml;ttning. All efterfr&aring;gan fr&aring;n varje efterfr&aring;gansplats tilldelas den enskilda inr&auml;ttning som ligger n&auml;rmast och som har ledig kapacitet (det vill s&auml;ga att om tilldelning av en efterfr&aring;gansplats till en inr&auml;ttning skulle &ouml;verskrida inr&auml;ttningens kapacitet, tilldelas inte efterfr&aring;gansplatsen alls i st&auml;llet f&ouml;r att en del av efterfr&aring;gan tilldelas).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Täck en procentsats av efterfrågan</h2></div>
+        <hr/>
+        <div>
+            <p>Anv&auml;nd det h&auml;r m&aring;let om du vill ta reda p&aring; det maximala antalet inr&auml;ttningar du beh&ouml;ver f&ouml;r att t&auml;cka en viss procentsats av efterfr&aring;gan.
+            </p>
+            <p>Det h&auml;r m&aring;let v&auml;ljer det minsta antalet inr&auml;ttningar som beh&ouml;vs f&ouml;r att uppn&aring; den specifika procentsatsen av efterfr&aring;gan. En efterfr&aring;gansplats som ligger inom maximalt resavst&aring;nd fr&aring;n tv&aring; eller flera inr&auml;ttningar kommer att ha sin efterfr&aring;gan delad proportionellt mellan inr&auml;ttningarna baserat p&aring; avst&aring;ndet fr&aring;n varje. Det h&auml;r m&aring;let anv&auml;nds ofta n&auml;r m&auml;nniskor kan v&auml;lja vilken inr&auml;ttning de ska bes&ouml;ka, och utg&aring;ngspunkten &auml;r i allm&auml;nhet att de kommer att v&auml;lja den n&auml;rmaste inr&auml;ttningen (om alla andra f&ouml;ruts&auml;ttningar &auml;r likadana).
+            </p>
+            <p>Till skillnad fr&aring;n de andra m&aring;len f&ouml;r val av inr&auml;ttningar d&auml;r du anger hur m&aring;nga inr&auml;ttningar som ska v&auml;ljas, v&auml;ljer det h&auml;r m&aring;let antalet inr&auml;ttningar &aring;t dig baserat p&aring; procentsatsen f&ouml;r den efterfr&aring;gan du vill uppfylla. M&aring;let utg&aring;r fr&aring;n att inr&auml;ttningarna inte har n&aring;gon begr&auml;nsad kapacitet.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Mät</h2></div>
+        <hr/>
+        <div>
+            <p>Precis som f&ouml;r andra verktyg som anv&auml;nder resor i sin analys, kan du ange om resorna ska m&auml;tas i avst&aring;nd eller tid samt v&auml;lja olika f&auml;rdl&auml;gen som g&aring;ngtid, k&ouml;rtid, k&ouml;rtid p&aring; landsbygd och s&aring; vidare. Vilka f&auml;rdl&auml;gen som &auml;r tillg&auml;ngliga avg&ouml;rs av organisationens administrat&ouml;r. Om du anv&auml;nder  <b>K&ouml;rtid</b>, <b>K&ouml;rtid p&aring; landsbygd</b> eller <b>Tid med lastbil</b> kan du &auml;ven v&auml;lja att ta med trafik f&ouml;r en specifik veckodag eller tid p&aring; dagen.
+            </p>
+            <p> F&ouml;r att kunna tilldela efterfr&aring;gansplatser till inr&auml;ttningarna med stor noggrannhet, anger du om resan sker fr&aring;n inr&auml;ttningarna till efterfr&aring;gansplatserna (till exempel fr&aring;n brandstationer till hus) eller fr&aring;n efterfr&aring;gansplatser till inr&auml;ttningar (till exempel bes&ouml;kare till bibliotek). V&auml;lj b&auml;sta inr&auml;ttningar kommer att ta h&auml;nsyn till enkelriktade gator, om du kan sv&auml;nga fr&aring;n en gata till en annan, om v&auml;nstersv&auml;ng &auml;r till&aring;ten i korsningar och s&aring; vidare, beroende p&aring; om resan sker ut&aring;t fr&aring;n inr&auml;ttningen till efterfr&aring;gansplatserna eller in&aring;t fr&aring;n efterfr&aring;gansplatserna till inr&auml;ttningarna.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Lager med efterfrågansplatser</h2></div>
+        <hr/>
+        <div>
+            <p>Punktgeoobjekten representerar platser som efterfr&aring;gar de tj&auml;nster som erbjuds av inr&auml;ttningarna. Verktyget tilldelar dessa efterfr&aring;gansplatser till l&auml;mpliga inr&auml;ttningar baserat p&aring; det valda m&aring;let.
+            </p>
+            <p>Efterfr&aring;gansplatserna har ett tillh&ouml;rande efterfr&aring;gansantal. Anv&auml;nd en konstant f&ouml;r att ange v&auml;rdet om alla efterfr&aring;gansplatser har samma efterfr&aring;gan. Om antalet f&ouml;r efterfr&aring;gan varierar enligt efterfr&aring;gansplats anv&auml;nder du ett f&auml;lt i Lager med efterfr&aring;gansplatser f&ouml;r att ange v&auml;rdet f&ouml;r varje efterfr&aring;gansplats.
+            </p>
+            <p>Efterfr&aring;gan tilldelas till inr&auml;ttningar tills all efterfr&aring;gan har tilldelats, oavsett hur l&aring;ngt fr&aring;n efterfr&aring;gansplatserna inr&auml;ttningarna ligger. Du kan tilldela ett maximalt resavst&aring;nd till Lager med efterfr&aring;gansplatser f&ouml;r att skapa ett brytavst&aring;nd eller en bryttid &ndash; alla efterfr&aring;gansplatser bortanf&ouml;r brytv&auml;rdet kommer inte att tilldelas. Anv&auml;nd en konstant f&ouml;r att ange v&auml;rdet om alla efterfr&aring;gansplatser har samma maximala resavst&aring;nd. Om det maximala resavst&aring;ndet varierar enligt efterfr&aring;gansplats anv&auml;nder du ett f&auml;lt i Lager med efterfr&aring;gansplatser f&ouml;r att ange v&auml;rdet f&ouml;r varje efterfr&aring;gansplats.
+            </p>
+            <p>Om m&aring;ltypen &auml;r  <b>T&auml;ck en procentsats av efterfr&aring;gan</b> m&aring;ste du ange den minsta procentsats av efterfr&aring;gan som du vill att inr&auml;ttningarna ska samla in.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. Det alternativet &ouml;ppnar ett galleri d&auml;r du kan bl&auml;ddra till och v&auml;lja dataupps&auml;ttningar fr&aring;n diverse k&auml;llor som du kan anv&auml;nda i din analys. 
+            </p>
+            <p>Verktyget har st&ouml;d f&ouml;r upp till 10&nbsp;000 geoobjekt i Lager med efterfr&aring;gansplatser.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Lager för nödvändiga inrättningar</h2></div>
+        <hr/>
+        <div>
+            <p>Punktgeoobjekten representerar platser som fungerar som inr&auml;ttningar genom att tillhandah&aring;lla n&aring;gon slags tj&auml;nst. N&ouml;dv&auml;ndiga inr&auml;ttningar representerar vanligtvis platser som redan finns, till skillnad fr&aring;n kandidatinr&auml;ttningar som vanligtvis representerar de platser d&auml;r nya inr&auml;ttningar kan byggas eller placeras. N&auml;r du tilldelar efterfr&aring;gansplatser anv&auml;nder verktyget inr&auml;ttningarna i  <b>Lager f&ouml;r n&ouml;dv&auml;ndiga inr&auml;ttningar</b> innan det v&auml;ljer n&aring;gra inr&auml;ttningar fr&aring;n <b>Lager f&ouml;r kandidatinr&auml;ttningar</b>.
+            </p>
+            <p>N&ouml;dv&auml;ndiga inr&auml;ttningar kan ha obegr&auml;nsad kapacitet (det vill s&auml;ga att de kan uppfylla hela den efterfr&aring;gan som tilldelas dem) eller begr&auml;nsad kapacitet. Om alla inr&auml;ttningar har samma begr&auml;nsade kapacitet (till exempel antalet hush&aring;ll som en brandstation kan betj&auml;na &ndash; s&auml;g, 4&nbsp;000), anger du ett konstant v&auml;rde. Om kapaciteten varierar mellan inr&auml;ttningarna (till exempel antalet tillg&auml;ngliga platser f&ouml;r f&ouml;rsta&aring;rselever p&aring; varje gymnasieskola), anger du ett f&auml;lt som inneh&aring;ller kapacitetsv&auml;rdet f&ouml;r varje inr&auml;ttning.
+            </p>
+            <p>Verktyget har st&ouml;d f&ouml;r upp till 100 geoobjekt i  <b>Lager f&ouml;r n&ouml;dv&auml;ndiga inr&auml;ttningar</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Lager för kandidatinrättningar</h2></div>
+        <hr/>
+        <div>
+            <p>Punktgeoobjekten representerar platser som fungerar som inr&auml;ttningar genom att tillhandah&aring;lla n&aring;gon slags tj&auml;nst. Kandidatinr&auml;ttningar representerar vanligtvis de platser d&auml;r nya inr&auml;ttningar kommer att byggas eller placeras, till skillnad fr&aring;n n&ouml;dv&auml;ndiga inr&auml;ttningar som vanligtvis representerar platser som redan finns.
+            </p>
+            <p>Beroende p&aring; ditt analysm&aring;l ska du ange antal kandidatinr&auml;ttningar att v&auml;lja mellan i kandidatupps&auml;ttningen. Om du anger b&aring;de n&ouml;dv&auml;ndiga inr&auml;ttningar och kandidatinr&auml;ttningar, anv&auml;nder verktyget inr&auml;ttningar i  <b>Lager f&ouml;r n&ouml;dv&auml;ndiga inr&auml;ttningar</b> innan det v&auml;ljer inr&auml;ttningar i <b>Lager f&ouml;r kandidatinr&auml;ttningar</b>.
+            </p>
+            <p>Kandidatinr&auml;ttningar kan ha obegr&auml;nsad kapacitet (det vill s&auml;ga att de kan uppfylla hela den efterfr&aring;gan som tilldelas dem) eller begr&auml;nsad kapacitet. Om alla inr&auml;ttningar har samma begr&auml;nsade kapacitet (till exempel antalet hush&aring;ll som en brandstation kan betj&auml;na &ndash; s&auml;g, 4&nbsp;000), anger du ett konstant v&auml;rde. Om kapaciteten varierar mellan inr&auml;ttningarna (till exempel antalet tillg&auml;ngliga platser f&ouml;r f&ouml;rsta&aring;rselever p&aring; varje gymnasieskola), anger du ett f&auml;lt som inneh&aring;ller kapacitetsv&auml;rdet f&ouml;r varje inr&auml;ttning.
+            </p>
+            <p>Verktyget har st&ouml;d f&ouml;r upp till 1&nbsp;000 geoobjekt i  <b>Lager f&ouml;r kandidatinr&auml;ttningar</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Välj hinderlager</h2></div>
+        <hr/>
+        <div>
+            <p> Ange ett eller flera geoobjekt som fungerar som tillf&auml;lliga restriktioner (hinder) vid resor p&aring; de underliggande gatorna. Du kan ange hindren med hj&auml;lp av punkt-, linje eller polygongeoobjekt.
+            </p>
+            <p>Ett punkthinder kan vara ett nedfallet tr&auml;d, en olycka, en nedrasad elledning eller n&aring;gonting annat som fullst&auml;ndigt blockerar trafiken p&aring; en specifik plats l&auml;ngs gatan. Det &auml;r till&aring;tet att f&auml;rdas p&aring; gatan men inte genom hindret. Du kan ange att upp till 250 geoobjekt ska fungera som punkthinder.
+            </p>
+            <p>Ett linjehinder f&ouml;rbjuder resor &ouml;verallt d&auml;r hindret korsar gatorna. Till exempel kan en parad eller protestmarsch som blockerar trafiken p&aring; flera gatusegment modelleras med ett linjehinder. Om antalet gatugeoobjekt som korsas av alla linjehinder &ouml;verstiger 500 visas ett felmeddelande i verktyget.
+            </p>
+            <p>Ett polygonhinder f&ouml;rbjuder resor &ouml;verallt d&auml;r polygonen korsar gatorna. En anv&auml;ndning f&ouml;r den h&auml;r typen av hinder &auml;r att modellera &ouml;versv&auml;mningar som t&auml;cker delar av gatun&auml;tet och g&ouml;r det om&ouml;jligt att f&auml;rdas p&aring; v&auml;garna. Om antalet gatugeoobjekt som korsas av alla polygonhinder &ouml;verstiger 2&nbsp;000 visas ett felmeddelande i verktyget.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagernamnet redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Resultatlagret kommer att inneh&aring;lla ett lager f&ouml;r vart och ett av f&ouml;ljande: inr&auml;ttningar som har efterfr&aring;gan tilldelad till sig, efterfr&aring;gansplatser som &auml;r tilldelade till inr&auml;ttningar och tilldelningslinjer som kopplar samman efterfr&aring;gansplatserna med deras tilldelade inr&auml;ttningar. Tilldelningslinjerna ritas som raka linjer, medan restiden eller resavst&aring;ndet mellan inr&auml;ttningen och efterfr&aring;gansplatserna alltid bygger p&aring; det resl&auml;ge du anger och inte anv&auml;nder avst&aring;nd som raka linjer.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

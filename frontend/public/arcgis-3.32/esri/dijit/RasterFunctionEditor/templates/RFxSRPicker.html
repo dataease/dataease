@@ -1,0 +1,12 @@
+<div class="srPicker">
+  <div class="input-group input-group-sm">
+    <input type="text" class="form-control font-1rem  ptp-6 pbp-6" data-dojo-attach-point="srsInputNode" />
+    <span tabindex="0" class="input-group-addon btn btn-transparent omp-input-group-addon-right mrp-10 clear-filter"
+      data-dojo-attach-point="nodeClearSRS" data-dojo-attach-event="click:reset"></span>
+    <div class="input-group-addon font-1rem  ptp-6 pbp-6">
+      <a class="filter-down-arrow" href="javascript:void(0)" data-dojo-attach-event="click:showOptions"
+        aria-haspopup="true" aria-expanded="false" data-dojo-attach-point="srsButton"></a>
+    </div>
+  </div>
+  <div id="{srconfig.id}" data-dojo-attach-point="srsTreeNode"></div>
+</div>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Agregeeri punktid</h2><p/>
+        <h2><img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" alt="Agregeeri punktid"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist t&ouml;&ouml;tab punktobjektide kihi ja pindobjektide kihi alusel. Sisendpinna objektid v&otilde;ivad tulla pol&uuml;goonikihilt v&otilde;i kandilistest v&otilde;i kuusnurksetest kujunditest, mis arvutatakse t&ouml;&ouml;riista k&auml;ivitamisel. Esmalt tuvastab t&ouml;&ouml;riist, millised punktid langevad igasse m&auml;&auml;ratletud alasse. P&auml;rast vastavasse pindobjekti j&auml;&auml;vate punktide koguarvu m&auml;&auml;ramist arvutatakse ala k&otilde;ikide punktide statistika. K&otilde;ige lihtsam statistika on punktide arv alas, kuid kasutada v&otilde;ib ka muud statistikat. 
+
+    </p>
+    <p>Kirjeldatud meetodit saab kasutada n&auml;iteks olukorras, kui teil on olemas kohvikute asukohad ja pindobjektid teatud maakonnas ning soovite summeerida selle alusel kohvikute m&uuml;&uuml;gitulu maakondade kaupa. Kui kohvikutel on atribuut  <i>TOTAL_SALES</i>, saate arvutada atribuudi <i>TOTAL_SALES</i> kogusumma igas maakonnas, leida atribuudi <i>TOTAL_SALES</i> miinimumi v&otilde;i maksimumi igas maakonnas v&otilde;i hankida muud statistikat nagu arv, vahemik, standardh&auml;lve ja dispersioon.
+    </p>
+    <p>Selle t&ouml;&ouml;riistaga saab t&ouml;&ouml;delda ka ajateadlikke andmeid. Kui sisendpunktide jaoks on aeg lubatud, siis on saadaval ajal&otilde;iguvalikud. Ajal&otilde;ikudega saate arvutada pindobjekti suhted konkreetset ajal&otilde;iku vaadates.  V&otilde;ite n&auml;iteks vaadata tunniseid ajavahemikke, mis annaks v&auml;ljundi iga tunni jaoks. 
+    </p>
+    <p>N&auml;iteks teil on aja jaoks punktobjektid k&otilde;ikide eri kohvikutes tehtud tehingute jaoks ilma alakihita. Andmed on kogutud aasta v&auml;ltel ja iga tehingu jaoks on j&auml;&auml;dvustatud asukoht ja ajatempel. Eeldades, et igal tehingul on  <i>TOTAL_SALES</i> atribuut, saate arvutada k&otilde;ikide <i>TOTAL_SALES</i> atribuutide summa huvipakkuvas aegruumis. Kui k&otilde;ik need tehingud on tehtud &uuml;hes linnas, saame luua &uuml;hekilomeetriste ruutudega alad ja vaadata n&auml;dalasi ajal&otilde;ike, et summeerida tehingud aegruumis.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Valige punkte sisaldav kiht, mis agregeeritakse aladeks</h2></div>
+        <hr/>
+        <div>
+            <p>Punktikiht, mis agregeeritakse aladeks.  <b>Ruutsalvedeks </b> v&otilde;i <b>kuusnurksalvedeks</b> agregeeritavatel punktikihtidel peab olema <b>anal&uuml;&uuml;siseadete</b> abil m&auml;&auml;ratud tasapinnaline ristkoordinaatide s&uuml;steem.
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="inputAggregation">
+        <div><h2>Valige ala kiht, millega agregeerida</h2></div>
+        <hr/>
+        <div>
+            <p>Alad, millesse punktikiht agregeeritakse. Saate valida enda antud alakihi v&otilde;i salved, mis luuakse, kui t&ouml;&ouml;riist k&auml;ivitub. Salvede loomisel  <b>ruuduna</b> m&auml;&auml;ratlevad ruudu k&otilde;rguse ja pikkuse m&auml;&auml;ratud arv ja &uuml;hikud. Kui teete valiku <b>Kuusnurk</b> m&auml;&auml;ravad arv ja &uuml;hikud paralleelk&uuml;lgede vahelise vahemaa.
+            </p>
+            <p> <b>Ruutsalvede</b> v&otilde;i <b>kuusnurksalvede</b> abil tehtav anal&uuml;&uuml;s n&otilde;uab tasapinnalist ristkoordinaatide s&uuml;steemi. <b>Koordinaats&uuml;steemi t&ouml;&ouml;tlemise</b> saab m&auml;&auml;rata funktsiooniga <b>Anal&uuml;&uuml;sikeskkonnad</b>. Kui koordinaats&uuml;steemi t&ouml;&ouml;tlemine ei ole m&auml;&auml;ratud tasapinnaliseks ristkoordinaatide s&uuml;steemiks, kuvatakse k&auml;su <b>K&auml;ivita anal&uuml;&uuml;s</b> andmisel selle m&auml;&auml;ramist taotlev h&uuml;pikaken.
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Valige ala kiht, millega agregeerida</h2></div>
+        <hr/>
+        <div>
+            <p>Alakiht, kuhu punktid agregeeritakse. K&otilde;ik punktid, mis j&auml;&auml;vad selle kihi alade piiridesse, loendatakse ning teie valitud statistikavaliku p&otilde;hjal summeeritakse. 
+            </p>
+            <p>M&auml;&auml;rata tuleb kas <b>Salve suurus</b> salvede jaoks v&otilde;i <b>Alakiht</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Valige salvede loomiseks ja agregeerimiseks vahemaa</h2></div>
+        <hr/>
+        <div>
+            <p>Vahemaa, mida kasutatakse teie sisendpunktidele salvede agregeerimiseks. Ruudukujulise salve puhul on suurus ruudu k&otilde;rgus. Kuusnurga puhul on suurus kuusnurga k&otilde;rgus (paralleelk&uuml;lgede vahel).  
+            </p>
+            <p>M&auml;&auml;rata tuleb kas <b>Salve suurus</b> salvede jaoks v&otilde;i <b>Alakiht</b>.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Agregeeri ajasammude abil (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p>Kui sisendpunktikihi jaoks on aeg lubatud ja selle t&uuml;&uuml;p on ajahetk, saate kasutada anal&uuml;&uuml;simiseks ajasamme. Aega kasutades saate m&auml;&auml;rata kolm parameetrit.
+                <ul>
+                    <li> <b>Ajasammude vahemik</b>
+                    </li>
+                    <li> <b>Ajasammude kordamise sagedus</b>
+                    </li>
+                    <li> <b>Aeg ajasammude &uuml;hildamiseks</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Kui teil on n&auml;iteksandmed, mis esindavad aastat ja soovite seda anal&uuml;&uuml;sida , kasutades &uuml;hen&auml;dalasi samme, seadke <b>Ajasammu ajavahemiku</b> v&auml;&auml;rtuseks <code>1 n&auml;dal</code>. 
+            </p>
+            <p>Kui teil on n&auml;iteks andmed, mis v&auml;ljendavad ajaliselt aastat ja soovite sedaanal&uuml;&uuml;sida , kasutades kuu esimest n&auml;dalat,, seadke <b>Ajasammu intervalliks</b> <code>1 n&auml;dal</code>, <b>Ajasammude kordamise sagedus</b> ajavahemikule <code>1 kuu</code>, ja <b>Ajasammude &uuml;hildamise ajaks</b> <code>1. jaanuar kell 12.00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Ajasammude vahemik</h2></div>
+        <hr/>
+        <div>
+            <p>Ajasammude genereerimiseks kasutatav ajavahemik.  <b>Ajasammude vahemikku saab kasutada nii eraldi kui ka koos parameetriga Ajasammude kordamise sagedus v&otilde;i parameetriga Aeg ajasammude &uuml;hildamiseks</b> <b></b> <b></b> .
+            </p>
+            <p>Kui n&auml;iteks sooviteluua ajasammud, mistoimuvad igal esmasp&auml;eval kell 9.00 kuni 10, seadke <b>Ajasammu ajavahemik</b> <code>1 tunnile</code>, <b>Ajasammude kordamise sagedus</b> <code>1 n&auml;dalale</code> ja <b>Ajasammude &uuml;hildamise aeg</b> <code>kella 9.00:00-ks esmasp&auml;eval</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Ajasammude kordamise sagedus</h2></div>
+        <hr/>
+        <div>
+            <p> Ajasamm, mida kasutatakse ajal&otilde;igu arvutamiseks. Parameetrit <b>Ajasammude kordamise sagedus</b> saab  kasutada eraldi, parameetriga, koos <b>Ajasammude vahemik</b>, <b>koos</b> v&otilde;i koos parameetritega <b>Ajasammude vahemik</b> ja <b>Aeg ajasammude &uuml;hildamiseks</b>.
+            </p>
+            <p> Kui n&auml;iteks  soovite luua ajasammud, mistoimuvad igal esmasp&auml;eval kell 9.00 kuni 10, seadke <b>Ajasammu ajavahemik</b> <code>1 tunnile</code>, <b>Ajasammude kordamise sagedus</b> <code>1 n&auml;dalale</code> ja <b>Ajasammude &uuml;hildamise aeg</b> <code>kella 9.00:00-ks esmasp&auml;eval</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Aeg ajasammude ühildamiseks:</h2></div>
+        <hr/>
+        <div>
+            <p>Kuup&auml;ev ja kellaaeg, mida kasutatakse ajal&otilde;igu &uuml;hitamiseks. Sellest ajast alustatakse ajasammuga  ajas tagasi liikumist. Juhul kui viiteaega ei valita, &uuml;hildatakse ajasamm 1. jaanuariga 1970. 
+            </p>
+            <p> Kui n&auml;iteks sooviteluua ajasammud, mis toimuvad igal esmasp&auml;eval kell 9.00 kuni 10, seadke <b>Ajasammu ajavahemik</b> <code>1 tunnile</code>, <b>Ajasammude kordamise sagedus</b> <code>1 n&auml;dalale</code> ja <b>Ajasammude &uuml;hildamise aeg</b> <code>kella 9.00:00-ks esmasp&auml;eval</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Lisa statistika (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p> Saate arvutada summeeritud objektide statistika. Saateallj&auml;rgnevad v&auml;&auml;rtused numbriv&auml;ljadel:
+                <ul>
+                    <li>Koguarv &ndash; arvutatakse v&auml;&auml;rtuste, mis pole nullv&auml;&auml;rtused, hulk. See funktsioon on kasutatav numbriv&auml;ljade v&otilde;i stringide korral. V&auml;&auml;rtuste [null, 0 ja 2] koguarv on 2.
+                    </li>
+                    <li>Summa &ndash; v&auml;ljal olevate arvv&auml;&auml;rtuste summa. V&auml;&auml;rtuste [null, null ja 3] summa on 3.
+                    </li>
+                    <li>Keskmine &ndash; arvv&auml;&auml;rtuste keskmine. V&auml;&auml;rtuste [0; 2 ja null] keskmine on 1.
+                    </li>
+                    <li>Miinimum &ndash; numbriv&auml;lja miinimumv&auml;&auml;rtus. V&auml;&auml;rtuste [0; 2 ja null] miinimum on 0. 
+                    </li>
+                    <li>Maksimum &ndash; numbriv&auml;lja maksimumv&auml;&auml;rtus. V&auml;&auml;rtuste [0; 2 ja null] maksimum on 2.
+                    </li>
+                    <li>Vahemik &ndash; numbriv&auml;lja vahemik. Selle arvutamiseks lahutatakse maksimumv&auml;&auml;rtusest miinimumv&auml;&auml;rtus. V&auml;&auml;rtuste [0, null ja 1] vahemik on 1. V&auml;&auml;rtuste [null ja 4] vahemik on 0.
+                    </li>
+                    <li>Dispersioon &ndash; raja numbriv&auml;lja dispersioon. V&auml;&auml;rtuse [1] dispersiooni on null. V&auml;&auml;rtuste [null, 1,0,1,1] dispersioon on 0,25.
+                    </li>
+                    <li>Standardh&auml;lve &ndash; numbriv&auml;lja standardh&auml;lve. V&auml;&auml;rtuse [1] standardh&auml;lve on null. V&auml;&auml;rtuste [null, 1,0,1,1] standardh&auml;lve on 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Saate arvutadaallj&auml;rgnevad v&auml;&auml;rtused tekstiv&auml;ljadel:
+                <ul>
+                    <li>Koguarv &ndash; stringide, mis pole nullv&auml;&auml;rtused, hulk.
+                    </li>
+                    <li>M&otilde;ni &ndash; see statistik on juhuslik valim tekstistringi v&auml;&auml;rtusest vastaval v&auml;ljal.
+                    </li>
+                </ul>
+                K&otilde;ik statistikud arvutatakse v&auml;&auml;rtustega, mis ei ole nullv&auml;&auml;rtus. Tulemkiht sisaldab uut v&auml;lja iga arvutatud statistiku kohta. Soovitud statistika lisamiseks valige uus atribuut ja statistik. 
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Koordinaatsüsteem (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>See on ajutine parameeter eelversioonile, et m&auml;&auml;rata t&ouml;&ouml;tlemiseks koordinaats&uuml;steem. Paljud suurandmete&nbsp;t&ouml;&ouml;riistad n&otilde;uavad t&ouml;&ouml;tlemiseks tasapinnalise ristkoordinaatide s&uuml;steemi kasutamist. Vaikimisi kasutab t&ouml;&ouml;riist sisestatud koordinaats&uuml;steemi, aga t&ouml;&ouml;tlemine nurjub, kui kasutatakse geograafilist koordinaats&uuml;steemi. Tasapinnalise ristkoordinaatide s&uuml;steemi m&auml;&auml;ramiseks sisestage WKID. N&auml;iteks  <b>Web Mercator</b> tuleb sisestada v&auml;&auml;rtusena <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Valige tulemite salvestamiseks mõni ArcGIS-i andmeladu</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalyticsi tulemeid k&auml;sitletakse  andmelaos salvedena ning need kuvatakse portaalis   Portal for ArcGIS objektikihtidena. &Uuml;ldjuhul salvestatakse tulemid ajalisruumilisse andmelattu &ndash; see on vaikimisi valitud. M&otilde;nel juhul on , tulemid m&otilde;istlik salvestada relatsioonilisse andmelattu. Allpool on toodud m&otilde;ned p&otilde;hjused, miks oleks soovitatav tulemid   salvestada relatsioonilisse andmelattu: 
+                <ul>
+                    <li>Tulemeid saateportaaliskasutadaportaali koost&ouml;&ouml;ks.
+                    </li>
+                    <li>Saate lubada tulemitega s&uuml;nkroniseerimise funktsiooni.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relatsioonilist andmeladu pole otstarbekas kasutada, kui GeoAnalyticsi tulemite arv suureneb. Sel juhul peaksite kasutama suurt ajalisruumilist andmeladu, mis v&otilde;imaldab hallata suurt andmemahtu.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Loodavakihi nimi.  Kui kirjutate andmelattu ArcGIS Data Store, salvestatakse teie tulemused  <b>Minu sisus</b> ja lisatakse kaardile. Kui kirjutate suurandmete failikettale, salvestatakse teie andmed suurandmete failikettale  ja lisatakse  selle manifestifailile. Seda  ei lisata kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui see kiht on juba olemas, siis t&ouml;&ouml;tlemine nurjub.
+            </p>
+            <p>Kui salvestate admelattu   ArcGIS Data Store (relatsioonilisse v&otilde;i ajalisruumilisse andmelattu), kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemused salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

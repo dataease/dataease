@@ -1,0 +1,52 @@
+<div data-dojo-attach-point="containerNode">
+
+  <div data-dojo-type="esri/dijit/metadata/form/iso/AbstractObject"
+    data-dojo-props="target:'gmd:CI_OnlineResource',minOccurs:0">
+
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'gmd:linkage',
+        label:'${i18nIso.CI_OnlineResource.linkage}'">
+      <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement"
+        data-dojo-props="target:'gmd:URL'"></div>
+    </div>
+
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'gmd:protocol',minOccurs:0,
+        label:'${i18nIso.CI_OnlineResource.protocol}'">
+      <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement"
+        data-dojo-props="target:'gco:CharacterString'"></div>
+    </div>
+
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'gmd:applicationProfile',minOccurs:0,
+        label:'${i18nIso.CI_OnlineResource.applicationProfile}'">
+      <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement"
+        data-dojo-props="target:'gco:CharacterString'"></div>
+    </div>
+
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'gmd:name',minOccurs:0,
+        label:'${i18nIso.CI_OnlineResource.name}'">
+      <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement"
+        data-dojo-props="target:'gco:CharacterString'"></div>
+    </div>
+
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'gmd:description',minOccurs:0,
+        label:'${i18nIso.CI_OnlineResource.description}'">
+      <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement"
+        data-dojo-props="target:'gco:CharacterString'">
+        <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+      </div>
+    </div>
+    
+    <div data-dojo-type="esri/dijit/metadata/form/iso/CodeListReference"
+      data-dojo-props="target:'gmd:function',
+        label:'${i18nIso.CI_OnlineResource.sFunction}',minOccurs:0">
+      <div data-dojo-type="esri/dijit/metadata/types/iso/gmd/citation/CI_OnlineFunctionCode">
+      </div>
+    </div>
+
+  </div>
+
+</div>

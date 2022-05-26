@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>מצא אשכולות של נקודות</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="מצא אשכולות של נקודות"></h2>
+        <hr/>
+    <p>הכלי  מצא אשכולות של נקודות מוצא אשכולות של ישויות נקודה בתוך רעש סובב בהתבסס על הפיזור המרחבי שלהן.
+    </p>
+    <p>לדוגמה, ארגון לא-ממשלתי חוקר מחלה מסוימת שמועברת על ידי מזיקים. יש לו סט נתוני נקודה שמייצג בתי אב באזור מחקר, שחלקם מזוהמים ואחרים לא מזוהמים. בעזרת הכלי  מציאת אשכולות של נקודות, אנליסט יכול לקבוע אשכולות של בתים מזוהמים כדי לעזור לזהות את האזור שבו יש להתחיל בטיפול ובהדברת מזיקים.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>בחר את השכבה שעבורה יש למצוא אשכולות</h2></div>
+        <hr/>
+        <div>
+            <p>שכבת הנקודות שבה יש למצוא אשכולות.  השכבות חייבות להיות במערכת קואורדינטות מוטלות או שהייחוס המרחבי של העיבוד חייב להיות מוגדר למערכת קואורדינטות מוטלות באמצעות  <b>סביבות ניתוח</b>.
+            </p>
+            <p>בנוסף לבחירת שכבה מהמפה שלך, באפשרותך לבחור באפשרות  <b>בחר שכבת ניתוח</b> בתחתית הרשימה הנפתחת כדי לדפדף לתכנים שלך עבור סט נתוני שיתוף קובץ Big Data או שכבת ישויות. באפשרותך אופציונלית להחיל מסנן על שכבת הקלט או להחיל בחירה על שכבות מתארחות שנוספו למפה שלך. מסננים ובחירות מוחלים רק עבור ניתוח. 
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>בחר את שיטת האשכולות שבה תרצה להשתמש</h2></div>
+        <hr/>
+        <div>
+            <p>שיטת יצירת האשכולות אשר תשמש להבדלת אשכולות של ישויות נקודה מרעש סובב. באפשרותך לבחור להשתמש במרחק מוגדר או באלגוריתם יצירת אשכולות בהתאמה עצמית.
+            </p>
+            <p>מרחק מוגדר (DBSCAN) משתמש בטווח חיפוש שצוין כדי להפריד אשכולות צפופים מרעש דליל יותר. מרחק מוגדר (DBSCAN) היא שיטה מהירה יותר אבל מתאימה רק אם קיים טווח חיפוש ברור מאוד להשתמש בו אשר עובד היטב להגדרת כל האשכולות שייתכן ונמצאים. מרחק מוגדר (DBSCAN) מוצא אשכולות שיש להן צפיפות דומה.
+            </p>
+            <p>שיטת התאמה עצמית (HDBSCAN) לא מחייבת ציון טווח חיפוש, אבל זוהי שיטה שדורשת יותר זמן. שיטת התאמה עצמית (HDBSCAN) מוצאת אשכולות של נקודות אשר דומות לשיטת מוגדר (DBSCAN), אבל משתמשת בטווחי חיפוש משתנים עבור אשכולות עם צפיפויות משתנות. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>מספר הנקודות המינימלי לזריעה או יצירה של אשכול</h2></div>
+        <hr/>
+        <div>
+            <p>פרמטר זה משמש באופן שונה בהתאם לשיטת יצירת האשכולות שנבחרה:
+            </p>
+            <p>
+                <ul>
+                    <li>מרחק מוגדר (DBSCAN) - מציין את מספר הישויות שיש למצוא בתוך טווח מסוים מנקודה כדי שאותה נקודה תתחיל ליצור אשכול. המרחק מוגדר בעזרת הפרמטר  <b>הגבל את טווח החיפוש ל</b>.
+                    </li>
+                    <li>התאמה עצמית (HDBSCAN) - מציין את מספר הישויות שבשכנות לכל נקודה (כולל הנקודה עצמה) אשר יילקחו בחשבון בעת הערכת הצפיפות. מספר זה הוא גם גודל האשכול המינימאלי שמותר בעת חילוץ אשכולות.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>הגבל את טווח החיפוש ל</h2></div>
+        <hr/>
+        <div>
+            <p>בעת שימוש במרחק מוגדר (DBSCAN), פרמטר זה הוא המרחק שבתוכו יש למצוא את  <b>מספר הנקודות המינימלי כדי להיחשב לאשכול</b>. פרמטר זה לא משמש אם שיטת יצירת האשכולות שנבחרה היא התאמה עצמית (HDBSCAN).
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>שם שכבת התוצאה</h2></div>
+        <hr/>
+        <div>
+            <p> השם של השכבה שתיווצר.  אם אתה כותב ל- ArcGIS Data Store, התוצאות שלך יישמרו ב-<b>התוכן שלי</b> ויתווספו למפה. אם אתה כותב לקובץ שיתוף Big Data, התוצאות שלך יאוחסנו בקובץ השיתוף של Big Data ויתווספו למניפסט שלו. הם לא יתווספו למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם השכבה כבר קיימת, הכלי ייכשל.
+            </p>
+            <p>בעת כתיב ל- ArcGIS Data Store (מאגר נתונים יחסים או מרחבי-זמני של Big Data) בעזרת התיבה הנפתחת  <b>שמור תוצאה ב</b>, באפשרותך לציין את שם התיקייה ב- <b>התוכן שלי</b> שבה התוצאה תישמר.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Gabungkan Fitur</h2><p/>
+        <h2><img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" alt="Gabungkan Fitur"></h2>
+        <hr/>
+    <p>Gabungkan Fitur berfungsi dengan dua layer dan menggabungkan atribut dari satu fitur ke fitur lain berdasarkan hubungan spasial dan atribut. Alat ini menentukan seluruh fitur input yang memenuhi kondisi penggabungan yang ditentukan dan menambahkan gabungan layer ke layer target. 
+    </p>
+    <p>Gabungkan Fitur dapat diterapkan ke titik, garis, area, dan tabel. Gabungan spasial mengharuskan data Anda untuk memiliki geometri. 
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya fitur yang terlihat dalam jangkauan peta saat ini yang akan dianalisis.  Jika tidak dicentang, semua fitur baik pada layer target maupun layer gabungan akan dianalisis, meskipun berada di luar jangkauan peta yang ada.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Pilih layer target</h2></div>
+        <hr/>
+        <div>
+            <p>Layer target yang akan memiliki atribut dari gabungan layer yang ditambahkan pada tabelnya.
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p> 
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Pilih layer untuk digabungkan ke layer target</h2></div>
+        <hr/>
+        <div>
+            <p>Layer gabungan dengan atribut yang akan ditambahkan ke layer target.
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p>
+        </div>
+    </div>
+    <div id="joinType">
+        <div><h2>Pilih jenis penggabungan</h2></div>
+        <hr/>
+        <div>
+            <p>Anda dapat menerapkan gabungan spasial, gabungan atribut, atau kombinasi dari keduanya. 
+                <ul>
+                    <li> <b>Spasial</b>&mdash;Menggunakan hubungan spasial yang ditentukan untuk menggabungkan fitur. Ini mengharuskan kedua layer memiliki geometri.
+                    </li>
+                    <li> <b>Atribut</b>&mdash;Menggabungkan fitur berdasarkan kolom yang sama.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Pilih hubungan spasial</h2></div>
+        <hr/>
+        <div>
+            <p>Hubungan spasial yang akan menentukan apakah fitur digabungkan satu sama lain. Hubungan yang tersedia akan tergantung pada jenis geometri (titik, garis, area) yang digunakan sebagai fitur input. Hubungan yang tersedia termasuk yang berikut ini:
+                <ul>
+                    <li> <b>Identik dengan</b>&mdash;Fitur pada layer target akan dicocokkan jika identik dengan fitur pada layer gabungan.
+                    </li>
+                    <li> <b>Berpotongan</b>&mdash;Fitur pada layer target akan dicocokkan jika berpotongan dengan fitur pada layer gabungan.
+                    </li>
+                    <li> <b>Sepenuhnya berisi</b>&mdash;Fitur akan dicocokkan jika fitur pada layer target sepenuhnya berisi fitur pada layer gabungan.
+                    </li>
+                    <li> <b>Sepenuhnya di dalam</b>&mdash;Fitur akan dicocokkan jika fitur pada layer target sepenuhnya berada di dalam fitur pada layer gabungan.
+                    </li>
+                    <li> <b>Dalam jarak</b>&mdash;Fitur pada layer target akan dicocokkan jika berada dalam jarak yang ditentukan dari fitur pada layer gabungan.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Gabungan atribut</h2></div>
+        <hr/>
+        <div>
+            <p>Hubungan atribut yang akan menentukan apakah fitur digabungkan satu sama lainnya. Fitur cocok jika nilai kolom pada layer gabungan sama dengan nilai kolom pada layer target. 
+            </p>
+            <p>Contoh, misalnya Anda memiliki layer geografis seluruh kabupaten dari alamat tempat tinggal (termasuk kolom  <i>ZIP</i>) dan set data tabular demografi kesehatan berdasarkan Kode Pos (termasuk kolom yang bernama <i>HEALTHZIP</i>). Anda dapat menggabungkan set data kesehatan dengan data tempat tinggal dengan mencocokkan kolom <i>ZIP</i> ke <i>HEALTHZIP</i>, yang akan menghasilkan layer tempat tinggal dengan data kesehatan yang sesuai.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Pilih operasi penggabungan</h2></div>
+        <hr/>
+        <div>
+            <p>Menentukan bagaimana gabungan antara layer target dan layer gabungan akan ditangani jika terdapat beberapa fitur pada layer gabungan memiliki hubungan yang sama dengan layer target. Berikut ini adalah dua operasi penggabungan yang dapat dipilih:
+                <ul>
+                    <li> <b>Gabungkan satu ke satu</b>&mdash; Opsi ini menggabungkan fitur di layer target ke fitur tunggal di layer gabungan. Bagaimana fitur digabungkan ditentukan oleh parameter <b>Tambahkan statistik</b> atau parameter <b>Tentukan catatan mana yang disimpan</b>. Jika <b>Tambahkan statistik</b> digunakan, semua fitur gabungan yang cocok akan diringkas ke setiap fitur di layer sasaran. Jumlah fitur gabungan akan ditambahkan secara default.
+Jika <b>Tentukan catatan mana yang disimpan</b>
+ digunakan, Anda dapat memilih untuk menyimpan cacatan pertama yang cocok (default) atau untuk menyimpan catatan yang cocok berdasarkan ekspresi. Ekspresi dapat menggunakan baik kolom numerik
+(opsi untuk catatan terbesar atau terkecil) maupun kolom tanggal (opsi untuk terbaru atau terlama).
+                    </li>
+                    <li> <b>Gabungkan satu ke banyak</b>&mdash;Opsi ini menggabungkan seluruh fitur yang cocok di layer gabungan ke layer target.  Layer hasil akan berisi beberapa rekaman fitur target.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Contoh, misalnya Anda ingin menemukan supermarket dalam jarak 5 kilometer dari pasar tradisional.   Pada kasus ini, layer akan digabungkan untuk memiliki fitur tunggal yang mewakili pasar tradisional, dan fitur gabungan mewakili toko kelontong setempat yang memiliki atribut seperti penjualan tahunan total. Menggunakan alat  <b>Gabungkan Fitur</b>, Anda akan menemukan bahwa lima toko kelontong memenuhi kriteria tersebut. Jika menggunakan operasi penggabungan <b>Gabungkan satu ke banyak</b>, Anda akan mendapatkan lima fitur pada hasil, yang mana masing-masing baris mewakili pasar tradisional dan supermarket. Jika menentukan hubungan <b>Gabungkan satu ke satu</b> dan memilih sebuah statistik, Anda akan mendapatkan satu fitur yang mewakili pasar petani dan informasi rangkuman dari supermarket, seperti angka (5), dan statistik opsional lainnya seperti jumlah penjualan tahunan.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Tambahkan statistik (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Jika opsi  <b>Gabungkan satu ke satu</b> dipilih, untuk kolom numerik, Anda dapat meringkas dan menghitung statistik di fitur gabungan.   Secara default, jumlah fitur gabungan yang cocok akan dihitung dan ditambahkan ke layer hasil.  Jika memilih untuk tidak menambahkan statistik tambahan, fitur pertama yang cocok di layer gabungan akan digabungkan dengan fitur pertama yang cocok di layer sasaran.   Anda dapat menghitung satu atau beberapa hal berikut:
+            </p>
+            <ul>
+                <li>Jumlah
+                </li>
+                <li>Minimal
+                </li>
+                <li>Maksimal
+                </li>
+                <li>Rata-Rata
+                </li>
+                <li>Simpangan Baku
+                </li>
+            </ul>
+            
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta.  Nama default ditetapkan berdasarkan nama layer input. Jika nama layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Dengan menggunakan  <b>Simpan hasil di</b> menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+        </div>
+    </div>
+    <div id="isView">
+        <div><h2>Buat hasil sebagai tampilan feature layer yang di-host</h2></div>
+        <hr/>
+        <div>
+            <p> Membuat hasil sebagai tampilan feature layer yang di-host menjadikan data tetap yang terbaru saat data sumber berubah.  Tampilan feature layer yang di-host yang berisi gabungan akan bersifat baca-saja dan tidak menggunakan kredit untuk analisis dan penyimpanan.
+            </p>
+            <p>Anda dapat membuat tampilan feature layer yang di-host dari hasil analisis jika persyaratan berikut ini terpenuhi:
+                <ul>
+                    <li>Anda adalah pemilik kedua layer.
+                    </li>
+                    <li>Kedua layer adalah feature layer yang di-host.
+                    </li>
+                    <li>Anda melakukan gabungan berdasarkan atribut.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

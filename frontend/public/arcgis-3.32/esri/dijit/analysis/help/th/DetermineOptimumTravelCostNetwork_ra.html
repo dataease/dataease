@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>กำหนดโครงข่ายต้นทุนการเดินทางที่ดีที่สุด</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="ภาพประกอบเครื่องมือกำหนดโครงข่ายต้นทุนการเดินทางที่ดีที่สุด"></h2>
+        <hr/>
+    <p>เครื่องมือนี้คำนวณโครงข่ายต้นทุนที่ดีที่สุดจากชุดของส่วนอินพุต
+    </p>
+    <p>ตัวอย่างหนึ่งของการใช้เครื่องมือนี้คือการค้นหาโครงข่ายที่ดีที่สุดสำหรับรถฉุกเฉิน
+    </p>
+    <p>ถ้า  <b>ใช้ขอบเขตแผนที่ปัจจุบัน</b> ถูกเลือก เฉพาะตำแหน่งเหล่านั้นในชั้นข้อมูลอินพุึตที่มองเห็นได้ ที่อยู่ในขอบเขตแผนที่ปัจจุบันนี้เท่านั้น จะถูกวิเคราะห์ หากไม่เลือก ตำแหน่งทั้งหมดในชั้นข้อมูลอินพุตจะถูกนำมาวิเคราะห์ ถึงแม้ว่าข้อมูลเหล่านั้นจะอยู่นอกขอบเขตแผนที่ปัจจุบัน
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>เลือกแรสเตอร์ของชั้นข้อมูลตำแหน่งของฟีเจอร์เพื่อคำนวณเส้นทางการเดินทางระหว่าง</h2></div>
+        <hr/>
+        <div>
+            <p>ส่วนของอินพุตที่เชื่อมต่อโดยโครงข่ายที่มีต้นทุนน้อยที่สุด
+            </p>
+            <p>กำหนดส่วนได้จากบริการข้อมูลภาพหรือฟีเจอร์เซอร์วิส
+            </p>
+            <p>สำหรับบริการข้อมูลภาพ ส่วนจะถูกกำหนดขึ้นด้วยกลุ่มของเซลล์ต่อเนื่อง (ติดกัน) ของค่าเดียวกัน แต่ละส่วนต้องมีตัวเลขเฉพาะ เซลล์ที่ไม่ได้เป็นส่วนหนึ่งของส่วนใด ๆ จะเป็น NoData ประเภทของแรสเตอร์ต้องเป็นจำนวนเต็ม และค่าอาจเป็นค่าบวกหรือค่าลบก็ได้
+            </p>
+            <p>สำหรับฟีเจอร์เซอร์วิส อินพุตอาจเป็นจุด เส้น หรือหลายเหลี่ยม
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>เลือกชั้นข้อมูลแรสเตอร์ค่าเดินทาง</h2></div>
+        <hr/>
+        <div>
+            <p>แรสเตอร์ที่กำหนดอิมพีแดนซ์หรือต้นทุนเพื่อย้ายผ่านแต่ละเซลล์
+            </p>
+            <p>ค่า ณ ตำแหน่งแต่ละเซลล์แทนระยะทางต้นทุนต่อหน่วยในการเคลื่อนผ่านเซลล์ ค่า ณ ตำแหน่งแต่ละเซลล์จะถูกคูณด้วยความละเอียดเซลล์ พร้อม ๆ กับชดเชยการเคลื่อนที่ในแนวทแยงเพื่อแสดงต้นทุนโดยรวมของการเคลื่อนผ่านเซลล์
+            </p>
+            <p>ค่าของแรสเตอร์ต้นทุนอาจเป็นจำนวนเต็มหรือจุดลอย แต่ไม่สามารถเป็นค่าลบหรือศูนย์ (คุณไม่สามารถมีต้นทุนเป็นค่าลบหรือศูนย์)
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>ชื่อชั้นข้อมูลเส้นรอบเส้นทางที่ดีที่สุดของผลลัพธ์</h2></div>
+        <hr/>
+        <div>
+            <p>ชื่อของชั้นข้อมูลที่จะถูกสร้างขึ้นใน  <b>เนื้อหาของฉัน</b> และเพิ่มไปยังแผนที่ ชื่อเริ่มต้นจะขึ้นอยู่กับชื่อเครื่องมือและชื่อชั้นข้อมูลอินพุต ถ้าชั้นข้อมูลนี้มีอยู่แล้ว คุณจะถูกขอให้ตั้งชื่อใหม่
+            </p>
+            <p>คุณสามารถระบุชื่อโฟลเดอร์ใน  <b>My Content</b> ที่ผลลัพธ์จะบันทึกโดยการใช้ <b>กล่อง drop-down</b> บันทึกผลใน
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>ชื่อชั้นข้อมูลเส้นรอบเส้นทางใกล้เคียงของผลลัพธ์</h2></div>
+        <hr/>
+        <div>
+            <p>ชื่อของชั้นข้อมูลที่จะถูกสร้างขึ้นใน  <b>เนื้อหาของฉัน</b> และเพิ่มไปยังแผนที่ ชื่อเริ่มต้นจะขึ้นอยู่กับชื่อเครื่องมือและชื่อชั้นข้อมูลอินพุต ถ้าชั้นข้อมูลนี้มีอยู่แล้ว คุณจะถูกขอให้ตั้งชื่อใหม่
+            </p>
+            <p>คุณสามารถระบุชื่อโฟลเดอร์ใน  <b>My Content</b> ที่ผลลัพธ์จะบันทึกโดยการใช้ <b>กล่อง drop-down</b> บันทึกผลใน
+            </p>
+        </div>
+    </div>
+</div>
+</html>

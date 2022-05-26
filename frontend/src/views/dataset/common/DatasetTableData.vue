@@ -74,7 +74,9 @@ export default {
         this.table.row = 100
         post('/dataset/table/getPreviewData/1/100', this.table, false,30000).then(response => {
           this.fields = response.data.fields
+          console.log('fields',this.fields)
           this.data = response.data.data
+          console.log('data',this.data)
           const datas = this.data
           if (response.data.status === 'warnning') {
             this.$warning(response.data.msg, 3000)

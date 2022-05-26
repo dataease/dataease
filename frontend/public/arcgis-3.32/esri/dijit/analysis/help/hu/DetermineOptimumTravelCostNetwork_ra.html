@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Optimális útiköltséghez tartozó hálózat meghatározása</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="Az Optim&aacute;lis &uacute;tik&ouml;lts&eacute;ghez tartoz&oacute; h&aacute;l&oacute;zat meghat&aacute;roz&aacute;sa eszk&ouml;z illusztr&aacute;ci&oacute;ja"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z az optim&aacute;lis k&ouml;lts&eacute;gh&aacute;l&oacute;zatot sz&aacute;m&iacute;tja ki bemeneti r&eacute;gi&oacute;k halmaz&aacute;b&oacute;l.
+    </p>
+    <p>Az eszk&ouml;z alkalmaz&aacute;s&aacute;ra lehet p&eacute;lda a legjobb h&aacute;l&oacute;zat megtal&aacute;l&aacute;sa a megk&uuml;l&ouml;nb&ouml;ztetett g&eacute;pj&aacute;rművek sz&aacute;m&aacute;ra.
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;s haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel az elemz&eacute;s csak azokat a bemenő r&eacute;tegen l&eacute;vő helyeket foglalja mag&aacute;ban, amelyek l&aacute;that&oacute;k az aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;sen. Ha nincs bejel&ouml;lve, akkor a bemenő r&eacute;teg &ouml;sszes hely&eacute;t elemzi, akkor is, ha azok k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Raszteres vagy vektoros helyréteg kiválasztása az útvonalak meghatározásához a következők között:</h2></div>
+        <hr/>
+        <div>
+            <p>A legkisebb k&ouml;lts&eacute;ggel j&aacute;r&oacute; h&aacute;l&oacute;zattal &ouml;sszekapcsolni k&iacute;v&aacute;nt bemeneti r&eacute;gi&oacute;k.
+            </p>
+            <p>A r&eacute;gi&oacute;k meghat&aacute;roz&aacute;s&aacute;hoz haszn&aacute;lhat&oacute; k&eacute;pszolg&aacute;ltat&aacute;s vagy vektoros adatszolg&aacute;ltat&aacute;s.
+            </p>
+            <p>K&eacute;pszolg&aacute;ltat&aacute;s haszn&aacute;lata eset&eacute;n a r&eacute;gi&oacute;kat azonos &eacute;rt&eacute;kű szomsz&eacute;dos cell&aacute;k csoportjai hat&aacute;rozz&aacute;k meg. Mindegyik r&eacute;gi&oacute;nak egyedi sz&aacute;moz&aacute;ssal kell rendelkeznie. Az egyetlen r&eacute;gi&oacute; r&eacute;sz&eacute;t sem k&eacute;pező cell&aacute;knak NoData &eacute;rt&eacute;kkel kell rendelkezni&uuml;k. A rasztert&iacute;pusnak integernek kell lennie, az &eacute;rt&eacute;kek pedig lehetnek pozit&iacute;vak vagy negat&iacute;vak.
+            </p>
+            <p>Vektoros adatszolg&aacute;ltat&aacute;s haszn&aacute;lata eset&eacute;n a bemenet lehet pont, vonal vagy polygon.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Raszteres útiköltségréteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>Az egyes cell&aacute;kon t&ouml;rt&eacute;nő, s&iacute;krajzi &eacute;rtelemben vett &aacute;thalad&aacute;s impedanci&aacute;j&aacute;t vagy k&ouml;lts&eacute;g&eacute;t meghat&aacute;roz&oacute; raszter.
+            </p>
+            <p>Az egyes cellahelyeken szereplő &eacute;rt&eacute;kek az adott cell&aacute;n t&ouml;rt&eacute;nő &aacute;thalad&aacute;s egys&eacute;gnyi t&aacute;vols&aacute;gra eső k&ouml;lts&eacute;g&eacute;t jelentik. Az eszk&ouml;z a cell&aacute;n t&ouml;rt&eacute;nő &aacute;thalad&aacute;s teljes k&ouml;lts&eacute;g&eacute;nek kisz&aacute;m&iacute;t&aacute;s&aacute;hoz megszorozza az egyes cellahelyek &eacute;rt&eacute;k&eacute;t a cellafelbont&aacute;ssal, &eacute;s &aacute;tl&oacute;s mozg&aacute;s eset&eacute;n kompenz&aacute;lja az &eacute;rt&eacute;ket.
+            </p>
+            <p>A k&ouml;lts&eacute;graszter &eacute;rt&eacute;kei lehetnek integer vagy lebegőpontos &eacute;rt&eacute;kek, de nem lehetnek negat&iacute;vak vagy null&aacute;k (a k&ouml;lts&eacute;g nem lehet negat&iacute;v vagy nulla).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Eredményül kapott optimális útvonalak polyline rétegének neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az Eredm&eacute;ny ment&eacute;si helye leg&ouml;rd&uuml;lő mezőben megadhatja a  <b>Saj&aacute;t tartalom</b>mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z <b>menti az eredm&eacute;nyt</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Eredményül kapott szomszédos útvonalak polyline rétegének neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az Eredm&eacute;ny ment&eacute;si helye leg&ouml;rd&uuml;lő mezőben megadhatja a  <b>Saj&aacute;t tartalom</b>mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z <b>menti az eredm&eacute;nyt</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Spoji slojeve</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Spoji slojeve"></h2>
+        <hr/>
+    <p>Alat kopira geoobjekte iz dva sloja u novi sloj. Slojevi koji će se spojiti moraju sadržavati iste vrste geoobjekata (točke, linije ili poligoni). Možete kontrolirati kako se polja iz sloja unosa povezuju i kopiraju.  Na primjer:
+        <ul>
+            <li>Imam tri sloja za Englesku, Wales i &Scaron;kotsku i želim jedan sloj Velike Britanije. 
+            </li>
+            <li>Imam 12 slojeva i svaki sadrži informacije o parcelama za susjedna gradska područja.  Želim ih spojiti u jedan sloj i zadržati samo polja koja imaju isti naziv i vrstu.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, spojit će se samo geoobjekti koji su vidljivi unutar trenutačnog obuhvata karte.  Ako opcija nije označena, spojit će se svi geoobjekti u oba sloju, čak i ako se nalaze izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izaberi sloj</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti, linijski ili poligonalni geoobjekti za spajanje sa slojem određenim u nastavku. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Izaberi sloj za spajanje</h2></div>
+        <hr/>
+        <div>
+            <p>Izaberite sloj za spajanje s prvim slojem.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Izmijeni polja za spajanje</h2></div>
+        <hr/>
+        <div>
+            <p>Prema zadanim postavkama, sva polja unosa prenijet će se do izlaznih rezultata.  Možete promijeniti kako su polja prenesena do izlaznih rezultata na sljedeći način:
+                <ul>
+                    <li> <b>Preimenuj</b> &mdash; polja će se preimenovati u izlaznom rezultatu.
+                    </li>
+                    <li> <b>Ukloni</b> &mdash; polja će se ukloniti iz izlaznog rezultata.
+                    </li>
+                    <li> <b>Pronađi podudaranje</b> &mdash; Izjednačeni su nazivi polja.  Vrijednosti polja iz sloja koji će se spojiti kopirat će se u podudarajuće izlazno polje.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ako oba sloja sadrže polje s istim nazivom i vrstom podataka, sadržaj obaju polja spojit će se u jedno polje s tim nazivom. To se ne primjenjuje na polja gdje je upotrijebljeno  <b>Podudaranje</b> u parametru <b>Izmijeni polja za spajanje</b>.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će se stvoriti u dijelu  <b>Moj sadržaj</b> i dodati karti.  Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako naziv sloja već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Vytvořit povodí (Create Watersheds)</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Vytvořit povod&iacute;"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj určuje povod&iacute; (př&iacute;tokovou oblast proti proudu) pro každ&yacute; bod va&scaron;&iacute; vstupn&iacute; anal&yacute;zy. 
+    </p>
+    <p>Předpokl&aacute;dejme např&iacute;klad, že m&aacute;te bodov&eacute; prvky, kter&eacute; představuj&iacute; m&iacute;sta zneči&scaron;těn&iacute; vody, a chcete naj&iacute;t pravděpodobn&eacute; zdroje zneči&scaron;těn&iacute;. Protože se zdroj zneči&scaron;těn&iacute; mus&iacute; nach&aacute;zet někde v povod&iacute; proti proudu od dan&eacute;ho bodu, použijete tento n&aacute;stroj k určen&iacute; povod&iacute; obsahuj&iacute;c&iacute;ch zdroje zneči&scaron;těn&iacute;.
+    </p>
+    <p>Um&iacute;stěn&iacute; vstupn&iacute;ch bodů je důležit&eacute;.  Nejsou-li um&iacute;stěny přesně na odtokov&eacute; linii, v&yacute;sledn&aacute; povod&iacute; mohou b&yacute;t velmi mal&aacute; a neužitečn&aacute; pro va&scaron;i anal&yacute;zu.  <b>Vyhled&aacute;vac&iacute; vzd&aacute;lenost k nejbliž&scaron;&iacute;mu odtoku</b> lze použ&iacute;t k &uacute;pravě um&iacute;stěn&iacute; vstupn&iacute;ch bodů, aby spadaly přesně na odtokovou linii a dalo se tak naj&iacute;t povod&iacute;, kter&eacute; plyne do bodu um&iacute;stěn&eacute;ho na odtokov&eacute; linii.  Upraven&aacute; um&iacute;stěn&iacute; použit&aacute; k nalezen&iacute; povod&iacute; se zapisuj&iacute; do v&yacute;stupn&iacute; vrstvy, vstupn&iacute; body se nezměn&iacute;.
+    </p>
+    <p>V&yacute;sledkem je skupina vrstev obsahuj&iacute;c&iacute; dvě vrstvy: povod&iacute; a upraven&eacute; body použit&eacute; k v&yacute;počtu povod&iacute;.     
+    </p>
+    <p>V&yacute;sledn&aacute; povod&iacute; budou m&iacute;t v&scaron;echny atributy vstupn&iacute;ch bodů a tak&eacute; tyto dodatečn&eacute; atributy:     
+        <ul>
+            <li> <i>PourPtID</i>&mdash;Obsahuje hodnotu ID ze vstupn&iacute;ho bodu
+            </li>
+            <li> <i>Area Square Kilometers</i>&mdash;Obsahuje povrch povod&iacute; ve čtverečn&iacute;ch kilometrech
+            </li>
+            <li> <i>Description</i> a <i>DataResolution</i>&mdash;Obsahuj&iacute; informace t&yacute;kaj&iacute;c&iacute; se hydrologick&yacute;ch &uacute;dajů použit&yacute;ch pro v&yacute;počet
+            </li>
+        </ul>
+        
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t aktu&aacute;ln&iacute; rozsah mapy</b>, budou k v&yacute;počtu povod&iacute; použity pouze prvky v aktu&aacute;ln&iacute;m rozsahu mapy.  Pokud pole za&scaron;krtnuto nen&iacute;, budou analyzov&aacute;ny v&scaron;echny prvky ve vstupn&iacute; vrstvě, včetně těch, kter&eacute; se nach&aacute;zej&iacute; mimo aktu&aacute;ln&iacute; rozsah mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Bodové prvky, které se použijí k výpočtu povodí.</h2></div>
+        <hr/>
+        <div>
+            <p>Povod&iacute; (př&iacute;tokov&aacute; oblast proti proudu) se vypoč&iacute;t&aacute; pro v&scaron;echny tyto body.  
+            </p>
+            <p>Vrstvu můžete vybrat ze sv&eacute; mapy nebo můžete zvolit možnost  <b>Vybrat vrstvu anal&yacute;zy</b>, kter&aacute; se nach&aacute;z&iacute; na konci rozbalovac&iacute;ho seznamu. Pomoc&iacute; t&eacute;to možnosti se otevře galerie, kde můžete proch&aacute;zet a&nbsp;vyb&iacute;rat datov&eacute; sady z&nbsp;různ&yacute;ch vrstev, kter&eacute; můžete použ&iacute;t ve sv&eacute; anal&yacute;ze. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Vyhledávací vzdálenost k nejbližšímu odtoku</h2></div>
+        <hr/>
+        <div>
+            <p>Pokud se vstupn&iacute; body nach&aacute;zej&iacute; mimo odtokovou linii, v&yacute;sledn&aacute; povod&iacute; budou pravděpodobně velmi mal&aacute; a nepř&iacute;li&scaron; užitečn&aacute; při určen&iacute; zdroje zneči&scaron;těn&iacute; proti proudu.  Ve vět&scaron;ině př&iacute;padů je při hled&aacute;n&iacute; povod&iacute;, kter&eacute; plyne do bodu na odtokov&eacute; linii, va&scaron;&iacute;m c&iacute;lem, aby byl vstupn&iacute; bod um&iacute;stěn v nejbliž&scaron;&iacute; odtokov&eacute; linii.  Za &uacute;čelem nalezen&iacute; nejbliž&scaron;&iacute; odtokov&eacute; linie zadejte vyhled&aacute;vac&iacute; vzd&aacute;lenost. Pokud neurč&iacute;te vyhled&aacute;vac&iacute; vzd&aacute;lenost, n&aacute;stroj vypoč&iacute;t&aacute; a použije konzervativn&iacute; vyhled&aacute;vac&iacute; vzd&aacute;lenost.  
+            </p>
+            <p>Pokud chcete použ&iacute;t přesn&eacute; um&iacute;stěn&iacute; vstupn&iacute;ho bodu, zadejte nulovou vyhled&aacute;vac&iacute; vzd&aacute;lenost.  
+            </p>
+            <p>Pro potřeby anal&yacute;zy byly odtokov&eacute; linie předem vypoč&iacute;t&aacute;ny společnost&iacute; Esri pomoc&iacute; standardn&iacute;ch hydrologick&yacute;ch modelů. Pokud se ve vyhled&aacute;vac&iacute; vzd&aacute;lenosti nenach&aacute;z&iacute; ž&aacute;dn&aacute; odtokov&aacute; linie, bude použito um&iacute;stěn&iacute; s nejvy&scaron;&scaron;&iacute; akumulac&iacute; toku ve vyhled&aacute;vac&iacute; vzd&aacute;lenosti.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy.  V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud n&aacute;zev vrstvy již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+            <p> Tento n&aacute;stroj nespotřebov&aacute;v&aacute; kredity.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

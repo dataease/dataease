@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>밀도 계산</h2><p/>
+        <h2><img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" alt="밀도 계산"></h2>
+        <hr/>
+    <p>밀도 계산 도구는 맵에서 일부 현상(포인트 또는 라인의 속성으로 표시됨)의 알려진 수량을 분산시켜 포인트 또는 라인 피처에서 밀도 맵을 생성합니다.가장 낮은 밀도에서 가장 높은 밀도로 분류된 영역 레이어가 결과로 나옵니다.   
+
+    </p>
+    <p>포인트 입력의 경우 각 포인트는 일부 이벤트 또는 인시던트의 위치를 표시해야 하며, 결과 레이어는 단위 면적당 인시던트 횟수를 표시합니다.새 위치의 높은 밀도 값은 해당 위치 근처에 더 많은 포인트가 있음을 나타냅니다.대부분의 경우 결과 레이어는 향후 이벤트에 대한 위험 표면으로 해석할 수 있습니다.예를 들어 입력 포인트가 낙뢰의 위치를 표시하는 경우 결과 레이어는 향후 낙뢰에 대한 위험 표면으로 해석할 수 있습니다.
+    </p>
+    <p>라인 입력의 경우 라인 밀도 표면은 각 위치 근처에 있는 전체 라인을 표시합니다.계산된 밀도 값의 단위는 단위 면적당 라인의 길이입니다.예를 들어 라인이 강을 표시하는 경우 결과 레이어는 검색 반경 내에 있는 강의 전체 길이를 표시하게 됩니다.이 결과는 동물이 서식하기에 쾌적한 지역을 식별하는 데 사용할 수 있습니다.
+    </p>
+    <p> 이 도구의 기타 이용 사례:
+        <ul>
+            <li>경찰이 범죄율이 높은 지역에 리소스를 제대로 할당할 수 있도록 범죄 밀도 맵을 생성합니다.
+            </li>
+            <li>군/구 내의 병원 밀도를 계산합니다.결과 레이어가 병원에 대한 높고 낮은 접근성을 지역에 표시하며 신규 병원 건설 장소를 결정하는 데 이 정보를 사용할 수 있습니다.
+            </li>
+            <li>과거 산불이 발생한 위치를 기반으로 산불 발생 위험도가 높은 지역을 식별합니다.
+            </li>
+            <li>새 도로 건설 장소를 계획하기 위해 주요 고속도로에서 멀리 있는 커뮤니티를 찾습니다.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>밀도를 계산할 포인트 또는 라인 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>밀도가 계산되는 포인트 또는 라인 레이어입니다.
+
+            </p>
+            <p>맵에서 레이어를 선택하는 것 외에도 드롭다운 목록 하단에서  <b>분석 레이어를 선택</b>할 수 있습니다. 해당 옵션을 사용하면 다양한 원본에서 분석에 사용할 데이터셋을 검색하고 선택할 수 있는 갤러리가 열립니다. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>개수 필드 사용</h2></div>
+        <hr/>
+        <div>
+            <p>각 위치에서 인시던트의 수를 지정하는 필드를 제공합니다.예를 들어 도시를 표시하는 포인트가 있는 경우 개수 필드처럼 도시 인구를 표시하는 필드를 사용할 수 있으며, 결과 인구 밀도 레이어는 더 많은 인구가 있는 도시 근처에서 더 높은 인구 밀도를 계산합니다.
+            </p>
+            <p> 기본 선택값인 없음을 사용하는 경우 각 위치는 단일 개수를 표시하는 것으로 간주합니다.
+            </p>
+        </div>
+    </div>
+    <div id="radius">
+        <div><h2>검색 거리</h2></div>
+        <hr/>
+        <div>
+            <p>밀도 값을 계산하는 경우 포인트 또는 라인 피처를 찾도록 검색할 범위를 지정하는 거리를 입력합니다.예를 들어 검색 거리를 10,000미터로 한 경우 결과 레이어의 위치 밀도가 해당 위치의 10,000미터 이내에 있는 피처를 기반으로 계산됩니다. 10,000미터 이내에 인시던트가 없는 위치에는 밀도 값 0이 제공됩니다.     
+
+            </p>
+            <p>거리가 제공되지 않는 경우 입력 피처의 위치 및 개수 필드의 값(개수 필드가 제공된 경우)을 기반으로 한 기본값이 계산됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>결과물을 다음에 맞게 클립</h2></div>
+        <hr/>
+        <div>
+            <p>밀도를 계산할 영역을 지정하는 레이어를 그리거나 제공합니다.예를 들어 호수 내에 물고기의 밀도를 계산하는 경우 이 매개변수에서 호수의 경계를 사용할 수 있으며 결과에 호수 경계 내에만 그려집니다.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>분류 기준:</h2></div>
+        <hr/>
+        <div>
+            <p>밀도 값을 영역에 분류하는 방법을 선택합니다.
+                <ul>
+                    <li>등간격&mdash;밀도 값의 범위가 각 영역에 동일하도록 영역이 생성됩니다.
+                    </li>
+                    <li>기하학적인 간격-영역은 기하학적 계열이 있는 클래스 간격에 기반을 둡니다.이 방법으로 각 클래스 범위가 각 클래스 내에서 거의 같은 수의 값을 지니며 간격 간 차이가 일정합니다.
+                    </li>
+                    <li>자연스러운 구분점-영역의 클래스 간격은 데이터의 자연스러운 그룹화를 기반으로 합니다.클래스 구분 값은 유사한 값을 가장 잘 그룹화하고 클래스 간의 차이점을 극대화합니다.
+
+                    </li>
+                    <li>동일 영역&mdash;각 영역의 크기가 동일하도록 영역이 생성됩니다.예를 들어 결과 레이어에 낮은 밀도 값보다 높은 밀도 값이 더 많은 경우 높은 밀도 값에 필요한 추가 영역이 생성됩니다.
+                    </li>
+                    <li>표준 편차-영역이 예측된 밀도 값의 표준 편차를 기반으로 생성됩니다. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>클래스 수</h2></div>
+        <hr/>
+        <div>
+            <p>결과 레이어에서 클래스 수를 지정합니다(예측 값 범위).각 클래스는 영역의 경계를 정의합니다.이러한 클래스의 값은 위의  <b>분류:</b> 매개변수에 따라 결정됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>결과 면적 단위</h2></div>
+        <hr/>
+        <div>
+            <p>결과 면적 단위를 지정합니다. 밀도는 개수를 면적으로 나눈 것이므로 이 매개변수에서 밀도 계산 면적의 단위를 지정합니다.  
+
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에서 생성되어 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어 이름이 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 메뉴를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Povodí (Watershed)</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="&Uacute;loha Povod&iacute;"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj stanov&iacute; př&iacute;tokovou oblast nad sadou buněk v rastru.
+    </p>
+    <p>Povod&iacute; je oblast, z n&iacute;ž odt&eacute;k&aacute; voda do společn&eacute;ho soustředěn&eacute;ho toku.Může se jednat o souč&aacute;st vět&scaron;&iacute;ho povod&iacute;, ale tak&eacute; může obsahovat men&scaron;&iacute; povod&iacute;, kter&yacute;m se ř&iacute;k&aacute; podpovod&iacute;.
+    </p>
+    <p>Hodnota každ&eacute;ho povod&iacute; se přeb&iacute;r&aacute; z hodnoty zdroje ve vstupn&iacute;m rastru nebo vrstvě prvků meze toku. Pokud je mez toku rastrovou datovou sadou, ve v&yacute;choz&iacute;m nastaven&iacute; se použij&iacute; hodnoty buněk. Pokud je mez toku datovou sadou bodov&eacute; tř&iacute;dy prvků, použij&iacute; se hodnoty ze specifikovan&eacute;ho pole.
+    </p>
+    <p>N&aacute;stroj Povod&iacute; podporuje pouze rastrovou vrstvu vstupn&iacute;ho směru odtoku D8.
+    </p>
+    <p>Pokud zad&aacute;v&aacute;te vstupn&iacute; um&iacute;stěn&iacute; meze toku jako data prvků, v&yacute;choz&iacute;m polem bude prvn&iacute; platn&eacute; pole, kter&eacute; je k dispozici. Pokud neexistuje ž&aacute;dn&eacute; platn&eacute; pole, v&yacute;choz&iacute; hodnotou bude pole ObjectID (např. OID nebo FID).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Zvolte vrstvu směru odtoku.</h2></div>
+        <hr/>
+        <div>
+            <p>Vstupn&iacute; rastr, kter&yacute; ukazuje směr odtoku každ&eacute; buňky.
+            </p>
+            <p>Rastr směru odtoku lze vytvořit pomoc&iacute; n&aacute;stroje Směr odtoku nebo &uacute;lohy FlowDirection ve službě RasterAnalysisTools, spusťte jej pomoc&iacute; v&yacute;choz&iacute;ho typu směru odtoku  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Zadejte vstupní lokace meze toku.</h2></div>
+        <hr/>
+        <div>
+            <p>Vstupn&iacute; lokace meze toku.
+            </p>
+            <p>U rastru se jedn&aacute; o buňky, nad kter&yacute;mi bude určena př&iacute;tokov&aacute; oblast nebo povod&iacute;. Jako zdrojov&eacute; buňky budou použity v&scaron;echny buňky, kter&eacute; nejsou NoData. U bodov&eacute;ho vstupu se jedn&aacute; o lokace, nad kter&yacute;mi bude určena př&iacute;tokov&aacute; oblast nebo povod&iacute;.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Zvolte pole meze toku</h2></div>
+        <hr/>
+        <div>
+            <p>Pole slouž&iacute;c&iacute; k&nbsp;přiřazen&iacute; hodnot k lokac&iacute;m meze toku.
+            </p>
+            <p>Pokud je vstupn&iacute; vrstva prvků meze toku rastr, použije se Hodnota. Pokud se jedn&aacute; o prvek, použije se č&iacute;seln&eacute; pole. Pokud pole obsahuje hodnoty desetinn&yacute;ch č&iacute;sel, budou zkr&aacute;ceny na cel&aacute; č&iacute;sla.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>N&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; se do mapy. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>Můžete zadat n&aacute;zev složky v  <b>Můj obsah</b>, kde bude v&yacute;sledek uložen pomoc&iacute; rozbalovac&iacute;ho seznamu <b>Uložit v&yacute;sledek do</b> .
+            </p>
+        </div>
+    </div>
+</div>
+</html>

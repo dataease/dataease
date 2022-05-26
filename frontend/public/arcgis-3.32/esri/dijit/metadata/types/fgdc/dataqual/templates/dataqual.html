@@ -1,0 +1,66 @@
+<div data-dojo-attach-point="containerNode">
+
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'dataqual',minOccurs:0,
+      label:'${i18nFgdc.dataqual.caption}'">
+    <div data-dojo-type="esri/dijit/metadata/form/Tabs">
+      
+      <!-- Attribute Accuracy -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nFgdc.dataqual.section.attributeAccuracy}'">
+        <div data-dojo-type="esri/dijit/metadata/types/fgdc/dataqual/attracc"></div>
+      </div>
+      
+      <!-- Logical Consistency Report -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nFgdc.dataqual.section.logicalConsistency}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'logic',label:'${i18nFgdc.dataqual.logic}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+        </div>
+      </div>
+      
+      <!-- Completeness Report -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nFgdc.dataqual.section.completeness}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'complete',label:'${i18nFgdc.dataqual.complete}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+        </div>
+      </div>
+      
+      <!-- Positional Accuracy -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nFgdc.dataqual.section.positionalAccuracy}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'posacc',minOccurs:0,label:'${i18nFgdc.dataqual.posacc}'">
+          <div data-dojo-type="esri/dijit/metadata/types/fgdc/dataqual/horizpa"></div>
+          <div data-dojo-type="esri/dijit/metadata/types/fgdc/dataqual/vertacc"></div>
+        </div>
+      </div>
+      
+      <!-- Lineage -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nFgdc.dataqual.section.lineage}'">
+        <div data-dojo-type="esri/dijit/metadata/types/fgdc/dataqual/lineage"></div>
+      </div>
+      
+      <!-- Cloud Coverage -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nFgdc.dataqual.section.cloudCover}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'cloud',minOccurs:0,
+            alternateValues:['Unknown'],label:'${i18nFgdc.dataqual.cloud}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputNumber"
+            data-dojo-props="minValue:0,maxValue:100,integerOnly:true,
+              hint:'${i18nFgdc.hints.integer0To100}'">
+            <div data-dojo-type="esri/dijit/metadata/form/tools/ClickableValueTool"
+              data-dojo-props="value:'Unknown',label:'${i18nFgdc.alternates.unknown}'"></div>  
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+</div>

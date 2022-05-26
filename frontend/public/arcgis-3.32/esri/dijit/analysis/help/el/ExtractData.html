@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Εξαγωγή Δεδομένων</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="&Epsilon;&xi;&alpha;&gamma;&omega;&gamma;ή &Delta;&epsilon;&delta;&omicron;&mu;έ&nu;&omega;&nu;"></h2>
+        <hr/>
+    <p>&Mu;&epsilon; &alpha;&upsilon;&tau;ό &tau;&omicron; &epsilon;&rho;&gamma;&alpha;&lambda;&epsilon;ί&omicron; &mu;&pi;&omicron;&rho;&epsilon;ί&tau;&epsilon; &nu;&alpha; &epsilon;&pi;&iota;&lambda;έ&xi;&epsilon;&tau;&epsilon; &kappa;&alpha;&iota; &nu;&alpha; &kappa;ά&nu;&epsilon;&tau;&epsilon; &lambda;ή&psi;&eta; &delta;&epsilon;&delta;&omicron;&mu;έ&nu;&omega;&nu; &gamma;&iota;&alpha; &mu;&iota;&alpha; &kappa;&alpha;&theta;&omicron;&rho;&iota;&sigma;&mu;έ&nu;&eta; &pi;&epsilon;&rho;&iota;&omicron;&chi;ή &epsilon;&nu;&delta;&iota;&alpha;&phi;έ&rho;&omicron;&nu;&tau;&omicron;&sigmaf;. &Tau;&alpha; &epsilon;&pi;ί&pi;&epsilon;&delta;&alpha; &pi;&omicron;&upsilon; &epsilon;&pi;&iota;&lambda;έ&gamma;&epsilon;&tau;&epsilon; &pi;&rho;&omicron;&sigma;&tau;ί&theta;&epsilon;&nu;&tau;&alpha;&iota; &sigma;&epsilon; έ&nu;&alpha; &alpha;&rho;&chi;&epsilon;ί&omicron; ZIP, CSV ή KMZ.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Θεματικά επίπεδα προς εξαγωγή</h2></div>
+        <hr/>
+        <div>
+            <p>&Epsilon;ί&nu;&alpha;&iota; &tau;&alpha; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;ά &epsilon;&pi;ί&pi;&epsilon;&delta;&alpha; &sigma;&tau;&omicron;&nu; &pi;ί&nu;&alpha;&kappa;&alpha; &pi;&epsilon;&rho;&iota;&epsilon;&chi;&omicron;&mu;έ&nu;&omega;&nu; &alpha;&pi;ό &tau;&alpha; &omicron;&pi;&omicron;ί&alpha; &mu;&pi;&omicron;&rho;&epsilon;ί&tau;&epsilon; &nu;&alpha; &epsilon;&xi;&alpha;&gamma;ά&gamma;&epsilon;&tau;&epsilon; &sigma;&tau;&omicron;&iota;&chi;&epsilon;ί&alpha; &Tau;&alpha; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;ά &epsilon;&pi;ί&pi;&epsilon;&delta;&alpha; &pi;&omicron;&upsilon; &epsilon;&pi;&iota;&lambda;έ&gamma;&omicron;&nu;&tau;&alpha;&iota;, &epsilon;&xi;ά&gamma;&omicron;&nu;&tau;&alpha;&iota; &kappa;&alpha;&iota; &pi;&rho;&omicron;&sigma;&tau;ί&theta;&epsilon;&nu;&tau;&alpha;&iota; &sigma;&tau;&omicron; &alpha;&rho;&chi;&epsilon;ί&omicron; ZIP ή CSV &pi;&omicron;&upsilon; &pi;&rho;&omicron;&kappa;ύ&pi;&tau;&epsilon;&iota;.
+            </p>
+            <p>&Gamma;&iota;&alpha; &nu;&alpha; &epsilon;&mu;&phi;&alpha;&nu;&iota;&sigma;&tau;&epsilon;ί έ&nu;&alpha; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;ό &epsilon;&pi;ί&pi;&epsilon;&delta;&omicron; &sigma;&tau;&eta; &lambda;ί&sigma;&tau;&alpha; &tau;&omega;&nu; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;ώ&nu; &epsilon;&pi;&iota;&pi;έ&delta;&omega;&nu; &pi;&rho;&omicron;&sigmaf; &epsilon;&xi;&alpha;&gamma;&omega;&gamma;ή, &pi;&rho;έ&pi;&epsilon;&iota; &epsilon;ί&tau;&epsilon; &nu;&alpha; &epsilon;ί&sigma;&tau;&epsilon; &omicron; &kappa;ά&tau;&omicron;&chi;&omicron;&sigmaf; &tau;&omega;&nu; &delta;&epsilon;&delta;&omicron;&mu;έ&nu;&omega;&nu; &epsilon;ί&tau;&epsilon; &omicron; &kappa;ά&tau;&omicron;&chi;&omicron;&sigmaf; &tau;&omega;&nu; &delta;&epsilon;&delta;&omicron;&mu;έ&nu;&omega;&nu; &nu;&alpha; &epsilon;&nu;&epsilon;&rho;&gamma;&omicron;&pi;&omicron;&iota;ή&sigma;&epsilon;&iota; &tau;&eta;&nu; &epsilon;&xi;&alpha;&gamma;&omega;&gamma;ή &tau;&omega;&nu; &delta;&epsilon;&delta;&omicron;&mu;έ&nu;&omega;&nu;. &Gamma;&iota;&alpha; &nu;&alpha; &epsilon;&nu;&epsilon;&rho;&gamma;&omicron;&pi;&omicron;&iota;ή&sigma;&epsilon;&tau;&epsilon; &tau;&eta;&nu; &epsilon;&xi;&alpha;&gamma;&omega;&gamma;ή &delta;&epsilon;&delta;&omicron;&mu;έ&nu;&omega;&nu; &sigma;&epsilon; &delta;&epsilon;&delta;&omicron;&mu;έ&nu;&alpha; &tau;&omega;&nu; &omicron;&pi;&omicron;ί&omega;&nu; &epsilon;ί&sigma;&tau;&epsilon; &kappa;ά&tau;&omicron;&chi;&omicron;&iota;: 
+                <ul>
+                    <li>&Alpha;&nu;&omicron;ί&xi;&tau;&epsilon; &tau;&eta;&nu; &pi;&epsilon;&rho;&iota;&gamma;&rho;&alpha;&phi;ή &alpha;&nu;&tau;&iota;&kappa;&epsilon;&iota;&mu;έ&nu;&omicron;&upsilon; &tau;&omega;&nu; &delta;&epsilon;&delta;&omicron;&mu;έ&nu;&omega;&nu;.
+                    </li>
+                    <li>&Kappa;ά&nu;&tau;&epsilon; &kappa;&lambda;&iota;&kappa; &sigma;&tau;&eta;&nu; &kappa;&alpha;&rho;&tau;έ&lambda;&alpha;  <b>&Rho;&upsilon;&theta;&mu;ί&sigma;&epsilon;&iota;&sigmaf;</b>.
+                    </li>
+                    <li>&Mu;&epsilon;&tau;&alpha;&beta;&epsilon;ί&tau;&epsilon; &pi;&rho;&omicron;&sigmaf; &tau;&alpha; &kappa;ά&tau;&omega; &mu;&epsilon; &kappa;ύ&lambda;&iota;&sigma;&eta; &sigma;&tau;&eta;&nu; &epsilon;&nu;ό&tau;&eta;&tau;&alpha;  <b>&Epsilon;&xi;&alpha;&gamma;&omega;&gamma;ή &delta;&epsilon;&delta;&omicron;&mu;έ&nu;&omega;&nu;</b>.
+                    </li>
+                    <li>&Epsilon;&pi;&iota;&lambda;έ&xi;&tau;&epsilon;  <b>&Nu;&alpha; &epsilon;&pi;&iota;&tau;&rho;έ&pi;&epsilon;&tau;&alpha;&iota; &sigma;&epsilon; ά&lambda;&lambda;&omicron;&upsilon;&sigmaf; &eta; &epsilon;&xi;&alpha;&gamma;&omega;&gamma;ή &sigma;&epsilon; &delta;&iota;&alpha;&phi;&omicron;&rho;&epsilon;&tau;&iota;&kappa;ά &mu;&omicron;&rho;&phi;ό&tau;&upsilon;&pi;&alpha;</b>.  &Kappa;ά&nu;&tau;&epsilon; &kappa;&lambda;&iota;&kappa; &sigma;&tau;&eta;&nu; &epsilon;&pi;&iota;&lambda;&omicron;&gamma;ή <b>&Alpha;&pi;&omicron;&theta;ή&kappa;&epsilon;&upsilon;&sigma;&eta;</b> ό&tau;&alpha;&nu; &omicron;&lambda;&omicron;&kappa;&lambda;&eta;&rho;ώ&sigma;&epsilon;&tau;&epsilon;.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>&Alpha;&nu; &tau;&omicron; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;ό &epsilon;&pi;ί&pi;&epsilon;&delta;&omicron; &alpha;&nu;ά&lambda;&upsilon;&sigma;&eta;&sigmaf; &pi;&epsilon;&rho;&iota;έ&chi;&epsilon;&iota; &sigma;&upsilon;&nu;&eta;&mu;&mu;έ&nu;&alpha;, &theta;&alpha; &pi;&rho;έ&pi;&epsilon;&iota; &nu;&alpha; έ&chi;&epsilon;&tau;&epsilon; &upsilon;&pi;ό&psi;&eta; &sigma;&alpha;&sigmaf; ό&tau;&iota; &theta;&alpha; &gamma;ί&nu;&epsilon;&iota; &epsilon;&xi;&alpha;&gamma;&omega;&gamma;ή &tau;&omega;&nu; &sigma;&upsilon;&nu;&eta;&mu;&mu;έ&nu;&omega;&nu; &mu;ό&nu;&omicron; &alpha;&nu; &tau;&omicron; &mu;&omicron;&rho;&phi;ό&tau;&upsilon;&pi;&omicron; &tau;&omega;&nu; &epsilon;&xi;&alpha;&gamma;ό&mu;&epsilon;&nu;&omega;&nu; &delta;&epsilon;&delta;&omicron;&mu;έ&nu;&omega;&nu; &epsilon;ί&nu;&alpha;&iota; file geodatabase &kappa;&alpha;&iota; &delta;&epsilon;&nu; &epsilon;ί&nu;&alpha;&iota; &epsilon;&pi;&iota;&lambda;&epsilon;&gamma;&mu;έ&nu;&eta; &eta; &delta;&upsilon;&nu;&alpha;&tau;ό&tau;&eta;&tau;&alpha;  <b>&Alpha;&pi;&omicron;&kappa;&omicron;&pi;ή &sigma;&tau;&omicron;&iota;&chi;&epsilon;ί&omega;&nu;</b>.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Περιοχή μελέτης</h2></div>
+        <hr/>
+        <div>
+            <p>&Eta; &pi;&epsilon;&rho;&iota;&omicron;&chi;ή &pi;&omicron;&upsilon; &pi;&rho;&omicron;&sigma;&delta;&iota;&omicron;&rho;ί&zeta;&epsilon;&iota; &tau;&alpha; &sigma;&tau;&omicron;&iota;&chi;&epsilon;ί&alpha; &pi;&omicron;&upsilon; &theta;&alpha; &sigma;&upsilon;&mu;&pi;&epsilon;&rho;&iota;&lambda;&eta;&phi;&theta;&omicron;ύ&nu; &sigma;&tau;&omicron; &alpha;&rho;&chi;&epsilon;ί&omicron; &epsilon;&xi;ό&delta;&omicron;&upsilon; ZIP ή CSV. &Mu;&pi;&omicron;&rho;&epsilon;ί&tau;&epsilon; &nu;&alpha; &epsilon;&pi;&iota;&lambda;έ&xi;&epsilon;&tau;&epsilon; &alpha;&pi;ό &tau;&alpha; &epsilon;&xi;ή&sigmaf;:
+                <ul>
+                    <li>&Tau;&eta;&nu; &tau;&rho;έ&chi;&omicron;&upsilon;&sigma;&alpha; &omicron;&rho;&alpha;&tau;ή έ&kappa;&tau;&alpha;&sigma;&eta; &tau;&omicron;&upsilon; &chi;ά&rho;&tau;&eta; ( <b>Ί&delta;&iota;&alpha; &mu;&epsilon; &tau;&eta;&nu; &epsilon;&mu;&phi;&alpha;&nu;&iota;&zeta;ό&mu;&epsilon;&nu;&eta;</b>).
+                    </li>
+                    <li>Έ&nu;&alpha; &alpha;&pi;ό &tau;&alpha; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;ά &epsilon;&pi;ί&pi;&epsilon;&delta;&alpha; &tau;&omicron;&upsilon; &pi;ί&nu;&alpha;&kappa;&alpha; &pi;&epsilon;&rho;&iota;&epsilon;&chi;&omicron;&mu;έ&nu;&omega;&nu; &sigma;&alpha;&sigmaf;. &Alpha;&nu; &tau;&omicron; &epsilon;&pi;&iota;&lambda;&epsilon;&gamma;&mu;έ&nu;&omicron; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;ό &epsilon;&pi;ί&pi;&epsilon;&delta;&omicron; &epsilon;ί&nu;&alpha;&iota; &sigma;&eta;&mu;&epsilon;&iota;&alpha;&kappa;ά ή &gamma;&rho;&alpha;&mu;&mu;&iota;&kappa;ά &sigma;&tau;&omicron;&iota;&chi;&epsilon;ί&alpha;, &omega;&sigmaf; &pi;&epsilon;&rho;&iota;&omicron;&chi;ή &mu;&epsilon;&lambda;έ&tau;&eta;&sigmaf; &theta;&alpha; &chi;&rho;&eta;&sigma;&iota;&mu;&omicron;&pi;&omicron;&iota;&eta;&theta;&epsilon;ί &eta; έ&kappa;&tau;&alpha;&sigma;&eta; &tau;&omicron;&upsilon; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;&omicron;ύ &epsilon;&pi;&iota;&pi;έ&delta;&omicron;&upsilon;.
+                    </li>
+                    <li>&Sigma;&chi;&epsilon;&delta;&iota;ά&sigma;&tau;&epsilon; &mu;&iota;&alpha; &pi;&epsilon;&rho;&iota;&omicron;&chi;ή &gamma;&iota;&alpha; &nu;&alpha; &kappa;&alpha;&theta;&omicron;&rho;ί&sigma;&epsilon;&tau;&epsilon; &tau;&eta;&nu; &pi;&epsilon;&rho;&iota;&omicron;&chi;ή &mu;&epsilon;&lambda;έ&tau;&eta;&sigmaf;.
+                    </li>
+                </ul>
+                 &Theta;&alpha; &epsilon;&xi;&alpha;&chi;&theta;&omicron;ύ&nu; ό&lambda;&alpha; &tau;&alpha; &sigma;&tau;&omicron;&iota;&chi;&epsilon;ί&alpha; &pi;&omicron;&upsilon; &beta;&rho;ί&sigma;&kappa;&omicron;&nu;&tau;&alpha;&iota; &epsilon;&nu;&tau;&epsilon;&lambda;ώ&sigmaf; &mu;έ&sigma;&alpha; &sigma;&tau;&eta;&nu; έ&kappa;&tau;&alpha;&sigma;&eta; &tau;&omicron;&upsilon; &chi;ά&rho;&tau;&eta;. &Gamma;&iota;&alpha; &sigma;&tau;&omicron;&iota;&chi;&epsilon;ί&alpha; &pi;&omicron;&upsilon; &delta;&iota;&alpha;&sigma;&chi;ί&zeta;&omicron;&upsilon;&nu; ή &tau;έ&mu;&nu;&omicron;&upsilon;&nu; &tau;&omicron; ό&rho;&iota;&omicron; &tau;&eta;&sigmaf; έ&kappa;&tau;&alpha;&sigma;&eta;&sigmaf; &tau;&omicron;&upsilon; &chi;ά&rho;&tau;&eta;, &alpha;&lambda;&lambda;ά &delta;&epsilon;&nu; &epsilon;ί&nu;&alpha;&iota; &epsilon;&nu;&tau;&epsilon;&lambda;ώ&sigmaf; &epsilon;&nu;&tau;ό&sigmaf; &tau;&eta;&sigmaf; έ&kappa;&tau;&alpha;&sigma;&eta;&sigmaf;, έ&chi;&epsilon;&tau;&epsilon; &delta;ύ&omicron; &epsilon;&pi;&iota;&lambda;&omicron;&gamma;έ&sigmaf;:
+                <ul>
+                    <li> <b>&Epsilon;&pi;&iota;&lambda;&omicron;&gamma;ή &Sigma;&tau;&omicron;&iota;&chi;&epsilon;ί&omega;&nu;</b>&mdash;&Theta;&alpha; &epsilon;&xi;&alpha;&chi;&theta;&omicron;ύ&nu; &omicron;&lambda;ό&kappa;&lambda;&eta;&rho;&alpha; &tau;&alpha; &sigma;&tau;&omicron;&iota;&chi;&epsilon;ί&alpha; &pi;&omicron;&upsilon; &delta;&iota;&alpha;&sigma;&tau;&alpha;&upsilon;&rho;ώ&nu;&omicron;&nu;&tau;&alpha;&iota; &mu;&epsilon; &tau;&omicron; ό&rho;&iota;&omicron; &tau;&eta;&sigmaf; &pi;&epsilon;&rho;&iota;&omicron;&chi;ή&sigmaf; &mu;&epsilon;&lambda;έ&tau;&eta;&sigmaf;.
+                    </li>
+                    <li> <b>&Alpha;&pi;&omicron;&kappa;&omicron;&pi;ή &Sigma;&tau;&omicron;&iota;&chi;&epsilon;ί&omega;&nu;</b>&mdash;&Theta;&alpha; &epsilon;&xi;&alpha;&chi;&theta;&omicron;ύ&nu; &mu;ό&nu;&omicron; &tau;&alpha; &tau;&mu;ή&mu;&alpha;&tau;&alpha; &tau;&omega;&nu; &sigma;&tau;&omicron;&iota;&chi;&epsilon;ί&omega;&nu; &epsilon;&kappa;&epsilon;ί&nu;&omega;&nu; &pi;&omicron;&upsilon; &beta;&rho;ί&sigma;&kappa;&omicron;&nu;&tau;&alpha;&iota; &epsilon;&nu;&tau;ό&sigmaf; &tau;&eta;&sigmaf; &pi;&epsilon;&rho;&iota;&omicron;&chi;ή&sigmaf; &mu;&epsilon;&lambda;έ&tau;&eta;&sigmaf;.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Μορφότυπο εξαγόμενων δεδομένων</h2></div>
+        <hr/>
+        <div>
+            <p>&Tau;&omicron; &mu;&omicron;&rho;&phi;ό&tau;&upsilon;&pi;&omicron; &tau;&omega;&nu; &delta;&epsilon;&delta;&omicron;&mu;έ&nu;&omega;&nu; &pi;&omicron;&upsilon; &theta;&alpha; &epsilon;&xi;&alpha;&chi;&theta;&omicron;ύ&nu;. Ό&tau;&alpha;&nu; &gamma;ί&nu;&epsilon;&tau;&alpha;&iota; &epsilon;&xi;&alpha;&gamma;&omega;&gamma;ή &gamma;&rho;&alpha;&mu;&mu;&iota;&kappa;ώ&nu; ή &pi;&omicron;&lambda;&upsilon;&gamma;&omega;&nu;&iota;&kappa;ώ&nu; &sigma;&tau;&omicron;&iota;&chi;&epsilon;ί&omega;&nu; &sigma;&epsilon; &alpha;&rho;&chi;&epsilon;ί&alpha; CSV, &epsilon;&xi;ά&gamma;&omicron;&nu;&tau;&alpha;&iota; &mu;ό&nu;&omicron; &tau;&alpha; &mu;&eta; &chi;&omega;&rho;&iota;&kappa;ά &gamma;&nu;&omega;&rho;ί&sigma;&mu;&alpha;&tau;&alpha;. Ό&tau;&alpha;&nu; &gamma;ί&nu;&epsilon;&tau;&alpha;&iota; &epsilon;&xi;&alpha;&gamma;&omega;&gamma;ή &sigma;&eta;&mu;&epsilon;&iota;&alpha;&kappa;ώ&nu; &sigma;&tau;&omicron;&iota;&chi;&epsilon;ί&omega;&nu;, &epsilon;&xi;ά&gamma;&omicron;&nu;&tau;&alpha;&iota; &tau;ό&sigma;&omicron; &tau;&alpha; &chi;&omega;&rho;&iota;&kappa;ά ό&sigma;&omicron; &kappa;&alpha;&iota; &tau;&alpha; &mu;&eta; &chi;&omega;&rho;&iota;&kappa;ά &gamma;&nu;&omega;&rho;ί&sigma;&mu;&alpha;&tau;&alpha;.  
+            </p>
+            <p>&Tau;&alpha; &epsilon;&xi;&alpha;&gamma;ό&mu;&epsilon;&nu;&alpha; &delta;&epsilon;&delta;&omicron;&mu;έ&nu;&alpha; &theta;&alpha; &chi;&rho;&eta;&sigma;&iota;&mu;&omicron;&pi;&omicron;&iota;&omicron;ύ&nu; &tau;&eta;&nu; &pi;&rho;&omicron;&beta;&omicron;&lambda;ή Web Mercator 1984. &Gamma;&iota;&alpha; &alpha;&rho;&chi;&epsilon;ί&alpha; CSV &tau;&alpha; &pi;&epsilon;&delta;ί&alpha;  <i>Lat</i> &kappa;&alpha;&iota; <i>Long</i> &theta;&alpha; &pi;&rho;&omicron;&sigma;&alpha;&rho;&tau;ώ&nu;&tau;&alpha;&iota; &sigma;&tau;&alpha; &delta;&epsilon;&delta;&omicron;&mu;έ&nu;&alpha; &mu;&epsilon; &sigma;&upsilon;&nu;&tau;&epsilon;&tau;&alpha;&gamma;&mu;έ&nu;&epsilon;&sigmaf; &sigma;&tau;&omicron; Web Mercator 1984.
+            </p> 
+            <p>&Upsilon;&pi;&omicron;&sigma;&tau;&eta;&rho;ί&zeta;&omicron;&nu;&tau;&alpha;&iota; &tau;&alpha; &epsilon;&xi;ή&sigmaf; &mu;&omicron;&rho;&phi;ό&tau;&upsilon;&pi;&alpha; &epsilon;&xi;ό&delta;&omicron;&upsilon;:
+                <ul>
+                    <li>&Alpha;&rho;&chi;&epsilon;ί&omicron; &tau;&iota;&mu;ώ&nu; &delta;&iota;&alpha;&chi;&omega;&rho;&iota;&sigma;&mu;έ&nu;&omega;&nu; &mu;&epsilon; &kappa;ό&mu;&mu;&alpha;&tau;&alpha; (CSV)&mdash; <code>.csv</code> ή <code>.zip</code>
+                    </li>
+                    <li>File geodatabase&mdash; <code>.zip</code>
+                    </li>
+                    <li>Keyhole Markup Language (KML)&mdash; <code>.kmz</code> ή <code>.zip</code>
+                    </li>
+                    <li>Shapefile&mdash; <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Όνομα αρχείου εξόδου</h2></div>
+        <hr/>
+        <div>
+            <p>&Alpha;&upsilon;&tau;ό &epsilon;ί&nu;&alpha;&iota; &tau;&omicron; ό&nu;&omicron;&mu;&alpha; &tau;&omicron;&upsilon; &alpha;&nu;&tau;&iota;&kappa;&epsilon;&iota;&mu;έ&nu;&omicron;&upsilon; &pi;&omicron;&upsilon; &theta;&alpha; &pi;&rho;&omicron;&sigma;&tau;&epsilon;&theta;&epsilon;ί &sigma;&tau;&eta;&nu; &epsilon;&nu;ό&tau;&eta;&tau;&alpha;  <b>&Tau;&omicron; &Pi;&epsilon;&rho;&iota;&epsilon;&chi;ό&mu;&epsilon;&nu;ό &Mu;&omicron;&upsilon;</b>. &Tau;&omicron; ό&nu;&omicron;&mu;&alpha; &alpha;&nu;&tau;&iota;&kappa;&epsilon;&iota;&mu;έ&nu;&omicron;&upsilon; &beta;&alpha;&sigma;ί&zeta;&epsilon;&tau;&alpha;&iota; &sigma;&tau;&eta;&nu; &epsilon;&pi;&iota;&lambda;&epsilon;&gamma;&mu;έ&nu;&eta; &rho;ύ&theta;&mu;&iota;&sigma;&eta; <b>&Mu;&omicron;&rho;&phi;ό&tau;&upsilon;&pi;&omicron; &epsilon;&xi;&alpha;&gamma;ό&mu;&epsilon;&nu;&omega;&nu; &delta;&epsilon;&delta;&omicron;&mu;έ&nu;&omega;&nu;</b>.     &Alpha;&nu; &tau;&omicron; &alpha;&nu;&tau;&iota;&kappa;&epsilon;ί&mu;&epsilon;&nu;&omicron; &upsilon;&pi;ά&rho;&chi;&epsilon;&iota; ή&delta;&eta;, &theta;&alpha; &sigma;&alpha;&sigmaf; &zeta;&eta;&tau;&eta;&theta;&epsilon;ί &nu;&alpha; &delta;ώ&sigma;&epsilon;&tau;&epsilon; ά&lambda;&lambda;&omicron; ό&nu;&omicron;&mu;&alpha;.
+            </p>
+            <p>&Chi;&rho;&eta;&sigma;&iota;&mu;&omicron;&pi;&omicron;&iota;ώ&nu;&tau;&alpha;&sigmaf; &tau;&omicron; &pi;&tau;&upsilon;&sigma;&sigma;ό&mu;&epsilon;&nu;&omicron; &pi;&lambda;&alpha;ί&sigma;&iota;&omicron;  <b>&Alpha;&pi;&omicron;&theta;ή&kappa;&epsilon;&upsilon;&sigma;&eta; &alpha;&pi;&omicron;&tau;&epsilon;&lambda;έ&sigma;&mu;&alpha;&tau;&omicron;&sigmaf; &sigma;&epsilon;</b>, &mu;&pi;&omicron;&rho;&epsilon;ί&tau;&epsilon; &nu;&alpha; &kappa;&alpha;&theta;&omicron;&rho;ί&sigma;&epsilon;&tau;&epsilon; &tau;&omicron; ό&nu;&omicron;&mu;&alpha; &epsilon;&nu;ό&sigmaf; &phi;&alpha;&kappa;έ&lambda;&omicron;&upsilon; &sigma;&tau;&eta;&nu; &epsilon;&nu;ό&tau;&eta;&tau;&alpha; <b>&Tau;&omicron; &pi;&epsilon;&rho;&iota;&epsilon;&chi;ό&mu;&epsilon;&nu;ό &mu;&omicron;&upsilon;</b> ό&pi;&omicron;&upsilon; &theta;&alpha; &alpha;&pi;&omicron;&theta;&eta;&kappa;&epsilon;&upsilon;&tau;&epsilon;ί &tau;&omicron; &alpha;&pi;&omicron;&tau;έ&lambda;&epsilon;&sigma;&mu;&alpha;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

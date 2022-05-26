@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Generer tesseleringer</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Generer tesseleringer"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet genererer tesseleringer over et studieomr&aring;de basert p&aring; angitt form og st&oslash;rrelse.
+    </p>
+    <p>Avmerkingsboksen  <b>Bruk gjeldende kartutstrekning</b> deaktiveres for dette verkt&oslash;yet, ettersom utstrekningen som brukes til &aring; generere tesseleringene, styres av parameteren <b>Definere utstrekning</b>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Velg form</h2></div>
+        <hr/>
+        <div>
+            <p>Geometrien eller formen p&aring; tesseleringen du vil opprette.  De tilgjengelige formene er  <code>kvadrat</code>, <code>heksagon</code>, <code>tverrstilt heksagon</code>, <code>trekant</code> eller <code>rombe</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Definer studieområde</h2></div>
+        <hr/>
+        <div>
+            <p>Utstrekningen eller omr&aring;det som tesseleringene skal dekke. Utstrekningen kan bestemmes ved &aring; bruke gjeldende kartutstrekning, utstrekningen til et eksisterende lag eller ved &aring; tegne interaktivt et omr&aring;de som skal brukes som utstrekning.
+            </p>
+            <p>Hvis et geoobjektlag er blitt valgt til &aring; bestemme utstrekningen, aktiveres alternativet for bare &aring; beholde kryssende tesseleringer. Hvis det avmerkes, genereres bare de tesseleringene som dekker eller krysser geoobjekter i det angitte utstrekningslaget, i det resulterende tesseleringslaget. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Ikke avmerket
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Dekker hele utstrekningen">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Avmerket
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Dekker geoobjekter">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Definer beholderstørrelse ved å angi</h2></div>
+        <hr/>
+        <div>
+            <p>St&oslash;rrelsen p&aring; hver celle. Cellest&oslash;rrelsen kan bestemmes ved &aring; angi kvadratiske enheter eller ved &aring; angi en avstand som beregnes ved hjelp av f&oslash;lgende m&aring;l, der d = distanse: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Kvadrat
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Tverrstilt tesselering">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Heksagon
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Heksagontesselering">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Tverrstilt heksagon
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Tverrstilt heksagontesselering">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Trekant
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Trekanttesselering">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Rombe
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Rombetesselering">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Hvis laget allerede finnes, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

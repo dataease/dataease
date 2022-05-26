@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Classify Pixels Using Deep Learning</h2><p/>
+        <h2><img src="./images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Classify Pixels Using Deep Learning"></h2>
+        <hr/>
+    <p>This tool runs a trained deep learning model on an input raster to produce a classified raster, and each valid pixel has an assigned class label.
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the raster area that is visible in the current map extent will be analyzed. If it's not checked, the whole raster will be analyzed, even if it is outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Choose image used to classify pixels</h2></div>
+        <hr/>
+        <div>
+            <p>The input image to classify.
+            </p>
+            <p>It can be an image service URL, a raster layer, or an image service layer.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Choose deep learning model used to classify pixels</h2></div>
+        <hr/>
+        <div>
+            <p>The input deep learning package ( <code>.dlpk</code>) item.
+            </p>
+            <p>The deep learning package is composed of the Esri model definition JSON file ( <code>.emd</code>), the deep learning binary model file, and optionally, the Python raster function to be used.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Specify deep learning model arguments</h2></div>
+        <hr/>
+        <div>
+            <p>The function arguments are defined in the Python raster function class referenced by the input model. This is where you list additional deep learning parameters and arguments for experiments and refinement, such as a confidence threshold for adjusting the sensitivity.
+            </p>
+            <p>The names of the arguments are populated by the tool from reading the Python module on the raster analysis server.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map. The default name is based on the tool name and the input layer name. If the layer already exists, you will be prompted to provide another name.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

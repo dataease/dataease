@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>下流解析</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="下流解析"></h2>
+        <hr/>
+    <p>このツールは、入力レイヤーのポイントから下流方向に向かう経路またはフロー パスを決定します。
+    </p>
+    <p>たとえば、汚染源を表すポイント フィーチャがあり、調査対象エリアのどこに汚染物質が流れているかを特定する必要があるとします。[下流解析] を使用すると、汚染が発生しているパスを識別することができます。また、距離の値と単位を指定すると、この経路を個別のライン セグメントに分割することもできます。ラインは、フロー パスの全長、指定された最大経路の長さ、または調査対象エリアなどのクリッピングされたエリア フィーチャとして返すことができます。経路パスの全長として返される値は、多くの場合、解析の原点から海までの全経路の合計値になります。
+    </p>
+    <p>生成される結果は、下流経路を表すラインです。 <b>[経路をライン セグメントに分割]</b> に距離を指定すると、経路ラインは、複数のラインに分割され、各ラインの長さは指定した長さになります。たとえば、入力ポイントが、汚染の流出を表し、汚染の流出が流れ込む河川が 1 時間に 1 km、つまり 1 日に 24 km のスピードで動く場合、河川を 24 km のセグメントに分割することが推奨されます。経路を 24 km 間隔に分割すると、汚染の流出が毎日移動するおおよその場所がわかります。このラインは、距離に基づいて等級色を使用したシンボルで表され、経路の起点からの距離を示すラベルが付けられます。
+    </p>
+    <p>生成される経路には、すべての入力ポイントとその他の属性が含まれます。
+        <ul>
+            <li> <i>PointID</i> - 入力ポイントからの ID 値が含まれます。
+                
+
+            </li>
+            <li> <i>LengthKm</i> - 下流経路の全長 (キロメートル) が含まれます。
+                
+
+            </li>
+            <li> <i>Description</i> および <i>DataResolution</i> - 経路の計算に使用される水文解析データに関連する情報が含まれます。
+                
+
+            </li>
+            <li> <i>FromDistance</i> および <i>ToDistance</i> - 各ライン セグメントの距離の起点と終点が含まれます。 <b>[経路をライン セグメントに分割]</b> を使用すると、これらの属性が書き込まれます。
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>[現在のマップ範囲を使用]</b> をオンにすると、現在のマップ範囲内に表示されている入力レイヤーのポイント フィーチャのみが解析されます。オフの場合、入力レイヤーのすべてのフィーチャが (現在のマップ範囲内になくても) 使用されます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>各下流解析の開始場所として使用されるポイント フィーチャ</h2></div>
+        <hr/>
+        <div>
+            <p>下流解析の開始場所として使用されるポイント フィーチャ。出力には、各入力ポイントのラインが含まれます。
+            </p>
+            <p>マップからレイヤーを選択するだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択することもできます。このオプションを選択すると、解析で使用するためにさまざまなソースのデータセットを参照して選択できるギャラリーが開きます。 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>流路をライン セグメントに分割</h2></div>
+        <hr/>
+        <div>
+            <p>経路ラインは、複数のラインに分割され、各ラインの長さは指定された長さになります。たとえば、入力ポイントが、汚染の流出を表し、汚染の流出が流れ込む河川が 1 時間に 1 km、つまり 1 日に 24 km のスピードで動く場合、河川を 24 km のセグメントに分割することが推奨されます。経路を 24 km 間隔に分割すると、汚染の流出が毎日移動するおおよその場所がわかります。このラインは、距離に基づいて等級色を使用したシンボルで表され、経路の起点からの距離を示すラベルが付けられます。生成される経路には複数のライン セグメントがあり、各ライン セグメントには、 <i>FromDistance</i> フィールドおよび <i>ToDistance</i> フィールドが含まれます。
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>流路の最大距離</h2></div>
+        <hr/>
+        <div>
+            <p>返されるラインの全長を決定します。経路をクリップするためのエリア フィーチャを指定すると、生成される結果は、ここで入力する距離に関係なく、エリア フィーチャにクリップされます。
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>出力のクリップ先</h2></div>
+        <hr/>
+        <div>
+            <p>経路のクリップ先にするエリアのレイヤーを描画するか、指定します。たとえば、経路の結果を自国などの調査対象エリア内のみにしたい場合は、国フィーチャを入力として使用すると、経路が国境で停止します。
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p>これは、 <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前です。デフォルト名は、ツール名と入力レイヤー名に基づいて設定されます。レイヤー名がすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存先]</b> ドロップダウン メニューを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+            <p> このツールを実行してもクレジットを消費しません。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

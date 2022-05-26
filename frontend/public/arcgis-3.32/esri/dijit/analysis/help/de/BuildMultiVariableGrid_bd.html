@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Gitter mit mehreren Variablen erstellen</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Workflow-Diagramm des Werkzeugs &quot;Daten anh&auml;ngen&quot;"></h2>
+        <hr/>
+    <p>Das Werkzeug &quot;Gitter mit mehreren Variablen erstellen&quot; arbeitet mit einem oder mehreren Layern mit Punkt-, Linien- oder Polygon-Features. Das Werkzeug generiert ein Gitter aus quadratischen oder sechseckigen Abschnitten und berechnet die Werte f&uuml;r jeden Abschnitt basierend auf der N&auml;he der einzelnen Eingabe-Layer. Diese Werte k&ouml;nnen die folgenden Variablen enthalten: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Entfernung zu 'N&auml;chstgelegen'</b>: Die Entfernung von jedem Abschnitt zum n&auml;chstgelegenen Feature
+            </li>
+            <li> <b>Attribut von 'N&auml;chstgelegen'</b>: Ein Feldwert des n&auml;chstgelegenen Features jedes Abschnitts
+            </li>
+            <li> <b>Zusammenfassung von 'Nahe gelegen'</b>: Eine angegebene Statistik aller Features innerhalb einer Entfernung jedes Abschnitts
+            </li>
+            <li> <b>Zusammenfassung von '&Uuml;berschneidend'</b>: Eine angegebene Statistik aller Features, die jeden Abschnitt schneiden.
+            </li>
+        </ul>
+        
+    </p>
+    <p>In den Ergebnis-Layer werden nur Variablen aufgenommen, die Sie angeben. Mithilfe dieser Variablen erhalten Sie Informationen zur Entfernung und Verteilung von Daten. Anhand der Ergebnisse k&ouml;nnen Sie Informationen wie die folgenden ermitteln:
+        <ul>
+            <li>Anhand mehrerer Layer f&uuml;r die Infrastruktur des &ouml;ffentlichen Nahverkehrs k&ouml;nnen Sie herausfinden, welcher Teil der Stadt mit dem &ouml;ffentlichen Nahverkehr am schlechtesten zu erreichen ist.
+            </li>
+            <li>Mithilfe von Layern f&uuml;r Wasserstra&szlig;en, wie Seen und Fl&uuml;sse, k&ouml;nnen Sie den Namen des n&auml;chstgelegenen Gew&auml;ssers jeder Position in den USA ermitteln.
+            </li>
+            <li>Anhand eines Layers f&uuml;r das Haushaltseinkommen l&auml;sst sich herausfinden, wo in den USA die Einkommensschwankungen in einer Umgebung von 50 Meilen am gr&ouml;&szlig;ten sind.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Bin-Typ zum Erstellen des Gitters mit mehreren Variablen auswählen</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Der Typ und die Gr&ouml;&szlig;e der Abschnitte, die zum Erstellen des Gitters mit mehreren Variablen verwendet werden. Bei der Option  <b>Quadrat</b> bestimmen die angegebene Zahl und die Einheiten die H&ouml;he und L&auml;nge des Quadrats. Bei der Option <b>Hexagon</b> wird anhand der angegebenen Zahl und der Einheiten die Entfernung zwischen parallelen Seiten festgelegt.
+            </p>
+            <p>Diese Analyse verwendet Abschnitte und erfordert ein projiziertes Koordinatensystem. Sie k&ouml;nnen das  <b>Verarbeitungskoordinatensystem</b> in <b>Analyseumgebungen</b> festlegen. Wenn das Verarbeitungskoordinatensystem nicht auf ein projiziertes Koordinatensystem festgelegt ist, werden Sie aufgefordert, es festzulegen, wenn Sie die <b>Analyse ausf&uuml;hren</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Eingabe-Layer und Variablen auswählen, die in das Gitter einbezogen werden sollen</h2></div>
+        <hr/>
+        <div>
+            <p>Klicken Sie auf die Schaltfl&auml;che &quot;Hinzuf&uuml;gen&quot; ( <b>+</b>), um das Fenster <b>Variablen hinzuf&uuml;gen</b> zu &ouml;ffnen und der Analyse einen Layer hinzuzuf&uuml;gen. W&auml;hlen Sie im Fenster <b>Variablen hinzuf&uuml;gen</b> einen Eingabe-Layer und konfigurieren Sie die Variablen, die f&uuml;r diesen Eingabe-Layer berechnet werden sollen.
+            </p>
+            <p>Wenn Sie die zu berechnenden Variablen gew&auml;hlt und konfiguriert haben, wird der Layer mit den anderen ausgew&auml;hlten Layern im Werkzeugfenster aufgef&uuml;hrt. Klicken Sie auf die Schaltfl&auml;che &quot;Bearbeiten&quot; f&uuml;r einen beliebigen Layer, um das Fenster  <b>Variablen hinzuf&uuml;gen</b> zu &ouml;ffnen und alle f&uuml;r diesen Layer konfigurierten Variablen anzuzeigen. Klicken Sie auf die Schaltfl&auml;che &quot;L&ouml;schen&quot; f&uuml;r einen beliebigen Layer, um diesen Layer und alle verbundenen Variablen aus der Analyse zu entfernen.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Variablen hinzufügen</h2></div>
+        <hr/>
+        <div>
+            <p>In diesem Fenster k&ouml;nnen Sie einen Eingabe-Layer ausw&auml;hlen und die Variablen konfigurieren, die f&uuml;r diesen Eingabe-Layer berechnet werden sollen. W&auml;hlen Sie zun&auml;chst im Dropdown-Men&uuml;  <b>Eingabe-Layer ausw&auml;hlen</b> einen Punkt-, Polygon- oder Linien-Layer aus, den Sie der Analyse hinzuf&uuml;gen m&ouml;chten.
+            </p>
+            <p>Sie k&ouml;nnen nicht nur einen Layer aus der Karte ausw&auml;hlen, sondern auch unten in der Dropdown-Liste die Option  <b>Analyse-Layer ausw&auml;hlen</b> ausw&auml;hlen, um zu Ihren Inhalten f&uuml;r ein Big-Data-Dateifreigabe-Dataset bzw. -Feature-Layer zu navigieren.
+            </p>
+            <p>Anschlie&szlig;end klicken Sie auf die Schaltfl&auml;che  <b>Variable hinzuf&uuml;gen</b>, um eine neue Variable f&uuml;r die Bearbeitung hinzuzuf&uuml;gen. Sie m&uuml;ssen f&uuml;r jede Variable einen eindeutigen Namen angeben. Dies ist der Name des Feldes, das in der Attributtabelle des Ergebnis-Layers erstellt wird.
+            </p>
+            <p>Verwenden Sie das Dropdown-Men&uuml;, um den Typ der hinzuzuf&uuml;genden Variablen auszuw&auml;hlen. Jeder Variablentyp muss mit einem eindeutigen Parametersatz konfiguriert werden. Alle Parameter sind erforderlich.
+            </p>
+            <p>Wenn Sie alle gew&uuml;nschten Variablen f&uuml;r den ausgew&auml;hlten Layer hinzugef&uuml;gt haben, klicken Sie zum Speichern der Variablen auf die Schaltfl&auml;che  <b>Hinzuf&uuml;gen</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p> Der Name des Layers, der erstellt wird.  Wenn Sie in einen ArcGIS Data Store schreiben, werden Ihre Ergebnisse in  <b>Eigene Inhalte</b> gespeichert und der Karte hinzugef&uuml;gt. Wenn Sie in eine Big-Data-Dateifreigabe schreiben, werden Ihre Ergebnisse in der Big-Data-Dateifreigabe gespeichert und  ihrem Manifest hinzugef&uuml;gt. Sie werden nicht der Karte hinzugef&uuml;gt. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, kann das Werkzeug nicht ausgef&uuml;hrt werden.
+            </p>
+            <p>Wenn Sie &uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> in ArcGIS Data Store (Big Data Store vom Typ &quot;relational&quot; oder &quot;spatiotemporal&quot;) schreiben, k&ouml;nnen Sie den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

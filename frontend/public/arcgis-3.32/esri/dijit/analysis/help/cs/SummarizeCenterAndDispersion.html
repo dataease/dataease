@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Souhrn středové hodnoty a rozptýlení (Summarize Center and Dispersion)</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Souhrn středov&eacute; hodnoty a rozpt&yacute;len&iacute;"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj vypoč&iacute;t&aacute; středov&eacute; prvky a směrov&aacute; rozložen&iacute;. Lze jej použ&iacute;t pro zodpovězen&iacute; ot&aacute;zek jako:
+        <ul>
+            <li>Kde je střed?
+            </li>
+            <li>Kter&yacute; prvek je nejl&eacute;pe dostupn&yacute; ze v&scaron;ech ostatn&iacute;ch prvků?
+            </li>
+            <li>Jak jsou prvky rozpt&yacute;len&eacute;, kompaktn&iacute; nebo integrovan&eacute;?
+            </li>
+            <li>Existuj&iacute; nějak&eacute; trendy směru?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t rozsah aktu&aacute;ln&iacute; mapy</b>, budou analyzov&aacute;ny pouze prvky ve vstupn&iacute; vrstvě, kter&eacute; jsou viditeln&eacute; v aktu&aacute;ln&iacute;m rozsahu mapy. Pokud pole za&scaron;krtnuto nen&iacute;, budou analyzov&aacute;ny v&scaron;echny prvky ve vstupn&iacute; vrstvě, včetně těch, kter&eacute; se nach&aacute;zej&iacute; mimo aktu&aacute;ln&iacute; rozsah mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Zvolit vrstvu, která se má popsat</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva bodů, lini&iacute; nebo polygonů, kter&aacute; bude použita pro hled&aacute;n&iacute; středov&yacute;ch prvků a směrov&yacute;ch rozložen&iacute;.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Typy shrnutí</h2></div>
+        <hr/>
+        <div>
+            <p>Způsob souhrnu středu a rozpt&yacute;len&iacute;. 
+            </p>
+            <ul>
+                <li>Středov&yacute; prvek &ndash; identifikuje prvek datov&eacute; sady, kter&yacute; je um&iacute;stěn&yacute; nejbl&iacute;že středu.
+                </li>
+                <li>Geografick&yacute; střed prvků &ndash; identifikuje geografick&yacute; střed (nebo střed koncentrace) sady prvků.
+                </li>
+                <li>Geografick&yacute; medi&aacute;n prvků &ndash; nalezne um&iacute;stěn&iacute;, kter&eacute; se nach&aacute;z&iacute; v&nbsp;minim&aacute;ln&iacute; euklidovsk&eacute; vzd&aacute;lenosti od v&scaron;ech prvků v&nbsp;datov&eacute; sadě.
+                </li>
+                <li>Elipsa &ndash; vytvoř&iacute; elipsu směrodatn&eacute; odchylky, kter&aacute; shrnuje prostorov&eacute; charakteristiky zeměpisn&yacute;ch prvků: tendence seskupov&aacute;n&iacute;, rozptyl a trendy směru. Velikost elipsy může b&yacute;t 1, 2 nebo 3 směrodatn&eacute; odchylky.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Vážit podle (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p>Pole slouž&iacute;c&iacute; k&nbsp;ohodnocen&iacute; um&iacute;stěn&iacute; (vahou) na z&aacute;kladě jejich relativn&iacute; důležitosti. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Seskupit podle (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p>Pole použit&eacute; k seskupen&iacute; prvků pro samostatn&eacute; v&yacute;počty středov&yacute;ch prvků nebo rozptylu. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy.  V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud n&aacute;zev vrstvy již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

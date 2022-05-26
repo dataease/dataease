@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>集水区</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="集水区任务"></h2>
+        <hr/>
+    <p>该工具用于确定栅格中一组像元之上的汇流区域。
+    </p>
+    <p>集水区是将流体（通常是水）汇集到公共出水口使其集中排放的上坡区域。它可以是较大集水区的一部分，也可包含被称为自然子流域的较小集水区。
+    </p>
+    <p>各个集水区的值将取自输入栅格中源的值或者要素倾泻点图层。如果倾泻点为栅格数据集，则默认情况下使用像元值。如果倾泻点为点要素数据集，则从指定的字段中获取值。
+    </p>
+    <p>&ldquo;集水区&rdquo;工具仅支持 D8 输入流向栅格图层。
+    </p>
+    <p>当指定输入倾泻点位置作为要素数据时，默认字段将为首个可用的有效字段。如果不存在有效字段，则 ObjectID 字段（如 OID 或 FID）将为默认字段。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>选择流向图层</h2></div>
+        <hr/>
+        <div>
+            <p>根据每个像元来显示流向的输入栅格。
+            </p>
+            <p>可使用&ldquo;流向&rdquo;工具或 RasterAnalysisTools 服务中的 FlowDirection 任务（使用默认流向类型  <b>D8</b> 运行）创建流向栅格。
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>指定输入倾泻点位置</h2></div>
+        <hr/>
+        <div>
+            <p>输入倾泻点位置。
+            </p>
+            <p>对于栅格，输入倾泻点位置表示将确定的汇流区域或集水区之上的像元。所有非 NoData 的像元都将用作源像元。对于点输入，此项表示将确定的汇流区域或流域之上的位置。
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>选择倾泻点字段</h2></div>
+        <hr/>
+        <div>
+            <p>用于为倾泻点位置赋值的字段。
+            </p>
+            <p>如果输入倾泻点图层为栅格，则使用&ldquo;值&rdquo;。如果为要素，则使用数值字段。如果该字段包含浮点型值，它们将被截断为整型。
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>将在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该名称的图层已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>您可以使用 <b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

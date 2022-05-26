@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Riepiloga attributi</h2><p/>
+        <h2><img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" alt="Diagramma Riepiloga Attributi"></h2>
+        <hr/>
+    <p> Questo strumento riepiloga tutti i valori corrispondenti in uno o pi&ugrave; campi e calcola le statistiche su di essi. La statistica pi&ugrave; semplice &egrave; costituita dal numero di feature che sono state riepilogate insieme, tuttavia &egrave; possibile calcolare anche statistiche pi&ugrave; avanzate.
+    </p>
+    <p>Si supponga, ad esempio, di avere feature puntuali relative alla posizione di negozi con un campo che rappresenta  <i>DISTRICT_MANAGER_NAME</i>, e che si desideri riepilogare le vendite di caff&egrave; per ciascun responsabile. &Egrave; possibile specificare il campo <i>DISTRICT_MANAGER_NAME</i> come quello in cui eseguire la dissolvenza e tutte le righe di dati che rappresentano singoli responsabili verranno riepilogate. Ci&ograve; significa che tutte le posizioni dei negozi gestite da <pre>Manager1</pre> saranno riepilogate in una riga, con le statistiche di riepilogo calcolate. In questo caso, verranno calcolate statistiche come il numero dei negozi e la somma di <i>TOTAL_SALES</i> per tutti i negozi che <pre>Manager1</pre> gestisce , cos&igrave; come per qualsiasi altro responsabile elencato nel campo <i>DISTRICT_MANAGER_NAME</i>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegli l'input per il riepilogo</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer che contiene i campi che verranno riepilogati.  
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Scegliere in che modo riepilogare i dati</h2></div>
+        <hr/>
+        <div>
+            <p>Sono disponibili due metodi per riepilogare i dati:
+                <ul>
+                    <li> <b>Tutte le feature in un'unica feature</b>&mdash;Calcola le statistiche su tutte le feature.
+                    </li>
+                    <li> <b>Per campi</b>&mdash;Raggruppa le feature in base ai valori nei campi specificati.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ad esempio, si supponga di avere un set di dati di alberi che includano campi di  <i>tipo di albero</i> con valori <code>Acero</code>, <code>Abete</code> e <code>Pino</code>,  e un campo <i>altezza albero</i>, e si intende trovare il valore di <i>altezza albero</i> medio. Riepilogando tutte le feature in una singola feature, si trover&agrave; l'albero con l'altezza media tra tutti gli alberi, con un unico valore medio. Riepilogando per il campo <i>altezza albero</i>, si otterr&agrave; un valore medio di aceri, un valore medio di abeti, e un valore medio di pini.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Aggiungi statistiche (facoltativo)</h2></div>
+        <hr/>
+        <div>
+            <p> &Egrave; possibile calcolare le statistiche su feature riepilogate. Su campi numerici &egrave; possibile calcolare quanto segue:
+                <ul>
+                    <li>Conteggio: calcola il numero di valori nonnull. Pu&ograve; essere utilizzato su campi o stringhe numeriche. Il conteggio di [null, 0, 2] &egrave; 2.
+                    </li>
+                    <li>Somma: la somma dei valori numerici in un campo. La somma di [null, null, 3] &egrave; 3.
+                    </li>
+                    <li>Media: la media di valori numerici. La media di [0, 2, null] &egrave; 1.
+                    </li>
+                    <li>Min: il valore minimo di un campo numerico. Il minimo di [0, 2, null] &egrave; 0. 
+                    </li>
+                    <li>Max: il valore massimo di un campo numerico. Il valore massimo di [0, 2, null] &egrave; 2.
+                    </li>
+                    <li>Intervallo: l'intervallo di un campo numerico. Questo viene calcolato come i valori minimi sottratti dal valore massimo. L'intervallo di [0, null, 1] &egrave; 1. L'intervallo di [null, 4] &egrave; 0.
+                    </li>
+                    <li>Varianza: la varianza di un campo numerico in una traccia. La varianza di [1] is null. La varianza di [null, 1,0,1,1] &egrave; 0,25.
+                    </li>
+                    <li>Deviazione standard: la deviazione standard di un campo numerico. La deviazione standard di [1] &egrave; null. La deviazione standard di [null, 1,0,1,1] &egrave; 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Su campi stringa &egrave; possibile calcolare quanto segue:
+                <ul>
+                    <li>Conteggio: il numero di stringhe nonnull.
+                    </li>
+                    <li>Qualsiasi: questa statistica &egrave; un esempio casuale di un valore stringa nel campo specificato.
+                    </li>
+                </ul>
+                Tutte le statistiche vengono calcolate su valori non null. Il layer risultante includer&agrave; un nuovo campo per ogni statistica calcolata. &Egrave; possibile aggiungere un numero qualsiasi di statistiche scegliendo un attributo e una statistica. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Scegliere il Data Store</h2></div>
+        <hr/>
+        <div>
+            <p>I risultati di GeoAnalytics sono memorizzati in un data store ed esposti come un feature layer in  Portal for ArcGIS. Nella maggior parte dei casi, i risultati devono essere memorizzati nello Spatiotemporal Data Store e questa &egrave; l'impostazione predefinita. In alcuni casi,, il salvataggio dei risultati nel Data Store relazionale &egrave; un'ottima opzione. Di seguito sono memorizzate le ragioni per memorizzare i risultati nel Data Store relazionale: 
+                <ul>
+                    <li>&Egrave; possibile utilizzare i risultati in una collaborazione tra portali.
+                    </li>
+                    <li>&Egrave; possibile abilitare funzionalit&agrave; di sincronizzazione con i risultati.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p> Il nome del layer che verr&agrave; creato.  Se si scrive su un ArcGIS Data Store, i risultati saranno salvati in  <b>I miei contenuti</b> e aggiunti alla mappa. Se si scrive su una condivisione file Big Data, i risultati saranno memorizzati nella condivisione file Big Data e aggiunti al suo Manifest. Non saranno aggiunti alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, lo strumento non verr&agrave; eseguito.
+            </p>
+            <p>Quando si scrive su  ArcGIS Data Store (data store relazionale o Spatiotemporal Big Data Store) usando la casella a discesa  <b>Salva risultato in</b>, &egrave; possibile specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

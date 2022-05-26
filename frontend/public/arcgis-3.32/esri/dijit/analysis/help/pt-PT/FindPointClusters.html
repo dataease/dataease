@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Encontrar Clusters de Ponto</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Encontrar Clusters de Ponto"></h2>
+        <hr/>
+    <p>Esta ferramenta encontra clusters de elementos de pontos no ruido circundante com base na sua distribui&ccedil;&atilde;o espacial.
+    </p>
+    <p>Se a op&ccedil;&atilde;o  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, apenas os elementos presentes na camada de pontos de entrada, na atual extens&atilde;o de mapa, ser&atilde;o analisados. Se n&atilde;o marcar a op&ccedil;&atilde;o, ser&atilde;o analisados todos os elementos na camada de pontos de entrada, mesmo que estejam fora da extens&atilde;o atual do mapa.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Selecione a camada a partir da qual os clusters serão encontrados.</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de pontos en que se encontrar&atilde;o os clusters. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Número mínimo de pontos para ser coniderado um cluster</h2></div>
+        <hr/>
+        <div>
+            <p>O n&uacute;mero m&iacute;nimo de elementos para ser considerado um cluster. Qualquer cluster com menos elementos do que os definidos ser&atilde;o considerados ru&iacute;do. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Limitar o intervalo de pesquisa para (opcional)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>A dist&acirc;ncia m&aacute;xima para considerar elementos como parte do mesmo cluster. Se deixado em branco, a ferramenta executar&aacute; HDBSCAN, que utiliza v&aacute;rias dist&acirc;ncias para separar agrupamentos de v&aacute;rias densidades de ru&iacute;do reduzido. Se deixado em branco, a ferramenta executar&aacute; DBSCAN, que utiliza uma dist&acirc;ncia espec&iacute;fica para separar agrupamentos densos de ru&iacute;do reduzido.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se o nome da camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Guardar resultado em</b> pode definir o nome da pasta em <b>O Meu Conte&uacute;do</b> onde o resultado ser&aacute; guardado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

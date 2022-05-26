@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpoler punkter</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Interpoler punkter-verkt&oslash;yet"></h2>
+        <hr/>
+    <p>Med dette verkt&oslash;yet kan du forutsi verdier p&aring; nye lokasjoner basert p&aring; m&aring;linger fra en samling punkter. Verkt&oslash;yet bruker punktdata med verdier p&aring; hvert punkt og gir et raster av predikerte verdier.
+    </p>
+    <p>Andre bruksm&aring;ter av dette verkt&oslash;yet omfatter f&oslash;lgende:
+
+        <ul>
+            <li>Et luftkvalitetsstyringsdistrikt har sensorer som m&aring;ler forurensningsniv&aring;et. Interpoler punkter kan brukes til &aring; forutsi forurensningsniv&aring;et p&aring; steder som ikke har sensorer, for eksempel steder med utsatt befolkning &ndash; f.eks. skoler eller sykehus.
+                
+
+            </li>
+            <li>Forutse tungmetallkonsentrasjoner i avlinger basert p&aring; pr&oslash;ver tatt fra enkelte planter.
+                
+
+            </li>
+            <li>Forutse niv&aring;et av n&aelig;ringsstoffer i jord (nitrogen, fosfor, kalium og s&aring; videre) og andre indikatorer (for eksempel elektrisk ledningsevne) for &aring; studere deres forhold til avlingsniv&aring; og &aring; benytte n&oslash;yaktige mengder gj&oslash;dsel for hver lokasjon p&aring; jordet.
+                
+
+            </li>
+            <li>Meteorologiske bruksomr&aring;der omfatter prediksjon av temperaturer, nedb&oslash;r og tilh&oslash;rende variabler (for eksempel sur nedb&oslash;r).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Velg punktlaget som inneholder lokasjoner med kjente verdier</h2></div>
+        <hr/>
+        <div>
+            <p>Punktlaget som inneholder punktene hvor verdiene er m&aring;lt.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Velg felt som skal interpoleres</h2></div>
+        <hr/>
+        <div>
+            <p>Velg feltet som inneholder verdiene du &oslash;nsker &aring; interpolere. Feltet m&aring; v&aelig;re numerisk.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimaliser for</h2></div>
+        <hr/>
+        <div>
+            <p>Velg din preferanse for hastighet kontra n&oslash;yaktighet.
+            </p>
+            <p>Mer n&oslash;yaktige prediksjoner ta lengre tid &aring; beregne. Denne parameteren endrer standardverdiene for flere andre parametere for Interpoler punkter, for &aring; optimalisere beregningshastigheten, resultatn&oslash;yaktigheten eller av en blanding av de to. Som standard vil verkt&oslash;yet optimalisere for balanse.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Forvandle data til vanlig distribusjon</h2></div>
+        <hr/>
+        <div>
+            <p>Velg om du vil forandre dine data til normalfordelingen.
+            </p>
+            <p>Interpolasjon er mest n&oslash;yaktig for data som f&oslash;lger en normal (klokkeformet) distribusjon. Hvis dataene ikke ser ut til &aring; v&aelig;re normalfordelt, b&oslash;r du utf&oslash;re en transformasjon.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Størrelse på lokale modeller</h2></div>
+        <hr/>
+        <div>
+            <p>Interpoler punkter fungerer ved &aring; bygge opp lokale interpoleringsmodeller som er blandet sammen for &aring; lage det endelige prognosekartet. Denne parameteren styrer hvor mange punkter som hver lokale modell skal inneholde. Mindre verdier vil gj&oslash;re resultatene mer lokale og kan avsl&oslash;re effekter i liten skala, men det kan introdusere noe ustabilitet i beregningene. St&oslash;rre verdier vil v&aelig;re mer stabile, men noen lokale effekter kan mangle.
+            </p>
+            <p>Verdien kan variere fra 30 til 500, men typiske verdier er mellom 50 og 200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Antall naboer</h2></div>
+        <hr/>
+        <div>
+            <p>Prognoser beregnes p&aring; bakgrunn av nabopunkter. Denne parameteren styrer hvor mange punkter som brukes i beregningen. Med flere naboer produseres det vanligvis mer n&oslash;yaktige resultater, men resultatene tar lengre tid &aring; beregne.
+            </p>
+            <p>Denne verdien kan variere fra 1 til 64, men typiske verdier er mellom 5 og 15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Utdatacellestørrelse</h2></div>
+        <hr/>
+        <div>
+            <p>Cellest&oslash;rrelsen og enheten for utdatarastrene.
+            </p>
+            <p>De tilgjengelige enhetene er fot, miles, meter og kilometer.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Prognosefeil</h2></div>
+        <hr/>
+        <div>
+            <p>Velg om du vil opprette et raster av standardfeil for prognoseverdiene.
+            </p>
+            <p>Standardfeil er nyttige fordi de gir informasjon om p&aring;liteligheten til de ansl&aring;tte verdiene. En enkel tommelfingerregel er at den faktiske verdien vil falle innenfor to standardfeil av den ansl&aring;tte verdien 95 prosent av tiden. La oss for eksempel anta at en ny lokasjon for en prognoseverdi p&aring; 50 med en standardfeil p&aring; 5. Det betyr at dette verkt&oslash;yets beste gjetning er at den faktiske verdien p&aring; den lokasjonen er 50, men den kan v&aelig;re s&aring; lav som 40 eller s&aring; h&oslash;y som 60. Du kan beregne dette utvalget av rimelige verdier ved &aring; multiplisere standardfeilen med 2, legge denne verdien til den ansl&aring;tte verdien for &aring; f&aring; den &oslash;vre enden av skalaen, og trekke det fra den ansl&aring;tte verdien for &aring; f&aring; den nedre enden av skalaen.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Du kan angi navnet p&aring; en mappe i  <b>Mitt innhold</b>, der resultatet blir lagret via rullegardinlisten <b>Lagre resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

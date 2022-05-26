@@ -1,0 +1,2 @@
+//>>built
+define("dojox/editor/plugins/nls/pt-pt/SafePaste",{instructions:"Colar directamente n\u00e3o est\u00e1 activado. Cole o conte\u00fado nesta caixa de di\u00e1logo utilizando o teclado do browser standard ou os controlos do menu Colar. Quando estiver satisfeito com o conte\u00fado a inserir, prima o bot\u00e3o Colar. Para cancelar a inser\u00e7\u00e3o de texto, prima o bot\u00e3o Cancelar."});

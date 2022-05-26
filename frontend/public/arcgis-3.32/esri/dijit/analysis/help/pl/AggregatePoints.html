@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Agreguj punkty</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Agreguj punkty"></h2>
+        <hr/>
+    <p>Narzędzie do pracy z warstwą obiekt&oacute;w punktowych oraz warstwą obiekt&oacute;w powierzchniowych. Pierwszą operacją jest przyporządkowanie punkt&oacute;w do poszczeg&oacute;lnych obszar&oacute;w. Po określeniu tej zależności przestrzennej między punktami i obszarami wykonywane są obliczenia statystyczne dotyczące wszystkich punkt&oacute;w na obszarze, a następnie statystyki te są przypisywane do danego obszaru. Najbardziej podstawowym obliczeniem statystycznym jest liczba punkt&oacute;w przypadająca na dany obszar, jednak można uzyskać r&oacute;wnież inne statystyki. 
+    </p>
+    <p>Przyjmijmy na przykład, że mamy obiekty punktowe reprezentujące lokalizację kawiarni oraz obiekty powierzchniowe reprezentujące powiaty i chcemy uzyskać podsumowanie sprzedaży kawy w powiatach. Zakładając, że kawiarnie mają atrybut  <i>TOTAL_SALES</i>, można obliczyć sumę wszystkich atrybut&oacute;w <i>TOTAL_SALES</i> w każdym powiecie lub wyznaczyć minimalną bądź maksymalną wartość <i>TOTAL_SALES</i> w&nbsp;każdym z&nbsp;nich, a&nbsp;także odchylenie standardowe sprzedaży w poszczeg&oacute;lnych powiatach.
+    </p>
+    <p>Jeśli zaznaczono opcję  <b>Użyj bieżącego zasięgu mapy</b>, w&nbsp;analizie wezmą udział jedynie obiekty w&nbsp;wejściowej warstwie punktowej i&nbsp;warstwie obszaru widoczne w&nbsp;bieżącym zasięgu mapy. Jeśli powyższa opcja nie jest zaznaczona, analizowane będą wszystkie obiekty w&nbsp;wejściowej warstwie punktowej i&nbsp;warstwie obszaru, nawet jeśli będą znajdować się poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Wybierz warstwę zawierającą punkty w celu agregowania do obszarów</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa punkt&oacute;w, kt&oacute;ra zostanie agregowana do obszar&oacute;w.
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Wybierz warstwę zawierającą obszary agregacji</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa obszar&oacute;w, dla kt&oacute;rej będą agregowane punkty. Wszystkie punkty znajdujące się w&nbsp;granicach obszar&oacute;w w&nbsp;tej warstwie zostaną uwzględnione w&nbsp;obliczeniach i&nbsp;opcjonalnie zsumowane przy użyciu wybranych operacji statycznych.  
+            </p>
+            <p>Można wybrać własną warstwę powierzchniową lub kosze wygenerowane podczas działania narzędzia.   Podczas generowania koszy  <b>kwadratowych</b> podana liczba i jednostki decydują o wysokości i długości kwadratu. W przypadku koszy <b>sześciokątnych</b> podana liczba i jednostki decydują o odległości między r&oacute;wnoległymi bokami sześciokąta.
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Zachowaj obszary bez punktów</h2></div>
+        <hr/>
+        <div>
+            <p>Opcja umożliwiająca określenie, czy obszary, na&nbsp;kt&oacute;rych nie ma punkt&oacute;w mają być wyświetlane w&nbsp;warstwie wynikowej. Jeśli nie zostanie zaznaczona, obszary, w&nbsp;kt&oacute;rych nie ma punkt&oacute;w, nie będą widoczne. Jeśli zostanie zaznaczona, obszary, w&nbsp;kt&oacute;rych nie ma punkt&oacute;w będą widoczne.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Dodaj statystyki</h2></div>
+        <hr/>
+        <div>
+            <p>Można wykonywać obliczenia statystyczne z&nbsp;wykorzystaniem atrybut&oacute;w&nbsp;wejściowej warstwy punktowej, takie jak: suma, średnia, wartość minimalna i&nbsp;maksymalna oraz odchylenie standardowe. Warstwa wynikowa 
+zawiera nowy atrybut dla każdego wykonanego obliczenia statystycznego. Dodać można dowolną statystykę danych liczbowych poprzez wybranie atrybutu oraz&nbsp;właściwej operacji statystycznej (wyświetlone zostanie nowa rozwijana lista).
+ 
+            </p>
+            <p>Jeśli warstwa do podsumowania nie zawiera żadnych p&oacute;l liczbowych, dodatkowe statystyki nie będą dostępne.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Wybierz pole, według którego wykonane będzie grupowanie</h2></div>
+        <hr/>
+        <div>
+            <p> Można tworzyć grupy statystyczne za pomocą atrybut&oacute;w w&nbsp;wejściowej warstwie punktowej. Jeśli na przykład agregowane są przestępstwa w&nbsp;granicach dzielnicy, można zastosować atrybut <i>Crime_type</i> z&nbsp;pięcioma r&oacute;żnymi rodzajami przestępstw. Każdy unikalny typ przestępstwa stanowi odrębną grupę, a wybrane przez Ciebie statystyki zostaną obliczone&nbsp;dla każdej unikalnej wartości atrybutu <i>Crime_type</i>. Statystyki dotyczące każdej z&nbsp;grup oraz liczba punkt&oacute;w zostaną wyświetlone w&nbsp;oknie podręcznym warstwy wynikowej. W&nbsp;wyniku wybrania atrybutu grupowania tworzone są dwa elementy: warstwa wynikowa oraz tabela wynik&oacute;w zawierająca statystyki dla każdej unikalnej grupy.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Dodaj mniejszość, większość</h2></div>
+        <hr/>
+        <div>
+            <p>To pole wyboru jest aktywowane po wybraniu pola, według kt&oacute;rego jest wykonywane grupowanie. Aby dowiedzieć się, kt&oacute;re wartości atrybut&oacute;w w&nbsp;danej grupie stanowią mniejszość (nie są dominujące) lub większość (są dominujące) w&nbsp;obrębie danego obszaru, zaznacz opcję  <b>Dodaj mniejszość, większość</b>. Po wybraniu opcji <b>Dodaj mniejszość, większość</b>, do warstwy wynikowej zostają dodane dwa nowe pola. Jeżeli wybierzesz także opcję <b>Dodaj wartości procentowe</b>, do warstwy wynikowej zostaną dodane dwa dodatkowe pola z&nbsp;procentowym podziałem dominujących i&nbsp;niedominujących wartości atrybut&oacute;w w&nbsp;każdej z&nbsp;grup.
+            </p>
+            <p>Jeżeli na przykład pracujesz jako planista miasta i&nbsp;chcesz sprawdzić, kt&oacute;re gatunki drzew stanowią mniejszość, a&nbsp;kt&oacute;re większość we wszystkich parkach znajdujących się na terenie miasta, zagreguj dane dotyczące drzew z&nbsp;danymi dotyczącymi obszar&oacute;w park&oacute;w i&nbsp;zaznacz opisywaną opcję.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Dodaj wartości procentowe</h2></div>
+        <hr/>
+        <div>
+            <p>To pole wyboru jest aktywowane po wybraniu pola, według kt&oacute;rego jest wykonywane grupowanie. Jeżeli chcesz sprawdzić, jaką wartość procentową stanowią poszczeg&oacute;lne wartości atrybut&oacute;w w&nbsp;każdej z&nbsp;grup, zaznacz opcję  <b>Dodaj wartości procentowe</b>. Do tabeli wynik&oacute;w zostanie dodane nowe pole zawierające wartości procentowe, jakie stanowią poszczeg&oacute;lne wartości atrybut&oacute;w w&nbsp;każdej z grup. Jeżeli wybierzesz także opcję <b>Dodaj mniejszość, większość</b>, do warstwy wynikowej zostaną dodane dwa dodatkowe pola z&nbsp;procentowym podziałem dominujących i&nbsp;niedominujących wartości atrybut&oacute;w w&nbsp;każdej z&nbsp;grup.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli ta nazwa warstwy już istnieje, wyświetlona zostanie prośba o podanie innej nazwy.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

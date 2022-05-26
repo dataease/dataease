@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------------
+dojox.gfx3d
+-------------------------------------------------------------------------------
+Version 0.100
+Release date: 10/31/2007
+-------------------------------------------------------------------------------
+Project state:
+beta
+-------------------------------------------------------------------------------
+Credits
+	Kun Xi (bookstack@gmail.com)
+	Eugene Lazutkin (eugene.lazutkin@gmail.com)
+-------------------------------------------------------------------------------
+Project description
+
+Implementation of simple portable 3D graphics library.
+-------------------------------------------------------------------------------
+Dependencies:
+
+Dojo Core, dojox.gfx.
+-------------------------------------------------------------------------------
+Documentation
+
+Not ready yet.
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/gfx3d.js
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/gfx3d/*
+
+Install into the following directory structure:
+/dojox/gfx3d/
+
+...which should be at the same level as your Dojo checkout.
+-------------------------------------------------------------------------------

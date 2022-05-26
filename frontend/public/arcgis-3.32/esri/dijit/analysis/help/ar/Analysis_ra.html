@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="raToolbox">
+        <p>يُتيح لك تحليل البيانات النقطية تنفيذ تحليل لمجموعات البيانات النقطية الكبيرة باستخدام  ArcGIS Image Server. وهو ما يُتيح لك تحليل مزيد من البيانات باستخدام قوة الخادم. مجموعات الأدوات المتوفرة حاليًا في تجربة مستخدم ويب  Portal for ArcGIS هي  <b>تلخيص البيانات</b> و <b>تحليل الأنماط</b> و <b>استخدام التقريب</b> و <b>تحليل الصورة</b> و <b>تحليل التضاريس</b> و <b>إدارة البيانات</b> و <b>التعلم الشامل</b>.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="smallsize">
+        <h2>تلخيص البيانات</h2>
+        <hr/>
+        <p>تحتوي مجموعة الأداة على أداة لاحتساب بعض الإحصائيات لطبقة البيانات النقطية ضمن حدود المنطقة التي تقوم بتعريفها. 
+            <ul>
+                <li> <b>تلخيص البيانات النقطية ضمن</b> تعمل على احتساب الإحصائيات لخلايا البيانات النقطية التي تقع ضمن حدود المنطقة المحددة.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="SummarizeRasterWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>تلخيص البيانات النقطية ضمن</h2></td>
+                    <td>
+                    <img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" class="titleImage" alt="تلخيص البيانات النقطية ضمن الأداة">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>احتساب بعض من تلخيص الإحصائيات لخلايا البيانات النقطية ضمن المناطق المحددة.
+            </p>
+            <p>فيما يلي بعض من أمثلة التطبيقات: 
+
+                <ul>
+                    <li>عند توفير طبقة من مناطق نقطة التحول وطبقة البيانات النقطية للارتفاع، يتم احتساب نطاق الارتفاعات ضمن كل نقطة تحول من أجل تحديد النقاط التحول التي سيكون لديها أعلى تدفق للطاقة.
+                        
+
+                    </li>
+                    <li>عند توفير طبقة من وحدات الإدارة الإدارية وطبقة البيانات النقطية لفئات استعمال الأراضي، يتم احتساب مجموعة متنوعة من قيم استعمالات الأراضي ضمن كل منطقة إدارة لتعريف المناطق التي تتطلب معظم العمل لتحديد خطة الإدارة.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="smallsize">
+        <h2>تحليل الأنماط</h2>
+        <hr/>
+        <p>تساعد هذه الأدوات في المساعدة في تعريف وتصنيف ورؤية النقوش المكانية في البيانات. 
+
+            <ul>
+                <li> <b>حساب الكثافة</b> تنقل كميات بعض الظواهر وإنشاء خريطة كثافة عن طريق نشر هذه الكميات عبر الخريطة.
+                    
+
+                </li>
+                <li> <b>استيفاء النقاط</b> يتوقع القيم في المواقع الجديدة استنادًا إلى القياسات الموجودة في مجموعة النقاط.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>حساب الكثافة</h2></td>
+                    <td>
+                    <img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" class="titleImage" alt="أداة احتساب الكثافة">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>تحليل الكثافة ينقل كميات معروفة لبعض الظواهر وإنشاء خريطة كثافة عن طريق نشر هذه الكميات عبر الخريطة. يمكن استخدام هذه الأداة، مثال، لإظهار تركيزات الإضاءة أو الأعاصير والوصول إلى مرافق الرعاية الصحية والكثافات السكانية.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsEBKTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>استيفاء النقاط</h2></td>
+                    <td>
+                    <img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" class="titleImage" alt="أداة استيفاء النقاط">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>تسمح هذه الأداة بتوقع القيم الموجودة في المواقع الجديدة استنادًا إلى القياسات الموجودة في مجموعة النقاط. تحصل هذه الأداة على البيانات النقطية مع القيم في كل نقطة وتقوم بإرجاع المناطق المُصنفة من قيم القيم المُتوقعة. يمكن استخدام هذه الأداة، مثال، لتوقع مستويات سقوط الأمطار في مُستجمع الأمطار المستندة إلى القياسات التي تم الحصول عليها في نقاط تجمع الأمطار الفردية.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>استخدام القرب</h2>
+        <hr/>
+        <p>تساعد هذه الأدوات في الإجابة على أحد الأسئلة الهامة في التحليل المكاني: &quot;ماذا يوجد بالقرب من ماذا؟&quot;
+
+            <ul>
+                <li> <b>حساب المسافة</b> حساب المسافة الإقليدية من مصدر واحد والاتجاه والتخصيص من أو مصدر واحد أو مجموعة مصادر.
+                    
+
+                </li>
+                <li>تقوم  <b>تحديد شبكة تكلفة السفر المثلى</b> بحساب شبكة التكلفة المثلى من مجموعة من المناطق المدخلة.
+                    
+
+                </li>
+                <li>تقوم أداة  <b>تحديد مسار تكلفة السفر كخط متصل</b> بحساب مسار الخطوط المتصلة لأقل تكلفة بين المصادر والوجهات المعروفة.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDistanceTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>حساب المسافة</h2></td>
+                    <td>
+                    <img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" class="titleImage" alt="حساب المسافة">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>حساب المسافة الإقليدية من مصدر واحد والاتجاه والتخصيص من أو مصدر واحد أو مجموعة مصادر. يمكنك استخدام هذه الأداة لتحديد المسافة التي يبعدها الموقع عن طريق أو مبنى أو منتزه. يمكنك أيضًا تحديد الاتجاه الذي يجب عليك السفر منه من موقع للعودة إلى مصدر في أكثر الاتجاهات المباشرة. يمكنك رؤية كل المواقع في منطقة الدراسة التي تعد المصدر الأقرب.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineOptimumTravelCostNetworkTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>تحديد شبكة تكلفة السفر المُثلَى</h2></td>
+                    <td>
+                    <img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" class="titleImage" alt="شرح أداة تحديد شبكة تكلفة السفر المُثلَى">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>حساب أفضل شبكة تكلفة من مجموعة من المناطق المدخلة.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineTravelCostPathAsPolylineTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>تحديد مسار تكلفة السفر كخطوط متصلة</h2></td>
+                    <td>
+                    <img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" class="titleImage" alt="تحديد توضيح أداة &quot;مسار تكلفة السفر كخط متصل&quot;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>حساب مسار الخطوط المتصلة لأقل تكلفة بين المصادر والوجهات المعروفة.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeImageCategory" class="smallsize">
+        <h2>تحليل صورة</h2>
+        <hr/>
+        <p>تساعد الأداة التالية في تحليل الصور. 
+            <ul>
+                <li> <b>تطبيق قالب وظيفة البيانات النقطية</b> تُعالج الصور الخاصة بك مع سلسلة من الوظائف، كما هو محدد بواسطة قالب وظيفة البيانات النقطية.
+                </li>
+                <li> <b>مراقبة الحياة النباتية</b> يكشف عن الحياة النباتية ضمن الصور بناءً على عمليات حسابية في النطاقات.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ApplyRFxTemplateTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>تطبيق قالب وظيفة البيانات النقطية</h2></td>
+                    <td>
+                    <img src="../images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" class="titleImage" alt="تطبيق قالب دالة البيانات النقطية">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>تُعالج الصور الخاصة بك مع سلسلة من الوظائف، كما هو محدد بواسطة قالب وظيفة البيانات النقطية.
+            </p>
+            <br/>
+        </div>
+        <div id="MonitorVegetationTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>مراقبة الغطاء النباتي</h2></td>
+                    <td>
+                    <img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" class="titleImage" alt="أداة رصد المناطق النباتية للبوابة الإلكترونية">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>يُنفذ عملية حسابية في نطاقات طبقة بيانات نقطية متعددة النطاقات لإظهار معلومات تغطية الحياة النباتية في منطقة الدراسة.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeTerrainCategory" class="regularsize">
+        <h2>تحليل تضاريس</h2>
+        <hr/>
+        <p>تساعد هذه الأدوات في تحليل أسطح البيانات النقطية. 
+            <ul>
+                <li> <b>احتساب المنحدر</b> يقوم باحتساب انحدار التضاريس.
+                    
+
+                </li>
+                <li> <b>اشتقاق الواجهة</b> تقوم باحتساب اتجاه الانحدار والميل لكل موقع.
+                    
+
+                </li>
+                <li> <b>إنشاء طريقة العرض</b> تقوم بتحديد ما يمكن رؤيته من أي نقطة أفقيًا.
+                    
+
+                </li>
+                <li> <b>المستجمع المائي</b> حساب المنطقة المساهمة أعلى المواقع المحددة على السطح.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateSlopeTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>حساب الانحدار</h2></td>
+                    <td>
+                    <img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" class="titleImage" alt="حساب أداة الانحدار للبوابة الإلكترونية">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>تُحدد سطح يقوم بإظهار منحدر بيانات الارتفاع المدخلة. يُمثل المنحدر معدل تغيير الارتفاع لكل خلية من نموذج الارتفاع الرقمي.
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveAspectTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>اشتقاق المظهر</h2></td>
+                    <td>
+                    <img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" class="titleImage" alt="أداة اشتقاق الواجهة للبوابة الإلكترونية">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>تستخدم لتحديد اتجاه انحدار الحد الأقصى لمعدل تغيير القيمة من كل خلية إلى الخلايا المجاورة لها. يمكن اعتبار الواجهة في صورة اتجاه انحدار.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>إنشاء طريقة العرض</h2></td>
+                    <td>
+                    <img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" class="titleImage" alt="أداة إنشاء طريقة العرض">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>يُحدد المواقع على سطح البيانات النقطية التي تكون مرئية لمجموعة من المراقبين.
+            </p>
+            <br/>
+        </div>
+        <div id="WatershedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>مستجمعات المياه</h2></td>
+                    <td>
+                    <img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" class="titleImage" alt="مهمة المستجمع المائي">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>يقوم بتحديد المنطقة المساهمة أعلى مجموعة الخلايا في البيانات النقطية.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>إدارة البيانات</h2>
+        <hr/>
+        <p>يتم استخدام هذه الأدوات لكل من إدارة البيانات الجغرافية اليومية ولدمج البيانات السابقة للتحليل. 
+            <ul>
+                <li> <b>استخراج البيانات النقطية</b> قص أجزاء من مجموعة بيانات نقطية للتحليل مستقبلاً.
+                    
+
+                </li>
+                <li> <b>إعادة تخطيط القيم</b> تعيين قيم مختلفة لخلايا البيانات النقطية.
+                    
+
+                </li>
+                <li> <b>تحويل المعلم إلى بيانات نقطية</b> تحويل البيانات النقطية الاتجاهية لبيانات نقطية.
+                    
+
+                </li>
+                <li> <b>تحويل البيانات النقطية إلى معلم</b> تحويل البيانات الاتجاهية لبيانات نقطية.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ExtractRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>استخراج البيانات النقطية</h2></td>
+                    <td>
+                    <img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" class="titleImage" alt="أداة استخراج البيانات النقطية للبوابة الإلكترونية">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>استخراج الخلايا من بيانات نقطية بناءً على القيمة أو الشكل أو مدى مجموعة بيانات مختلفة.
+            </p>
+            <br/>
+        </div>
+        <div id="RemapValuesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>إعادة تعيين القيم</h2></td>
+                    <td>
+                    <img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" class="titleImage" alt="أداة تخطيط القيم للبوابة الإلكترونية">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>تغيير القيمة الفردي أو نطاقات قيم الخلية إلى قيم جديدة.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertFeatureToRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>تحويل معلم إلى بيانات نقطية</h2></td>
+                    <td>
+                    <img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" class="titleImage" alt="أداة تحويل معلم إلى بيانات نقطية">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>إنشاء مجموعة بيانات نقطية جديدة من مجموعة بيانات معالم حالية.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertRasterToFeatureTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>تحويل بيانات نقطية إلى معلم</h2></td>
+                    <td>
+                    <img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" class="titleImage" alt="أداة تحويل بيانات نقطية إلى معلم">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>إنشاء مجموعة بيانات معالم جديدة من مجموعة بيانات نقطية حالية.
+            </p>
+            <br/>
+        </div>
+    <div id="DeepLearningCategory" class="regularsize">
+        <h2>مجموعة أدوات التعلم الشامل</h2>
+        <hr/>
+        <p>تُستخدم هذه الأدوات 	لاكتشاف معالم معينة في صورة أو لتصنيف وحدات البكسل في مجموعة بيانات نقطية. التعلم الشامل هو نوع من التعلم الآلي بذكاء اصطناعي يكتشف المعالم في الصور باستخدام طبقات متعددة في الشبكات العصبية حيث كل طبقة قادرة على استخراج معلم فريد أو أكثر في الصورة. تستخدم هذه الأدوات الطرق التي تم التدريب عليها لاكتشاف معالم معينة في أطر التعلم الشامل الخارجية&mdash;مثل TensorFlow وCNTK وKeras&mdash;وإخراج المعالم أو تصنيف الخرائط.
+            <ul>
+                <li>تُنتج أداة  <b>تصنيف وحدات البكسل باستخدام التعلم الشامل</b> بيانات نقطية مصنفة باستخدام نموذج تعلم شامل مدرب.
+                </li>
+                <li>تُنتج أداة  <b>اكتشاف الكائنات باستخدام التعلم الشامل</b> تصنيف معلم يحتوي على كائنات توجد مجموعة بيانات نقطية للإدخال باستخدام نموذج تعلم شامل ومدرب.
+                </li>
+            </ul>
+             
+        </p>
+    </div>
+        <div id="ClassifyPixelsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>تصنيف وحدات البكسل باستخدام التعلم الشامل</h2></td>
+                    <td>
+                    <img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" class="titleImage" alt="تصنيف وحدات البكسل باستخدام التعلم الشامل">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Runs a trained deep learning model on an input raster to produce a classified raster, with each valid pixel having a class label assigned.
+            </p>
+            <br/>
+        </div>
+        <div id="DetectObjectsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>اكتشاف الكائنات باستخدام التعلم الشامل</h2></td>
+                    <td>
+                    <img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="اكتشاف الكائنات باستخدام التعلم الشامل">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Runs a trained deep learning model on an input raster to produce a feature class containing the objects it finds. The features can be bounding boxes or polygons around the objects found, or points at the centers of the objects.
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

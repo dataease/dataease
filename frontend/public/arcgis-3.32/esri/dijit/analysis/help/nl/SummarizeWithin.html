@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Samenvatten in</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Samenvatten in"></h2>
+        <hr/>
+    <p>Met deze tool worden objecten (en delen van objecten) gevonden die zich binnen de grenzen van gebieden in de eerste invoerlaag bevinden. Bijvoorbeeld:
+        <ul>
+            <li>Er is een kaartlaag met stroomgebiedgrenzen en een laag met landgebruikgrenzen per type landgebruik; bereken het totale oppervlak aan landgebruik voor elk stroomgebied. 
+            </li>
+            <li>Er is een kaartlaag met percelen in een provincie en een kaartlaag met stadsgrenzen; maak een samenvatting van de gemiddelde waarde van lege percelen binnen elke stadsgrens.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Als  <b>Huidige kaartextent gebruiken</b> is aangevinkt, worden alleen de objecten in de invoerlaag en de samen te vatten kaartlaag geanalyseerd die zichtbaar zijn binnen het huidige kaartextent. Als deze optie niet is aangevinkt, worden alle objecten in de invoerlaag en de samen te vatten kaartlaag geanalyseerd, ook als ze zich buiten het huidige kaartextent bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Kies gebiedslaag om andere objecten samen te vatten binnen de grenzen</h2></div>
+        <hr/>
+        <div>
+            <p>De gebiedslaag die gebruikt wordt om objecten samen te vatten die binnen de grenzen vallen. 
+            </p>
+            <p>U kunt kiezen tussen een gebiedslaag die u verstrekt of bins die worden gegenereerd als de tool wordt uitgevoerd. Bij het genereren van bins, voor  <b>Vierkant</b> bepalen het gespecificeerde aantal en de eenheden de hoogte en de lengte van het vierkant. Voor <b>Zeskant</b> bepalen het gespecificeerde aantal en de eenheden de afstand tussen de evenwijdige zijden.
+            </p>
+            <p>Naast het kiezen van een laag uit uw kaart, kunt u  <b>Analyselaag kiezen</b> selecteren onderaan de vervolgkeuzelijst. Met deze optie wordt een galerij geopend waarin u kunt bladeren naar en datasets van verschillende bronnen kunt selecteren die u in uw analyse kunt gebruiken. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Kaartlaag kiezen voor samenvatten</h2></div>
+        <hr/>
+        <div>
+            <p>Objecten in deze laag die binnen de grenzen van objecten in de bovenstaande invoerlaag vallen, worden samengevat. 
+            </p>
+            <p>Naast het kiezen van een laag uit uw kaart, kunt u  <b>Analyselaag kiezen</b> selecteren onderaan de vervolgkeuzelijst. Met deze optie wordt een galerij geopend waarin u kunt bladeren naar en datasets van verschillende bronnen kunt selecteren die u in uw analyse kunt gebruiken. 
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Voeg statistieken toe van de samen te vatten laag</h2></div>
+        <hr/>
+        <div>
+            <p>U kunt statistieken berekenen voor numerieke attributen die binnen de grenzen van objecten vallen. 
+            </p>
+            <p>Als  <b>Telling van punten</b> is aangevinkt, wordt het totale aantal punten binnen elke gebiedsgrens berekend. Daarnaast kunt u statistieken berekenen voor numerieke attributen van de punten binnen elke gebiedsgrens.
+            </p>
+            <ul>
+                <li> <b>Som</b>&mdash;De totale waarde voor het opgegeven veld.
+                </li>
+                <li> <b>Gemiddelde</b>&mdash;Het gemiddelde voor het opgegeven veld.
+                </li>
+                <li> <b>Minimum</b>&mdash;De kleinste waarde in het opgegeven veld.
+                </li>
+                <li> <b>Maximum</b>&mdash;De grootste waarde in het opgegeven veld.
+                </li>
+                <li> <b>Std. Afwijking</b>&mdash;De standaardafwijking van de waarden in het opgegeven veld.
+                </li>
+            </ul>
+            
+            <p>Als de samen te vatten laag geen numerieke velden heeft, zijn de aanvullende statistieken niet beschikbaar.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Statistieken toevoegen van</h2></div>
+        <hr/>
+        <div>
+            <p>U kunt optioneel statistieken berekenen voor numerieke attributen van de samen te vatten lijnen. 
+            </p>
+            <p>Als  <b>Totale lengte van lijnen in</b> is aangevinkt, wordt de totale lengte van de lijnen binnen elke gebiedsgrens berekend. Daarnaast kunt u statistieken berekenen voor numerieke attributen van de lijnen binnen elke stadsgrens.
+            </p>
+            <ul>
+                <li> <b>Som</b>&mdash;De totale waarde voor het opgegeven veld.
+                </li>
+                <li> <b>Gemiddelde</b>&mdash;Het gemiddelde voor het opgegeven veld.
+                </li>
+                <li> <b>Minimum</b>&mdash;De kleinste waarde in het opgegeven veld.
+                </li>
+                <li> <b>Maximum</b>&mdash;De grootste waarde in het opgegeven veld.
+                </li>
+                <li> <b>Std. Afwijking</b>&mdash;De standaardafwijking van de waarden in het opgegeven veld.
+                </li>
+            </ul>
+            
+            <p>Als de samen te vatten laag geen numerieke velden heeft, zijn de aanvullende statistieken niet beschikbaar.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Statistieken toevoegen van</h2></div>
+        <hr/>
+        <div>
+            <p>U kunt optioneel statistieken berekenen voor numerieke attributen van de samen te vatten oppervlakten. 
+            </p>
+            <p>Als  <b>Som van gebied met</b> is aangevinkt, wordt het totale gebied berekend van objecten die zich binnen elke gebiedsgrens van de eerste invoerlaag bevinden. Daarnaast kunt u statistieken berekenen voor numerieke attributen van de objecten binnen elke gebiedsgrens.
+            </p>
+            <ul>
+                <li> <b>Som</b>&mdash;De totale waarde voor het opgegeven veld.
+                </li>
+                <li> <b>Gemiddelde</b>&mdash;Het gemiddelde voor het opgegeven veld.
+                </li>
+                <li> <b>Minimum</b>&mdash;De kleinste waarde in het opgegeven veld.
+                </li>
+                <li> <b>Maximum</b>&mdash;De grootste waarde in het opgegeven veld.
+                </li>
+                <li> <b>Std. Afwijking</b>&mdash;De standaardafwijking van de waarden in het opgegeven veld.
+                </li>
+            </ul>
+            
+            <p>Als de samen te vatten laag geen numerieke velden heeft, zijn de aanvullende statistieken niet beschikbaar.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Statistieken toevoegen van</h2></div>
+        <hr/>
+        <div>
+            <p>Zodra u een samen te vatten laag kiest, kunt u optioneel statistieken berekenen van alle numerieke attributen van de punten, lijnen of oppervlakten in de invoerlaag. 
+            </p>
+            <ul>
+                <li> <b>Som</b>&mdash;De totale waarde voor het opgegeven veld
+                </li>
+                <li> <b>Gemiddelde</b>&mdash;Het gemiddelde voor het opgegeven veld
+                </li>
+                <li> <b>Minimum</b>&mdash;De kleinste waarde in het opgegeven veld
+                </li>
+                <li> <b>Maximum</b>&mdash;De grootste waarde in het opgegeven veld
+                </li>
+                <li> <b>Std. Afwijking</b>&mdash;De standaardafwijking van de waarden in het opgegeven veld.
+                </li>
+            </ul>
+            
+            <p>Afhankelijk van de objecttypes die u samenvat, kunt u het totale aantal punten, totale lengte van lijnen of totale oppervlakte berekenen.
+            </p>
+            <p>Als de samen te vatten laag geen numerieke velden heeft, zijn de aanvullende statistieken niet beschikbaar.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Kies veld om op te groeperen</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is een attribuut van de  <b>Samenvatten</b>-objecten die u kunt gebruiken om statistieken afzonderlijk te berekenen voor elke unieke attribuutwaarde. Stel bijvoorbeeld dat de eerste invoerlaag stadsgrenzen bevat en dat de samengevatte objecten percelen zijn. Een van de attributen van de percelen is <i>Status</i> en dit bevat twee waarden: VACANT en OCCUPIED. Als u het totale gebied wilt berekenen van lege en bezette percelen binnen de grenzen van steden, gebruikt u <i>Status</i> als groep per attribuut. De statistieken voor elke groep en het aantal objecten binnen elke gebiedsgrens worden weergegeven in de pop-up van de resultaatlaag.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Minderheid, meerderheid toevoegen</h2></div>
+        <hr/>
+        <div>
+            <p>Dit selectievakje wordt ingeschakeld wanneer u een veld kiest om op te groeperen. Als u wilt weten welke attribuutwaarden binnen elke groep in de minderheid zijn (minst dominant) of in de meerderheid (meest dominant) binnen elke grens van de eerste invoerlaag, selecteer dan  <b>Minderheid, meerderheid toevoegen</b>. Als u <b>Minderheid, meerderheid toevoegen</b> selecteert, worden er twee nieuwe velden toegevoegd aan uw resultaatlaag. Als u ook <b>Percentages toevoegen</b> selecteert, worden twee extra velden toegevoegd aan de resultaatlaag met de percentages van de minderheid en de meerderheid van de attribuutwaarden binnen elke groep.
+            </p>
+            <ul>
+                <li>Als u punten samenvat, worden waarden in de minderheid en meerderheid berekend op basis van het aantal punten binnen elk grensgebied in de invoergebiedslaag.  
+                </li>
+                <li>Als u lijnen samenvat, worden waarden in de minderheid en meerderheid berekend op basis van de lengte van de lijnen binnen elk grensgebied in de eerste gebiedslaag.  
+                </li>
+                <li>Als u gebieden samenvat, worden waarden in de minderheid en meerderheid berekend op basis van de gebieden binnen elk grensgebied in de eerste gebiedslaag.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Percentages toevoegen</h2></div>
+        <hr/>
+        <div>
+            <p>Dit selectievakje wordt ingeschakeld als u een veld kiest om te groeperen. Selecteer  <b>Percentages toevoegen</b> als u het percentage wilt zoeken van elke attribuutwaarde binnen elke groep. Er wordt een nieuw veld toegevoegd aan de resultaattabel met de percentages van elke attribuutwaarde binnen elke groep. Als <b>Minderheid, meerderheid toevoegen</b> ook geselecteerd is, worden twee extra velden toegevoegd aan de resultaatlaag met de percentages van de minderheid en de meerderheid van de attribuutwaarden binnen elke groep.
+            </p>
+        </div>
+    </div>
+    <div id="ResultLayerName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laagnaam al bestaat, wordt u gevraagd een nieuwe naam te verschaffen.
+            </p>
+            <p>Met behulp van het vervolgkeuzemenu  <b>Resultaat opslaan in</b> kunt u de naam van een map opgeven in <b>Mijn Content</b> waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

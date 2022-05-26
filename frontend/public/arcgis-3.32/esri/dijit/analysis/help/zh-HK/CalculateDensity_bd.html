@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>計算密度</h2><p/>
+        <h2><img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" alt="計算密度"></h2>
+        <hr/>
+    <p>「計算密度」工具透過將已知數量的某種現象（表示為點的屬性）散佈到整個地圖上，來從點圖徵建立密度地圖。結果是按密度從小到大分類的區域圖層。
+
+    </p>
+    <p>對於點輸入，每個點應表示某一事件或事件點的位置，結果圖層應表示每個單位面積中的事件點計數。新位置中的密度值越高則表示此位置附近的點越多。在多數情况下，結果圖層可視爲未來事件的風險表面。例如，如果輸入點表示受到雷擊的位置，則結果圖層可視爲未來可能受到雷擊的風險表面。
+    </p>
+    <p>此工具的其他使用範例如下：
+        <ul>
+            <li>建立犯罪密度地圖以幫助警方適當分配資源到高犯罪率區域。
+            </li>
+            <li>計算某郡的醫院密度。結果圖層將顯示容易到達醫院和不容易到達醫院的區域，此資訊可用於確定新建醫院的位置。
+            </li>
+            <li>根據發生森林火災的歷史位置，確定森林火災的高風險區域。
+            </li>
+            <li>尋找距離主幹道較遠的社區，以計劃修建新道路的位置。
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇計算密度所使用的點圖層</h2></div>
+        <hr/>
+        <div>
+            <p>將在其上計算密度的點圖層。
+            </p>
+            <p>除了從地圖選擇圖層外，您也可以選擇下拉式清單底部的 <b>選擇分析圖層</b>，以瀏覽到大數據檔案分享資料集或圖徵圖層的內容。
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>選擇要用來計算密度的一或多個欄位 (選用)</h2></div>
+        <hr/>
+        <div>
+            <p>提供一或多個欄位，用於指定每個位置處的事件數量。例如，如果您具有表示城市的點，則您可以將表示城市人口的欄位作爲計數欄位，産生的人口密度圖層將計算擁有較多人口之城市附近的較大的人口密度。
+            </p>
+            <p>一律會計算點計數的密度。若未選擇欄位，則假定每個位置代表一個計數。
+            </p>
+        </div>
+    </div>
+    <div id="binType">
+        <div><h2>選擇容器形狀</h2></div>
+        <hr/>
+        <div>
+            <p>匯聚到並使用於密度計算之點的容器形狀。
+            </p>
+            <p>使用 <b>方形</b>或 <b>六角形</b>容器進行分析時，需要使用投影座標系統。您可以在 <b>分析環境</b>中設定 <b>處理座標系統</b>。若未將處理座標系統設為投影座標系統，系統會在您 <b>執行分析</b> 時提醒您設定它。
+            </p>
+        </div>
+    </div>
+    <div id="binSizing">
+        <div><h2>選擇用於彙聚的容器大小</h2></div>
+        <hr/>
+        <div>
+            <p>產生之容器的大小。對於方形容器，大小表示方形的高度。對於六角形，大小表示六角形的高度（從平行面起算）。
+            </p>
+        </div>
+    </div>
+    <div id="weight">
+        <div><h2>選擇要套用的密度加權</h2></div>
+        <hr/>
+        <div>
+            <p>套用到密度計算的加權類型。有兩個選項：
+                <ul>
+                    <li> <b>統一</b> - 這會計算每個區域的量級。
+                    </li>
+                    <li> <b>核心</b> - 套用核心函數，將平滑的錐形表面擬合到每個點。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>選擇鄰域大小</h2></div>
+        <hr/>
+        <div>
+            <p>用來計算密度之區域的大小。鄰里大小必須大於容器大小。
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>選擇密度的輸出單位</h2></div>
+        <hr/>
+        <div>
+            <p>密度值的所要輸出單位。預設情況下，會根據您在個人資料中指定的預設單位，將其設定為平方公里或平方英哩。若密度值極小，您可以增加面積單位的大小（例如，從平方公里增加為平方英哩）以傳回更大值。值只會調整結果的比例。
+
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>使用時間步長計算密度 (選用)</h2></div>
+        <hr/>
+        <div>
+            <p>若是在輸入點圖層上啟用時間，且其為即時類型，則可使用時間步長進行分析。使用時間時可設定三個參數：
+                <ul>
+                    <li> <b>時間步長間隔</b>
+                    </li>
+                    <li> <b>重複時間步長的頻率</b>
+                    </li>
+                    <li> <b>將時間步長對齊到的時間</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>例如，如果您擁有表示時間中年份的資料，並想要使用每週步長來分析它，請將 <b>時間步長間隔</b>設為 <code>1 週</code>。 
+            </p>
+            <p>例如，如果您擁有表示時間中年份的資料，並想要使用月份的第一週分析它，請將 <b>時間步長間隔</b>設為 <code>1 週</code>、將 <b>重複時間步長的頻率</b>設為 <code>1 個月</code>，並將 <b>將時間步長對齊到的時間</b>設為 <code>1 月 1 日上午 12:00</code>。
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>時間步長間隔</h2></div>
+        <hr/>
+        <div>
+            <p>使用於產生時間步長的時間間隔。 <b>時間步長間隔</b>可單獨使用，或與 <b>重複時間步長的頻率</b>或 <b>將時間步長對齊到的時間</b>參數搭配使用。
+            </p>
+            <p>例如，若要建立在每週一上午 9:00 到上午 10:00 發生的時間步長，請將 <b>時間步長間隔</b>設為 <code>1 小時</code>、將 <b>重複時間步長的頻率</b>設為 <code>1 週</code>，並將 <b>將時間步長對齊到的時間</b>設為 <code>週一上午 9:00:00</code>。
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>重複時間步長的頻率</h2></div>
+        <hr/>
+        <div>
+            <p> 用於計算時間步長的步長。 <b>重複時間步長的頻率</b>可單獨使用、搭配使用 <b>時間步長間隔</b>、搭配使用 <b>參考時間</b>，或搭配使用 <b>時間步長間隔</b>和 <b>將時間步長對齊到的時間</b>二者。
+            </p>
+            <p> 例如，若要建立在每週一上午 9:00 到上午 10:00 發生的時間步長，請將 <b>時間步長間隔</b>設為 <code>1 小時</code>、將 <b>重複時間步長的頻率</b>設為 <code>1 週</code>，並將 <b>將時間步長對齊到的時間</b>設為 <code>週一上午 9:00:00</code>。
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>要將時間步長對齊到的時間</h2></div>
+        <hr/>
+        <div>
+            <p>用來對齊時間分段的日期和時間。時間步長將從此時間起算並繼續向後流動。若未選取參考時間，時間步長將對齊到 1970 年 1 月 1 日。
+            </p>
+            <p> 例如，若要建立在每週一上午 9:00 到上午 10:00 發生的時間步長，請將 <b>時間步長間隔</b>設為 <code>1 小時</code>、將 <b>重複時間步長的頻率</b>設為 <code>1 週</code>，並將 <b>將時間步長對齊到的時間</b>設為 <code>週一上午 9:00:00</code>。
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>空間參考 (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>這是搶鮮版的暫時參數，用於設定處理空間參考。許多大數據工具要求將投影的座標系統作為空間參考，以進行處理。預設情況下，工具將使用輸入座標系統，但若是地理座標系統則將失敗。若要設定投影的座標系統，請輸入 WKID。例如， <b>Web Mercator</b> 將輸入 <code>3857</code>。
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>選擇資料儲存庫</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics 結果是儲存於資料儲存庫，並作為  Portal for ArcGIS 中的圖徵圖層公開。在大多數情況下，必須將結果儲存到大型的時空資料儲存庫，且這是預設值。在某些情況下，將結果儲存至關聯式資料儲存庫是個好選擇。在下列情況下，您可能想要在關聯式資料儲存庫中儲存結果： 
+                <ul>
+                    <li>您可以使用入口網站-至-入口網站協同作業中的結果。
+                    </li>
+                    <li>您可以啟用結果同步功能。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果您預期 GeoAnalytics 結果會增加，並需要利用大型的時空資料儲存庫的功能來處理大量資料，則不應使用關聯式資料儲存庫。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p> 將建立之圖層的名稱。若是寫入到 ArcGIS Data Store，您的結果將儲存於<b>我的內容</b>並新增至地圖中。若是寫入到大數據檔案分享，您的結果將儲存於大數據檔案分享並新增至其資訊清單中。不會將它新增到地圖。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層已存在，工具將失敗。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式方塊寫入到 ArcGIS Data Store（關聯式或大型的時空資料儲存庫）時，可以在<b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

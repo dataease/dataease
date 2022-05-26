@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>딥러닝을 사용하여 객체 감지(Detect Objects Using Deep Learning)</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="딥러닝을 사용하여 객체 감지"></h2>
+        <hr/>
+    <p>이 도구는 입력 래스터에서 숙련된 딥러닝 모델을 실행하여 찾는 객체가 포함된 피처 클래스를 생성합니다. 피처는 찾은 객체 주변의 경계 상자 또는 폴리곤이거나, 객체 중심에 있는 포인트일 수 있습니다.
+    </p>
+    <p> <b>현재 맵 범위 사용</b>을 선택한 경우 현재 맵 범위 내에 보이는 래스터 영역만 분석됩니다. 이 옵션을 선택하지 않으면 현재 맵 범위가 아닌 경우에도 전체 래스터가 분석됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>객체 감지에 사용되는 이미지 선택</h2></div>
+        <hr/>
+        <div>
+            <p>객체 감지에 사용되는 입력 이미지입니다.
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>객체 감지에 사용되는 딥러닝 모델 선택</h2></div>
+        <hr/>
+        <div>
+            <p>입력 딥러닝 패키지( <code>.dlpk</code>) 항목입니다.
+            </p>
+            <p>딥러닝 패키지는 Esri 모델 정의 JSON 파일( <code>.emd</code>), 딥러닝 이진 모델 파일, 필요한 경우 사용할 파이썬 래스터 함수로 구성됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>딥러닝 모델 인수 지정</h2></div>
+        <hr/>
+        <div>
+            <p>함수 인수는 입력 모델에서 참조하는 파이썬 래스터 함수 클래스에 정의됩니다. 여기에서, 민감도를 조정하기 위한 신뢰도 임계값 등의 실험 및 세부 조정에 대한 추가적인 딥러닝 매개변수와 인수를 나열합니다.
+            </p>
+            <p>인수의 이름은 도구를 통해 래스터 분석 서버에서 파이썬 모듈을 읽어 채워집니다.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>결과에서 중복 피처 제거(선택)</h2></div>
+        <hr/>
+        <div>
+            <p>비최대값 억제를 수행하며, 중복 객체를 식별하여 신뢰도 값이 낮은 중복 피처는 제거됩니다. 
+                <ul>
+                    <li>선택하지 않음 - 감지된 모든 객체는 결과 피처 클래스에 있습니다. 이 방법이 기본값입니다.
+                        
+
+                    </li>
+                    <li>선택함 - 감지된 중복 개체를 제거합니다.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>신뢰도 점수 필드</h2></div>
+        <hr/>
+        <div>
+            <p>피처 서비스의 필드로, 객체 감지 방법으로 결과로 도출된 신뢰도 점수를 포함합니다.
+            </p>
+            <p>이 매개변수는  <b>비최대값 억제</b> 매개변수를 선택할 때 필요합니다.
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>클래스 값 필드</h2></div>
+        <hr/>
+        <div>
+            <p>결과 피처 서비스의 클래스 값 필드입니다. 지정하지 않으면 도구는 표준 클래스 값 필드인  <i>Classvalue</i> 및 <i>Value</i>를 사용합니다. 이러한 필드가 없으면 모든 피처가 동일한 객체 클래스로 처리됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>최대 중첩 비율</h2></div>
+        <hr/>
+        <div>
+            <p>2개의 겹치는 피처에 대한 최대 중첩 비율로, 유니온 영역에서 인터섹트 영역의 비율로 정의됩니다. 기본값은 0입니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에 생성되고 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 결과가 저장될 <b>내 콘텐츠</b>에서 폴더 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

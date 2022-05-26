@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Localizar Mais Próximo</h2><p/>
+        <h2><img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="Encontrar Mais Pr&oacute;ximos"></h2>
+        <hr/>
+    <p>Esta ferramenta encontra os elementos mais pr&oacute;ximos e elabora um relat&oacute;rio e classifica a dist&acirc;ncia a elementos pr&oacute;ximos. Para encontrar o que h&aacute; mais pr&oacute;ximo, a ferramenta pode medir usando quer seja um modo de viagem seleccionado quer seja uma dist&acirc;ncia em linha reta. Existem op&ccedil;&otilde;es para limitar o n&uacute;mero de elementos mais pr&oacute;ximos a pesquisar ou o intervalo de pesquisa em encontr&aacute;-los. Os resultados desta ferramenta podem ajud&aacute;-lo a responder &agrave;s seguintes perguntas:
+        <ul>
+            <li>Qual &eacute; o parque mais pr&oacute;ximo?
+            </li>
+            <li>Qual o hospital onde posso chegar na unidade de tempo mais curta? Quanto tempo demora uma viagem numa ter&ccedil;a-feira &agrave;s 5:30 da tarde em plena hora de ponta?
+            </li>
+            <li>Quais s&atilde;o as dist&acirc;ncias rodovi&aacute;rias entre as grandes cidades?
+            </li>
+            <li>Qual desses pacientes residem a duas milhas das f&aacute;bricas de produtos qu&iacute;micos?
+            </li>
+        </ul>
+        
+    </p>
+    <p>A ferramenta Localizar Mais Pr&oacute;ximo devolve uma camada que cont&eacute;m os elementos mais pr&oacute;ximos e uma camada de linha que liga os locais de in&iacute;cio aos locais mais pr&oacute;ximos. A camada de linha cont&eacute;m informa&ccedil;&atilde;o sobre o in&iacute;cio e as localiza&ccedil;&otilde;es mais pr&oacute;ximas e as dist&acirc;ncias entre elas.
+    </p>
+    <p>Se marcar a op&ccedil;&atilde;o  <b>Utilizar a extens&atilde;o atual do mapa</b>, apenas os elementos vis&iacute;veis na extens&atilde;o atual do mapa ser&atilde;o considerados elementos iniciais e, potencialmente, elementos pr&oacute;ximos. Se n&atilde;o marcar a op&ccedil;&atilde;o, ser&atilde;o considerados todos os elementos na camada de entrada, mesmo que estejam fora da extens&atilde;o atual do mapa.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Especificar os locais iniciais</h2></div>
+        <hr/>
+        <div>
+            <p>A ferramenta Localizar Mais Pr&oacute;ximo mede desde os elementos na camada que indicar aqui (os locais de partida) at&eacute; &agrave;s localiza&ccedil;&otilde;es que indicar no pr&oacute;ximo par&acirc;metro.  A ferramenta suporta at&eacute;  5 000 elementos em cada camada. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>Encontrar as localizações mais próximas em</h2></div>
+        <hr/>
+        <div>
+            <p>A ferramenta Localizar Mais Pr&oacute;ximo faz a medi&ccedil;&atilde;o a partir de cada uma das localiza&ccedil;&otilde;es na primeira camada at&eacute; &agrave;s localiza&ccedil;&otilde;es nesta camada. A ferramenta suporta at&eacute;  5 000 localiza&ccedil;&otilde;es em cada camada. </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, pode selecionar  <b>Escolher Camada de An&aacute;lise</b> que se encontra na parte inferior da lista pendente. Esta op&ccedil;&atilde;o abre uma galeria, na qual pode navegar e selecionar conjuntos de dados de v&aacute;rias fontes para utilizar na sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Medir</h2></div>
+        <hr/>
+        <div>
+            <p>Seleccione se pretende encontrar as localiza&ccedil;&otilde;es mais pr&oacute;ximas baseado numa dist&acirc;ncia em linha reta ou modo de viagem seleccionado. Modos de desloca&ccedil;&atilde;o apenas s&atilde;o activados quando sua camada de entrada cont&eacute;m pontos. Os modos de viagem dispon&iacute;veis s&atilde;o definidos pelo administrador da sua organiza&ccedil;&atilde;o.  Ao utilizar um dos modos de viagem, as medi&ccedil;&otilde;es s&atilde;o feitas ao longo de estradas ou cal&ccedil;adas, e honram as regras aplic&aacute;veis, como ruas de sentido &uacute;nico, invers&otilde;es de marcha ilegais, e assim por diante.
+            </p>
+            <p>Quando faz a medi&ccedil;&atilde;o entre linhas ou &aacute;reas, &eacute; encontrada a dist&acirc;ncia de ou para o ponto mais pr&oacute;ximo ao longo da linha ou do limite da &aacute;rea. 
+            </p> 
+            <p>Quando seleciona  <b>Tempo de Condu&ccedil;&atilde;o</b>, <b>Tempo de Condu&ccedil;&atilde;o Rural</b>, ou <b>Tempo de Condu&ccedil;&atilde;o em Cami&atilde;o</b> tem acesso a op&ccedil;&otilde;es sobre como medir o tempo de condu&ccedil;&atilde;o.
+                <ul>
+                    <li>
+                        <p>Desmarque a op&ccedil;&atilde;o  <b>Utilizar Trafego</b> para localizar os elementos mais pr&oacute;ximos com base em velocidades est&aacute;ticas de desloca&ccedil;&atilde;o, como os limites de velocidade, e n&atilde;o em velocidades oscilantes causadas por mudan&ccedil;as nas condi&ccedil;&otilde;es de trafego.
+                        </p>
+                        <p>Esta &eacute; a op&ccedil;&atilde;o que deve selecionar se pretender saber o que est&aacute; mais pr&oacute;ximo de um modo geral, e n&atilde;o necessariamente o mais pr&oacute;ximo dadas as condi&ccedil;&otilde;es de tr&acirc;nsito para uma hora e um dia espec&iacute;ficos.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Marque a op&ccedil;&atilde;o  <b>Utilizar Trafego</b> para localizar os elementos mais pr&oacute;ximos com base numa hora de partida espec&iacute;fica e mudan&ccedil;a das condi&ccedil;&otilde;es de trafego.  Se seleccionar tamb&eacute;m a op&ccedil;&atilde;o <b>Trafego real</b> , a hora de partida das localiza&ccedil;&otilde;es iniciais &eacute; definida para a hora actual e as velocidades de trafego atuais e previstas s&atilde;o referenciadas a partir de sensores e feeds para determinar quais os elementos est&atilde;o mais pr&oacute;ximos. As velocidades de tr&aacute;fego previstas s&atilde;o calculadas em refer&ecirc;ncia a velocidades de tr&aacute;fego em tempo real, velocidades hist&oacute;ricas e eventos atuais como o clima. As velocidades de tr&aacute;fego conseguem fazer uma previs&atilde;o at&eacute; 12 horas, de modo a que possa mover o slider para definir a hora de partida at&eacute; 12 horas.
+                        </p>
+                        <p>Utilize estas defini&ccedil;&otilde;es de tr&acirc;nsito real para descobrir quais os elementos que podem ser alcan&ccedil;ados no mais curto espa&ccedil;o de tempo, partindo no momento, partindo ap&oacute;s uma hora, etc.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Se marcar  <b>Utilizar Trafego</b> e seleccionar <b>Trafego baseado em condi&ccedil;&otilde;es t&iacute;picas para</b> um dia e uma hora, a ferramenta localiza os elementos mais pr&oacute;ximos com base em m&eacute;dias de velocidades hist&oacute;ricas para cada intervalo de cinco minutos ao longo de uma semana normal. Os resultados incluem o tr&aacute;fego mas removem a influ&ecirc;ncia das condi&ccedil;&otilde;es de tr&aacute;fego atuais e de eventos, que podem variar significativamente da norma.
+                        </p>
+                        <p>Pode utilizar as defini&ccedil;&otilde;es de tr&acirc;nsito hist&oacute;ricas para perguntar, por exemplo: &quot;Que elementos &eacute; poss&iacute;vel alcan&ccedil;ar mais rapidamente partindo dos elementos iniciais &agrave;s 11:30 numa quarta-feira?&quot; 
+                        </p>
+                        <p>A hora definida refere-se ao fuso hor&aacute;rio no qual est&atilde;o localizados os elementos iniciais. Assim, se definir a hora para 8:00 e tiver dois elementos de in&iacute;cio, um na cidade de Nova Iorque e outro em Los Angeles, os locais mais pr&oacute;ximos ser&atilde;o encontrados assumindo uma hora de partida de 8:00. Hora do Leste e 08h00. Hor&aacute;rio do Pac&iacute;fico, respectivamente.
+                        </p>
+                    </li>
+                </ul>
+                Note que &agrave; medida que um ve&iacute;culo se dirige para longe de um ponto, o tempo aumenta e as condi&ccedil;&otilde;es de tr&aacute;fego mudam. Esta ferramenta tem em conta essas varia&ccedil;&otilde;es quando &eacute; marcada a op&ccedil;&atilde;o <b>Utilizar trafego</b>; no entanto, nem todas as regi&otilde;es suportam o trafego. Clique no link <b>Verificar disponibilidade</b> na ferramenta para verificar se est&aacute; dispon&iacute;vel na sua regi&atilde;o. 
+            </p>
+            <p> <b>Tempo de Condu&ccedil;&atilde;o em Cami&atilde;o</b> pode utilizar velocidades de viagem din&acirc;micas com base no tr&acirc;nsito, mas apenas at&eacute; ao limite de velocidade legal para cami&otilde;es. Por exemplo, caso a velocidade din&acirc;mica para uma rua, com base no tr&acirc;nsito em tempo real, for de 65 milhas por hora, mas o limite de velocidade para cami&otilde;es nessa rua seja 55 milhas por hora, o c&aacute;lculo utilizar&aacute; 55 milhas por hora para essa rua.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Selecionar camadas de barreiras</h2></div>
+        <hr/>
+        <div>
+            <p> Um ou mais elementos que atuem como restri&ccedil;&otilde;es tempor&aacute;rias (barreiras) ao transitar pelas ruas subjacentes. Pode especificar as barreiras utilizando elementos de pontos, linhas ou pol&iacute;gonos.
+            </p>
+            <p>Uma barreira de pontos pode delinear uma &aacute;rvore ca&iacute;da, um acidente, uma linha el&eacute;trica derrubada ou algo que bloqueie completamente o tr&acirc;nsito numa posi&ccedil;&atilde;o espec&iacute;fica ao longo da rua. &Eacute; poss&iacute;vel transitar na rua, mas n&atilde;o pela barreira. Pode especificar at&eacute; 250 elementos para atuarem como barreiras de pontos.
+            </p>
+            <p>Uma barreira de linhas pro&iacute;be que se transite por qualquer ponto de intersec&ccedil;&atilde;o entre a barreira e as ruas. Por exemplo, um desfile ou protesto que bloqueie o tr&aacute;fego por v&aacute;rios segmentos de ruas pode ser delineado com uma barreira de linhas. Se o n&uacute;mero de elementos da rua intersetado por todas as barreiras de linhas for superior a 500 elementos, a ferramenta devolve um erro.
+            </p>
+            <p>Uma barreira de pol&iacute;gonos pro&iacute;be que se transite por qualquer ponto de intersec&ccedil;&atilde;o entre o pol&iacute;gono e as ruas. Este tipo de barreira pode ser utilizado para delinear inunda&ccedil;&otilde;es que abranjam &aacute;reas da rede de estradas e n&atilde;o permitam que se transite por elas. Se o n&uacute;mero de elementos da rua intersetado por todas as barreiras de pol&iacute;gonos for superior a 2000 elementos, a ferramenta devolve um erro.
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>Para cada localização na camada de entrada</h2></div>
+        <hr/>
+        <div>
+            <p>Existem duas op&ccedil;&otilde;es para limitar a pesquisa de localiza&ccedil;&otilde;es mais pr&oacute;ximas. Uma op&ccedil;&atilde;o consiste em limitar o n&uacute;mero m&aacute;ximo de localiza&ccedil;&otilde;es mais pr&oacute;ximas a encontrar por cada localiza&ccedil;&atilde;o inicial. Pode localizar o parque mais pr&oacute;ximo, os dois parques mais pr&oacute;ximos, etc. A outra op&ccedil;&atilde;o &eacute; definir uma dist&acirc;ncia m&aacute;xima de pesquisa ou unidade de tempo.
+            </p>
+            <p>Se desmarcar as op&ccedil;&otilde;es, o n&uacute;mero m&aacute;ximo de localiza&ccedil;&otilde;es mais pr&oacute;ximas a encontrar &eacute; de 100 (o limite da ferramenta) e o intervalo de pesquisa m&aacute;ximo &eacute; ilimitado.
+            </p>
+            <p>O tempo de processamento depende do n&uacute;mero de localiza&ccedil;&otilde;es iniciais, do n&uacute;mero de localiza&ccedil;&otilde;es pr&oacute;ximas e do intervalo de pesquisa m&aacute;ximo. O processamento demora mais tempo se existirem mais localiza&ccedil;&otilde;es ou intervalos de pesquisa maiores.
+            </p>
+            <p>Note que quando um limite &eacute; definido no intervalo de pesquisa, &eacute; poss&iacute;vel que a ferramenta n&atilde;o encontre todos os locais mais pr&oacute;ximos dentro desse intervalo ou que menos locais sejam encontrados do que o n&uacute;mero m&aacute;ximo de locais mais pr&oacute;ximos que especificar.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada de elementos que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. Se a camada de elementos j&aacute; existir, ser-lhe-&aacute; pedido que forne&ccedil;a outro nome. A camada de elementos conter&aacute; duas camadas: uma com as localiza&ccedil;&otilde;es mais pr&oacute;ximas e outra que representa as linhas que ligam as localiza&ccedil;&otilde;es de entrada &agrave;s localiza&ccedil;&otilde;es mais pr&oacute;ximas.
+            </p>
+            <p>Caso selecione  <b>Incluir camadas de rotas</b>, cada rota do resultado ser&aacute; tamb&eacute;m guardada como camada de rota. Uma camada de rota inclui todas as informa&ccedil;&otilde;es de uma rota espec&iacute;fica, tais como as paragens atribu&iacute;das &agrave; rota, assim como, as dire&ccedil;&otilde;es do percurso. Criar camadas de rotas &eacute; &uacute;til caso pretenda partilhar as rotas individuais com outros membros da sua organiza&ccedil;&atilde;o ou para aplicar modifica&ccedil;&otilde;es adicionais &agrave;s rotas utilizando o bot&atilde;o <b>Dire&ccedil;&otilde;es</b> no visualizador de mapas. As camadas de rotas utilizam o nome introduzido para a camada de elementos como prefixo e o nome da rota gerada como parte da an&aacute;lise, que &eacute; adicionado para criar um nome &uacute;nico para cada camada de rotas.
+            </p>
+            <p>O n&uacute;mero m&aacute;ximo de camadas de rota que podem ser criadas &eacute;  1 000. Se o resultado cont&eacute;m mais do que  1 000 rotas e  <b>Incluir camadas de rota</b> est&aacute; marcado, a ferramenta apenas criar&aacute; o servi&ccedil;o de elementos de sa&iacute;da.
+            </p>
+            <p>Ao utilizar o menu pendente  <b>Guardar resultado em</b>, pode especificar o nome de uma pasta em <b>O Meu Conte&uacute;do</b> onde a camada de elementos e as camadas de rotas, caso sejam criadas, ser&atilde;o guardadas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

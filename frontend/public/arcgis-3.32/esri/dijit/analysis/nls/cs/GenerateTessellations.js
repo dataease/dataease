@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/cs/GenerateTessellations",{chooseShape:"Zvolit tvar",defineExtent:"Definovat rozsah",defineBin:"Definovat velikost p\u0159ihr\u00e1dky zad\u00e1n\u00edm",area:"Plocha",distance:"Vzd\u00e1lenost",resultLayerName:"N\u00e1zev v\u00fdsledn\u00e9 vrstvy",hexagon:"\u0160esti\u00faheln\u00edk",transverseHexagon:"P\u0159\u00ed\u010dn\u00fd \u0161esti\u00faheln\u00edk",square:"\u010ctverec",triangle:"Troj\u00faheln\u00edk",diamond:"Koso\u010dtverec",sameAsDisplay:"Stejn\u011b jako u zobrazen\u00ed",
+emptyBinSize:"Velikost p\u0159ihr\u00e1dky nesm\u00ed b\u00fdt pr\u00e1zdn\u00e1",currentExtent:"aktu\u00e1ln\u00ed rozsah",intersectExtent:"Zachovat pouze prot\u00ednaj\u00edc\u00ed se pravideln\u00e9 m\u0159\u00ed\u017eky polygon\u016f",outputLayerName:"Generovat pravideln\u00e9 m\u0159\u00ed\u017eky polygon\u016f v ${extentLayerName}",itemDescription:"Byl pou\u017eit rozsah z ${extentLayerName}.",itemTags:"V\u00fdsledek anal\u00fdzy, generovat pravideln\u00e9 m\u0159\u00ed\u017eky polygon\u016f, ${extentLayerName}",
+itemSnippet:"Vrstva prvk\u016f vygenerovan\u00e1 \u0159e\u0161en\u00edm Generovat pravideln\u00e9 m\u0159\u00ed\u017eky polygon\u016f."});

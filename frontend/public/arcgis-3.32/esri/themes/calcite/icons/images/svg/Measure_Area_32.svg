@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 18.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 32 32" enable-background="new 0 0 32 32" xml:space="preserve">
+<g id="Dark_Theme_1_" display="none">
+	<rect x="-32" y="-64" display="inline" fill="#333333" width="544" height="736"/>
+	
+		<rect x="-64" y="-96" display="inline" fill="none" stroke="#808080" stroke-width="0.25" stroke-miterlimit="10" width="612" height="792"/>
+</g>
+<g id="LightTheme" display="none">
+	<rect x="-32" y="-64" display="inline" fill="#F8F8F8" width="544" height="736"/>
+	
+		<rect x="-64" y="-96" display="inline" fill="none" stroke="#808080" stroke-width="0.25" stroke-miterlimit="10" width="612" height="792"/>
+</g>
+<g id="Hover" display="none">
+	<rect x="-32" y="-64" display="inline" fill="#C5E5F9" width="544" height="736"/>
+</g>
+<g id="Selected" display="none">
+	<rect x="-32" y="-64" display="inline" fill="#AADBFA" width="544" height="736"/>
+</g>
+<g id="Icon_Name">
+</g>
+<g id="Icons">
+	<g>
+		<polygon fill="#68AA67" points="4,2 27,8 27,29 4,29 		"/>
+		<polygon fill="#DDEEDB" points="5,28 5,3.29443 26,8.77246 26,28 		"/>
+		<rect fill="none" width="32" height="32"/>
+		<rect x="25" y="7" fill="#5B945A" width="3" height="3"/>
+		<rect x="26" y="8" fill="#9BC29C" width="1" height="1"/>
+		<rect x="25" y="27" fill="#5B945A" width="3" height="3"/>
+		<rect x="26" y="28" fill="#9BC29C" width="1" height="1"/>
+		<rect x="3" y="1" fill="#5B945A" width="3" height="3"/>
+		<rect x="4" y="2" fill="#9BC29C" width="1" height="1"/>
+		<rect x="3" y="27" fill="#5B945A" width="3" height="3"/>
+		<rect x="4" y="28" fill="#9BC29C" width="1" height="1"/>
+		<rect x="1" y="16.0020008" fill-rule="evenodd" clip-rule="evenodd" fill="#F8F8F8" width="29.0009995" height="8"/>
+		<path fill="#B88B55" d="M0,15v10h31V15H0z M30,24h-1v-4h-1v4h-1v-3h-1v3h-1v-7h-1v7h-1v-3h-1v3h-1v-4h-1v4h-1v-3h-1v3h-1v-7h-1v7
+			h-1v-3h-1v3h-1v-4h-1v4h-1v-3h-1v3H9v-7H8v7H7v-3H6v3H5v-4H4v4H3v-3H2v3H1v-8h29V24z"/>
+	</g>
+</g>
+</svg>

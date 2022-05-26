@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Klasifikace a regrese založená na lese (Forest-based Classification and Regression)</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Diagram pracovn&iacute;ho postupu Klasifikace a regrese založen&aacute; na lese"></h2>
+        <hr/>
+    <p>Vytvoř&iacute; modely a vygeneruje předpovědi pomoc&iacute; adaptace Briemanova algoritmu n&aacute;hodn&eacute;ho lesa, kter&yacute; je metodou strojov&eacute;ho učen&iacute; s dohledem. Předpovědi lze prov&eacute;st jak pro kategorick&eacute; proměnn&eacute; (klasifikace), tak pro souvisl&eacute; proměnn&eacute; (regrese). Nez&aacute;visl&eacute; proměnn&eacute; jsou pole v tabulce atributů cvičn&yacute;ch prvků. N&aacute;stroj umožňuje generovat model pro posouzen&iacute; v&yacute;konu, nebo generovat model a předpov&iacute;dat v&yacute;sledky do jin&yacute;ch datov&yacute;ch sad. 
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Typ analýzy</h2></div>
+        <hr/>
+        <div>
+            <p>Určuje provozn&iacute; režim n&aacute;stroje. N&aacute;stroj umožňuje učen&iacute; modelu pouze pro posouzen&iacute; v&yacute;konu, nebo učen&iacute; modelu a předpov&iacute;d&aacute;n&iacute; prvků. Typy předpovědi jsou n&aacute;sleduj&iacute;c&iacute;:
+                <ul>
+                    <li> <b>Učen&iacute; modelu k posouzen&iacute; jeho v&yacute;konu</b>&mdash;Model bude učen tak, aby vyhovoval vstupn&iacute;m datům.Použijte tuto možnost k posouzen&iacute; přesnosti va&scaron;eho modelu před generov&aacute;n&iacute;m předpověd&iacute; na nov&eacute; datov&eacute; sadě.V&yacute;stupem t&eacute;to možnosti bude feature služba va&scaron;ich přizpůsoben&yacute;ch cvičn&yacute;ch dat, diagnostika modelu a voliteln&aacute; tabulka důležitosti proměnn&yacute;ch.
+                    </li>
+                    <li> <b>Učen&iacute; modelu a předpov&iacute;d&aacute;n&iacute; hodnot</b>&mdash; Budou vygenerov&aacute;ny předpovědi nebo klasifikace prvků.Nez&aacute;visl&eacute; proměnn&eacute; mus&iacute; b&yacute;t uvedeny pro cvičn&eacute; prvky i prvky, kter&eacute; budou předpovězeny. V&yacute;stupem t&eacute;to možnosti bude feature služba va&scaron;ich předpovězen&yacute;ch hodnot, diagnostika modelu a voliteln&aacute; tabulka důležitosti proměnn&yacute;ch.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Učení modelu k posouzení jeho výkonu</h2></div>
+        <hr/>
+        <div>
+            <p>Použijte tento režim, pokud chcete model přizpůsobit a prozkoumat jeho přizpůsoben&iacute;.
+            </p>
+            <p>Při t&eacute;to možnosti bude model učen za použit&iacute; vstupn&iacute; vrstvy. Použijte tuto možnost k posouzen&iacute; přesnosti va&scaron;eho modelu před generov&aacute;n&iacute;m předpověd&iacute; na nov&eacute; datov&eacute; sadě.V&yacute;stupem t&eacute;to možnosti bude diagnostika modelu v okně zpr&aacute;v a použit&iacute; modelu na va&scaron;ich cvičn&yacute;ch datech.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Učení modelu a předpovídání hodnot</h2></div>
+        <hr/>
+        <div>
+            <p>Použijte tento režim, pokud chcete model přizpůsobit, a použ&iacute;t model na datovou sadu k vygenerov&aacute;n&iacute; předpověd&iacute;.
+            </p>
+            <p>Předpovědi nebo klasifikace budou pro prvky vygenerov&aacute;ny. V&yacute;stupem t&eacute;to možnosti bude feature služba, diagnostika modelu a voliteln&aacute; tabulka důležitosti proměnn&yacute;ch.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Vyberte cvičnou vrstvu</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva prvků obsahuj&iacute;c&iacute; proměnnou k předpovědi a pole, kter&aacute; budou použita pro generov&aacute;n&iacute; předpovědi.
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Vybrat vrstvu, pro níž budou předpovídány hodnoty</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva prvků představuj&iacute;c&iacute; um&iacute;stěn&iacute;, ve kter&yacute;ch budou provedeny předpovědi. Tato vrstva prvků mus&iacute; tak&eacute; obsahovat v&scaron;echny nez&aacute;visl&eacute; proměnn&eacute; zadan&eacute; jako pole odpov&iacute;daj&iacute;c&iacute; těm použit&yacute;m v cvičn&yacute;ch datech.
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Zvolit pole k předpovědi</h2></div>
+        <hr/>
+        <div>
+            <p>Pole ze cvičn&yacute;ch prvků obsahuj&iacute;c&iacute; hodnoty, kter&eacute; maj&iacute; b&yacute;t použity k učen&iacute; modelu. Toto pole obsahuje zn&aacute;m&eacute; (cvičn&eacute;) hodnoty proměnn&eacute;, kter&eacute; se použij&iacute; k předpovědi v nezn&aacute;m&yacute;ch um&iacute;stěn&iacute;ch. Pokud jsou hodnoty kategorick&eacute; (např&iacute;klad javor, borovice, dub), za&scaron;krtněte pole  <b>Kategorick&yacute;</b>.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Vyberte jednu nebo více nezávislých proměnných</h2></div>
+        <hr/>
+        <div>
+            <p>Jedno nebo v&iacute;ce pol&iacute; reprezentuj&iacute;c&iacute;ch nez&aacute;visl&eacute; proměnn&eacute; (pole), kter&eacute; pom&aacute;haj&iacute; předpov&iacute;dat hodnotu či kategorii proměnn&eacute; k předpovědi. Použijte za&scaron;krt&aacute;vac&iacute; pole Kategorick&yacute; pro jak&eacute;koliv proměnn&eacute;, kter&eacute; reprezentuj&iacute; tř&iacute;dy či kategorie (např. půdn&iacute; kryt nebo př&iacute;tomnost či nepř&iacute;tomnost). Zadejte proměnn&eacute; jako pravda pro ty, kter&eacute; představuj&iacute; tř&iacute;dy nebo kategorie, jako např&iacute;klad půdn&iacute; kryt nebo nepř&iacute;tomnost, a nepravda, pokud jsou proměnn&eacute; souvisl&eacute;.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Počet stromů</h2></div>
+        <hr/>
+        <div>
+            <p>Počet stromů vytvořen&yacute;ch v modelu. V&iacute;ce stromů bude m&iacute;t obecně za n&aacute;sledek přesněj&scaron;&iacute; předpověď modelu, ale v&yacute;počet modelu bude d&eacute;le trvat V&yacute;choz&iacute; počet stromů je 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Minimální velikost listů</h2></div>
+        <hr/>
+        <div>
+            <p>Minim&aacute;ln&iacute; počet pozorov&aacute;n&iacute; požadovan&yacute; pro zachov&aacute;n&iacute; listu (konečn&yacute; uzel na stromu, kter&yacute; se již d&aacute;l neděl&iacute;). V&yacute;choz&iacute; minimum pro regresi je 5 a v&yacute;choz&iacute; hodnota pro klasifikaci je 1. U velmi velk&yacute;ch dat zv&yacute;&scaron;en&iacute; těchto č&iacute;sel sn&iacute;ž&iacute; dobu běhu n&aacute;stroje.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Maximální hloubka stromu</h2></div>
+        <hr/>
+        <div>
+            <p>Maxim&aacute;ln&iacute; počet dělen&iacute; stromu. Pomoc&iacute; velk&eacute; maxim&aacute;ln&iacute; hloubky bude vytvořeno v&iacute;ce dělen&iacute;, což může zv&yacute;&scaron;it &scaron;ance na přeplněn&iacute; modelu. V&yacute;choz&iacute; hodnota se odv&iacute;j&iacute; od dat a z&aacute;lež&iacute; na počtu vytvořen&yacute;ch stromů a počtu zahrnut&yacute;ch proměnn&yacute;ch.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Data dostupná na strom (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Určuje procento prvků ve cvičn&eacute; vrstvě použit&yacute;ch na každ&yacute; rozhodovac&iacute; strom. V&yacute;choz&iacute; počet dat je 100 %. Ze dvou třetin stanoven&yacute;ch dat jsou pro každ&yacute; strom n&aacute;hodně odebr&aacute;ny vzorky.
+            </p>
+            <p>Každ&yacute; rozhodovac&iacute; strom v lese je vytvořen pomoc&iacute; n&aacute;hodn&eacute;ho vzorku nebo podmnožiny (asi dvou třetin) dostupn&yacute;ch cvičn&yacute;ch dat. Použit&iacute; niž&scaron;&iacute;ho počtu procent vstupn&iacute;ch dat pro každ&yacute; rozhodovac&iacute; strom zvy&scaron;uje rychlost n&aacute;stroje u velmi velk&yacute;ch datov&yacute;ch sad.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Počet náhodně vzorkovaných proměnných</h2></div>
+        <hr/>
+        <div>
+            <p>Určuje počet nez&aacute;visl&yacute;ch proměnn&yacute;ch použit&yacute;ch k vytvořen&iacute; každ&eacute;ho rozhodovac&iacute;ho stromu.
+            </p>
+            <p>Každ&yacute; rozhodovac&iacute; strom v lese je vytvořen pomoc&iacute; n&aacute;hodn&eacute; podmnožiny stanoven&yacute;ch nez&aacute;visl&yacute;ch proměnn&yacute;ch. Zv&yacute;&scaron;en&iacute; počtu proměnn&yacute;ch použit&yacute;ch na každ&yacute; rozhodovac&iacute; strom zv&yacute;&scaron;&iacute; &scaron;anci na přeplněn&iacute; va&scaron;eho modelu, zejm&eacute;na pokud se zde vyskytuje jedna nebo dvojice dominantn&iacute;ch proměnn&yacute;ch. Běžnou prax&iacute; je použ&iacute;t druhou odmocninu z celkov&eacute;ho počtu nez&aacute;visl&yacute;ch proměnn&yacute;ch, pokud va&scaron;e proměnn&aacute; k předpovědi je č&iacute;slo, nebo vydělit celkov&yacute; počet nez&aacute;visl&yacute;ch proměnn&yacute;ch třemi, pokud je proměnn&aacute; k předpovědi kategorick&aacute;.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Vybrat, jak jsou nezávislá pole spárována</h2></div>
+        <hr/>
+        <div>
+            <p>Jak budou odpov&iacute;daj&iacute;c&iacute; proměnn&eacute; ve cvičn&eacute; vrstvě upraveny na proměnn&eacute; ve vrstvě předpovědi. Pouze proměnn&eacute; použit&eacute; při učen&iacute; budou obsaženy v tabulce.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Počet opakování pro ověření</h2></div>
+        <hr/>
+        <div>
+            <p>Určuje procentu&aacute;ln&iacute; hodnotu (mezi 0 a 50 procenty) prvků ve cvičn&eacute; vrstvě, kter&eacute; maj&iacute; b&yacute;t vyhrazeny jako zku&scaron;ebn&iacute; datov&aacute; sada pro ověřen&iacute;. Model bude učen bez t&eacute;to n&aacute;hodn&eacute; podmnožiny dat a hodnoty pozorovan&eacute; pro tyto prvky budou porovn&aacute;ny s předpov&iacute;dan&yacute;mi hodnotami. V&yacute;choz&iacute; hodnota je 10 procent.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy.  V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud v&yacute;sledn&aacute; vrstva již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>Vr&aacute;cen&eacute; v&yacute;sledky budou z&aacute;viset na typu anal&yacute;zy. Pokud uč&iacute;te model tak, aby vyhovoval vstupn&iacute;m datům, budou v&yacute;sledky obsahovat vrstvu cvičn&yacute;ch dat přizpůsoben&yacute;ch modelu a informace o v&yacute;sledku posouzen&iacute; vyhověn&iacute; modelu.Pokud uč&iacute;te model a prov&aacute;d&iacute;te předpovědi, v&yacute;sledky budou obsahovat vrstvu cvičn&yacute;ch dat přizpůsoben&yacute;ch modelu, vrstvu v&yacute;sledků předpovědi a informace o v&yacute;sledku posouzen&iacute; vyhověn&iacute; modelu.
+            </p>
+            <p>V&nbsp;rozbalovac&iacute;m seznamu  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

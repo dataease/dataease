@@ -1,0 +1,75 @@
+<div class="esriAnalysis esriMultiVariableForm">
+    <div data-dojo-type="dijit/form/Form" data-dojo-attach-point="_form" readOnly="true">
+      <table class="esriFormTable"  data-dojo-attach-point="_aggregateTable"  style="border-collapse:collapse;border-spacing:5px;" cellpadding="5px" cellspacing="5px">
+         <tbody>
+          <tr data-dojo-attach-point="_attrTypeRow">
+            <td  colspan="3" style="padding-top:0;">
+              <select class="esriLeadingMargin1 longInput esriLongLabel" data-dojo-type="dijit/form/Select" data-dojo-attach-point="_attrTypeSelect" data-dojo-attach-event="onChange:_handleVariableTypeChange">
+                <option value="DistanceToNearest">${i18n.distToNearest}</option>
+                <option value="AttributeOfNearest">${i18n.attrOfInterest}</option>
+                <option value="AttributeSummaryOfRelated">${i18n.summaryNearby}</option>
+                <option value="AttributeSummaryOfIntersect">${i18n.summaryIntersecting}</option>
+              </select>
+            </td>
+          </tr>
+          <tr data-dojo-attach-point="_attrLabelRow">
+            <td colspan="3" style="padding-top:0;padding-bottom:0">
+              <label class="esriLeadingMargin2 esriSmallLabel" data-dojo-attach-point="_attrTypeLabel"></label>
+            </td>
+          </tr>
+          <tr data-dojo-attach-point="_includeFieldLabelRow">
+            <td colspan="2">
+              <label class="esriLeadingMargin1" data-dojo-attach-point="_includeFieldLabel">${i18n.fieldToIncude}</label>
+           </td>
+           <!--<td class="shortTextInput" style="padding-bottom:0;">
+              <a href="#" class='esriFloatTrailing helpIcon' data-dojo-attach-point="_chooseAggHelp" esriHelpTopic=""></a>
+            </td>-->
+          </tr>
+          <tr data-dojo-attach-point="_includeFieldRow">
+            <td  colspan="3">
+              <select class="esriLeadingMargin1 longInput esriLongLabel"  data-dojo-type="dijit/form/Select" data-dojo-attach-point="_includeFieldSelect" data-dojo-attach-event="onChange:_handleIncludeFieldChange">
+              </select>
+            </td>
+          </tr>
+          <tr data-dojo-attach-point="_statsLabelRow">
+            <td colspan="2">
+              <label class="esriLeadingMargin1">${i18n.statstoCalculate}</label>
+            </td>
+            <!--<td class="shortTextInput">
+              <a href="#" class='esriFloatTrailing helpIcon' esriHelpTopic=""></a>
+            </td>-->
+          </tr>
+          <tr data-dojo-attach-point="_afterStatsRow">
+          </tr>
+          <tr data-dojo-attach-point="_binCenterLabelRow">
+            <td colspan="2" style="padding-bottom:0;">
+              <label class="esriLeadingMargin1" data-dojo-attach-point="_binCenterLabel">${i18n.maxDistancefromCtr}</label>
+           </td>
+           <!--<td class="shortTextInput" style="padding-bottom:0;">
+              <a href="#" class='esriFloatTrailing helpIcon' esriHelpTopic=""></a>
+            </td>-->
+          </tr>
+          <tr data-dojo-attach-point="_binCenterUnitsRow">
+           <td style="width:50%;">
+              <input type="text" data-dojo-type="dijit/form/NumberTextBox" data-dojo-props="intermediateChanges:true,value:'5',required:false,missingMessage:'${i18n.distanceMsg}'" data-dojo-attach-point="_binsInput" class="esriLeadingMargin1"  style="width:75%;">
+            </td>
+            <td colspan="2" style="width:50%;">
+              <select class="mediumInput esriAnalysisSelect" data-dojo-type="dijit/form/Select" data-dojo-attach-point="_binUnits" style="width:80%;table-layout:fixed;">
+                 <option value="NauticalMiles">${i18n.nautMiles}</option>
+                 <option value="Miles">${i18n.miles}</option>
+                 <option value="Yards">${i18n.yards}</option>
+                 <option value="Feet">${i18n.feet}</option>
+                 <option type="separator"></option>
+                 <option value="Kilometers">${i18n.kilometers}</option>
+                 <option value="Meters">${i18n.meters}</option>
+              </select>
+            </td>
+          </tr>
+        </tbody>
+       </table>
+     </div>
+    <div class="esriFormWarning esriRoundedBox" data-dojo-attach-point="_errorMessagePane" style="display:none;">
+      <a href="#" title="${i18n.close}" class="esriFloatTrailing esriAnalysisCloseIcon" data-dojo-attach-event="onclick:_handleCloseMsg"></a>
+      <span data-dojo-attach-point="_bodyNode"></span>
+    </div>
+  </div>

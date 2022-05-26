@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolar Pontos</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Ferramenta Interpolar Pontos"></h2>
+        <hr/>
+    <p>Esta ferramenta permite a voc&ecirc; prever os valores em novos locais baseada em medidas a partir de uma cole&ccedil;&atilde;o de pontos. A ferramenta obt&eacute;m os dados de ponto com valores em cada ponto e retorna um raster de valores previstos:
+    </p>
+    <p>Outros casos de uso desta ferramenta incluem o seguinte:
+
+        <ul>
+            <li>Uma &aacute;rea de gerenciamento da qualidade do ar tem sensores que medem n&iacute;veis de polui&ccedil;&atilde;o. Interpolar Pontos pode ser utilizada para predizer n&iacute;veis de polui&ccedil;&atilde;o em locais que n&atilde;o t&ecirc;m sensores, como locais com popula&ccedil;&otilde;es de risco&mdash;escolas ou hospitais, por exemplo.
+                
+
+            </li>
+            <li>Prever concentra&ccedil;&otilde;es de metal pesado em colheitas baseado em amostras tiradas de plantas individuais.
+                
+
+            </li>
+            <li>Prever n&iacute;veis de nutriente do solo (nitrog&ecirc;nio, f&oacute;sforo, pot&aacute;ssio, e assim por diante) e outros indicadores (como condutividade el&eacute;trica) para estudar suas rela&ccedil;&otilde;es com rendimento da cultura e prescrever quantidades precisas de fertilizante para cada local no campo.
+                
+
+            </li>
+            <li>Os aplicativos meteorol&oacute;gicos incluem predi&ccedil;&atilde;o de temperaturas, chuva e vari&aacute;veis associadas (como chuva &aacute;cida).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Escolher a camada de ponto contendo locais com valores conhecidos</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de ponto que cont&eacute;m os pontos onde os valores foram medidos.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Escolher campo para interpolar</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha o campo cujos valores voc&ecirc; deseja interpolar. Este campo deve ser num&eacute;rico.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Otimizar para</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha sua prefer&ecirc;ncia para velocidade versus precis&atilde;o.
+            </p>
+            <p>Predi&ccedil;&otilde;es mais precisas tomam mais tempo para calcular. Este par&acirc;metro altera os valores padr&atilde;o de v&aacute;rios outros par&acirc;metros de Interpolar Pontos para otimizar a velocidade de c&aacute;lculo, precis&atilde;o de resultados ou um equil&iacute;brio dos dois. Por padr&atilde;o, a ferramenta otimizar&aacute; para equilibrar.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Transformar dados para distribuição normal</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha se transformar seus dados para a distribui&ccedil;&atilde;o normal.
+            </p>
+            <p>A interpola&ccedil;&atilde;o &eacute; mais precisa para dados que seguem uma distribui&ccedil;&atilde;o normal (em forma de sino). Se os seus dados parecerem n&atilde;o estarem normalmente distribu&iacute;dos, voc&ecirc; dever&aacute; executar uma transforma&ccedil;&atilde;o.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Tamanho dos modelos locais</h2></div>
+        <hr/>
+        <div>
+            <p>A ferramenta Interpolar Pontos funciona construindo modelos de interpola&ccedil;&atilde;o locais que s&atilde;o misturados para criar o mapa de predi&ccedil;&atilde;o final. Este par&acirc;metro controla quantos pontos estar&atilde;o contidos em cada modelo local. Os valores menores tornar&atilde;o os resultados mais locais e poder&atilde;o revelar efeitos em pequena escala, mas podem introduzir alguma instabilidade nos c&aacute;lculos. Os valores maiores ser&atilde;o mais est&aacute;veis, mas alguns efeitos locais podem estar ausentes.
+            </p>
+            <p>O valor pode variar de 30 at&eacute; 500, mas valores t&iacute;picos est&atilde;o entre 50 e 200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Número de Vizinhos</h2></div>
+        <hr/>
+        <div>
+            <p>As predi&ccedil;&otilde;es s&atilde;o calculadas baseadas em pontos vizinhos. Este par&acirc;metro controla quantos pontos ser&atilde;o utilizados no c&aacute;lculo. A utiliza&ccedil;&atilde;o de um n&uacute;mero maior de vizinhos geralmente produzir&aacute; resultados mais precisos, mas os resultados demoram mais para calcular.
+            </p>
+            <p>Este valor pode variar de 1 at&eacute; 64, mas valores t&iacute;picos est&atilde;o entre 5 e 15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Tamanho da Célula de Saída</h2></div>
+        <hr/>
+        <div>
+            <p>O tamanho da c&eacute;lula e a unidade para os rasters de sa&iacute;da.
+            </p>
+            <p>As unidades dispon&iacute;veis s&atilde;o P&eacute;s, Milhas, Metros e Quil&ocirc;metros.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Erros de predição de saída</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha se voc&ecirc; deseja criar um raster de erros padr&atilde;o para os valores previstos.
+            </p>
+            <p>Erros padr&atilde;o s&atilde;o &uacute;teis, pois fornecem informa&ccedil;&otilde;es sobre a confiabilidade dos valores preditos. Uma regra geral simples &eacute; que o valor verdadeiro cair&aacute; dentro de dois erros padr&atilde;o de 95 por cento de tempo do valor predito. Por exemplo, suponha que um novo local tem um valor previsto de 50 com um erro padr&atilde;o de 5. Isto significa que a melhor suposi&ccedil;&atilde;o desta ferramenta &eacute; que o valor verdadeiro neste local &eacute; 50, mas ele razoavelmente pode ser t&atilde;o baixo quanto 40 ou t&atilde;o alto quanto 60. Para calcular este intervalo de valores razo&aacute;vel, multiplique o erro padr&atilde;o por 2, adicione este valor ao valor previsto para obter o maior valor final do intervalo e subtraia do valor previsto para obter o menor valor final do intervalo.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Voc&ecirc; pode especificar o nome de uma pasta em  <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo utilizando a caixa suspensa <b>Salvar resultados em</b> .
+            </p>
+        </div>
+    </div>
+</div>
+</html>

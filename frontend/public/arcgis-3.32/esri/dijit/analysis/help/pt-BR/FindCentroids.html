@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Localizar Centróides</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Localizar Centr&oacute;ides"></h2>
+        <hr/>
+    <p>Esta ferramenta funciona com uma camada de fei&ccedil;&atilde;o de pontos m&uacute;ltiplos, linha ou de &aacute;rea para determinar o centro representativo de cada fei&ccedil;&atilde;o.
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionado, somente as fei&ccedil;&otilde;es na camada de pontos m&uacute;ltiplos, linha de entrada ou camada de &aacute;rea vis&iacute;vel dentro da extens&atilde;o de mapa atual ser&atilde;o analisadas. Se n&atilde;o selecionada, todas as fei&ccedil;&otilde;es na camada de entrada ser&atilde;o analisadas, mesmo que estiverem fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolha camada cujas feições serão utilizadas para gerar centróides</h2></div>
+        <hr/>
+        <div>
+            <p> A camada de pontos m&uacute;ltiplos, linha ou de &aacute;rea que ser&aacute; utilizada para localizar centr&oacute;ides.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> localizado na parte inferior da lista suspensa. Esta op&ccedil;&atilde;o abre uma galeria onde voc&ecirc; pode procurar e selecionar conjunto de dados de v&aacute;rias fontes para utilizar em sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Mostre-me localizações de saída</h2></div>
+        <hr/>
+        <div>
+            <p> Quando  a op&ccedil;&atilde;o <b>No centr&oacute;ide verdadeiro</b> estiver marcado (padr&atilde;o), a sa&iacute;da retornar&aacute; a localiza&ccedil;&atilde;o verdadeira do centr&oacute;ide para cada fei&ccedil;&atilde;o de entrada. Os centr&oacute;ides ser&atilde;o localizados conforme abaixo:
+                <ul>
+                    <li>Fei&ccedil;&otilde;es de pontos m&uacute;ltiplos&mdash;O centr&oacute;ide de sa&iacute;da estar&aacute; localizado no nas coordenadas m&eacute;dia x e y de todas fei&ccedil;&otilde;es de pontos m&uacute;ltiplos.
+                    </li>
+                    <li>Fei&ccedil;&otilde;es de pontos m&uacute;ltiplos&mdash;O centr&oacute;ide de sa&iacute;da ser&aacute; localizado no nas coordenadas m&eacute;dia x e y de todas fei&ccedil;&otilde;es de pontos m&uacute;ltiplos. O peso &eacute; baseado no comprimento do segmento.
+                    </li>
+                    <li>Fei&ccedil;&otilde;es de &aacute;rea&mdash;O centr&oacute;ide de sa&iacute;da ser&aacute; localizado no centro da &aacute;rea.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Quando a op&ccedil;&atilde;o  <b>contido por fei&ccedil;&otilde;es de entrada</b> estiver marcada, as fei&ccedil;&otilde;es de ponto de sa&iacute;da estar&atilde;o contidas ou dentro de cada fei&ccedil;&atilde;o de entrada. As fei&ccedil;&otilde;es de pontos resultantes aparecer&atilde;o como seguem:
+                <ul>
+                    <li>Fei&ccedil;&otilde;es de pontos m&uacute;ltiplos&mdash;O centr&oacute;ide de sa&iacute;da ser&aacute; coincidente para um dos pontos no grupo de pontos m&uacute;ltiplos.
+                    </li>
+                    <li>Fei&ccedil;&otilde;es de linha&mdash;O centr&oacute;ide de sa&iacute;da estar&aacute; na linha.  Se a linha for curvada, a sa&iacute;da estar&aacute; no ponto m&eacute;dio da linha. 
+                    </li>
+                    <li>Fei&ccedil;&otilde;es de &aacute;rea&mdash;O ponto de sa&iacute;da estar&aacute; dentro da fei&ccedil;&atilde;o de &aacute;rea.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa.  O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se o nome da camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Salvar resultado em</b>, &eacute; poss&iacute;vel especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

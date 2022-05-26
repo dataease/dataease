@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Aggregate Points</h2><p/>
+        <h2><img src="./images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Aggregate Points"></h2>
+        <hr/>
+    <p>This tool works with a layer of
+point features  and a layer of area features. It first
+determines which points fall within each area. After determining
+this point-in-area spatial relationship, statistics about all
+points in the area are calculated and assigned to the area. The
+most basic statistic is the count of the number of points within
+the area, but you can get other statistics as well. 
+    </p>
+    <p>For example, suppose you have point features of coffee shop locations and area features of counties, and you want to summarize coffee sales by county.  Assuming the  coffee shops have a    <i>TOTAL_SALES</i> attribute, you can get the sum of all <i>TOTAL_SALES</i> within each county, or the minimum or maximum <i>TOTAL_SALES</i>
+ within each county, or the standard deviation of all sales within each county.
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the features in the input point layer and area layer visible within the current map extent will be analyzed.  If unchecked, all features in both the input point layer and the area layer will be analyzed, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Choose layer containing points to aggregate into areas</h2></div>
+        <hr/>
+        <div>
+            <p>The point layer that will be aggregated into the areas.
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Choose layer containing aggregation areas</h2></div>
+        <hr/>
+        <div>
+            <p>The area layer to which the points
+will be aggregated. Any points that fall within the boundaries of
+areas in this layer will be counted and optionally summarized using your choices of
+statistics.  
+            </p>
+            <p>You can choose between an area layer that you
+provide or bins that are generated when the tool runs. When
+generating bins, for  <b>Square</b>, the number and units specified determine the
+height and length of the square. For <b>Hexagon</b>, the number and units specified determine the
+distance between parallel sides.
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Keep areas with no points</h2></div>
+        <hr/>
+        <div>
+            <p>Determines whether areas that have no points within them appear in the result layer.  If unchecked, areas without points will not appear in the result.  If checked, areas without points will appear in the result.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Add statistic</h2></div>
+        <hr/>
+        <div>
+            <p>You can calculate statistics about attributes of the input point layer such as sum, mean, minimum, maximum, and standard deviation. The result layer will
+contain a new attribute for each statistic calculated. Any number of statistics can be added by choosing an attribute and statistic (a new drop-down box will appear).
+
+ 
+            </p>
+            <p>If the layer to summarize does not have any number fields, the additional statistics will not be available.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Choose field to group by</h2></div>
+        <hr/>
+        <div>
+            <p> You can create statistical groups using an attribute in the input point layer.    For example, if you are aggregating crimes to neighborhood boundaries, you may have an attribute <i>Crime_type</i> with five different crime types.  Each unique crime type forms a group, and the statistics you choose will be calculated for each unique value of <i>Crime_type</i>.  The statistics for each group, as well as the count of points, will be displayed in the result layer's pop-up.  When you choose a grouping attribute, two results are created: the result layer and a result table containing the statistics for each unique group.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Add minority, majority</h2></div>
+        <hr/>
+        <div>
+            <p>This checkbox is enabled  when you choose a field to group by.    If you want to find out which attribute values within each group are the minority (least dominant) or the majority (most dominant)  within each boundary,  select  <b>Add minority, majority</b>.   When you select <b>Add minority, majority</b>, two new fields are added to your result layer.   If you also select <b>Add percentages</b>, two additional fields are added to the result layer containing the percentages of the minority and majority attribute values within each group.
+            </p>
+            <p>For example, if you are a city planner and you want to find out which tree species are in the minority and which are in the majority within all city parks, aggregate your tree data with your park areas and check this option.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Add percentages</h2></div>
+        <hr/>
+        <div>
+            <p>This check box is enabled  when you choose a field to group by.    Select  <b>Add percentages</b>   if you want to find the percentage of each attribute value within each group.  A new field  is added to the result table containing the percentages of each attribute value within each group.   If <b>Add minority, majority</b> is also checked, two additional fields are added to the result layer containing the percentages of the minority and majority attribute values within each group.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Result layer
+name</h2></div>
+        <hr/>
+        <div>
+            <p>This is the name of the layer that will be created in  <b>My Content</b>  and added to the map.  The default  name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down menu, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Tilordne verdier på nytt</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="Portalverkt&oslash;y for &aring; tilordne verdier p&aring; nytt"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet lar deg endre eller omklassifisere pikselverdiene p&aring; rasterdata. Pikselverdier tilordnes p&aring; nytt ved &aring; spesifisere en rekke med pikselverdier som skal tilordnes en ny pikselverdi i resultatet. Resultat pikselverdien kan v&aelig;re en gyldig verdi eller en NoData-verdi, som er piksler som ikke har noen kjent verdi knyttet til seg.
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, er det kun cellene som vises i gjeldende kartutstrekning som f&aring;r verdiene tilordnet p&aring; nytt. Hvis det ikke er merket av for dette alternativet, blir alle rasterlagene behandlet selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Inndata</h2></div>
+        <hr/>
+        <div>
+            <p>Inndata som f&aring;r sine verdier tilordnet p&aring; nytt.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Tilordne pikselverdier på nytt til nye verdier</h2></div>
+        <hr/>
+        <div>
+            <p>Du angir et verdiomr&aring;de ved &aring; angi en minimum- og maksimumsverdi, og deretter tildeler du en resultatverdi eller en NoData-verdi til det angitte omr&aring;det.
+            </p>
+            <p>For &aring; tilordne et nytt verdiomr&aring;de, klikker du p&aring;  <b>Legg til</b>, som legger til en rad.  Klikk p&aring; hver verdi for &aring; redigere tabellen til omr&aring;dene og den nye tilordnede verdien du trenger. N&aring;r du angir verdiomr&aring;de, er det to viktige regler som brukes:
+                <ul>
+                    <li>Minimumsverdien i omr&aring;det er inklusiv, og maksimumsverdien er eksklusiv.
+                    </li>
+                    <li>Radene i tabellen behandles fra topp til bunn.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Tabellen nedenfor viser at minimumsverdien er inkludert i utdataene, men den maksimale verdien er ikke inkludert i utdataene.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1-9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10-19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Rekkef&oslash;lgen p&aring; omr&aring;dene som er angitt i tabellen er ogs&aring; viktig. Den &oslash;verste raden i tabellen behandles f&oslash;rst, deretter behandles raden under. De to tabellene nedenfor viser hvordan de samme verdiomr&aring;dene produserer ulike resultater p&aring; grunn av rekkef&oslash;lgen av tabellradene.
+            </p> 
+            <p>Tabellen nedenfor viser utdataverdien n&aring;r den f&oslash;rste kolonnen sorteres numerisk:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1-14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Tabellen nedenfor viser hvordan en annerledes sortering av radene vil produsere forskjellige utdataverdier:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1-9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Begge reglene brukes til &aring; endre rekkef&oslash;lgen p&aring; verdiene. Siden hver rad behandles fra topp til bunn, f&aring;r disse verdiene prioritet ved fastsettelse av utdata, selv n&aring;r de samme omr&aring;dene benyttes.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Du kan angi navnet p&aring; en mappe i  <b>Mitt innhold</b>, der resultatet blir lagret via rullegardinlisten <b>Lagre resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

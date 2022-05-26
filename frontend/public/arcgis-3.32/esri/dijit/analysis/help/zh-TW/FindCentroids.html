@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>尋找質心</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="尋找質心"></h2>
+        <hr/>
+    <p>此工具使用多點、線或區域圖徵的圖層來決定每個圖徵的代表中心。
+    </p>
+    <p>如果勾選  <b>使用目前地圖範圍</b>，則僅分析目前地圖範圍中可見的輸入多點、線或區域圖層中的圖徵。如果未勾選，則分析輸入圖層中的所有圖徵，包括超出目前地圖範圍的圖徵。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇將用來產生質心的圖徵所屬的圖層</h2></div>
+        <hr/>
+        <div>
+            <p> 將要用來尋找質心的多點、線或區域圖層。
+            </p>
+            <p>除了從地圖選擇圖層，您也可以選擇下拉清單底部的 <b>選擇分析圖層</b>。此選項將開啟圖庫，可讓您瀏覽並選擇各種來源中的資料集，以便在您的分析中使用該資料集。 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>向我顯示輸出位置</h2></div>
+        <hr/>
+        <div>
+            <p> 勾選 <b>在實際質心上</b>（預設值）時，輸出將傳回每個輸入圖徵之質心的實際位置。將如下定位質心：
+                <ul>
+                    <li>多點圖徵 - 輸出質心將位於多點圖徵中所有點的平均 x 和 y 座標。
+                    </li>
+                    <li>線圖徵 - 輸出質心將位於線圖徵中所有線段之中點的加權平均 x 和 y 座標。權數是根據線段的長度。
+                    </li>
+                    <li>區域圖徵 - 輸出質心將位於區域的中心。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>勾選 <b>由輸入圖徵包含</b>時，輸出點圖徵會被每個輸入圖徵包含或位於其中。導出的點圖徵將以下列方式顯示：
+                <ul>
+                    <li>多點圖徵 - 輸出質心將與多點群組中的其中一個點重合。
+                    </li>
+                    <li>線圖徵 - 輸出質心將位於線上。若是曲線，輸出將位於線的中點。
+                    </li>
+                    <li>區域圖徵 - 輸出點將位於區域圖徵的內部。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層名稱已存在，系統將提示您提供其他名稱。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式功能表，可以在 <b>我的內容</b>中指定儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

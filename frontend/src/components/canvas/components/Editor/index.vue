@@ -982,6 +982,7 @@ export default {
     },
     componentData: {
       handler(newVal, oldVla) {
+        console.log('组件：',newVal)
         // 初始化时componentData 加载可能出现慢的情况 此时重新初始化一下matrix
         if (newVal.length !== this.lastComponentDataLength) {
           this.lastComponentDataLength = newVal.length

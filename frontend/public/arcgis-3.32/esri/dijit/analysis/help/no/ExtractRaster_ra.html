@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Trekk ut raster</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Portalverkt&oslash;y for &aring; trekke ut raster"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet kan klippe et raster til en grense, enten til et rektangul&aelig;rt omr&aring;de eller til en form du definerer interaktivt p&aring; skjermen. Du kan klippe til utstrekningen av omr&aring;det du ser p&aring; kartet, eller i henhold til studieomr&aring;det som er definert av et polygon.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg inndata for uttrekking</h2></div>
+        <hr/>
+        <div>
+            <p>Inndatalaget som skal klippes.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Angi beskjæringsgeometri</h2></div>
+        <hr/>
+        <div>
+            <p>Velg utstrekningstypen som skal brukes ved klipping av lagets geometri:
+
+                <ul>
+                    <li>Bruk gjeldende utstrekning &ndash; Den gjeldende kartutstrekningen blir bruk til &aring; klippe det resulterende laget. Dette er standardalternativet.
+                        
+
+                    </li>
+                    <li>Velg studieomr&aring;de &ndash; Lar deg velge om resultatet skal vise omr&aring;det innenfor geometriens utstrekning eller omr&aring;det utenfor den geometriske utstrekningen. Hvis du velger alternativet  <b>Data inside the geometry</b> (Data innenfor geometrien), fjernes bildene som er utenfor utstrekningen. Hvis du velger alternativet <b>Data outside the geometry</b> (Data utenfor geometrien), fjernes bildene som er utenfor utstrekningen. Du kan ogs&aring; definere en klippegeometri ved hjelp av tegneverkt&oslash;yet.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Du kan angi navnet p&aring; en mappe i  <b>Mitt innhold</b>, der resultatet blir lagret via rullegardinlisten <b>Lagre resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

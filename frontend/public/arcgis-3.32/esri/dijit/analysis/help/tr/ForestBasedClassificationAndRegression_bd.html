@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Orman Sınıflandırma Ve Regresyon</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Orman Sınıflandırma ve Regresyon iş akışı diyagramı"></h2>
+        <hr/>
+    <p>Leo Breiman&rsquo;ın rastgele orman denetimli makine &ouml;ğrenimi y&ouml;nteminin bir uyarlamasını kullanarak modeller oluşturur ve tahminler &uuml;retir. Tahminler hem kategorik değişkenler (sınıflandırma) hem de s&uuml;rekli değişkenler (regresyon) i&ccedil;in yapılabilir. A&ccedil;ıklayıcı değişkenler, eğitim detaylarının &ouml;znitelik tablosunda bulunan alanlardır. Bu ara&ccedil;, performansı değerlendirmek i&ccedil;in bir model oluşturmak ya da bir model oluşturarak başka veri k&uuml;meleri i&ccedil;in sonu&ccedil;lar tahmin etmek i&ccedil;in &ccedil;alıştırılabilir.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analiz Türü</h2></div>
+        <hr/>
+        <div>
+            <p>Aracın işlem modunu belirtir. Ara&ccedil;, bir modeli yalnızca performansı değerlendirmek i&ccedil;in eğitmek veya bir modeli eğiterek detayları tahmin etmek i&ccedil;in &ccedil;alıştırılabilir. Tahmin t&uuml;rleri aşağıdaki gibidir:
+                <ul>
+                    <li> <b>Model performansını değerlendirmek i&ccedil;in bir model eğit</b>&mdash;Bir model eğitilir ve girdi verilerine uygulanır. Yeni bir veri k&uuml;mesinde tahminler oluşturmadan &ouml;nce modelinizin doğruluğunu değerlendirmek i&ccedil;in bu se&ccedil;eneği kullanın. Bu se&ccedil;eneğin &ccedil;ıktısı bir detay servisi, uygun hale getirilmiş eğitim verilerinizin bir detay servisi, model teşhisi ve değişken &ouml;nemini g&ouml;steren isteğe bağlı bir tablo olacaktır.
+                    </li>
+                    <li> <b>Bir model eğit ve değerleri tahmin et</b>&mdash; Detaylar i&ccedil;in tahminler veya sınıflandırmalar &uuml;retilir. A&ccedil;ıklayıcı değişkenler, hem eğitim detayları hem de tahmin edilecek detaylar i&ccedil;in sağlanmalıdır. Bu se&ccedil;eneğin &ccedil;ıktısı, tahmin edilen değerlerinizin bir detay servisi, model teşhisi ve değişken &ouml;nemini g&ouml;steren isteğe bağlı bir tablo olacaktır.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Model performansını değerlendirmek için bir model eğit</h2></div>
+        <hr/>
+        <div>
+            <p>Bir model uydurmak istiyorsanız bu modu kullanın ve uygunluğunu araştırın.
+            </p>
+            <p>Bu se&ccedil;im ile model bir girdi katmanı kullanılarak eğitilecektir. Yeni bir veri k&uuml;mesinde tahminler oluşturmadan &ouml;nce modelinizin doğruluğunu değerlendirmek i&ccedil;in bu se&ccedil;eneği kullanın. Bu se&ccedil;enek, model teşhisi &ccedil;ıktısını mesaj penceresinde verir ve modeli eğitim verilerinize uygular.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Bir model eğit ve değerleri tahmin et</h2></div>
+        <hr/>
+        <div>
+            <p>Bir model uydurmak istiyorsanız bu modu kullanın ve bu modeli tahminler oluşturmak i&ccedil;in veri k&uuml;mesine uygulayın.
+            </p>
+            <p>Detaylar i&ccedil;in tahminler veya sınıflandırmalar oluşturulur. Bu se&ccedil;eneğin &ccedil;ıktısı bir detay servisi, model teşhisi ve değişken &ouml;nemini g&ouml;steren isteğe bağlı bir tablo olacaktır.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Eğitim katmanı seç</h2></div>
+        <hr/>
+        <div>
+            <p>Tahmin edilecek değişkeni ve tahmin &uuml;retmek i&ccedil;in kullanılacak alanları i&ccedil;eren detay katmanı.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Değerleri tahmin edilecek katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Tahminlerin yapılacağı konumları temsil eden bir detay katmanı. Bu detay katmanı, eğitim detaylarında kullanılanlara karşılık gelen alanlar olarak sağlanan a&ccedil;ıklayıcı değişkenleri de i&ccedil;ermelidir.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Tahmin edilecek alanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Modeli eğitmek i&ccedil;in kullanılacak değerleri i&ccedil;eren, eğitim detaylarından gelen alan. Bu alan, bilinmeyen konumlarda tahmin yapmak i&ccedil;in kullanılacak değişkenin bilinen (eğitim) değerlerini i&ccedil;erir. Değerler kategorikse (&ouml;r., Ak&ccedil;aağa&ccedil;, &Ccedil;am Ağacı, Meşe Ağacı)  <b>Kategorik</b> onay kutusunu işaretleyin.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Bir veya daha fazla açıklayıcı değişken seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Tahmin edilecek değişkenin değerini veya kategorisini tahmin etmeye yardımcı olan a&ccedil;ıklayıcı değişkenleri temsil eden bir veya daha fazla alan (alanlar). Sınıfları veya kategorileri (arazi &ouml;rt&uuml;s&uuml; ya da varlık veya yokluk gibi) temsil eden değişkenler i&ccedil;in kategorik onay kutusunu kullanın. Değişken arazi &ouml;rt&uuml;s&uuml; ya da varlık veya yokluk gibi sınıfları veya kategorileri temsil ediyorsa değişkeni doğru (true) olarak, değişken s&uuml;rekli ise yanlış (false) olarak belirtin.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Ağaç sayısı</h2></div>
+        <hr/>
+        <div>
+            <p>Modeli oluşturmak i&ccedil;in kullanılacak ağa&ccedil; sayısı. Daha fazla ağa&ccedil; genellikle daha doğru model tahmini sağlar, ancak modelin hesaplanması daha uzun s&uuml;recektir. Varsayılan ağa&ccedil; sayısı 100'd&uuml;r.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Minimum yaprak boyutu</h2></div>
+        <hr/>
+        <div>
+            <p>Bir yaprağın (bu bir ağa&ccedil; &uuml;zerindeki daha fazla b&ouml;l&uuml;nmeyen terminal d&uuml;ğ&uuml;md&uuml;r) tutulması i&ccedil;in gereken minimum g&ouml;zlem sayısı. Regresyon i&ccedil;in varsayılan minimum 5, sınıflandırma i&ccedil;in varsayılan ise 1'dir. &Ccedil;ok b&uuml;y&uuml;k veriler i&ccedil;in, bu sayıları artırmak, aracın &ccedil;alışma s&uuml;resini kısaltır.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Maksimum ağaç derinliği</h2></div>
+        <hr/>
+        <div>
+            <p>Bir ağa&ccedil;tan yapılabilecek maksimum b&ouml;lme sayısı. B&uuml;y&uuml;k bir maksimum derinlik kullanmak, daha fazla b&ouml;lme oluşturur, bu da modele fazla uygunluk şansını artırabilir. Varsayılan veri odaklıdır ve oluşturulan ağa&ccedil; sayısına ve dahil edilen değişken sayısına bağlıdır.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Ağaç başına mevcut veri (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Her karar ağacı i&ccedil;in kullanılan eğitim katmanındaki detayların y&uuml;zdesini belirtir. Varsayılan verinin y&uuml;zde 100&rsquo;&uuml;d&uuml;r. Her bir ağa&ccedil; i&ccedil;in &ouml;rnekler, belirtilen verilerin &uuml;&ccedil;te ikisinden rastgele alınır.
+            </p>
+            <p>Ormandaki her karar ağacı, mevcut eğitim verilerinin rastgele bir &ouml;rneği veya alt k&uuml;mesi (yaklaşık &uuml;&ccedil;te ikisi) kullanılarak oluşturulur. Her karar ağacı i&ccedil;in girdi verilerinin daha d&uuml;ş&uuml;k bir y&uuml;zdesini kullanmak, &ccedil;ok b&uuml;y&uuml;k veri k&uuml;meleri i&ccedil;in aracın hızını artırır.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Rastgele örneklenen değişken sayısı</h2></div>
+        <hr/>
+        <div>
+            <p>Her karar ağacını oluşturmak i&ccedil;in kullanılan a&ccedil;ıklayıcı değişkenlerin sayısını belirtir.
+            </p>
+            <p>Ormandaki karar ağa&ccedil;larının her biri, belirtilen a&ccedil;ıklayıcı değişkenlerin rastgele bir alt k&uuml;mesi kullanılarak oluşturulur. Her karar ağacında kullanılan değişkenlerin sayısının artırılması, &ouml;zellikle bir veya birka&ccedil; baskın değişken varsa, modelinize fazla uygunluk şansını artıracaktır. Yaygın olarak kullanılan bir uygulama, tahmin edilecek değişkenin sayısal olması durumunda toplam a&ccedil;ıklayıcı değişken sayısının karek&ouml;k&uuml;n&uuml; almak veya tahmin edilecek değişken kategorikse toplam a&ccedil;ıklayıcı değişken sayısını 3'e b&ouml;lmektir.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Açıklayıcı alanların nasıl eşleştirildiğini seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Eğitim katmanındaki ilgili değişkenlerin tahmin katmanındaki değişkenlerle nasıl eşleşeceği. Sadece eğitimde kullanılan değişkenler tabloya dahil edilecektir.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Doğrulama için yapılan yürütme sayısı</h2></div>
+        <hr/>
+        <div>
+            <p>Doğrulama i&ccedil;in test veri k&uuml;mesi olarak ayrılacak eğitim katmanındaki detayların y&uuml;zdesini (y&uuml;zde 0 ile y&uuml;zde 50 arasında) belirtir. Model, bu rastgele veri alt k&uuml;mesi olmadan eğitilir ve bu detaylar i&ccedil;in g&ouml;zlenen değerler, tahmin edilen değerlerle karşılaştırılır. Varsayılan y&uuml;zde 10&rsquo;dur.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adıdır.  Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p>Getirilen sonu&ccedil;lar analiz t&uuml;r&uuml;ne bağlı olacaktır. Model uyumunu değerlendirmek i&ccedil;in eğitiyorsanız, sonu&ccedil;lar modele uygun bir eğitim verileri katmanı ve model uyumunu değerlendiren sonu&ccedil; bilgilerini i&ccedil;erir. Tahmin etme i&ccedil;in eğitiyorsanız, sonu&ccedil;lar modele uygun bir eğitim verileri katmanı, tahmin edilen sonu&ccedil;ların olduğu bir katman ve model uyumunu değerlendiren sonu&ccedil; bilgilerini i&ccedil;erir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolazione punti</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Interpolazione punti"></h2>
+        <hr/>
+    <p>   Lo strumento Interpolazione punti consente di prevedere i valori in corrispondenza di nuove posizioni sulla base delle misurazioni trovate in una raccolta di punti. Lo strumento considera i dati relativi ai punti con valori in corrispondenza di ciascun punto e restituisce aree classificate in base ai valori previsti. Ad esempio:
+        <ul>
+            <li>un distretto per la gestione della qualit&agrave; dell'aria dispone di sensori per misurare i livelli di inquinamento. &Egrave; possibile utilizzare Interpolazione punti per prevedere i livelli di inquinamento nelle localit&agrave; in cui non sono presenti sensori, ad esempio localit&agrave; con popolazioni a rischio, come scuole o ospedali.
+            </li>
+            <li>&Egrave; possibile prevedere le concentrazioni di metalli pesanti nei raccolti sulla base di campioni prelevati da singole piante.
+            </li>
+            <li>&Egrave; possibile prevedere i livelli di nutrienti (azoto, fosforo, potassio e cos&igrave; via) presenti nel suolo, oltre ad altri indicatori, come la conducibilit&agrave; elettrica, al fine di studiarne le relazioni con il raccolto e prescrivere le esatte quantit&agrave; di fertilizzanti in ogni punto del campo.
+
+            </li>
+            <li>Le applicazioni meteorologiche includono la previsione delle temperature, delle precipitazioni e di variabili associate, come le piogge acide. 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegli il layer punto contenente posizioni con valori noti</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer di punti da utilizzare come base dell'interpolazione.  
+
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Scegliere il campo per l\'interpolazione</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere un campo che contiene i valori da interpolare.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Ottimizza per</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere la preferenza tra velocit&agrave; e precisione. Previsioni pi&ugrave; accurate richiedono tempi di calcolo pi&ugrave; lunghi.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Visualizza errori di predizione</h2></div>
+        <hr/>
+        <div>
+            <p> Se l'opzione &egrave; selezionata, verr&agrave; creato un layer di errori standard per le previsioni di interpolazione.  Il nome del layer di output sar&agrave; quello del layer dei risultati cui verr&agrave; aggiunto il suffisso Errors.
+            </p>
+            <p>Gli errori standard sono utili perch&eacute; forniscono informazioni sull'affidabilit&agrave; dei valori previsti. Secondo la regola generale il valore reale &egrave; compreso tra due errori standard del valore previsto nel 95% del tempo. Ad esempio, si supponga che a una nuova localit&agrave; sia assegnato un valore previsto di 50 con un errore standard di 5. Questi valori indicano che lo strumento considerer&agrave; 50 come valore effettivo della posizione, ma che tale valore potrebbe scendere a 40 oppure salire a 60. Per calcolare questo intervallo di valori ipotizzabili, moltiplicare per due il valore dell'errore standard, quindi sommarlo o sottrarlo dal valore previsto in modo da ottenere rispettivamente il valore massimo o il valore minimo dell'intervallo.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Classifica per</h2></div>
+        <hr/>
+        <div>
+            <p>Consente di scegliere in che modo i valori previsti verranno classificati in aree.
+                <ul>
+                    <li>Intervallo geometrico: le aree vengono basate su intervalli di classe per i quali &egrave; disponibile una serie geometrica. Con questo metodo ogni intervallo di classi dispone all'incirca dello stesso numero di valori e la variazione tra gli intervalli &egrave; congruente.
+                    </li>
+                    <li>Stesso intervallo: le aree vengono create in modo tale che l'intervallo dei valori previsti risulti uguale per ciascuna area.
+                    </li>
+                    <li>Stessa area: le aree vengono create in modo tale che il numero di valori di dati sia uguale in ciascuna area. Se ad esempio i dati contengono pi&ugrave; valori maggiori che valori minori, verranno create pi&ugrave; aree per i valori maggiori.
+                    </li>
+                    <li>Manuale: questa opzione consente di definire l'intervallo personalizzato di valori per le aree. Questi valori verranno immessi nel parametro  <b>Valori di interruzione classe</b> di seguito.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Numero di classi</h2></div>
+        <hr/>
+        <div>
+            <p>Consente di specificare il numero di classi (intervallo di valori previsti) nel layer dei risultati. Ogni classe definisce il confine delle aree. I valori di tali classi saranno determinati dal parametro 
+ <b>Classifica per</b> descritto in precedenza.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Valori di interruzione classe</h2></div>
+        <hr/>
+        <div>
+            <p>Immettere i valori di interruzione classe desiderati separati da spazi. Ad esempio, se si desiderano inserire interruzioni di classe in corrispondenza dei valori 1,5, 3 e 7, immettere  <code>1,5 3 7</code>.  Tali valori definiranno il limite superiore di ciascuna classe, in modo che il numero delle classi sia uguale a quello dei valori immessi. Non verranno create aree per eventuali localit&agrave; in cui i valori previsti siano superiori al valore di interruzione massimo immesso. &Egrave; necessario immettere almeno due valori e non se ne possono immettere pi&ugrave; di 32.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Ritaglia output in</h2></div>
+        <hr/>
+        <div>
+            <p>Tracciare o specificare un layer per specificare l'area in cui si desidera tracciare il risultato. Ad esempio, se si intende interpolare le misurazioni relative all'inquinamento del lago, &egrave; possibile utilizzare il limite del lago in questo parametro in modo che il layer tracciato si riferisca solo alla parte interna al limite del lago.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Esegui predizione in queste posizioni</h2></div>
+        <hr/>
+        <div>
+            <p>Tracciare o specificare un layer che indichi le localit&agrave; corrispondenti ai punti di cui calcolare i valori di predizione,in modo da effettuare predizioni per specifiche localit&agrave; d'interesse. Se, ad esempio, il layer di input rappresenta le misurazioni dei livelli di inquinamento, &egrave; possibile utilizzare questo parametro per prevedere i livelli di inquinamento delle localit&agrave; con vaste popolazioni a rischio, come scuole o ospedali.  Sar&agrave; quindi possibile utilizzare queste informazioni per fornire consigli agli operatori sanitari di tali localit&agrave;.
+            </p>
+            <p>Se specificato, questo strumento restituir&agrave; un layer puntuale di predizioni in corrispondenza delle localit&agrave; specificate. Il nome del layer di output sar&agrave; quello del layer dei risultati cui verr&agrave; aggiunto il suffisso Points.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome layer risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

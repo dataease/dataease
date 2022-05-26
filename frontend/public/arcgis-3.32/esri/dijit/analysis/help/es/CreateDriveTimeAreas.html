@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Crear áreas de tiempo de recorrido por vehículo</h2><p/>
+        <h2><img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" alt="Crear &aacute;reas de tiempo de recorrido"></h2>
+        <hr/>
+    <p>Crear &aacute;reas de tiempo de recorrido crea &aacute;reas a las que se pueda llegar dentro de un tiempo o distancia conduciendo, caminando, etc. Se mide desde uno o varios puntos (hasta 1000) en las carreteras o los caminos para crear una capa que pueda ayudarte a responder preguntas como las siguientes:
+        <ul>
+            <li>&iquest;A d&oacute;nde puedo ir desde aqu&iacute; conduciendo 30 minutos?
+            </li>
+            <li>&iquest;A d&oacute;nde puedo ir desde aqu&iacute; conduciendo 30 minutos a las 5:30 p.m. durante la hora punta?
+            </li>
+            <li>&iquest;Qu&eacute; hay a dos kil&oacute;metros a pie de mi hotel?
+            </li>
+            <li>&iquest;A qu&eacute; &aacute;reas de la ciudad pueden llegar los bomberos en cinco minutos? 
+            </li>
+            <li>&iquest;En qu&eacute; medida mejorar&iacute;a la cobertura de la respuesta frente a los incendios si se construyera aqu&iacute; un nuevo parque de bomberos?
+            </li>
+            <li>&iquest;Qu&eacute; &aacute;reas de mercado cubre mi negocio?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Es posible que encuentre una respuesta a las preguntas solo con visualizar las &aacute;reas de salida. Si lo prefiere, puede realizar un an&aacute;lisis espacial adicional utilizando las &aacute;reas de salida. Por ejemplo, ejecutar la opci&oacute;n Consolidar puntos utilizando las &aacute;reas de tiempo de recorrido con datos demogr&aacute;ficos puede ayudar a determinar las ubicaciones de establecimientos que ofrecen las mejores perspectivas de clientela para su negocio. 
+    </p>
+    <p>
+        <table>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        <tr><td valign="baseline"><img src="../images/tip.png"></td><td valign="baseline"><h2>Tip:&ensp;</h2></td>
+        <td valign="baseline">
+            <p>Para crear &aacute;reas midiendo una distancia en l&iacute;nea recta en lugar de medir a trav&eacute;s de las carreteras, utiliza en su lugar la herramienta Crear zonas de influencia.
+            </p>
+        </td></tr>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        </table>
+    </p>
+    <p>Si se ha activado  <b>Utilizar la extensi&oacute;n de mapa actual al buscar ubicaciones</b>, solo se utilizar&aacute;n las entidades visibles en la extensi&oacute;n de mapa actual para crear &aacute;reas bas&aacute;ndose en el tiempo o la distancia de recorrido. Si no se ha activado, se utilizar&aacute;n todas las entidades de la capa de entrada, aunque est&eacute;n fuera de la extensi&oacute;n del mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elegir la capa de puntos a partir de la cual se deben calcular las áreas de tiempo de recorrido por vehículo</h2></div>
+        <hr/>
+        <div>
+            <p>Las entidades de puntos en torno a las cuales se calcular&aacute;n las &aacute;reas. Puede elegir c&oacute;mo se calculan las &aacute;reas en funci&oacute;n del modo de viaje (en coche, en cami&oacute;n o a pie) y la medida (tiempo o distancia).
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+            <p>La herramienta admite hasta 1000 entidades en la capa de entrada.
+
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Medir</h2></div>
+        <hr/>
+        <div>
+            <p>Elija su modo de viaje (en coche, en cami&oacute;n o caminando) y mida el tiempo o la distancia. Los modos de viaje disponibles vienen determinados por el administrador de su organizaci&oacute;n.   Despu&eacute;s de elegir su modo y medir, introduzca una duraci&oacute;n o una distancia de hasta  5 horas (300 minutos) o  300 millas (482.80 kil&oacute;metros). 
+            </p>
+            <p>La direcci&oacute;n del viaje ( <b>Desde la instalaci&oacute;n</b> o <b>Hacia la instalaci&oacute;n</b>) puede afectar a la forma en que se generan las &aacute;reas. Crear &aacute;reas de tiempo de recorrido por veh&iacute;culo seguir&aacute; calles de un solo sentido, evitar&aacute; giros prohibidos y seguir&aacute; otras reglas en funci&oacute;n de la direcci&oacute;n de viaje. Debe seleccionar la direcci&oacute;n de viaje en funci&oacute;n del tipo de ubicaciones de entrada y el contexto de su an&aacute;lisis. Por ejemplo, el &aacute;rea de tiempo de recorrido por veh&iacute;culo para un establecimiento de reparto de pizzas se deber&iacute;a crear desde la instalaci&oacute;n, mientras que el &aacute;rea de tiempo de recorrido por veh&iacute;culo para un hospital se deber&iacute;a crear hacia la instalaci&oacute;n.
+            </p>
+            <p>Al elegir  <b>Tiempo de conducci&oacute;n</b>, <b>Tiempo de conducci&oacute;n (medio rural)</b> o <b>Tiempo en cami&oacute;n</b>, dispone de distintas opciones para medir el tiempo de recorrido.
+                <ul>
+                    <li>
+                        <p>Desactive  <b>Utilizar tr&aacute;fico</b> para crear &aacute;reas de tiempo de recorrido bas&aacute;ndose en velocidades predeterminadas. Esta es la opci&oacute;n que debe elegir si desea un &aacute;rea de tiempo de recorrido en general, y no una que se calcule utilizando las condiciones de tr&aacute;fico variables para una hora de salida espec&iacute;fica.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Active  <b>Utilizar tr&aacute;fico</b> para crear &aacute;reas de tiempo de recorrido a una hora de inicio dada y en condiciones de tr&aacute;fico variables. Si adem&aacute;s eliges la opci&oacute;n <b>Tr&aacute;fico en directo</b>, la hora de salida desde los puntos de entrada se establece en la hora actual, y se toman como referencia las velocidades de tr&aacute;fico actuales y previstas de los sensores y las fuentes para crear las &aacute;reas de tiempo de recorrido. Las velocidades de tr&aacute;fico previstas se calculan en funci&oacute;n de las velocidades de tr&aacute;fico en directo, las velocidades hist&oacute;ricas y eventos actuales como las condiciones meteorol&oacute;gicas. Las velocidades de tr&aacute;fico se predicen con 12 horas de antelaci&oacute;n, de modo que puede mover la barra deslizante para establecer la hora de salida hasta 12 horas antes.
+                        </p>
+                        <p>Utiliza esta configuraci&oacute;n de tr&aacute;fico en directo para averiguar a qu&eacute; &aacute;reas se puede llegar saliendo ahora, dentro de una hora, etc.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Al activar  <b>Utilizar tr&aacute;fico</b> y elegir <b>Tr&aacute;fico basado en las condiciones t&iacute;picas para</b> un d&iacute;a y una hora, la herramienta crea las &aacute;reas de tiempo de recorrido bas&aacute;ndose en las velocidades medias hist&oacute;ricas para cada intervalo de cinco minutos de una semana normal. Los resultados incluyen el tr&aacute;fico pero eliminan la influencia de las condiciones de tr&aacute;fico y los eventos de ese momento, que pueden variar considerablemente de lo habitual.
+                        </p>
+                        <p>Puede utilizar esta configuraci&oacute;n de tr&aacute;fico hist&oacute;rica para preguntar, por ejemplo, &quot;En general, &iquest;a qu&eacute; &aacute;reas puedo llegar saliendo a las 11:30 de la ma&ntilde;ana de un mi&eacute;rcoles?&quot; 
+                        </p>
+                        <p>La hora que establezca utilizar&aacute; la zona horaria en la que se sit&uacute;an sus puntos de entrada. Es decir, si estableces la hora a las 8:00 de la ma&ntilde;ana y tienes dos puntos, uno en la ciudad de Nueva York y otro en Los Angeles, las &aacute;reas de tiempo de recorrido se generar&aacute;n para las 8:00 de la ma&ntilde;ana. hora del Este y las 8:00 de la ma&ntilde;ana hora del Pac&iacute;fico, respectivamente.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Tenga en cuenta que cuando un veh&iacute;culo empieza el recorrido desde un punto, el tiempo transcurre y las condiciones de tr&aacute;fico cambian. La herramienta &Aacute;reas de tiempo de recorrido tiene en cuenta estas variaciones si elige  <b>Tiempo de conducci&oacute;n</b> y activa <b>Utilizar tr&aacute;fico</b>; sin embargo, no todas las regiones admiten tr&aacute;fico. Haga clic en el v&iacute;nculo <b>Ver disponibilidad</b> de la herramienta para averiguar si se ofrece en su &aacute;rea de estudio.
+            </p>
+            <p> <b>Tiempo en cami&oacute;n</b> puede utilizar velocidades de viaje din&aacute;micas basadas en el tr&aacute;fico, pero solo hasta el l&iacute;mite de velocidad permitido para camiones. Por ejemplo, si la velocidad din&aacute;mica de una calle basada en el tr&aacute;fico en directo es de 65 millas por hora, pero el l&iacute;mite de velocidad para camiones en esa calle es de 55 millas por hora, el c&aacute;lculo utilizar&aacute; 55 millas por hora para esa calle.
+            </p>
+            <p> <b>Tiempo a pie</b> y <b>Distancia a pie</b> usan una velocidad fija de 5 kil&oacute;metros por hora (3.1 millas por hora) y siguen los caminos peatonales y las calles designadas (ignorando las reglas que afectan a los autom&oacute;viles, como las calles de un solo sentido). </p>
+            <p> <b>Distancia en cami&oacute;n</b> utiliza velocidades fijas y sigue las reglas que regulan la circulaci&oacute;n de los camiones pesados, mientras que <b>Distancia de conducci&oacute;n</b> y <b>Distancia de conducci&oacute;n en medio rural</b> utilizan velocidades fijas y siguen las reglas que regulan la circulaci&oacute;n de autom&oacute;viles, como los coches.
+            </p> 
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Seleccionar capas de barrera</h2></div>
+        <hr/>
+        <div>
+            <p> Una o varias entidades que act&uacute;an como restricciones temporales (barreras) al viajar por las calles subyacentes. Puede especificar las barreras mediante entidades poligonales, de puntos o l&iacute;neas.
+            </p>
+            <p>Una barrera de punto puede modelar un &aacute;rbol ca&iacute;do, un accidente, una l&iacute;nea el&eacute;ctrica ca&iacute;da o cualquier cosa que bloquee completamente el tr&aacute;fico en una posici&oacute;n concreta a lo largo de la calle. Se permite el desplazamiento por la calle, pero no por la barrera. Puede especificar hasta 250 entidades para que act&uacute;en como barreras de punto.
+            </p>
+            <p>Una barrera de l&iacute;nea proh&iacute;be viajar a cualquier punto en que la barrera interseque las calles. Por ejemplo, un desfile o una protesta que bloquee el tr&aacute;fico por varios segmentos de calle se puede modelar con una barrera de l&iacute;nea. Si el n&uacute;mero de las entidades de calle intersecadas por todas las barreras de l&iacute;nea supera 500, la herramienta devuelve un error.
+            </p>
+            <p>Una barrera de pol&iacute;gono proh&iacute;be viajar a cualquier punto en que el pol&iacute;gono interseque las calles. Un uso de este tipo de barrera consiste en modelar inundaciones cubriendo &aacute;reas de la red de calles que hacen inviables los viajes por carretera. Si el n&uacute;mero de las entidades de calle intersecadas por todas las barreras de pol&iacute;gono supera 2.000, la herramienta devuelve un error.
+            </p>
+        </div>
+    </div>
+    <div id="DissolveType">
+        <div><h2>Áreas desde diferentes puntos</h2></div>
+        <hr/>
+        <div>
+            <p>Elige c&oacute;mo se deben manejar las &aacute;reas compartidas de puntos de entrada diferentes cuando estos confluyen. Se pueden:
+                <ul>
+                    <li> <b>Superponer</b>: las &aacute;reas desde puntos de entrada diferentes pueden abarcar la misma carretera. Esto resulta &uacute;til cuando necesita conocer todos los puntos de entrada que pueden llegar a una ubicaci&oacute;n determinada en la distancia o el tiempo dado.
+                    </li>
+                    <li> <b>Disolver</b>: todas las &aacute;reas se fusionan en una y solo un &aacute;rea puede abarcar una ubicaci&oacute;n determinada. Esto resulta &uacute;til cuando lo &uacute;nico que necesita saber es si se puede llegar a un &aacute;rea dentro de un tiempo o una distancia dado y no es preciso conocer los puntos de entrada espec&iacute;ficos que pueden llegar a la ubicaci&oacute;n.
+                    </li>
+                    <li> <b>Dividir</b>: las &aacute;reas desde ubicaciones de entrada diferentes que se superpondr&iacute;an se dividen en el medio para que, en vez de ello, est&eacute;n contiguas. Esto resulta &uacute;til cuando quiere ver qu&eacute; &aacute;reas est&aacute;n dentro de un tiempo o una distancia dado de los puntos de entrada y, al mismo tiempo, determinar qu&eacute; punto de entrada es el m&aacute;s pr&oacute;ximo a esa &aacute;rea.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="showHoles">
+        <div><h2>Mostrar áreas inalcanzables como agujeros</h2></div>
+        <hr/>
+        <div>
+            <p>Decida si las &aacute;reas de salida incluir&aacute;n agujeros en caso de que no se pudiese llegar a algunas de las calles debido a la  <b>Medici&oacute;n</b> de tiempo o distancia o por las restricciones impuestas por el modo de viaje.
+            </p>
+            <p>Las &aacute;reas de tiempo de recorrido por veh&iacute;culo creadas utilizando este par&aacute;metro tienen un l&iacute;mite de 15 minutos o 15 millas (24 kil&oacute;metros).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa.  El nombre predeterminado se basa en el nombre de la herramienta y el nombre de la capa de entrada. Si el nombre de capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Con el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+    <div id="includeReachableStreets">
+        <div><h2>Incluir calles alcanzables</h2></div>
+        <hr/>
+        <div>
+            <p>Incluya las calles utilizadas para crear las &aacute;reas de tiempo de recorrido por veh&iacute;culo como una capa de salida. 
+            </p>
+            <p>Crear &aacute;reas de tiempo de recorrido por veh&iacute;culo mide el alcance de una instalaci&oacute;n en la red de calles y, luego, crea &aacute;reas de tiempo de recorrido por veh&iacute;culo de las calles que se transitaron. Por tanto, las &aacute;reas son una aproximaci&oacute;n de las calles transitadas. Si el objetivo de su an&aacute;lisis es determinar qu&eacute; calles se cubren en un tiempo o distancia de viaje determinados desde una instalaci&oacute;n, generar calles alcanzables puede ser m&aacute;s preciso que utilizar las &aacute;reas de tiempo de recorrido por veh&iacute;culo para evaluar si una calle determinada es alcanzable.
+            </p>
+            <p>Las &aacute;reas de tiempo de recorrido por veh&iacute;culo creadas utilizando este par&aacute;metro tienen un l&iacute;mite de 15 minutos o 15 millas (24 kil&oacute;metros).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

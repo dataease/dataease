@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>摘要中心和離差</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="摘要中心和離差"></h2>
+        <hr/>
+    <p>此工具會尋找中央圖徵和方向分佈。
+它可用來回答問題，例如：
+        <ul>
+            <li>中心在哪裡？
+            </li>
+            <li>所有其他圖徵最容易存取哪個圖徵？
+            </li>
+            <li>圖徵的分散、精簡或整合方式為何？
+            </li>
+            <li>是否有方向趨勢？
+            </li>
+        </ul>
+        
+    </p>
+    <p>如果勾選 <b>使用目前地圖範圍</b>，則僅分析目前地圖範圍中可見之輸入圖層的圖徵。如果未勾選，則分析輸入圖層中的所有圖徵，包括超出目前地圖範圍的圖徵。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>選擇要說明的圖層</h2></div>
+        <hr/>
+        <div>
+            <p>將用來尋找中央圖徵和方向分佈的點、線或區域圖層。
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>摘要類型</h2></div>
+        <hr/>
+        <div>
+            <p>摘要中心和離差的方法。
+            </p>
+            <ul>
+                <li>中央圖徵 - 識別資料集內位置最集中的圖徵。
+                </li>
+                <li>平均值中心 - 識別一組圖徵的地理中心（或密集處的中心）。
+                </li>
+                <li>中位數中心 - 識別與資料集內的圖徵有最短的歐幾里德整體距離的位置。
+                </li>
+                <li>橢圓 - 建立標準差橢圓來摘要地理圖徵的空間特性：集中趨勢、離差和方向趨勢。橢圓大小可調整為 1、2 或 3 個標準差。
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>加權依據 (選用)</h2></div>
+        <hr/>
+        <div>
+            <p>用來根據位置的相對重要性以加權該位置的欄位。
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>群組依據 (選用)</h2></div>
+        <hr/>
+        <div>
+            <p>可針對個別的中央圖徵或離差計算以分組圖徵的欄位。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層名稱已存在，系統將提示您提供其他名稱。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式功能表，可以在 <b>我的內容</b>中指定儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

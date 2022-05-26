@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Afstand berekenen</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Afstand berekenen"></h2>
+        <hr/>
+    <p>Deze tool berekent de Euclidese afstand, richting en toewijzing uit &eacute;&eacute;n bron of verzameling bronnen.
+    </p>
+    <p>Voorbeeldtoepassingen omvatten het beantwoorden van vragen zoals:
+
+        <ul>
+            <li>Wat is de afstand tot de dichtstbijzijnde stad?
+                
+
+            </li>
+            <li>Wat is de afstand tot de dichtstbijzijnde weg?
+                
+
+            </li>
+            <li>Wat is de afstand tot de dichtstbijzijnde waterbron?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Als  <b>Huidig extent van de kaart gebruiken</b> is aangevinkt, worden alleen die objecten in de invoerlaag die binnen het huidige extent van de kaart zichtbaar zijn, geanalyseerd. Als de optie niet is aangevinkt, worden alle objecten in de invoerlaag geanalyseerd, zelfs als deze zich buiten het huidige extent van de kaartweergave bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Kies het raster van de locatie van de objectlaag voor de berekening van de afstand naar</h2></div>
+        <hr/>
+        <div>
+            <p>De laag die de bronnen definieert waarnaar de afstand wordt berekend. De laag kan van een imageservice of een featureservice zijn.
+            </p>
+            <p>Voor een imageservice kan een invoertype kan een integer of floating-point zijn.
+            </p>
+            <p>Voor een featureservice kan de invoer een punt, lijn of polygoon zijn.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maximumafstand voor de berekening</h2></div>
+        <hr/>
+        <div>
+            <p>De maximale afstand moet worden berekend. Als u bijvoorbeeld een waarde van 10.000 meter opgeeft, wordt de Euclidische afstand berekend van de bronlocaties tot die waarde (afstand).
+            </p>
+            <p>Als er geen waarde wordt opgegeven, wordt de afstand berekend in de gedefinieerde extent.
+            </p>
+            <p>De beschikbare eenheden zijn kilometers, meters, mijlen en voet.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Output celgrootte</h2></div>
+        <hr/>
+        <div>
+            <p>De celgrootte en de eenheid voor de uitvoerrasters.
+            </p>
+            <p>De eenheden kunnen kilometer, meter, mijl of voet zijn.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Resultaat afstandslaagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>U kunt de naam van een map opgeven in  <b>Mijn Content</b>, waar het resultaat wordt opgeslagen met het vervolgkeuzemenu <b>Resultaat opslaan in</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Resultaat richtingslaagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt. U dient een naam in te vullen die nog niet in <b>Mijn Content</b> bestaat.
+            </p>
+            <p>U kunt de naam van een map opgeven in  <b>Mijn Content</b>, waar het resultaat wordt opgeslagen met het vervolgkeuzemenu <b>Resultaat opslaan in</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Resultaat allocatielaagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt. U dient een naam in te vullen die nog niet in <b>Mijn Content</b> bestaat.
+            </p>
+            <p>U kunt de naam van een map opgeven in  <b>Mijn Content</b>, waar het resultaat wordt opgeslagen met het vervolgkeuzemenu <b>Resultaat opslaan in</b>.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Kies een allocatieveld</h2></div>
+        <hr/>
+        <div>
+            <p>Een veld op de invoerbronlaag dat de waarden bevat die elke bron defini&euml;ren. Het kan een integer of stringveld van de brondataset zijn.
+            </p>
+            <p>De standaard is  <i>Value</i>. Als een featureservice wordt gebruikt en er is geen <i>Value</i> veld beschikbaar, dan wordt de eerst beschikbare integer of stringveld gebruikt. Als er geen geldige velden bestaan, wordt het ObjectID-veld (bijvoorbeeld OID of FID gebruikt, afhankelijk van het type feature-invoer) gebruikt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="aoToolbox">
+        <p>La casella degli strumenti Analizza feature contiene diversi strumenti disponibili per l'utilizzo.  Queste attivit&agrave; sono organizzate in categorie, ovvero semplici raggruppamenti logici che non influiscono sul modo in cui si accede a tali attivit&agrave; o le si utilizza.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Riepiloga dati</h2>
+        <hr/>
+        <p>Questi strumenti consentono di calcolare totali, lunghezze, aree e statistiche descrittive di base di feature e dei relativi attributi in aree o altre feature vicine.
+            <ul>
+                <li> <b>Aggrega punti</b> consente di calcolare le statistiche su punti inclusi in aree specificate.
+                </li>
+                <li> <b>Join delle feature</b> consente di trasferire attributi da un layer o una tabella in un'altra in base a relazioni spaziali o di attributi.
+                </li>
+                <li> <b>Riepiloga nelle vicinanze</b> consente di calcolare le statistiche per feature e per i relativi attributi entro una distanza specificata.
+                </li>
+                <li> <b>Riepiloga entro</b> consente di calcolare le statistiche per le feature di area e per gli attributi sovrapposti tra loro.
+                </li>
+                <li> <b>Riepiloga centro e dispersione</b> consente di calcolare feature centrali e distribuzioni direzionali.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Aggrega Punti</h2></td>
+                    <td>
+                    <img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" class="titleImage" alt="Aggrega Punti">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Utilizzando un layer di feature punto e un layer di feature area, questo strumento determina i punti inclusi in ciascuna area e calcola le statistiche su tutti i punti nelle singole aree. Ad esempio:
+                <ul>
+                    <li>Date le posizioni dei punti relativi a reati, &egrave; possibile calcolare il numero di reati per regione o per un altro tipo di distretto amministrativo.
+                    </li>
+                    <li>&Egrave; possibile calcolare i ricavi minimi e massimi di negozi in franchising in base alla provincia.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Join delle Feature</h2></td>
+                    <td>
+                    <img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" class="titleImage" alt="Join delle feature">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Join delle feature consente di trasferire attributi da un layer o una tabella in un'altra in base a relazioni spaziali o di attributi. Ad esempio:
+                <ul>
+                    <li>Aggiungere confini comuni o informazioni demografiche ai dati relativi agli incidenti.
+                    </li>
+                    <li>Identificare i servizi pi&ugrave; vicini a una posizione nota.
+                    </li>
+                    <li>Determinare il numero di edifici residenziali che si trovano in zone alluvionali.
+                    </li>
+                    <li>Identificare habitat comuni per diverse specie selvagge.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeNearbyTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Riepiloga nelle Vicinanze</h2></td>
+                    <td>
+                    <img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" class="titleImage" alt="Riepiloga nelle Vicinanze">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Consente di trovare feature che si trovano entro una distanza specificata da feature nel layer di input.   La distanza pu&ograve; essere calcolata lungo le linee rette o i percorsi fattibili di una modalit&agrave; di viaggio. Vengono quindi calcolate le statistiche per le feature nelle vicinanze. Ad esempio:
+                <ul>
+                    <li>&Egrave; possibile calcolare la popolazione totale che si trova a una distanza di cinque minuti dalla posizione proposta per l'apertura di un nuovo negozio.
+                    </li>
+                    <li>&Egrave; possibile calcolare il numero di rampe di accesso all'autostrada che si trovano a una distanza di cinque minuti dalla posizione proposta per l'apertura di un nuovo negozio allo scopo di valutare l'accessibilit&agrave; al negozio.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Riepiloga Entro</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Riepiloga Entro">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Consente di trovare aree (e parti di aree) che si sovrappongono tra due layer e di calcolare le statistiche sulla sovrapposizione. Ad esempio:
+                <ul>
+                    <li>Dati un layer di aree spartiacque e un layer di aree di utilizzo del suolo per tipo di utilizzo, &egrave; possibile calcolare la superficie totale in acri del tipo di utilizzo del suolo per ogni spartiacque. 
+                    </li>
+                    <li>Dati un layer di particelle in una regione e un layer di confini di citt&agrave;, &egrave; possibile riepilogare il valore medio delle particelle non occupate in ogni citt&agrave;.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeCenterAndDispersionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Riepiloga centro e dispersione</h2></td>
+                    <td>
+                    <img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" class="titleImage" alt="Riepiloga centro e dispersione">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Questo strumento utilizza feature puntuali per calcolare feature centrale, centro medio, centro mediano o ellisse (distribuzione). Ad esempio:
+                <ul>
+                    <li>Dato un layer di centroidi di gruppo in blocco, &egrave; possibile usare la feature centrale ponderata dalla popolazione per identificare quale parte della citt&agrave; &egrave; la pi&ugrave; accessibile per un centro di arti dello spettacolo.
+                    </li>
+                    <li>Dato un layer di osservazioni degli alci all'interno di un parco per diversi anni, &egrave; possibile usare il centro medio per vedere dove si radunano gli alci in estate e in inverno.
+                    </li>
+                    <li>Dato un layer di incendi, &egrave; possibile usare il centro mediano per misurare la tendenza centrale degli incendi senza includere le periferie.
+                    </li>
+                    <li>Dato un layer di campioni di pozzi di acque sotterranee, &egrave; possibile utilizzare un'ellisse per determinare come si diffonde un contaminante.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>Miglioramento dati</h2>
+        <hr/>
+        <p>Questi strumenti consentono di esplorare le caratteristiche delle aree. Vengono infatti restituiti dati demografici dettagliati e le statistiche relative alle aree selezionate. 
+            <ul>
+                <li> <b>Migliora layer</b> consente di recuperare informazioni su persone, luoghi e attivit&agrave; commerciali in un'area specifica oppure a un determinato tempo di guida o una certa distanza da una posizione.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Aggiungi dati al layer</h2></td>
+                    <td>
+                    <img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" class="titleImage" alt="Aggiungi dati al layer">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Consente di recuperare informazioni su persone, luoghi e attivit&agrave; commerciali in un'area specifica oppure a un determinato tempo di guida o una certa distanza da una posizione.
+
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="largesize">
+        <h2>Trova posizioni</h2>
+        <hr/>
+        <p>Questi strumenti vengono utilizzati per identificare o creare feature che soddisfino i criteri specificati. Il tipo di criteri dipende dallo strumento utilizzato; ad esempio, i criteri possono essere basati su interrogazioni su dati spaziali o sugli attributi, aree visibili da un'altezza specificata, aree downstream per punti di drenaggio specifici o tempo di guida in condizioni di traffico specifiche.
+            <ul>
+                <li> <b>Scegli Strutture Migliori</b> consente di scegliere le posizioni migliori per le strutture allocando posizioni che hanno richieste per queste strutture in modo tale da soddisfare un obiettivo specifico.
+                </li>
+                <li> <b>Crea Campo di vista</b> consente di creare aree visibili in base alle posizioni specificate.
+                </li>
+                <li> <b>Crea Spartiacque</b> consente di creare aree di bacini fluviali in base alle posizioni specificate.
+                </li>
+                <li> <b>Deriva Nuove Posizioni</b> consente di creare nuove aree da posizioni dell'area di studio conformi a una serie di criteri.
+                </li>
+                <li> <b>Trova Centroidi</b> trova il centro rappresentativo (baricentro) per feature di input.
+                </li>
+                <li> <b>Trova Posizioni Esistenti</b> consente di cercare aree esistenti in un layer che soddisfano una serie di criteri.
+                </li>
+                <li> <b>Trova Posizioni Simili</b> consente di trovare le posizioni pi&ugrave; simili a una o pi&ugrave; posizioni di riferimento in base ai criteri specificati.
+                </li>
+                <li class="PortalOnly"> <b>Geocodifica Posizioni da Tabella</b> consente di convertire indirizzi da una tabella in coordinate. 
+                </li>
+                <li> <b>Traccia Downstream</b> consente di stabilire i percorsi di flusso in una direzione da monte a valle rispetto alle posizioni specificate.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="ChooseBestFacilitiesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Choose Best Facilities</h2></td>
+                    <td>
+                    <img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" class="titleImage" alt="Choose Best Facilities">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Consente di scegliere le posizioni migliori per le strutture allocando posizioni che hanno richieste per queste strutture in modo tale da soddisfare un obiettivo specifico.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Crea Campo di Vista</h2></td>
+                    <td>
+                    <img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" class="titleImage" alt="Crea Campo di Visuale">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Consente di creare aree visibili in base alle posizioni specificate.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateWatershedsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Crea spartiacque</h2></td>
+                    <td>
+                    <img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" class="titleImage" alt="Crea Spartiacque">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Consente di creare aree di bacini fluviali in base alle posizioni specificate.
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveNewLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Deriva nuove località</h2></td>
+                    <td>
+                    <img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" class="titleImage" alt="Deriva nuove posizioni">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Consente di creare nuove feature nell'area di studio conformi a una serie di criteri specificati. Tali criteri possono essere basati su interrogazioni sugli attributi (ad esempio, particelle ancora disponibili) e su interrogazioni su dati spaziali (ad esempio, a una distanza di 1 km da un fiume). 
+            </p>
+            <br/>
+        </div>
+        <div id="FindCentroidsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Trova Centroidi</h2></td>
+                    <td>
+                    <img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" class="titleImage" alt="Trova Centroidi">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Trova il centro rappresentativo (centroide) per feature multipuntuale, lineare e area di input.
+            </p>
+            <br/>
+        </div>
+        <div id="FindExistingLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Trova località esistenti</h2></td>
+                    <td>
+                    <img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" class="titleImage" alt="Trova posizioni esistenti">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Consente di selezionare feature esistenti nell'area di studio conformi a una serie di criteri specificati. Tali criteri possono essere basati su interrogazioni sugli attributi (ad esempio, particelle ancora disponibili) e su interrogazioni su dati spaziali (ad esempio, a una distanza di 1 km da un fiume). 
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Geocodifica località da tabella</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="Geocodifica localit&agrave; da tabella">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Consente di convertire indirizzi in coordinate. Utilizzare questo strumento su indirizzi in un foglio di calcolo Excel o un file CSV.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Trova Posizioni Simili</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="Trova posizioni simili">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Consente di trovare le posizioni pi&ugrave; simili a una o pi&ugrave; posizioni di riferimento in base ai criteri specificati.
+            </p>
+            <br/>
+        </div>
+        <div id="TraceDownstreamTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Traccia Downstream</h2></td>
+                    <td>
+                    <img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" class="titleImage" alt="Traccia Direzione della Corrente">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Consente di determinare i percorsi dei flussi nella direzione a valle dalle posizioni specificate.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>Analizza modelli</h2>
+        <hr/>
+        <p>Questi strumenti consentono di identificare, quantificare e visualizzare i modelli spaziali nei dati.  
+            <ul>
+                <li> <b>Calcolo densit&agrave;</b> consente di valutare quantit&agrave; note di alcuni fenomeni e di diffondere tali quantit&agrave; nella mappa.
+                </li>
+                <li> <b>Trova hot spot</b> consente di identificare cluster di rilevanza statistica nel modello spaziale dei dati.
+                </li>
+                <li> <b>Trova outlier</b> consente di determinare la presenza di outlier statisticamente rilevanti nel modello spaziale dei dati.
+                </li>
+                <li> <b>Trova cluster punti</b> trova i cluster di feature punto entro il disturbo circostante in base alla loro distribuzione spaziale.
+                </li>
+                <li> <b>Interpolazione punti</b> consente di prevedere i valori in corrispondenza di nuove posizioni sulla base delle misurazioni trovate in una raccolta di punti.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calcolo densità</h2></td>
+                    <td>
+                    <img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" class="titleImage" alt="Calcolo densit&agrave;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>L'analisi della densit&agrave; consente di valutare quantit&agrave; note di alcuni fenomeni e di diffondere tali quantit&agrave; nella mappa. Questo strumento pu&ograve; essere utilizzato, ad esempio, per mostrare le concentrazioni di fulmini o tornado, di accessi alle strutture sanitarie e di densit&agrave; di popolazione.
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Trova hot spot</h2></td>
+                    <td>
+                    <img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" class="titleImage" alt="Trova Hot Spot">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Questo strumento consente di creare una mappa che illustra gli eventuali cluster spaziali di rilevanza statistica presenti nei dati. Utilizzare questo strumento per scoprire hot spot (rossi) e cold spot (blu) imprevisti relativi, ad esempio, al valore minimo e massimo delle case, alla frequenza dei reati, al numero di incidenti, alla disoccupazione o alla biodiversit&agrave;.
+            </p>
+            <br/>
+        </div>
+        <div id="FindOutliersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Trova outlier</h2></td>
+                    <td>
+                    <img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" class="titleImage" alt="Trova outlier">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Questo strumento consente di creare una mappa che illustra gli eventuali cluster e gli outlier spaziali di rilevanza statistica presenti nei dati. Utilizzare questo strumento per identificare feature i cui valori sono significativamente diversi dai loro vicini &igrave;.  &Egrave; possibile utilizzare questo strumento, ad esempio, per individuare modelli di spesa anomali, determinare dove si trovano i confini pi&ugrave; netti tra affluenza e povert&agrave; in un'area di studio o determinare se ci sono contee negli Stati Uniti con aspettativa di vita insolitamente bassa rispetto ai lori vicini.
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Trova cluster punti</h2></td>
+                    <td>
+                    <img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" class="titleImage" alt="Trova cluster punti">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Questo strumento rileva le aree in cui i punti sono concentrati e in cui sono separati da aree vuote o sparse. I punti che non fanno parte di un cluster sono etichettati come disturbo.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpolazione punti</h2></td>
+                    <td>
+                    <img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" class="titleImage" alt="Interpolazione punti">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Questo strumento consente di prevedere i valori in corrispondenza di nuove posizioni sulla base delle misurazioni trovate in una raccolta di punti.  Lo strumento considera i dati relativi ai punti con valori in corrispondenza di ciascun punto e restituisce aree classificate in base ai valori previsti.  Pu&ograve; essere utilizzato, ad esempio, per prevedere i livelli di precipitazioni in uno spartiacque sulla base delle misurazioni effettuate in corrispondenza dei singoli misuratori di precipitazioni.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>Usa prossimità</h2>
+        <hr/>
+        <p>  Questi strumenti consentono di rispondere a una delle domande pi&ugrave; comuni dell'analisi spaziale: &quot;Che cosa &egrave; vicino a cosa?&quot;
+            <ul>
+                <li> <b>Connetti origini a destinazioni</b> consente di misurare il tempo di percorrenza o la distanza tra coppie di punti.
+                </li>
+                <li> <b>Crea buffer</b> consente di creare aree a uguale distanza delle feature.
+                </li>
+                <li> <b>Crea aree tempo di guida</b> consente di trovare aree in prossimit&agrave; di localit&agrave; che possono essere raggiunte entro un certo arco temporale.
+                </li>
+                <li> <b>Trova pi&ugrave; vicine</b>consente di identificare i luoghi pi&ugrave; vicini alle posizioni note.
+                </li>
+                <li> <b>Pianifica itinerari</b> consente di determinare gli itinerari migliori per una flotta di veicoli quando l'itinerario prevede numerose fermate.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ConnectOriginsToDestinationsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Connetti Origini a Destinazioni</h2></td>
+                    <td>
+                    <img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" class="titleImage" alt="Connetti Origini a Destinazioni">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Connetti origini a destinazioni consente di misurare il tempo di percorrenza o la distanza tra coppie di punti. Lo strumento segnala distanze in linea retta, distanze stradali o tempi di percorrenza. Utilizzando questo strumento &egrave; possibile:
+            </p>
+            <p>
+                <ul>
+                    <li>Calcolare la distanza totale o il tempo che i pendolari impiegano nel tragitto da casa al lavoro.
+                    </li>
+                    <li>Misurare la distanza percorsa dai clienti per effettuare acquisti presso un negozio specifico. Ottenere informazioni per definire la propria posizione nel mercato, in particolare nel caso di campagne pubblicitarie mirate o della scelta di siti per l'apertura di nuovi negozi.
+                    </li>
+                    <li>Calcolare il chilometraggio previsto per la flotta di veicoli. In seguito, eseguire lo strumento Riepiloga entro per ottenere il chilometraggio per provincia o per altra regione.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Specificando i punti di partenza e di arrivo, si otterr&agrave; un layer contenente le linee dell'itinerario, incluse le misurazioni, tra le coppie di origini e destinazioni.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateBuffersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Crea Buffer</h2></td>
+                    <td>
+                    <img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" class="titleImage" alt="Crea Buffer">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Un buffer &egrave; un'area che copre una data distanza da una feature punto, linea o area. 
+            </p>
+            <p>I buffer vengono in genere utilizzati per creare aree da analizzare successivamente con altri strumenti come Sovrapponi layer. Ad esempio, se la domanda &egrave; &quot;Quali edifici si trovano nel raggio di un chilometro dalla scuola?&quot;, &egrave; possibile trovare la risposta creando un buffer di un chilometro intorno alla scuola e sovrapponendo tale buffer al layer che contiene le aree occupate dagli edifici. Il risultato finale &egrave; un layer di tali edifici nel raggio di un miglio (un chilometro e seicento metri) dalla scuola.  
+            </p>
+            <br/>
+        </div>
+        <div id="CreateDriveTimeAreasTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Crea Drive-Time Areas</h2></td>
+                    <td>
+                    <img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" class="titleImage" alt="Crea Drive-Time Areas">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>L'area tempo di guida &egrave; l'area che pu&ograve; essere raggiunta entro un tempo o una distanza di guida specificata. Le aree tempo di guida consentono di rispondere a domande quali:
+                <ul>
+                    <li>Dove &egrave; possibile andare da qui guidando per 30 minuti?
+                    </li>
+                    <li>Dove &egrave; possibile andare da qui guidando per 30 minuti alle 18.00 in ora di punta?
+                    </li>
+                    <li>Quali zone della citt&agrave; sono raggiungibili dai pompieri entro cinque minuti? Quale sarebbe l'impatto di una nuova caserma dei vigili del fuoco in termini di copertura anti-incendio?
+                    </li>
+                    <li>Quali aree commerciali riguardano una determinata attivit&agrave;? Quali aree si trovano a 10 chilometri da determinati negozi?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindNearestTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Trova Più Vicine</h2></td>
+                    <td>
+                    <img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" class="titleImage" alt="Trova Pi&ugrave; Vicine">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Consente di misurare il costo di percorrenza tra incidenti e strutture e di determinare quelle pi&ugrave; vicine tra loro. Nel layer risultante vengono visualizzati i percorsi migliori tra incidenti e strutture unitamente al costo di percorrenza (tempo e distanza) di ciascun percorso. &Egrave; ad esempio possibile utilizzare questo strumento per trovare l'ospedale pi&ugrave; vicino in caso di incidente oppure lo sportello bancomat pi&ugrave; vicino rispetto alla posizione corrente.
+            </p>
+            <br/>
+        </div>
+        <div id="PlanRoutesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Pianifica itinerari</h2></td>
+                    <td>
+                    <img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" class="titleImage" alt="Pianifica Itinerari">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Specificando un insieme di fermate e il numero di veicoli disponibili per le fermate stesse, Pianifica itinerari determiner&agrave; l'assegnazione pi&ugrave; efficiente delle fermate ai veicoli e indicher&agrave; l'itinerario.
+            </p>
+            <p>Utilizzare questo strumento per pianificare il lavoro di un team di ispettori, valutatori o fornitori di servizi domestici che operano sul campo oppure di addetti alla consegna e al prelievo di oggetti da localit&agrave; remote oppure di persone che offrono servizi di trasporto pubblico.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Gestisci dati</h2>
+        <hr/>
+        <p>Questi strumenti vengono utilizzati per la gestione quotidiana dei dati geografici e per combinare i dati prima dell'analisi.  
+            <ul>
+                <li> <b>Dissolvi confini</b> consente di unire insieme aree che condividono un confine comune e un valore di attributo comune.
+                </li>
+                <li> <b>Estrai dati</b> consente di creare nuovi dataset estraendo le feature dai dati esistenti.
+                </li>
+                <li> <b>Genera tassellazioni</b> consente di creare tassellazioni sulla base dell'estensione dei dati.
+                </li>
+                <li> <b>Unisci layer</b> consente di copiare in un nuovo layer tutte le feature di due o pi&ugrave; layer esistenti.
+                </li>
+                <li> <b>Sovrapponi layer</b> consente di combinare due o pi&ugrave; layer in un unico layer. La sovrapposizione &egrave; un processo analogo all'analisi di un insieme di mappe ed alla creazione di un unica mappa contenente tutte le informazioni trovate nel gruppo.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Dissolvi Boundary</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Dissolvi Boundary">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Le aree che si sovrappongono o che condividono un confine comune vengono unite per formare una singola area.    
+            </p>
+            <p>Per controllare i confini che verranno uniti, specificare un campo. Ad esempio, se si dispone di un layer di regioni, e ciascuna regione dispone di un attributo  <i>State_Name</i>, &egrave; possibile dissolvere i Boundary utilizzando l'attributo <i>State_Name</i>.  Le regioni adiacenti vengono unite se presentano lo stesso valore per <i>State_Name</i>.  Il risultato finale &egrave; un layer di confini di stato.
+            </p>
+            <br/>
+        </div>
+        <div id="ExtractDataTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Estrai Dati</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" class="titleImage" alt="Estrai Dati">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Consente di creare un file zip, CSV o KMZ di dati dai layer e da un'area di interesse specificata.
+            </p>
+            <p> 
+            </p>
+            <br/>
+        </div>
+        <div id="GenerateTessellationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Genera tassellazioni</h2></td>
+                    <td>
+                    <img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" class="titleImage" alt="Genera tassellazioni">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Genera tassellazioni in un'area di studio sulla base di una forma e di una dimensione specificate.
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Unisci Layer</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="Unisci layer">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Consente di copiare in un nuovo layer le feature di due o pi&ugrave; layer esistenti. Ad esempio:
+                <ul>
+                    <li>Si dispone di tre per Inghilterra, Galles e Scozia e si desidera ottenere un singolo layer della Gran Bretagna. 
+                    </li>
+                    <li>Si dispone di 12 layer, ciascuno dei quali contiene informazioni relative a lotti di municipalit&agrave; contigue. Si desidera unirli in un unico layer, mantenendo solo gli attributi che presentano lo stesso nome e tipo nei 12 layer di input.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sovrapponi layer</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" class="titleImage" alt="Sovrapponi layer">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Consente di combinare due o pi&ugrave; layer in un unico layer. La sovrapposizione &egrave; un processo analogo all'analisi di un insieme di mappe e alla creazione di un unica mappa contenente tutte le informazioni trovate nel gruppo. Ad esempio:
+                <ul>
+                    <li>Quali lotti sono compresi nella pianura alluvionale da 100 anni?
+                          
+                    </li>
+                    <li>Quali strade sono comprese in determinate regioni?
+                    </li>
+                    <li>Quale uso del suolo si fa di un determinato tipo di terreno?
+                         
+                    </li>
+                    <li>Quali pozzi si trovano in basi militari abbandonate?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

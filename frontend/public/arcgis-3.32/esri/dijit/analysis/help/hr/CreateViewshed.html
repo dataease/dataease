@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Stvori vidljivost</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Stvori vidljivost"></h2>
+        <hr/>
+    <p>Alat Stvori vidljivost stvara poligone gdje promatrač može vidjeti objekte na tlu. Unesene točke za promatranje mogu predstavljati ili promatrače (kao &scaron;to su osobe na tlu ili vidikovci za požare) ili promatrane objekte (kao &scaron;to su vjetroturbine, vodeni tornjevi, vozila ili drugi ljudi). Poligonalni rezultati su područja gdje promatrači mogu vidjeti promatrane objekte i obratno: promatrani objekti vide promatrače.
+    </p>
+    <p>Promatrači i promatrani objekti mogu se nalaziti na visini iznad tla, a te se visine upotrebljavaju za određivanje vidljivosti. Na primjer, vidljivost koja je izračunata za vjetroturbinu od 400 stopa i osobe koje su visoke 180 cm i stoje na tlu obično će biti veća u odnosu na vidljivost izračunatu za vjetroturbinu od 200 stopa i osobe visoke 180 cm.
+    </p>
+    <p>Imajte na umu da izračun vidljivosti ne uzima u obzir prepreke kao &scaron;to su stabla ili zgrade. Izračun se vr&scaron;i kao da je riječ o golom terenu na kojem se ne nalazi ni&scaron;ta osim promatrača i promatranog objekta.
+    </p>
+    <p>Sloj rezultata sadrži poligonalne geoobjekte koji predstavljaju vidljiva područja. Polje  <i>Frequency</i> bilježi broj točaka za promatranje od kojih se vide pojedina područja. Primjerice, ako imate pet unesenih točaka i svaka predstavlja vidikovac za požare, polje <i>Frequency</i> imat će vrijednosti između jedan i pet; područja čija je vrijednost jedan mogu se vidjeti samo s jednog vidikovca, a područja čija je vrijednost pet mogu se vidjeti sa svih vidikovaca. Sloj rezultata također sadrži polje <i>DEMResolution</i>, koje bilježi razlučivost digitalnog modela visine terena (DEM) kori&scaron;tenog za stvaranje vidljivosti.
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, samo će se točke za promatranje koje su vidljive unutar trenutačnog obuhvata karte analizirati.  Ako opcija nije označena, sve će se točke za promatranje u sloju unosa analizirati, čak i ako se nalaze izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Točkasti geoobjekti koji prikazuju lokacije promatrača</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti geoobjekti koji će se upotrijebiti kao lokacije promatrača. 
+            </p>
+            <p>Osim odabira sloja iz karte, možete odabrati opciju  <b>Izaberi sloj za analizu</b> koja se nalazi na dnu popisa padajućeg izbornika. Ova opcija otvara galeriju u kojoj možete pretraživati i odabrati skupove podataka iz raznih izvora te ih koristiti u svojoj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Visina lokacija promatrača</h2></div>
+        <hr/>
+        <div>
+            <p>To je visina u odnosu na tlo va&scaron;e lokacije promatrača.    Zadana postavka obično je prosječna visina osobe.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Visina ostalih objekata na tlu</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je visina struktura ili osoba na tlu koja se upotrebljava za određivanje vidljivosti. Rezultat vidljivosti oni su poligoni odakle točka za promatranje može vidjeti ostale objekte. Također vrijedi i suprotno; ostali objekti mogu vidjeti točku za promatranje. 
+            </p>
+            <p>
+                <ul>
+                    <li>Ako va&scaron;e točke za promatranje predstavljaju vjetroturbine i ako želite utvrditi odakle osobe koje se nalaze na tlu mogu vidjeti turbine, unesite prosječnu visinu osobe (otprilike 180 cm).  Rezultat će biti poligoni odakle osoba koja stoji na tlu može vidjeti vjetroturbine.
+                    </li>
+                    <li>Ako va&scaron;e točke za promatranje predstavljaju vidikovce za požare i želite utvrditi s kojih se vidikovaca može vidjeti izdizanje dima od 20 stopa ili veće, unesite 20 stopa za visinu. Rezultat će biti područja koja se mogu vidjeti s vidikovca za požare gdje se dim izdiže barem 20 stopa.
+                    </li>
+                    <li>Ako va&scaron;e točke za prometanje predstavljaju mjesta za promatranje prirode duž ceste i staza i želite utvrditi s kojih se mjesta mogu vidjeti vjetroturbine koje su visoke najmanje 400 stopa, unesite 400 stopa za visinu.  Rezultat će biti područja odakle osoba s mjesta za promatranje može vidjeti vjetroturbine koje su visoke barem 400 stopa.
+                    </li>
+                    <li>Ako va&scaron;a mjesta za promatranje predstavljaju mjesta za promatranje prirode i želite utvrditi koliko područja na tlu mogu vidjeti ljudi koji se nalaze na mjestu za promatranje prirode, unesite nulu.  Rezultat će biti područja koja se mogu vidjeti s mjesta za promatranje prirode.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Maksimalna udaljenost gledanja</h2></div>
+        <hr/>
+        <div>
+            <p>To je prag udaljenosti gdje zavr&scaron;ava izračun vidljivog područja. Izvan ove udaljenosti nije poznato vide li točke za promatranje ostale objekte i obratno. Velike vrijednosti povećavaju vrijeme za izračun. Maksimalna dopu&scaron;tena vrijednost jest 31 milja (50 kilometara).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Naziva sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će se stvoriti u dijelu  <b>Moj sadržaj</b> i dodati karti.  Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako naziv sloja već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+            <p> Pokretanjem tog alata ne tro&scaron;e se krediti.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

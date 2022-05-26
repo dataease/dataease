@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Izračun gostote</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="Orodje za izračun gostote"></h2>
+        <hr/>
+    <p>Orodje ustvarja karto gostote iz točkovnih ali linijskih geoobjektov s &scaron;irjenjem znanih količin nekaterih pojavov (predstavljenih kot atributi točk ali linij) na karti. Rezultat je poligonski sloj, klasificiran od največje do najmanj&scaron;e gostote.
+    </p>
+    <p>Pri vhodnih točkah mora vsaka točka predstavljali lokacijo nekega dogodka, sloj z rezultati pa predstavlja &scaron;tevilo dogodkov na posamezno območje. Vi&scaron;ja vrednost gostote na novi lokaciji pomeni, da je v bližini te lokacije več točk. V veliko primerih je sloj z rezultati mogoče interpretirati kot območje tveganja za prihodnje dogodke. Na primer, če vhodne točke predstavljajo lokacije udarov strele, je sloj z rezultati mogoče interpretirati kot območje tveganja za prihodnje udare strele.
+    </p>
+    <p>Pri vhodnih linijskih podatkih, povr&scaron;inska gostota predstavlja skupno &scaron;tevilo linij, ki je v bližini vsake lokacije. Enote izračunanih vrednosti gostote so dolžina linije na povr&scaron;insko enoto. Na primer, če linije predstavljajo reke, bo sloj z rezultati predstavljal skupno dolžino rek znotraj iskalnega polmera. Ta rezultat je mogoče uporabiti za identifikacijo območij, ki so primerna za pa&scaron;o živali.
+    </p>
+    <p>Drugi primeri uporabe tega orodja vključujejo:
+
+        <ul>
+            <li>Ustvarjanje kart gostote kriminalitete, ki pomagajo policijo ustrezno razporediti vire na območja z visoko stopnjo kriminalitete.
+                
+ 
+            </li>
+            <li>Izračunavanje gostote porazdelitve bolni&scaron;nic v okrožju. Sloj z rezultati bo prikazoval območja z dobro in slabo dostopnostjo do bolni&scaron;nic, te informacije pa je mogoče uporabiti pri odločitvah o kraju gradnje novih bolni&scaron;nic.
+                
+ 
+            </li>
+            <li>Identifikacija območij, za katere obstaja visoko tveganje gozdnih požarov glede na pretekle lokacije gozdnih požarov.
+                
+ 
+            </li>
+            <li>Lociranje prebivalstva, ki je daleč od avtocest za načrtovanje poteka novih cest.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>Izberi vhodni točkovni ali linijski sloj za izračun gostote</h2></div>
+        <hr/>
+        <div>
+            <p>Vhodni točkovni ali linijski sloj, ki se bo uporabljal za izračun gostote sloja.
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>Uporabi polje štetja</h2></div>
+        <hr/>
+        <div>
+            <p>Vnesite polje, ki določa &scaron;tevilo dogodkov na posamezni lokaciji. Na primer, če imate točke, ki predstavljajo mesta, lahko uporabite polje, ki predstavlja prebivalstvo mesta kot polje &scaron;tetja. Sloj gostote prebivalstva bo izračunal večje gostote prebivalstva v bližini mest z več prebivalci.
+            </p>
+            <p>Če je uporabljena privzeta vrednost  <b>Brez</b>, bo posamezna lokacija &scaron;tela za eno.
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Iskalna razdalja</h2></div>
+        <hr/>
+        <div>
+            <p>Vnesite razdaljo, ki določa, kako daleč bo potekalo iskanje točkovnih ali linijskih geoobjektov med izračunavanjem vrednosti gostote. Na primer, če navedete iskalno razdaljo 10.000 metrov, bo gostota vseh lokacij v izhodnem sloju izračunana na osnovi geoobjektov, ki se nahajajo do 10.000 metrov od lokacije. Lokacije, ki nimajo incidentov v razdalji do 10.000 metrov, bodo dobile vrednost gostote nič.
+            </p>
+            <p>Če razdalja ni navedena, bo privzeta izračunana na osnovi lokacij vhodnih geoobjektov in vrednosti v polju &scaron;tevca (če je polje &scaron;tevca vneseno).
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>Izhodne površinske enote</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite enoto povr&scaron;ine izhodnega poligona. Gostota je &scaron;tevilo, deljeno s povr&scaron;ino, in ta parameter določa povr&scaron;insko enoto v izračunu gostote.
+            </p>
+            <p>Razpoložljive povr&scaron;inske enote so kvadratne milje, kvadratni čevlji, kvadratni metri in kvadratni kilometri.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Velikost izhodne celice</h2></div>
+        <hr/>
+        <div>
+            <p>Velikost celice in enote za rezultate rastra.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>Ime sloja, ki bo ustvarjen v odseku  <b>Moja vsebina</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, bo od vas zahtevano, da vnesete drugo ime.
+            </p>
+            <p>Lahko navedete ime mape v  <b>Moji vsebini</b>, kjer bo rezultat shranjen s pomočjo spustnega menija <b>Shrani rezultat v</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

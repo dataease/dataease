@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Ereignisse ermitteln</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Ereignisse ermitteln"></h2>
+        <hr/>
+    <p> Dieses Werkzeug arbeitet mit einem Layer aus Punkten, Linien, Fl&auml;chen oder Tabellen, der ein Layer mit aktivierten Zeiteigenschaften ist und einen Zeitpunkt darstellt. Mit sequenziell angeordneten Features, sogenannten Spuren, ermittelt dieses Werkzeug die Features, die die gew&uuml;nschten Ereignisse enthalten. Ereignisse werden durch Bedingungen, die Sie angeben, bestimmt.
+    </p>
+    <p>Zuerst ermittelt das Werkzeug anhand bestimmter Felder, welche Features zu einer Spur geh&ouml;ren. Unter Verwendung der Zeit jedes Features werden die Spuren sequenziell sortiert und die Ereignisbedingungen angewendet. Features, die die Startbedingung f&uuml;r ein Ereignis erf&uuml;llen, werden als Ereignis markiert. Zus&auml;tzlich k&ouml;nnen Sie eine Endbedingung f&uuml;r ein Ereignis anwenden. Sobald die Endbedingung erf&uuml;llt ist, ist das Feature kein Ereignis mehr. Die Ergebnisse werden dann mit den urspr&uuml;nglichen Features zuz&uuml;glich einer neuen Spalte mit dem Ereignisnamen zur&uuml;ckgegeben und geben an, welches Feature die Ereignisbedingung erf&uuml;llt. Sie k&ouml;nnen festlegen, dass alle urspr&uuml;nglichen Features oder nur die Features, die Ereignisse sind, zur&uuml;ckgegeben werden.
+    </p>
+    <p>Angenommen, Ihnen liegen alle 10 Minuten GPS-Messungen von Hurrikanen vor. Jede GPS-Messung erfasst den Namen, die Position, die Uhrzeit der Erfassung und die Windgeschwindigkeit. Mit diesen Feldern k&ouml;nnten Sie ein Ereignis erstellen, bei dem jede Messung mit einer Windgeschwindigkeit gr&ouml;&szlig;er als 208 km/h ein Ereignis mit dem Titel  <code>Catastrophic</code> ist. Wenn Sie keine Endbedingung festlegen, endet das Ereignis, sobald das Feature die Startbedingung nicht mehr erf&uuml;llt (also die Windgeschwindigkeit unter 208 f&auml;llt).
+    </p>
+    <p>Als weiteres Beispiel sei angenommen, Sie &uuml;berwachen mit dem Feld  <code>contaminateLevel</code> die Konzentration einer Chemikalie in Ihrer lokalen Wasserversorgung. Sie wissen, dass die empfohlene Konzentration unter 0,01 mg/l und die gef&auml;hrliche Konzentration &uuml;ber 0,03 mg/l liegt. Relevant sind also Ereignisse, die bei einem Wert von &uuml;ber 0,03&nbsp;mg/l beginnen und Ereignisse bleiben, bis die Konzentration wieder auf normal gefallen ist. Um solche Ereignisse zu ermitteln, erstellen Sie ein Ereignis mit der Startbedingung <code>contaminateLevel &gt; 0.03</code> und der Endbedingung <code>contaminateLevel &lt; 0.01</code>. Damit wird jede Abfolge mit Werten &uuml;ber 0,03 mg/l bis zum n&auml;chsten Wert unter 0,01 markiert.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Layer auswählen, in dem Ereignisse ermittelt werden sollen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Punkte, Linien, Fl&auml;chen oder Tabellen, die zum Ermitteln der Ereignisse verwendet werden sollen. Der Eingabe-Layer muss ein Layer mit aktivierten Zeiteigenschaften sein, der Features enth&auml;lt, die einen Zeitpunkt darstellen. Au&szlig;erdem muss mindestens ein Feld enthalten sein, das zum Identifizieren von Spuren verwendet werden kann.
+            </p>
+            <p>Sie k&ouml;nnen nicht nur einen Layer aus der Karte ausw&auml;hlen, sondern auch unten in der Dropdown-Liste die Option  <b>Analyse-Layer ausw&auml;hlen</b> ausw&auml;hlen, um zu Ihren Inhalten f&uuml;r ein Big-Data-Dateifreigabe-Dataset bzw. -Feature-Layer zu navigieren.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Mindestens ein Feld zum Identifizieren von Spuren auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Felder, die die Spur-ID darstellen. Sie k&ouml;nnen ein Feld oder mehrere Felder zum Darstellen von eindeutigen Werten f&uuml;r Spuren angeben.
+            </p>
+            <p>Wenn Sie beispielsweise die Spuren von Hurrikanen rekonstruieren, k&ouml;nnen Sie den Namen des Hurrikans als Spurfeld verwenden.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Eine Ausdrucksbedingung erstellen, um den Beginn eines Ereignisses zu kennzeichnen</h2></div>
+        <hr/>
+        <div>
+            <p>F&uuml;gen Sie mit dem Ausdruck-Generator eine Bedingung hinzu, um zu bestimmen, was ein Ereignis ist. Wenn die von Ihnen angegebene Bedingung erf&uuml;llt ist, ist das Feature ein Ereignis. Wenn Sie keine Endbedingung angegeben haben, endet ein Ereignis, sobald die Startbedingung nicht mehr erf&uuml;llt ist.
+            </p>
+            <p>Als Beispiel sei angenommen, Sie m&ouml;chten gewarnt werden, wenn die Summe der Felder  <code>concentration_1</code> und <code>concentration_2</code> gr&ouml;&szlig;er als <code>concentration_3</code> ist. Dazu verwenden Sie die Bedingung <code>($feature[&quot;concentration_1&quot;] + $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>Wenn Sie wissen m&ouml;chten, wie sich die Konzentrationen im Lauf der Zeit ver&auml;ndert haben, und gewarnt werden m&ouml;chten, wenn die aktuelle  <code>concentration_1</code> gr&ouml;&szlig;er ist als die beiden vorherigen Messungen von <code>concentration_2</code>, k&ouml;nnen Sie einen Ausdruck wie den folgenden verwenden: <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Eine Ausdrucksbedingung erstellen, um das Ende eines Ereignisses zu kennzeichnen (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Mit dem Ausdruck-Generator k&ouml;nnen Sie eine Bedingung hinzuf&uuml;gen, um zu bestimmen, wann ein Ereignis endet. Wenn die von Ihnen angegebene Endbedingung erf&uuml;llt ist, ist das Feature kein Ereignis mehr. Wenn Sie keine Endbedingung angegeben haben, endet ein Ereignis, sobald die Startbedingung nicht mehr erf&uuml;llt ist.    
+            </p>
+            <p>Als Beispiel sei angenommen, Sie m&ouml;chten gewarnt werden, wenn die Summe der Felder  <code>concentration_1</code> und <code>concentration_2</code> gr&ouml;&szlig;er als <code>concentration_3</code> ist. Au&szlig;erdem soll das Ereignis enden, wenn <code>concentration_4</code> kleiner als <code>concentration_1</code> ist. Dazu verwenden Sie die Startbedingung <code>($feature[&quot;concentration_1&quot;] + $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> und die Endbedingung <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>.
+            </p>
+            <p>Wenn ein Ereignis enden soll, sobald der Mittelwert der aktuellen  <code>concentration_1</code> und der vier vorherigen Messungen h&ouml;her ist als die erste Messung, k&ouml;nnen Sie einen Ausdruck wie den folgenden verwenden: <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Anzeigen:</h2></div>
+        <hr/>
+        <div>
+            <p>Bei allen Ausgabemethoden werden Felder an die urspr&uuml;nglichen Features angeh&auml;ngt. Zur Festlegung, welche Features zur&uuml;ckgegeben werden, gibt es zwei M&ouml;glichkeiten:
+                <ul>
+                    <li> <b>Alle Features</b>: Dies ist die Standardeinstellung. Alle Features in der Eingabe werden zur&uuml;ckgegeben.
+                    </li>
+                    <li> <b>Nur Ereignisse</b>: Bei dieser Methode werden nur die Features, die Ereignisse sind, zur&uuml;ckgegeben. Features, die nicht als Ereignisse identifiziert wurden, werden nicht zur&uuml;ckgegeben.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Daten mit Zeitintervallen analysieren (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie fest, ob Ereignisse mithilfe von Zeitintervallen erkannt werden sollen, die Ihre Eingabe-Features f&uuml;r die Analyse segmentieren. Wenn Sie Zeitintervalle verwenden, m&uuml;ssen Sie das zu verwendende Zeitintervall und optional die Bezugszeit festlegen. Wird keine Bezugszeit festgelegt, wird der 1.&nbsp;Januar&nbsp;1970 verwendet. 
+            </p>
+            <p>Wenn Sie die Zeitgrenze beispielsweise auf 1&nbsp;Tag festlegen, beginnend am 1.&nbsp;Januar&nbsp;1990 um 9:00&nbsp;Uhr, wird jede Spur f&uuml;r jeden Tag um 9:00&nbsp;Uhr abgeschnitten und innerhalb dieses Segments analysiert. 
+            </p>
+            <p>Zeitintervalle sind eine bequeme M&ouml;glichkeit, die Rechenzeit zu beschleunigen, da kleinere Spuren schnell f&uuml;r die Analyse erstellt werden. Wenn die Unterteilung nach einem wiederholt auftretenden Zeitintervall sinnvoll f&uuml;r Ihre Analyse ist, ist sie f&uuml;r die Big-Data-Verarbeitung zu empfehlen.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p> Der Name des Layers, der erstellt wird.  Wenn Sie in einen ArcGIS Data Store schreiben, werden Ihre Ergebnisse in  <b>Eigene Inhalte</b> gespeichert und der Karte hinzugef&uuml;gt. Wenn Sie in eine Big-Data-Dateifreigabe schreiben, werden Ihre Ergebnisse in der Big-Data-Dateifreigabe gespeichert und  ihrem Manifest hinzugef&uuml;gt. Sie werden nicht der Karte hinzugef&uuml;gt. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, kann das Werkzeug nicht ausgef&uuml;hrt werden.
+            </p>
+            <p>Wenn Sie &uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> in ArcGIS Data Store (Big Data Store vom Typ &quot;relational&quot; oder &quot;spatiotemporal&quot;) schreiben, k&ouml;nnen Sie den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

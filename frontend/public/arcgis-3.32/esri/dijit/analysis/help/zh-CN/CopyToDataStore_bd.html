@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>复制到数据存储</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="复制到数据存储"></h2>
+        <hr/>
+    <p>该工具可用于获取输入图层并将其复制到数据存储。您可以将结果复制到  ArcGIS Data Store（关系或时空大数据存储），并将在您的门户中创建一个图层，或者也可以将结果复制到大数据文件共享。 </p>
+    <p>例如，可以将存储在 <code>大数据文件共享</code>中的要素复制到 <code>关系数据存储</code>中，并指定将仅复制当前地图范围内的要素。这将仅使用指定地图范围内的要素创建托管要素服务。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>选择要复制的图层</h2></div>
+        <hr/>
+        <div>
+            <p>将要复制的图层或表。
+            </p>
+            <p>除了从地图中选择图层外，还可以在下拉列表的底部选择 <b>选择分析图层</b>，以浏览至大数据文件共享数据集或要素图层中的内容。
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>您可以使用所有要素或进行选择(可选)</h2></div>
+        <hr/>
+        <div>
+            <p>或者，可以使用选择按钮确定要复制的位置。
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>选择要复制到的数据存储</h2></div>
+        <hr/>
+        <div>
+            <p>要将图层复制到其中的数据存储。 此参数将覆盖 <b>分析环境</b>中选择的内容。 选项如下：
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>时空</b> - 这是默认设置。
+                            </li>
+                            <li> <b>关系</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>大数据文件共享输出模板</b>
+                        <ul>
+                            <li>大数据文件共享模板列表的格式为 <b>大数据文件共享名称-模板名称</b>。在运行该工具之前，必须配置大数据文件共享模板。
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p> 要创建的图层的名称。如果您要写入 ArcGIS Data Store，则您的结果将保存在<b>我的内容</b>并添加到地图中。如果您要写入大数据文件共享，则您的结果将存储于大数据文件共享中，并添加到其清单。结果将不会添加到地图中。默认名称基于工具名称以及输入图层名称。如果该图层已存在，将无法使用该工具。
+            </p>
+            <p>如果写入  ArcGIS Data Store（关系或时空大数据存储），可以使用<b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

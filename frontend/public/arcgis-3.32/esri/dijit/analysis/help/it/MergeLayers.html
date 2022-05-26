@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Unisci Layer</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Unisci layer"></h2>
+        <hr/>
+    <p>Questo strumento consente di copiare feature da due layer in un nuovo layer. Tutti i layer da unire devono contenere gli stessi tipi di feature (puntuali, lineari o areali). &Egrave; possibile controllare la modalit&agrave; in cui i campi vengono uniti e copiati dai layer di input. Ad esempio:
+        <ul>
+            <li>Si dispone di tre per Inghilterra, Galles e Scozia e si desidera ottenere un singolo layer della Gran Bretagna. 
+            </li>
+            <li>Si dispone di 12 layer, ciascuno dei quali contiene informazioni relative a lotti di municipalit&agrave; contigue. Si desidera unirli in un unico layer, mantenendo solo i campi con lo stesso nome e tipo nei 12 layer di input.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se si seleziona  <b>Usa estensione mappa corrente</b>, vengono unite solo le feature visibili all'interno dell'estensione mappa corrente.  Se questa opzione &egrave; deselezionata, vengono unite tutte le feature presenti in entrambi i layer, anche se esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegliere il layer</h2></div>
+        <hr/>
+        <div>
+            <p>Le feature puntuali, di linea o area da unire con il layer specificato di seguito. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Scegli il layer da unire</h2></div>
+        <hr/>
+        <div>
+            <p>Selezionare il layer da unire con il primo layer.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Modifica campi di unione</h2></div>
+        <hr/>
+        <div>
+            <p>Per impostazione predefinita, nella posizione di output vengono conservati tutti i campi presenti in entrambi i layer di input. &Egrave; possibile modificare la modalit&agrave; in cui i campi vengono riportati nella posizione di output come segue:
+                <ul>
+                    <li> <b>Rinomina</b>: il campo viene rinominato nella posizione di output.
+                    </li>
+                    <li> <b>Rimuovi</b>: il campo viene rimosso dalla posizione di output.
+                    </li>
+                    <li> <b>Abbina</b>: i nomi dei campi vengono resi equivalenti.  I valori del campo proveniente dal layer da unire vengono copiati nel campo di output corrispondente.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Se entrambi i layer contengono un campo con un tipo di dati e di nome identici, il contenuto di entrambi i campi verr&agrave; unificato in un unico campo con lo stesso nome. Questo processo non viene utilizzato per i campi in cui viene utilizzato  <b>Corrispondi</b> viene utilizzato nel parametro <b>Modifica campi di unione</b>.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

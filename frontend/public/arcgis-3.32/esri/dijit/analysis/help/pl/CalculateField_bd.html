@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Oblicz pole</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Oblicz pole"></h2>
+        <hr/>
+    <p> To narzędzie działa z warstwą wejściową, obliczając wartości dla nowych lub istniejących p&oacute;l. Należy zbudować wyrażenie w języku Arcade umożliwiające obliczanie wartości służących do wypełniania obiekt&oacute;w. Jeśli dane zawierają dane czasowe, a ich typem czasu jest Moment, można opcjonalnie budować wyrażenia zawierające dane o ścieżkach.
+    </p>
+    <p>Użytkownik może na przykład chcieć zmodyfikować istniejące pole o nazwie  <i>TotalSales</i>. Pole to ma być reprezentowane przez sumę łącznej sprzedaży w latach 2016 i 2017. Używając tych p&oacute;l w wyrażeniu, można obliczyć wartość pola jako <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>Innym przykładem może być wykonywanie odczyt&oacute;w GPS dotyczących lokalizacji, czasu, identyfikator&oacute;w i prędkości autobus&oacute;w w mieście. Planowane jest utworzenie nowego pola o nazwie  <i>SpeedFrom3</i>, w kt&oacute;rym obliczana jest średnia prędkość z 3 ostatnich zarejestrowanych odczyt&oacute;w GPS dla każdego obiektu. Zostanie do tego użyte obliczenie zawierające dane o ścieżkach, w kt&oacute;rym ścieżka jest wyznaczana przez identyfikator autobusu. Obliczenie służące do określania średniej prędkości z 3 poprzednich etap&oacute;w czasowych i bieżącego etapu czasowego ma postać <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę, dla której będą obliczane wartości pól</h2></div>
+        <hr/>
+        <div>
+            <p>Punkty, linie, obszary lub tabela, dla kt&oacute;rych mają zostać obliczone wartości pola.  
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Oblicz wartości pola dla tego pola</h2></div>
+        <hr/>
+        <div>
+            <p>Nowe lub istniejące pole, dla kt&oacute;rego zostaną obliczone wartości oraz typ danych tego pola. Jeśli wartości są obliczane dla pola, kt&oacute;re już istnieje, typ danych nie musi być taki sam. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Utwórz wyrażenie obliczające wartości pól</h2></div>
+        <hr/>
+        <div>
+            <p>Za pomocą kreatora wyrażeń dodaj wyrażenie służące do obliczania wartości p&oacute;l. 
+            </p>
+            <p>Na przykład może być planowane dodanie wartości p&oacute;l o nazwie  <i>income</i> i <i>bonus</i>. W tym celu dodaj wyrażenie <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;] </code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>Wyrażenie zawiera dane o ścieżkach</h2></div>
+        <hr/>
+        <div>
+            <p>Określ, czy wyrażenie zawiera dane o ścieżkach. W wyrażeniu zawierającym dane o ścieżkach będzie występować formatowanie podobne do następującego:  <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. W wyrażeniach zawierających dane o ścieżkach wymagane są pola umożliwiające identyfikację poszczeg&oacute;lnych ścieżek. Ścieżki mogą składać się z punkt&oacute;w, linii, obszar&oacute;w lub tabel. Wymagane jest jedynie, aby dane wejściowe zawierały identyfikator ścieżki i zawierały dane czasowe o typie czasu Moment.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Zanalizuj dane z przedziałami czasu</h2></div>
+        <hr/>
+        <div>
+            <p>Wskaż, czy chcesz obliczać wartości dla ścieżek przy użyciu przedział&oacute;w czasu, co spowoduje podzielenie danych wejściowych na segmenty w celu analizy. W przypadku użycia przedział&oacute;w czasu należy ustawić określony przedział i opcjonalnie ustawić czas referencyjny. Jeśli czas referencyjny nie zostanie ustawiony, przyjęty zostanie 1&nbsp;stycznia 1970&nbsp;r. 
+            </p>
+            <p>Jeśli na przykład granica czasu zostanie ustawiona na 1&nbsp;dzień, począwszy od 9:00 rano w dniu 1&nbsp;stycznia 1990, to każda ścieżka będzie obcinana dla każdego dnia o godz. 9:00 rano i analizowana w tym segmencie. 
+            </p>
+            <p>Użycie przedział&oacute;w czasu to prosty spos&oacute;b na skr&oacute;cenie czasu przetwarzania, ponieważ pozwala szybko tworzyć mniejsze ścieżki na potrzeby analizy. Jeśli podział na powtarzalne przedziały czasu ma sens w danej analizie, jest to zalecana metoda w przypadku przetwarzania dużych zbior&oacute;w danych.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p> Nazwa warstwy, kt&oacute;ra zostanie utworzona w oknie Moje zasoby. W przypadku zapisywania w ArcGIS Data Store wyniki będą przechowywane w obszarze  <b>Moje zasoby</b> i dodawane do mapy. W przypadku zapisywania w udostępnionym pliku dużych zbior&oacute;w danych wyniki będą przechowywane w udostępnionym pliku dużych zbior&oacute;w danych i dodawane do jego manifestu. Nie będą dodawane do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, działanie narzędzia nie powiedzie się.
+            </p>
+            <p>W przypadku zapisywania w  ArcGIS Data Store (relacyjny magazyn danych lub magazyn dużych zbior&oacute;w danych czasowo-przestrzennych) przy użyciu listy rozwijanej  <b>Zapisz wynik w</b> można określić nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Configuració de l'entorn d'anàlisi del Portal</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>  Configuraci&oacute; de l'entorn per a l'an&agrave;lisi al Portal for ArcGIS i a l'ArcGIS Online. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Sobreescriu la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Especifica si s'han de sobreescriure les capes existents.    Quan est&agrave; activada, si ja existeix una capa amb el mateix nom als vostres continguts, se sobreescriur&agrave;.
+            </p>
+            <p>
+                <ul>
+                    <li>Activada: si ja existeix una capa amb el mateix nom als vostres continguts, se sobreescriur&agrave;. La sortida tindr&agrave; el mateix sistema de coordenades que l'entrada.
+                    </li>
+                    <li>Desactivada: si el nom de la capa de resultats que es proporciona ja existeix, es produir&agrave; un error i caldr&agrave; canviar el nom de la capa de resultats per poder executar l'eina. Aquesta &eacute;s l'opci&oacute; per defecte.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Tanca el widget d'anàlisi després d'executar l'anàlisi</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica si s'ha de mantenir el quadre de di&agrave;leg d'an&agrave;lisi obert i habilitat mentre l'eina fa el processament.     Aquesta opci&oacute; us permet modificar els par&agrave;metres de l'an&agrave;lisi mentre la tasca d'an&agrave;lisi anterior se segueix executant.  L'an&agrave;lisi &eacute;s un proc&eacute;s iteratiu i, si manteniu el quadre de di&agrave;leg de l'eina obert, podeu canviar els par&agrave;metres i tornar a executar l'an&agrave;lisi.
+            </p>
+            <p>
+                <ul>
+                    <li>Activada: el quadre de di&agrave;leg de l'eina d'an&agrave;lisi es tancar&agrave; i el focus es retornar&agrave; a la taula de continguts. Aquesta &eacute;s l'opci&oacute; per defecte.
+                    </li>
+                    <li>Desactivada: el quadre de di&agrave;leg de l'eina d'an&agrave;lisi romandr&agrave; obert i habilitat.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Desa els resultats de l'anàlisi com a capes d'entitats allotjades</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Especifica si la capa de resultats que s'ha creat a partir de l'an&agrave;lisi ser&agrave; una col&middot;lecci&oacute; d'entitats o una capa d'entitats allotjades. 
+            </p>
+            <p>
+                <ul>
+                    <li>Activada: els resultats de l'an&agrave;lisi crearan una capa d'entitats allotjades i es crear&agrave; un element als vostres continguts. Aquesta &eacute;s l'opci&oacute; per defecte.
+                    </li>
+                    <li>Desactivada: els resultats de l'an&agrave;lisi crearan una col&middot;lecci&oacute; d'entitats.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Sistema de coordenades de sortida</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el sistema de coordenades de la capa de resultats de l'an&agrave;lisi de r&agrave;ster.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Igual que l'entrada</b>: el resultat de l'an&agrave;lisi tindr&agrave; el mateix sistema de coordenades que l'entrada. Aquesta &eacute;s l'opci&oacute; per defecte.
+                    </li>
+                    <li> <b>Segons s'especifiqui</b>: el resultat de l'an&agrave;lisi tindr&agrave; el mateix sistema de coordenades que trieu.   Si aquesta opci&oacute; est&agrave; seleccionada, feu clic al bot&oacute; del globus i trieu un valor d'una llista de sistemes de coordenades coneguts, o b&eacute; afegiu el WKID de la refer&egrave;ncia espacial al quadre corresponent.
+                    </li>
+                    <li> <b>Capa
+&lt;name&gt;</b>: el resultat de l'an&agrave;lisi tindr&agrave; el mateix sistema de coordenades que una capa existent que trieu al mapa web.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Sistema de coordenades de processament</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el sistema de coordenades que l'an&agrave;lisi far&agrave; servir durant l'execuci&oacute; de l'an&agrave;lisi del GeoAnalytics.   
+            </p>
+            <p>Per al GeoAnalytics, en algunes an&agrave;lisis &eacute;s necessari que el processament s'executi en un sistema de coordenades projectades.   Per a qualsevol eina que hagi implementat la col&middot;locaci&oacute; de bins d'unitats de dades o lineals &eacute;s necessari un sistema de coordenades projectades. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Igual que l'entrada</b>: l'an&agrave;lisi es processar&agrave; amb el mateix sistema de coordenades que l'entrada. Aquesta &eacute;s l'opci&oacute; per defecte.
+                    </li>
+                    <li> <b>Segons s'especifiqui</b>: l'an&agrave;lisi tindr&agrave; el mateix sistema de coordenades que trieu.   Si aquesta opci&oacute; est&agrave; seleccionada, feu clic al bot&oacute; del globus i trieu un valor d'una llista de sistemes de coordenades projectades coneguts, o b&eacute; afegiu el WKID de la refer&egrave;ncia espacial al quadre corresponent.
+                    </li>
+                    <li> <b>Capa
+&lt;name&gt;</b>: l'an&agrave;lisi tindr&agrave; el mateix sistema de coordenades que una capa existent que trieu al mapa web.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Extensió</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica l'extensi&oacute; o el l&iacute;mit que es far&agrave; servir durant l'execuci&oacute; de l'an&agrave;lisi.  Totes les entitats d'entrada que estiguin completament dins de l'extensi&oacute; especificada o que s'hi intersequin es faran servir a l'an&agrave;lisi.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Per defecte</b>: extensi&oacute; que proporciona l'eina.
+                    </li>
+                    <li> <b>Segons s'especifiqui</b>: l'extensi&oacute; es defineix mitjan&ccedil;ant les coordenades que proporcioneu.
+                    </li>
+                    <li> <b>Capa
+&lt;name&gt;</b>: l'extensi&oacute; utilitzada per processar l'an&agrave;lisi ser&agrave; la mateixa que l'extensi&oacute; espacial d'una capa existent que trieu al mapa web. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Alinea el ràster</h2></div>
+        <hr/>
+        <div>
+            <p>Ajusta l'extensi&oacute; de la capa de r&agrave;ster de sortida perqu&egrave; coincideixi amb l'alineaci&oacute; de cel&middot;les de la capa  <b>Alinea el r&agrave;ster</b> especificada a l'an&agrave;lisi de r&agrave;ster.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Mida de la cel·la</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica la mida o la resoluci&oacute; de cel&middot;la que s'utilitzar&agrave; per crear la capa de r&agrave;ster de sortida a l'an&agrave;lisi de r&agrave;ster. La resoluci&oacute; de sortida per defecte es determina segons la mida de cel&middot;la m&eacute;s gran de la capa de r&agrave;ster d'entrada.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Quantitat m&iacute;nima d'entrades</b>: utilitzeu la mida de cel&middot;la m&eacute;s petita de totes les capes d'entrada.
+                    </li>
+                    <li> <b>Quantitat m&agrave;xima d'entrades</b>: utilitzeu la mida de cel&middot;la m&eacute;s gran de totes les capes d'entrada. Aquesta &eacute;s l'opci&oacute; per defecte.
+                    </li>
+                    <li> <b>Segons s'especifiqui</b>: especifiqueu un valor num&egrave;ric per definir la mida de cel&middot;la. Si se selecciona aquesta opci&oacute;, el valor per defecte &eacute;s 1.
+                    </li>
+                    <li> <b>Capa &lt;name&gt;</b>: definiu la mida de cel&middot;la segons la capa de r&agrave;ster que s'hagi triat.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Màscara</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica la capa que s'utilitzar&agrave; per definir l'&agrave;rea d'inter&egrave;s a l'an&agrave;lisi de r&agrave;ster.   Nom&eacute;s s'inclouran a l'operaci&oacute; d'an&agrave;lisi aquelles cel&middot;les que quedin dins de la m&agrave;scara d'an&agrave;lisi.
+            </p>
+            <ul>
+                <li>La m&agrave;scara pot ser un r&agrave;ster o una capa d'entitats.
+                </li>
+                <li>Si la m&agrave;scara d'an&agrave;lisi &eacute;s un r&agrave;ster, totes les cel&middot;les que tinguin un valor es tindran en compte per definir la m&agrave;scara. Les cel&middot;les d'un r&agrave;ster de m&agrave;scara que siguin NoData es consideraran fora de la m&agrave;scara i seran NoData a la capa de resultats de l'an&agrave;lisi. 
+                </li>
+                <li>Si la m&agrave;scara d'an&agrave;lisi &eacute;s una capa d'entitats, es convertir&agrave; internament en un r&agrave;ster quan es faci l'execuci&oacute;. Per aquest motiu, assegureu-vos que els valors de
+ <b>Mida de la cel&middot;la</b> i <b>Alinea el r&agrave;ster</b> estiguin definits correctament per a l'an&agrave;lisi.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Magatzem de dades</h2></div>
+        <hr/>
+        <div>
+            <p>Els resultats del GeoAnalytics es poden emmagatzemar en un  ArcGIS Data Store i exposar-se com una capa d'entitats al  Portal for ArcGIS, o b&eacute; en un recurs compartit de fitxers de dades massives configurat. 
+            </p>
+            <p>Si emmagatzemeu un resultat a l' ArcGIS Data Store, els resultats s'han d'emmagatzemar, en la majoria dels casos, al magatzem de dades espaciotemporal. Aquesta &eacute;s l'opci&oacute; per defecte. A continuaci&oacute; teniu alguns motius pels quals &eacute;s bona idea desar els resultats en un magatzem de dades relacional: 
+                <ul>
+                    <li>Per utilitzar els resultats a la col&middot;laboraci&oacute; de portal a portal
+                    </li>
+                    <li>Per habilitar les funcions de sincronitzaci&oacute; amb els vostres resultats
+                    </li>
+                </ul>
+                
+            </p>
+            <p>No &eacute;s recomanable fer servir un magatzem de dades relacionals si espereu que els resultats del GeoAnalytics augmentin i voleu aprofitar les funcions del magatzem de dades massives espaciotemporals per gestionar grans quantitats de dades. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Factor de processament en paral·lel</h2></div>
+        <hr/>
+        <div>
+            <p>Distribueix l'an&agrave;lisi a diverses inst&agrave;ncies del servei de processament de r&agrave;ster. 
+            </p>
+            <p>Les eines que respecten l'entorn  <b>Factor de processament en paral&middot;lel</b> us permeten controlar el nombre d'inst&agrave;ncies del servei de processament de r&agrave;ster que podeu utilitzar per processar les dades.
+            </p>
+            <p>Si l'eina no respecta el valor de  <b>Tipus de processador</b> o si l'entorn <b>Tipus de processador</b> est&agrave; definit en <b>CPU</b>, l'entorn <b>Factor de processament en paral&middot;lel</b> controla les inst&agrave;ncies del servei de processament de r&agrave;ster (CPU). Si <b>Tipus de processador</b> est&agrave; definit en <b>GPU</b>, l'entorn <b>Factor de processament en paral&middot;lel</b> controla el nombre d'inst&agrave;ncies de GPU de processament de r&agrave;ster.
+            </p> 
+            <p>En definir  <b>Factor de processament en paral&middot;lel</b>, podeu sol&middot;licitar el nombre de treballadors paral&middot;lels que el servidor d'imatges d'an&agrave;lisi de r&agrave;ster utilitza per processar una tasca d'an&agrave;lisi de r&agrave;ster. Aix&ograve; no obstant, si el nombre total de processos paral&middot;lels supera el nombre m&agrave;xim d'inst&agrave;ncies del servei de processament de r&agrave;ster (CPU o GPU), els processos paral&middot;lels addicionals es posaran en cua.
+            </p>
+            <p>Si el valor de  <b>Factor de processament en paral&middot;lel</b> no s'especifica, que &eacute;s l'opci&oacute; per defecte, l'eina utilitzar&agrave; el 80&nbsp;% del nombre m&agrave;xim d'inst&agrave;ncies del servei de processament de r&agrave;ster. Es pot especificar un enter o un percentatge com a factor de processament en paral&middot;lel.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>Tipus de processador</h2></div>
+        <hr/>
+        <div>
+            <p>Les eines que respecten l'entorn  <b>Tipus de processador</b> us permeten triar on i com voleu processar les dades. Podeu processar les dades mitjan&ccedil;ant la CPU o la CPU del servidor.  Si l'entorn <b>Tipus de processador</b> &eacute;s buit, l'eina utilitza la CPU per processar les dades. Aquesta &eacute;s l'opci&oacute; per defecte.
+            </p> 
+            <p>El processament de la CPU es pot definir en paral&middot;lel en diversos nuclis i inst&agrave;ncies, com a l'entorn <b>Factor de processament en paral&middot;lel</b>.
+            </p>
+            <p>Les GPU s&oacute;n efectives per al processament de gr&agrave;fics i imatges, on l'estructura altament paral&middot;lela permet que processin de manera eficient grans blocs de dades de manera repetitiva. Les eines d'an&agrave;lisi de r&agrave;ster que respecten aquest entorn poden distribuir la seva feina a les inst&agrave;ncies de GPU en diversos servidors d'an&agrave;lisi de r&agrave;ster, com a l'entorn  <b>Factor de processament en paral&middot;lel</b>.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b>: les dades es processaran mitjan&ccedil;ant la unitat de processament de gr&agrave;fics.
+                    </li>
+                    <li> <b>CPU</b>: les dades es processaran mitjan&ccedil;ant la unitat de processament central de l'ordinador.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

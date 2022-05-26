@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Procurar Localizações Semelhantes</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Procurar Localiza&ccedil;&otilde;es Semelhantes"></h2>
+        <hr/>
+    <p>Com base nos crit&eacute;rios que especificar, a ferramenta Procurar Localiza&ccedil;&otilde;es Semelhantes avalia a semelhan&ccedil;a entre locais na sua camada de pesquisa de candidatos e um ou mais locais de refer&ecirc;ncia. Esta ferramenta pode responder a perguntas tais como
+        <ul>
+            <li>Qual das suas lojas &eacute; mais semelhante &agrave;s suas l&iacute;deres de desempenho no que se refere a perfis de clientes?
+            </li>
+            <li>Com base nas carater&iacute;sticas das aldeias mais atingidas pela doen&ccedil;a, que outras aldeias est&atilde;o em risco?
+            </li>
+        </ul>
+        Para responder a quest&otilde;es como estas, forne&ccedil;a os locais de refer&ecirc;ncia, os locais de pesquisa de candidatos e os campos que representam os crit&eacute;rios que pretende fazer corresponder. A primeira da camada de entrada contem a localiza&ccedil;&atilde;o da sua referencia ou marca.  Por exemplo, esta camada pode conter as suas lojas com melhor desempenho ou as aldeias mais afetadas pela doen&ccedil;a. Quando especifica a camada que cont&eacute;m locais de pesquisa de candidatos. Isto pode representar todas as suas lojas ou todas as outras aldeias. Finalmente, identifique um ou mais campos a utilizar para mensurar a semelhan&ccedil;a. A ferramenta Encontrar Localiza&ccedil;&otilde;es semelhantes ir&aacute; ent&atilde;o ordenar todos os locais de pesquisa de candidatos pela proximidade de correspond&ecirc;ncia com os seus locais de refer&ecirc;ncia ao longo de todos os campos que tenha selecionado.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolher camada contendo locais de referência</h2></div>
+        <hr/>
+        <div>
+            <p>O ponto, linha ou camada de &aacute;rea contendo localiza&ccedil;&otilde;es referenciadas para corresponder. 
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, pode selecionar  <b>Escolher Camada de An&aacute;lise</b> que se encontra na parte inferior da lista pendente. Esta op&ccedil;&atilde;o abre uma galeria, na qual pode navegar e selecionar conjuntos de dados de v&aacute;rias fontes para utilizar na sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Pode utilizar todos os locais ou efetuar uma seleção</h2></div>
+        <hr/>
+        <div>
+            <p>Utilize os bot&otilde;es de sele&ccedil;&atilde;o para identificar os locais de refer&ecirc;ncia, se necess&aacute;rio. Por exemplo, se a camada de entrada contiver todos os locais&mdash;os locais de refer&ecirc;ncia, bem como os locais de pesquisa de candidatos&mdash;ser&aacute; necess&aacute;rio utilizar uma das ferramentas de sele&ccedil;&atilde;o para identificar os locais de refer&ecirc;ncia. Se criar duas camadas separadas, uma com os locais de refer&ecirc;ncia e outra com os locais de pesquisa de candidatos, n&atilde;o &eacute; necess&aacute;rio fazer uma sele&ccedil;&atilde;o. 
+            </p>
+            <p>Se n&atilde;o houver mais do que um local de refer&ecirc;ncia, ser&aacute; criado um &uacute;nico local atrav&eacute;s da m&eacute;dia dos valores para cada um dos campos utilizados para analisar semelhan&ccedil;a.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Procurar locais semelhantes em</h2></div>
+        <hr/>
+        <div>
+            <p>Os locais de pesquisa de candidatos nesta camada ser&atilde;o ordenados do mais semelhante para o menos semelhante. A semelhan&ccedil;a baseia-se no grau de correspond&ecirc;ncia entre cada local e o local de refer&ecirc;ncia nos campos que especificar. 
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, pode selecionar  <b>Escolher Camada de An&aacute;lise</b> que se encontra na parte inferior da lista pendente. Esta op&ccedil;&atilde;o abre uma galeria, na qual pode navegar e selecionar conjuntos de dados de v&aacute;rias fontes para utilizar na sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Basear semelhança em</h2></div>
+        <hr/>
+        <div>
+            <p>Os campos que selecionar ser&atilde;o os crit&eacute;rios utilizados para valiar a semelhan&ccedil;a. Se selecionar um campo de popula&ccedil;&atilde;o e de rendimento, os locais de pesquisa de candidatos com as menores (melhores) classifica&ccedil;&otilde;es ser&atilde;o aqueles que t&ecirc;m valores de popula&ccedil;&atilde;o e de rendimento semelhantes nos seus locais de refer&ecirc;ncia. 
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Mostre-me</h2></div>
+        <hr/>
+        <div>
+            <p>Pode visualizar todos os locais de pesquisa de candidatos ordenados do mais semelhante ao menos semelhante, ou pode especificar o n&uacute;mero de resultados que pretende visualizar. 
+                <ul>
+                    <li> <b>Todos os locais, do mais ao menos semelhante</b>: todos os elementos na camada de pesquisa de candidatos ser&atilde;o inclu&iacute;dos na classifica&ccedil;&atilde;o na camada resultante.
+                    </li>
+                    <li> <b>O n&uacute;mero de localiza&ccedil;&otilde;es devolvidas</b>: deve determinar quantos dos candidatos de topo mais semelhantes devem ser inclu&iacute;dos na camada resultante. O valor predefinido &eacute; 1.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Forne&ccedil;a um nome para a camada que ser&aacute; criada no  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. Esta camada resultante cont&eacute;m os locais de refer&ecirc;ncia e o n&uacute;mero de locais de pesquisa de candidatos ordenados que especificou. Se a camada j&aacute; existir, ser&aacute; questionado se pretende substituir a camada existente.
+            </p>
+            <p>Ao utilizar a caixa suspensa  <b>Guardar resultado em</b> pode definir o nome da pasta em <b>O Meu Conte&uacute;do</b> onde o resultado ser&aacute; guardado.
+            </p>  
+        </div>
+    </div>
+</div>
+</html>

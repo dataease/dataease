@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Obogati sloj</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Obogati sloj"></h2>
+        <hr/>
+    <p>Ovaj alat obogaćuje va&scaron;e podatke činjenicama o ljudima, mjestima i poslovanjima koji okružuju lokacije va&scaron;ih podataka i omogućuje vam da odgovorite na nova pitanja o lokacijama na koja ne možete odgovoriti samo pomoću karte. Na primjer: kakvi ljudi žive ovdje? &Scaron;to ljudi u ovom području vole raditi? Kakve su njihove navike i životni stilovi? Kakvih poduzeća ima u ovom području?
+    </p>
+    <p>Rezultat će biti novi sloj koji sadrži sve demografske i geografske informacije od danih zbirki podataka.  Te se nove informacije dodaju kao polja u tablici.
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, obogatit će se samo geoobjekti u sloju unosa koji su vidljivi unutar trenutačnog obuhvata karte.  Ako opcija nije označena, obogatit će se svi geoobjekti u sloju unosa, čak i ako se nalaze izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izaberite sloj za obogaćivanje novim podacima</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti, linijski ili poligonalni sloj koji će se obogatiti novim podacima atributa. 
+            </p>
+            <p>Osim odabira sloja iz karte, možete odabrati opciju  <b>Izaberi sloj za analizu</b> koja se nalazi na dnu popisa padajućeg izbornika. Ova opcija otvara galeriju u kojoj možete pretraživati i odabrati skupove podataka iz raznih izvora te ih koristiti u svojoj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Varijable za obogaćivanje</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Kliknite na  <b>Odabir varijabli</b> za otvaranje <b>Preglednika podataka</b>. <b>Preglednik podataka</b> pomaže vam da pronađete i odaberete varijable za obogaćivanje pojedinačno ili u zbirkama.
+            </p>
+            <p>Regija se odabire automatski na temelju va&scaron;ih podataka. Možete odabrati drugu regiju ako va&scaron;i podaci pokrivaju vi&scaron;e od jedne države. 
+            </p>
+            <p>Varijable za obogaćivanje organiziraju se u zbirke podataka radi jednostavnog pristupa.   Kada odaberete zbirku podataka, preglednik prikazuje nekoliko najpopularnijih varijabli za obogaćivanje u toj zbirci.  Pod  <b>Nastavi pregledavanje</b> također prikazuje kategorije unutar zbirke. Unutar svake kategorije možete odabrati čitave potkategorije ili ući u potkategoriju i odabrati pojedinačne varijable za obogaćivanje. Također možete upotrijebiti okvir za pretraživanje za traženje određene varijable u kategoriji.
+            </p>
+            <p>Kako birate varijable za uključivanje radi obogaćivanja, one se dodaju u ko&scaron;aricu u kutu  <b>Preglednika podataka</b>. Upotrijebite ovu ko&scaron;aricu za praćenje broja varijabli koje ste odabrali.
+            </p>
+            <p>Svaka odabrana varijabla dodat će se kao polje u va&scaron; sloj rezultata.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Odredi poligone za obogaćivanje</h2></div>
+        <hr/>
+        <div>
+            <p>Odredite poligone za obogaćivanje oko unesenih točaka i linija uporabom udaljenosti zračne linije ili odabranog načina putovanja. Za udaljenost zračne linije unesite vrijednost do 1000 milja (1609 kilometara). Načini putovanja mogu se upotrijebiti kada sloj unosa sadrži točke. Dostupne načine putovanja određuje administrator va&scaron;e organizacije. Prilikom upotrebe jednog od načina putovanja, mjerenja se rade uz ceste ili staze i po&scaron;tuju primjenjiva pravila, kao &scaron;to su jednosmjerne ulice, zabranjena skretanja itd. Nakon &scaron;to odaberete način i mjerenje, unesite trajanje ili udaljenost do 5 sati (300 minuta) ili 300 milja (482,8 kilometara).
+            </p>
+            <p>Ako se označi opcija  <b>Vrati rezultat kao granična područja</b>, vraćeni rezultat bit će poligonalni geoobjekti određeni prema gore navedenim vrijednostima vremena i udaljenosti. Ako ne označite ovu opciju, dobiveni rezultat bit će točkasti geoobjekti.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će se stvoriti u dijelu  <b>Moj sadržaj</b> i dodati karti.  Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako naziv sloja već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

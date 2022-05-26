@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Stapanje granica</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Svedi granice"></h2>
+        <hr/>
+    <p>Oblasti koje se preklapaju ili dele zajedničku granicu spajaju se da bi formirale jednu oblast.    
+    </p>
+    <p>Možete da kontroli&scaron;ete koje se granice spajaju definisanjem polja po kom će se vr&scaron;iti spajanje. Na primer, ako imate sloj sa okruzima, a svaki okrug ima atribut  <i>State_Name</i>, možete da svedete granice koristeći atribut <i>State_Name</i>.  Susedni okruzi biće spojeni ako imaju istu vrednost za atribut <i>State_Name</i>.  Krajnji rezultat je sloj sa državnim granicama.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite sloj oblasti čije će granice biti svedene</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj koji sadrži geoobjekte oblasti koji će biti svedeni. 
+            </p>
+            <p>Pored biranja sloja sa mape, možete da selektujete  <b>Izaberi sloj za analizu</b> koji se nalazi na dnu padajuće liste. Ova opcija otvara galeriju gde možete da pregledate i birate skupove podataka iz raznih izvora za kori&scaron;ćenje u va&scaron;oj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Odaberite metod svođenja</h2></div>
+        <hr/>
+        <div>
+            <p>Možete da odaberete jedan od dva metoda za spajanje geoobjekata oblasti:
+                <ul>
+                    <li> <b>Oblasti koje se preklapaju ili koje su susedne</b> &ndash; dve ili vi&scaron;e oblasti čije se granice međusobno preklapaju biće spojene u jednu oblast. Pored toga, oblasti koje su susedne (to jest, dele zajedničku granicu), biće spojene u jednu oblast.
+                    </li>
+                    <li> <b>Oblasti sa istom vredno&scaron;ću polja</b> &ndash; oblasti koje se preklapaju ili dele zajedničku granicu biće spojene u jednu oblast ako imaju istu vrednost polja.
+                        <p>Na primer, ako imate sloj sa okruzima, a svaki okrug ima polje  <i>State_Name</i>, možete da svedete granice koristeći polje <i>State_Name</i>.  Susedni okruzi biće spojeni ako imaju istu vrednost za atribut <i>State_Name</i>.  Krajnji rezultat je sloj sa državnim granicama.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ako je opcija  <b>Koristi trenutni obuhvat mape</b> izabrana, biće analizirani samo oni geoobjekti u ulaznom sloju koji su vidljivi unutar trenutnog obuhvata mape. Ako nije izabrana, biće svedeni svi geoobjekti u ulaznom sloju, čak i ako su izvan trenutnog obuhvata mape.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Kreiranje višedelnih geoobjekata</h2></div>
+        <hr/>
+        <div>
+            <p>U ArcGIS, digitalna reprezentacija mesta ili objekta koji ima vi&scaron;e delova, ali je definisan kao jedan geoobjekat zato &scaron;to referencira jedan skup atributa. Na primer, u sloju država, država Havaji može da se smatra vi&scaron;edelnim geoobjektom zato &scaron;to su njeni odvojeni geometrijski delovi klasifikovani kao jedna država. Ovaj Bulov parametar pruža dve opcije:
+                <ul>
+                    <li>Tačno (potvrđeno): izlazna usluga može da sadrži vi&scaron;edelne geoobjekte.
+                    </li>
+                    <li>Netačno (nepotvrđeno): izlazna usluga sadrži samo jednodelne geoobjekte, a pojedinačni geoobjekti se kreiraju za svaki deo.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Dodaj statistiku</h2></div>
+        <hr/>
+        <div>
+            <p>Kada se oblasti spoje, možete da sumirate njihove atribute. Na primer, ako svodite granicu između okruga na osnovu polja  <i>State_Name</i>, a svaki okrug ima polje <i>Population</i>, možete da izračunate zbir za polje <i>Population</i> za državu.
+            </p>
+            <p>Dostupni tipovi statistike su:
+            </p>
+            <ul>
+                <li> <b>Zbir</b> &ndash; dodaje ukupnu vrednost za navedeno polje
+                    
+
+                </li>
+                <li> <b>Prosek</b> &ndash; izračunava prosek za navedeno polje
+                    
+
+                </li>
+                <li> <b>Minimum</b> &ndash; pronalazi najmanju vrednost za sve zapise navedenog polja
+                    
+
+                </li>
+                <li> <b>Maksimum</b> &ndash; pronalazi najveću vrednost za sve zapise navedenog polja
+                    
+
+                </li>
+                <li> <b>Std. Devijacija</b> &ndash; pronalazi standardnu devijaciju za vrednosti u navedenom polju
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako naziv sloja već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Koristeći padajući meni  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> u kojoj će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

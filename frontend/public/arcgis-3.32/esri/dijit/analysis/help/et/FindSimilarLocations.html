@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Leia sarnased asukohad</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Leia sarnased asukohad"></h2>
+        <hr/>
+    <p>T&auml;psustatud kriteeriumitel p&otilde;hinevalt otsib Leia sarnased asukohad t&ouml;&ouml;riist sarnaseid kandidaate otsitavast kihist &uuml;hes v&otilde;i mitmes viidatud asukohtades. See t&ouml;&ouml;riist saab vastata k&uuml;simusele, nagu
+        <ul>
+            <li>Millised teie poodidest on k&otilde;ige sarnasemad teie parimatele poodidele, arvestades klientide profiile?
+            </li>
+            <li>Arvestades haigustest enim r&auml;situd k&uuml;lasid, millised k&uuml;lad on samuti riski all?
+            </li>
+        </ul>
+        Sellistele k&uuml;simustele vastamiseks tuleb pakkuda viidatavad asukohad, kandidaatide otsimise asukohad ja m&auml;&auml;rata v&auml;ljad, mis esitavad sobivuse kontrolli kriteeriume. Esimene sisendkiht peaks sisaldama viite- v&otilde;i alusasukohti.  N&auml;iteks kiht v&otilde;ib sisaldada parimaid tulemusi omavaid poode v&otilde;i enim haigustest r&auml;situd k&uuml;lasid. Seej&auml;rel saab t&auml;psustada kihi, mis sisaldab kandidaatide otsingu asukohti. See v&otilde;ib koosneda k&otilde;igist olemasolevatest poodidest v&otilde;i k&uuml;ladest. L&otilde;puks saab m&auml;&auml;rata &uuml;he v&otilde;i mitu v&auml;lja, mille alusel sarnasusi m&otilde;&otilde;detakse. Leia sarnased asukohad t&ouml;&ouml;riist j&auml;rjestab seej&auml;rel k&otilde;ik kandidaadid vastavalt kui t&auml;pselt nad vastavad m&auml;&auml;ratud v&auml;ljade v&auml;&auml;rtustele, mille te selekteerisite.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vali viiteasukohti sisaldav kiht</h2></div>
+        <hr/>
+        <div>
+            <p>Punkti-, joone- v&otilde;i alakiht, mis sisaldab vastendatavaid viiteasukohti. 
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Võite kasutada kõiki asukohti või valida osad</h2></div>
+        <hr/>
+        <div>
+            <p>Kasuta selektsioonu nuppe, et m&auml;&auml;rata viidatavad asukohad, kui vaja. N&auml;iteks kui sisendkiht sisaldab k&otilde;iki asukohti - nii viidatavaid kui ka kandidaatide otsingu asukohti - siis peaksite kasutama &uuml;ht selektsiooni t&ouml;&ouml;riista, et m&auml;&auml;rata viidatavad asukohad. Kui loote kaks eraldi kihti, &uuml;he viidatavate asukohtadega ja teise kandidaatide otsingu asukohtadega, siis ei pea selektsiooni tegema. 
+            </p>
+            <p>Kui on rohkem kui &uuml;ks viitamise asukoht, siis luuakse &uuml;ks keskne asukoht keskmistest v&auml;&auml;rtustest &uuml;le k&otilde;igi sarnasuse anal&uuml;&uuml;sis kasutatavate v&auml;ljade.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Otsi sarnaseid asukohti siit</h2></div>
+        <hr/>
+        <div>
+            <p>Kandidaatide otsingu asukohad j&auml;rjestatakse siin kihis vastavat enim sarnanevalt kuni v&auml;him sarnanevale. Sarnasus baseerub sellel, kui l&auml;hedalt iga asukoht sobitub viidatava asukohaga &uuml;le k&otilde;ikide t&auml;psustatud v&auml;ljade. 
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Sarnasusalus</h2></div>
+        <hr/>
+        <div>
+            <p>Valitud v&auml;lju kasutatakse sarnasuse kriteeriumitena. Kui valite n&auml;iteks asustustihenduse v&otilde;i sissetuleku v&auml;ljad, siis kandidaatide otsing p&uuml;&uuml;ab leida madalaima (parima) sobivusega asukohad, mis omavad sarnast asustustihedust ja sissetulekute v&auml;&auml;rtust teie viidatud asukohtadele. 
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Näita</h2></div>
+        <hr/>
+        <div>
+            <p>V&otilde;ite n&auml;ha k&otilde;iki kandidaadite otsingu asukohti, mis on j&auml;rjestatud sobivusele vastavuse alusel v&otilde;i t&auml;psustada tulemuste arvu, mida soovite n&auml;ha. 
+                <ul>
+                    <li> <b>K&otilde;ik asukohad alates k&otilde;ige sarnasemast</b> &ndash; k&otilde;ik objektid kandidaatide otsingu kihist lisatakse tulemkihis vastavas j&auml;rjestuses.
+                    </li>
+                    <li> <b>Tagastatavate asukohtade arv</b> &ndash; saate t&auml;psustada, mitut k&otilde;ige sarnasemat kandidaati soovite tulemkihis n&auml;ha. Vaikev&auml;&auml;rtus on 1.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sisestage kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Tulemkiht sisaldab viidatavaid asukohti ja m&auml;&auml;ratud arvu jagu sarnasuse alusel leitud kandidaatide asukohti. Kui see kiht juba eksisteerib, saate selle soovi korral &uuml;mber nimetada.
+            </p>
+            <p>Kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemused salvestatakse.
+            </p>  
+        </div>
+    </div>
+</div>
+</html>

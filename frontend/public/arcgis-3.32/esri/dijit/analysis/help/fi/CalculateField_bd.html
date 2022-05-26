@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Laske kenttä</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Laske kentt&auml;"></h2>
+        <hr/>
+    <p> T&auml;t&auml; ty&ouml;kalua k&auml;ytet&auml;&auml;n sy&ouml;tetason kanssa uuden tai aiemmin luodun kent&auml;n arvojen laskemiseen. Muodosta Arcade-lauseke niiden arvojen laskemista varten, joilla kohteet t&auml;ytet&auml;&auml;n.   Jos aika on otettu huomioon aineistossa ja aineiston ajan tyyppin&auml; on hetki, voit vaihtoehtoisesti muodostaa lausekkeita, jotka ottavat reitit huomioon.
+    </p>
+    <p>Oletetaan esimerkiksi, ett&auml; haluat muokata aiemmin luotua kentt&auml;&auml; nimelt&auml;  <i>TotalSales</i>. Haluat, ett&auml; kentt&auml; esitt&auml;&auml; vuosien 2016 ja 2017 kokonaismyyntien summaa. K&auml;ytt&auml;m&auml;ll&auml; kyseisi&auml; kentti&auml; lausekkeessa lasket kent&auml;n arvon lausekkeella <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>Oletetaan toisessa esimerkiss&auml;, ett&auml; sinulla on GPS-mittauksia, joihin on tallennettu sijainti, aika, linja-auton tunnus ja linja-autojen nopeus kaupungissa. Haluat luoda uuden kent&auml;n nimelt&auml;  <i>SpeedFrom3</i>, joka laskee kolmen viimeksi tallennetun GPS-mittauksen nopeuksien keskiarvon kullekin kohteelle. T&auml;ss&auml; laskennassa k&auml;ytet&auml;&auml;n laskentaa, jossa reitit on otettu huomioon. Siin&auml; reitti on linja-auton tunnuksen osoittama linja-auto.    Laskenta, joka m&auml;&auml;ritt&auml;&auml; kolmen edellisen aika-askeleen ja nykyisen aika-askeleen keskiarvon, on <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse karttataso, jonka kentän arvot lasketaan</h2></div>
+        <hr/>
+        <div>
+            <p>Pisteet, viivat, alueet tai taulukko, joiden kenttien arvot lasketaan.  
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Laske seuraavan kentän arvot</h2></div>
+        <hr/>
+        <div>
+            <p>Uusi tai aiemmin luotu kentt&auml;, jonka arvot lasketaan, sek&auml; kent&auml;n tietotyyppi. Jos lasket sellaisen kent&auml;n arvoja, joka on jo olemassa, tietotyypin ei tarvitse t&auml;sm&auml;t&auml;. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Luo lauseke, joka laskee kentän arvot</h2></div>
+        <hr/>
+        <div>
+            <p>Lis&auml;&auml; lauseke kent&auml;n arvojen laskentaa varten k&auml;ytt&auml;m&auml;ll&auml; lausekkeen muodostustoimintoa. 
+            </p>
+            <p>Oletetaan esimerkiksi, ett&auml; haluat lis&auml;t&auml; arvot kentille nimelt&auml;  <i>income</i>  ja <i>bonus</i>. Voit tehd&auml; t&auml;m&auml;n lis&auml;&auml;m&auml;ll&auml; lausekkeen <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;] </code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>Lauseke on seurantatietoinen</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml;, onko lausekkeessa otettu reitti huomioon. Lauseke, jossa reitti on otettu huomioon, sis&auml;lt&auml;&auml; seuraavanlaisen muotoilun:  <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. Lausekkeissa, joissa reitti on otettu huomioon, on oltava kent&auml;t yksitt&auml;isten reittien tunnistusta varten. Reitit voivat muodostua pisteist&auml;, viivoista, alueista tai taulukoista. Reitit edellytt&auml;v&auml;t vain, ett&auml; l&auml;ht&ouml;aineistossa on reittitunnus ja ett&auml; aika on otettu huomioon aineistossa, jonka ajan tyyppin&auml; on hetki.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analysoi aikavälejä sisältävät tiedot</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml;, haluatko laskea arvot reiteille k&auml;ytt&auml;m&auml;ll&auml; aikav&auml;lej&auml;, jotka segmentoivat l&auml;ht&ouml;aineistosi analyysia varten. Jos k&auml;yt&auml;t aikav&auml;lej&auml;, sinun on m&auml;&auml;ritett&auml;v&auml; aikav&auml;li, jota haluat k&auml;ytt&auml;&auml;, ja m&auml;&auml;ritett&auml;v&auml; vaihtoehtoisesti viiteaika. Jos et m&auml;&auml;rit&auml; viiteaikaa, j&auml;rjestelm&auml; k&auml;ytt&auml;&auml; p&auml;iv&auml;m&auml;&auml;r&auml;&auml; 1.1.1970. 
+            </p>
+            <p>Jos m&auml;&auml;rit&auml;t aikarajaksi esimerkiksi yhden p&auml;iv&auml;n, alkaen 1.1.1990 klo 9.00, kukin reitti katkaistaan klo 9.00 kunakin p&auml;iv&auml;n&auml; ja analysoidaan kyseisen segmentin osalta. 
+            </p>
+            <p>Aikav&auml;lien k&auml;ytt&ouml; on nopea tapa kiihdytt&auml;&auml; laskenta-aikaa, koska se luo pienempi&auml; analysoitavia reittej&auml;. Jos toistuvan aikav&auml;lin k&auml;ytt&ouml; jaossa on parempi analyysin kannalta, sit&auml; suositellaan Big Datan k&auml;sittelyss&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+            <p>Kun kirjoitat kohteeseen  ArcGIS Data Store  (relaatiotietokantaan perustuvaan tai spatiotemporaaliseen Big Data -s&auml;il&ouml;&ouml;n) k&auml;ytt&auml;m&auml;ll&auml; avattavaa  <b>Tallenna tulos kohteeseen</b> -luetteloa, voit m&auml;&auml;ritt&auml;&auml; kansion nimen <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

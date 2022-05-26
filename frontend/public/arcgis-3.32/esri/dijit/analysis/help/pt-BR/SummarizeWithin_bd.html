@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Resumir Dentro</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Resumir Dentro"></h2>
+        <hr/>
+    <p>Esta ferramenta localiza fei&ccedil;&otilde;es (e por&ccedil;&otilde;es de fei&ccedil;&otilde;es) que est&atilde;o dentro dos limites das &aacute;reas na primeira camada de entrada.  
+        <ul>
+            <li>Fornecidas uma camada de limites da vertente e uma camada de limites de uso do solo por tipo de uso do solo, calcule a &aacute;rea total em acres do tipo de uso do solo para cada vertente. 
+            </li>
+            <li>Fornecida uma camada de lotes em um munic&iacute;pio e uma camada de limites da cidade, resuma o valor m&eacute;dio de lotes desocupados dentro de cada limite da cidade.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente estas fei&ccedil;&otilde;es na camada de entrada e a camada a ser resumida que s&atilde;o vis&iacute;veis dentro da extens&atilde;o de mapa atual ser&atilde;o analisadas.  Se n&atilde;o selecionada, todas as fei&ccedil;&otilde;es em ambas a camada de entrada e a camada a ser resumida ser&atilde;o analisadas, mesmo que estiverem fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Escolha a camada de área para resumir outras feições dentro dos seus limites</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de &aacute;rea que ser&aacute; utilizada para resumir as fei&ccedil;&otilde;es que caem dentro dos seus limites. Voc&ecirc; pode optar por resumir dentro de uma camada de pol&iacute;gono que voc&ecirc; fornece ou dentro de bandejas quadradas ou de hex&aacute;gono que s&atilde;o gerados quando a ferramenta executar.  Ao gerar caixas, para  <b>Quadrado</b>, o n&uacute;mero e unidades especificadas determinam a altura e comprimento do quadrado. Para <b>Hex&aacute;gono</b>, o n&uacute;mero e unidades especificadas determina a dist&acirc;ncia entre os lados paralelos.
+            </p>
+            <p>An&aacute;lise utilizando caixas  <b>Quadrado </b> ou <b>Hex&aacute;gono</b> exige um sistema de coordenadas plana. Voc&ecirc; pode configurar o <b>Processamento de sistema de coordenadas</b> nos <b>Ambientes de An&aacute;lise</b>. Se seu processamento de sistema de coordenadas n&atilde;o estiver configurado para um sistema de coordenada plana, voc&ecirc; ser&aacute; solicitado para defin&iacute;-lo quando voc&ecirc; <b>Executar An&aacute;lise</b> .
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista suspensa para procurar por seu conte&uacute;do para um conjunto de dados de compartilhamento do arquivo de grandes dados ou camada de fei&ccedil;&atilde;o.
+            </p>
+        </div>
+    </div>
+    <div id="summaryLayer">
+        <div><h2>Escolher camada para resumir</h2></div>
+        <hr/>
+        <div>
+            <p>As fei&ccedil;&otilde;es nesta camada que caem dentro dos limites das fei&ccedil;&otilde;es na camada de entrada ou bandejas especificadas acima ser&atilde;o resumidas. 
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista suspensa para procurar por seu conte&uacute;do para um conjunto de dados de compartilhamento do arquivo de grandes dados ou camada de fei&ccedil;&atilde;o.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Escolha uma distância para gerar bandeijas e agregar</h2></div>
+        <hr/>
+        <div>
+            <p>A dist&acirc;ncia utilizada para gerar bandejas.  
+            </p>
+            <p> <b>Tamanho da Caixa</b> para caixas ou <b>Camada de &Aacute;rea</b> deve ser configurado.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Agregar utilizando partes de tempo (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Se o tempo estiver habilitado na camada de ponto de entrada e for do tipo momento, voc&ecirc; poder&aacute; analisar utilizando partes do tempo.  H&aacute; tr&ecirc;s par&acirc;metros que voc&ecirc; pode configurar ao utilizar o tempo:
+                <ul>
+                    <li> <b>Intervalo de tempo</b>
+                    </li>
+                    <li> <b>Com que frequ&ecirc;ncia repetir o intervalo de tempo</b>
+                    </li>
+                    <li> <b>Tempo para alinhar intervalos de tempo para</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Por exemplo, se voc&ecirc; tiver dados que representam um ano no tempo e deseja analis&aacute;-los  utilizando etapas semanais, configure  <b>Intervalo de etapa de tempo</b> para <code>1 semana</code>. 
+            </p>
+            <p>Por exemplo, se voc&ecirc; tiver  dados que representam um ano no tempo e deseja para analis&aacute;-los   utilizando a primeira semana do m&ecirc;s, configure  <b>Intervalo de etapa de tempo</b> para <code>1 semana</code>, <b>Com que frequ&ecirc;ncia repetir a etapa de tempo</b> para <code>1 m&ecirc;s</code>, e <b>Tempo para alinhar as etapas de tempo</b> para <code>1 de janeiro, em 12:00 am</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Intervalo de tempo a ser agregado</h2></div>
+        <hr/>
+        <div>
+            <p>O intervalo de tempo utilizado para gerar etapas de tempo.  <b>O intervalo de tempo</b>  pode ser utilizado sozinho ou utilizado com os par&acirc;metros <b>Com que frequ&ecirc;ncia repetir o intervalo de tempo</b> ou par&acirc;metro <b>Tempo para alinhar os intervalos de tempo</b>.
+            </p>
+            <p>Por exemplo, se desejar criar etapas de tempo que  ocorrem toda segunda-feira de 9:00 a.m. At&eacute; 10:00 a.m., configure  <b>Intervalo de etapa de tempo</b> para <code>1 hora</code>, <b>Com que frequ&ecirc;ncia repetir a etapa de tempo</b> para <code>1 semana</code>, e <b>Tempo para alinhar as etapas de tempo </b> para <code>9:00:00 a.m. em uma segunda-feira</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Etapa de tempo a ser agregada</h2></div>
+        <hr/>
+        <div>
+            <p> A etapa utilizada para calcular uma etapa do tempo. <b>Com que frequ&ecirc;ncia repetir o intervalo de tempo</b> pode ser utilizado sozinho, com <b>Intervalo de tempo</b>, com <b>Tempo de Refer&ecirc;ncia</b>, ou com ambos <b>Intervalo de tempo</b> e <b>Tempo para alinhar os intervalos de tempo</b>.
+            </p>
+            <p> Por exemplo, se desejar criar etapa de tempo  que  ocorrem toda segunda-feira de 9:00 a.m. at&eacute; 10:00 a.m., configure <b>Intervalo de etapa de tempo</b> para <code>1 hora</code>, <b>Com que frequ&ecirc;ncia repetir a etapa de tempo</b> para <code>1 semana</code>, e <b>Tempo para alinhar as etapas de tempo</b> para <code>9:00:00 a.m. em uma segunda-feira</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Tempo de referência utilizado para alinhar partes de tempo</h2></div>
+        <hr/>
+        <div>
+            <p>A data e hora utilizadas para alinhar as partes de tempo. O intervalo de tempo come&ccedil;ar&aacute; em  sentido contr&aacute;rio deste tempo. Se nenhum tempo de refer&ecirc;ncia for selecionado, o intervalo de time alinhar&aacute; &agrave; 1 de Janeiro de 1970. 
+            </p>
+            <p> Por exemplo,  se desejar criar etapa de tempo  que  ocorre toda segunda-feira de 9:00 a.m. At&eacute; 10:00 a.m., configure <b>Intervalo de etapa de tempo</b> para <code>1 hora</code>, <b>Com que frequ&ecirc;ncia repetir a etapa de tempo</b> para <code>1 semana</code>, e <b>Tempo para alinhar as etapas de tempo</b> para <code>9:00:00 a.m. em uma segunda-feira</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Adicionar estatísticas (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p> Voc&ecirc; pode calcular as estat&iacute;stica em fei&ccedil;&otilde;es que s&atilde;o resumidas.
+Voc&ecirc; pode calcular o seguinte em campos num&eacute;ricos:
+                <ul>
+                    <li>Contagem&mdash;Calcula o n&uacute;mero de valores diferentes de nulo.
+Pode ser utilizado em campos num&eacute;ricos ou strings. 'A contagem de [null, 0, 2] &eacute; 2.
+                    </li>
+                    <li>Soma&mdash;A soma de valores num&eacute;ricos em um campo. A soma de [null, null, 3] &eacute; 3.
+                    </li>
+                    <li>M&eacute;dia&mdash;A m&eacute;dia de valores num&eacute;ricos. A m&eacute;dia de [0, 2, null] &eacute; 1.
+                    </li>
+                    <li>M&iacute;n&mdash;O valor m&iacute;nimo de um campo num&eacute;rico. O m&iacute;nimo de [0, 2, null] &eacute; 0. 
+                    </li>
+                    <li>M&aacute;x&mdash;O valor m&aacute;ximo de um campo num&eacute;rico. O valor m&aacute;ximo de [0, 2, null] &eacute; 2.
+                    </li>
+                    <li>Alcance&mdash;O alcance de um campo num&eacute;rico. Isto &eacute; calculado como os valores m&iacute;nimos subtra&iacute;dos do valor m&aacute;ximo. O alcance de [0, null, 1] &eacute; 1. O alcance de [null, 4] &eacute; 0.
+                    </li>
+                    <li>Vari&acirc;ncia&mdash;A vari&acirc;ncia de um campo num&eacute;rico em um caminho. A vari&acirc;ncia de [1] &eacute; nula. A vari&acirc;ncia de [null, 1,0,1,1] &eacute; 0,25.
+                    </li>
+                    <li>Desvio padr&atilde;o&mdash;O desvio padr&atilde;o de um campo num&eacute;rico. O desvio padr&atilde;o de [1] &eacute; nulo. O desvio padr&atilde;o de [nulo, 1,0,1,1] &eacute; 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Voc&ecirc; pode calcular o seguinte em campos de strings:
+                <ul>
+                    <li>Contagem&mdash;O n&uacute;mero de strings diferente de nulo.
+                    </li>
+                    <li>Qualquer&mdash;Esta estat&iacute;stica &eacute; uma amostra aleat&oacute;ria de um valor de string no campo especificado.
+                    </li>
+                </ul>
+                Todas as estat&iacute;sticas s&atilde;o calculadas em valores n&atilde;o nulos. A camada resultante conter&aacute; um novo atributo para cada estat&iacute;stica calculada. Qualquer n&uacute;mero de estat&iacute;stica pode ser adicionado ao escolher um atributo e estat&iacute;stica. 
+            </p>
+            <p>Al&eacute;m destas estat&iacute;sticas, a estat&iacute;stica proporcional ser&aacute; calculada em todos os campos num&eacute;ricos:
+                <ul>
+                    <li>Contagem&mdash;A contagem de cada campo multiplicada pela propor&ccedil;&atilde;o da camada de resumo dentro dos pol&iacute;gonos. 
+                    </li>
+                    <li>Somar&mdash;A soma dos valores ponderados em cada campo. Onde o peso aplicado &eacute; a propor&ccedil;&atilde;o da camada de resumo dentro dos pol&iacute;gonos.
+                    </li>
+                    <li>M&eacute;dia&mdash;M&eacute;dia ponderada dos valores em cada campo. Onde o peso aplicado &eacute; a propor&ccedil;&atilde;o da camada de resumo dentro dos pol&iacute;gonos.
+                    </li>
+                    <li>M&iacute;nimo&mdash;O m&iacute;nimo dos valores ponderados em cada campo. Onde o peso aplicado &eacute; a propor&ccedil;&atilde;o da camada de resumo dentro dos pol&iacute;gonos.
+                    </li>
+                    <li>M&aacute;ximo&mdash;O m&aacute;ximo dos valores ponderados em cada campo. Onde o peso aplicado &eacute; a propor&ccedil;&atilde;o da camada de resumo dentro dos pol&iacute;gonos.
+                    </li>
+                    <li>Intervalo&mdash;A diferen&ccedil;a entre os valores ponderados m&aacute;ximos e m&iacute;nimos.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Dependendo dos tipos de fei&ccedil;&otilde;es que voc&ecirc; estiver resumindo, a contagem total dos pontos mais pr&oacute;ximos, comprimento total das linhas ou &aacute;rea total ser&atilde;o calculadas.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Escolher campo para agrupar por</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; um atributo de  <b>Resumir</b> fei&ccedil;&otilde;es que voc&ecirc; pode utilizar para calcular estat&iacute;sticas separadamente para cada valor de atributo &uacute;nico. Por exemplo, suponha que a primeira camada de entrada cont&eacute;m limites da cidade e as fei&ccedil;&otilde;es de resumo s&atilde;o lotes.  Um dos atributos dos lotes &eacute; <i>Status</i> que cont&eacute;m dois valores: VACANT e OCCUPIED. Para calcular a &aacute;rea total dos lotes ocupados e desocupados dentro dos limites das cidades, utilize <i>Status</i> como o grupo por atributo. A estat&iacute;stica para cada grupo, como tamb&eacute;m, a contagem de fei&ccedil;&otilde;es dentro de cada limite de &aacute;rea, ser&aacute; exibida no pop-up da camada resultante.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Adicionar minoria, maioria</h2></div>
+        <hr/>
+        <div>
+            <p>Esta caixa de sele&ccedil;&atilde;o &eacute; habilitada quando voc&ecirc; escolhe um campo para agrupar. Se voc&ecirc; deseja descobrir quais valores de atributo dentro de cada grupo s&atilde;o a minoria (menos dominante) ou a maioria (mais dominante) dentro de cada limite da primeira camada de entrada, selecione  <b>Adicionar minoria, maioria</b>.   Quando voc&ecirc; seleciona <b>Adicionar minoria, maioria</b>, dois novos campos s&atilde;o adicionados na sua camada resultante.   Se voc&ecirc; tamb&eacute;m selecionar <b>Adicionar porcentagens</b>, dois campos adicionais ser&atilde;o adicionados na camada resultante contendo as porcentagens dos valores de atributo da minoria e maioria dentro de cada grupo.
+            </p>
+            <ul>
+                <li>Se voc&ecirc; estiver resumindo pontos, os valores da minoria e maioria ser&atilde;o calculados baseados na contagem de pontos dentro de cada &aacute;rea de limite na camada de &aacute;rea de entrada.  
+                </li>
+                <li>Se voc&ecirc; estiver resumindo linhas, os valores da minoria e maioria ser&atilde;o calculados baseados no comprimento das linhas dentro de cada &aacute;rea de limite na camada de &aacute;rea de entrada.  
+                </li>
+                <li>Se voc&ecirc; estiver resumindo &aacute;reas, os valores da minoria e maioria ser&atilde;o calculados baseados na &aacute;rea dentro de cada &aacute;rea de limite na camada de &aacute;rea de entrada.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Adicionar porcentagens</h2></div>
+        <hr/>
+        <div>
+            <p>Esta caixa de sele&ccedil;&atilde;o &eacute; habilitada quando voc&ecirc; escolhe um campo para agrupar. Selecione  <b>Adicionar porcentagens</b> se voc&ecirc; deseja encontrar a porcentagem de cada valor de atributo dentro de cada grupo. Um novo campo &eacute; adicionado na tabela resultante contendo as porcentagens de cada valor de atributo dentro de cada grupo. Se <b>Adicionar minoria, maioria</b> tamb&eacute;m estiver selecionado, dois campos adicionais ser&atilde;o adicionados na camada resultante contendo as porcentagens dos valores de atributo da minoria e maioria dentro de cada grupo.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Escolher armazenamento de dados</h2></div>
+        <hr/>
+        <div>
+            <p>Os resultados do GeoAnalytic s&atilde;o armazenados em um armazenamento de dados e expostos como uma camada de fei&ccedil;&atilde;o no  Portal for ArcGIS. Na maioria dos casos, os resultados devem ser armazenados no armazenamento de dados de espa&ccedil;o-tempo e este &eacute; o padr&atilde;o. Em alguns casos, salvar resultados no armazenamento de dados relacional &eacute; uma boa op&ccedil;&atilde;o. Abaixo est&atilde;o as raz&otilde;es pelas quais voc&ecirc; talvez queira armazenar resultados em  um armazenamento de dados relacional: 
+                <ul>
+                    <li>Voc&ecirc; pode  utilizar os resultados no portal-para-colabora&ccedil;&atilde;o do portal.
+                    </li>
+                    <li>Voc&ecirc; pode habilitar os recursos de sincroniza&ccedil;&atilde;o com seus resultados.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Voc&ecirc; n&atilde;o deve utilizar um armazenamento de dados relacional se voc&ecirc; espera que os resultados do GeoAnalytics aumentem e deseja aproveitar os recursos do armazenamento de grandes dados de espa&ccedil;o-tempo para lidar com grandes quantidades de dados.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se voc&ecirc; estiver gravando em um ArcGIS Data Store, seus resultados ser&atilde;o salvos em  <b>Meu Conte&uacute;do</b> e adicionados no mapa. Se voc&ecirc; estiver gravando em um compartilhamento do arquivo de grandes dados, seus resultados ser&atilde;o armazenados compartilhamento do arquivo de grandes dados  e adicionados em seu   manifesto. N&atilde;o ser&atilde;o adicionados no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existe, a ferramenta falhar&aacute;.
+            </p>
+            <p>Ao gravar no  ArcGIS Data Store  (armazenamento de grandes dados de espa&ccedil;o-tempo ou relacional) utilizando a caixa suspensa  <b>Salvar resultados em</b> , voc&ecirc; pode especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

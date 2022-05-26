@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Zvolit nejlepší zařízení (Choose Best Facilities)</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Zvolit nejlep&scaron;&iacute; zař&iacute;zen&iacute;"></h2>
+        <hr/>
+    <p>N&aacute;stroj Zvolit nejlep&scaron;&iacute; zař&iacute;zen&iacute; umožňuje zvolit nejlep&scaron;&iacute; um&iacute;stěn&iacute; pro zař&iacute;zen&iacute;. N&aacute;stroj přiřazuje um&iacute;stěn&iacute; s popt&aacute;vkou po zař&iacute;zen&iacute;ch způsobem vyhovuj&iacute;c&iacute;m zadan&eacute;mu c&iacute;li.
+    </p>
+    <p>Zař&iacute;zen&iacute; představuj&iacute; um&iacute;stěn&iacute;, kter&aacute; nab&iacute;zej&iacute; určit&yacute; druh služby. Jde např&iacute;klad o pož&aacute;rn&iacute; stanice, &scaron;koly, knihovny, obchody nebo distribučn&iacute; centra. Um&iacute;stěn&iacute; s popt&aacute;vkou představuj&iacute; um&iacute;stěn&iacute;, kde existuje popt&aacute;vka pro služby nab&iacute;zen&eacute; zař&iacute;zen&iacute;mi. Může j&iacute;t např&iacute;klad o body sč&iacute;tac&iacute;ch obvodů, kter&eacute; shrnuj&iacute; populaci dan&eacute; oblasti.
+    </p>
+    <p>S pomoc&iacute; n&aacute;stroje Zvolit nejlep&scaron;&iacute; zař&iacute;zen&iacute; můžete naj&iacute;t odpověď na ot&aacute;zky typu:
+        <ul>
+            <li>Jak v př&iacute;padě nouzov&eacute; situace přiřadit dom&aacute;cnosti spr&aacute;vn&yacute;m centrům humanit&aacute;rn&iacute; pomoci, pokud je kapacita lůžek omezena a nen&iacute; možn&eacute; ji překročit?
+            </li>
+            <li>Jak lze přiřadit jednotliv&eacute; čtvrti nejbliž&scaron;&iacute;m knihovn&aacute;m a zjistit počet potenci&aacute;ln&iacute;ch n&aacute;v&scaron;těvn&iacute;ků jednotliv&yacute;ch knihoven? 
+            </li>
+            <li>Jak naj&iacute;t nejlep&scaron;&iacute; um&iacute;stěn&iacute; pro distribučn&iacute; centrum potravin, kter&eacute; by minimalizovalo celkovou dobu přepravy (a tedy n&aacute;klady) při dod&aacute;vce pro řetězec obchodů s potravinami?
+            </li>
+            <li>Kam by bylo ide&aacute;ln&iacute; um&iacute;stit nov&yacute; park, aby co největ&scaron;&iacute; počet obyvatel města bydlel ve vzd&aacute;lenosti do pěti minut chůze od něj?
+            </li>
+            <li>Jak v okrese nejl&eacute;pe um&iacute;stit několik obchodů s potřebami pro dom&aacute;c&iacute; mazl&iacute;čky, aby 40 procent vlastn&iacute;ků dom&aacute;c&iacute;ch mazl&iacute;čků nebylo od někter&eacute;ho z obchodů vzd&aacute;leno v&iacute;ce než 10 minut j&iacute;zdy autem?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Cíl</h2></div>
+        <hr/>
+        <div>
+            <p>Zadejte c&iacute;l, kter&yacute; je nutn&eacute; splnit při přidělov&aacute;n&iacute; um&iacute;stěn&iacute; s popt&aacute;vkou konkr&eacute;tn&iacute;m zař&iacute;zen&iacute;m.
+            </p>
+            <p>S n&aacute;strojem Zvolit nejlep&scaron;&iacute; zař&iacute;zen&iacute; můžete určit typ probl&eacute;mu, kter&yacute; se snaž&iacute;te vyře&scaron;it &ndash; c&iacute;l. N&aacute;stroj je optimalizov&aacute;n tak, aby nalezl ře&scaron;en&iacute; pro konkr&eacute;tn&iacute; c&iacute;l. Bez ohledu na c&iacute;l se při tvorbě ře&scaron;en&iacute; použ&iacute;v&aacute; stejn&aacute; z&aacute;kladn&iacute; metoda &ndash; množstv&iacute; popt&aacute;vky v dan&eacute;m um&iacute;stěn&iacute; s popt&aacute;vkou je přiděleno nejbliž&scaron;&iacute;mu zař&iacute;zen&iacute;. C&iacute;le měn&iacute; způsob zohledněn&iacute; vz&aacute;jemn&eacute;ho vztahu mezi vzd&aacute;lenost&iacute; (nebo časem) a popt&aacute;vkou. N&aacute;stroj zv&aacute;ž&iacute; vzd&aacute;lenost/dobu přepravy a množstv&iacute; popt&aacute;vky a v někter&yacute;ch př&iacute;padech i kapacitu zař&iacute;zen&iacute;. Pokud je např&iacute;klad c&iacute;lem minimalizovat dobu přepravy, bude se n&aacute;stroj i přesto druhotně snažit maximalizovat přidělovanou popt&aacute;vku. Pokud je c&iacute;lem maximalizovat přidělenou popt&aacute;vku, zajist&iacute; to n&aacute;stroj minimalizac&iacute; doby přepravy (přiřazen&iacute;m um&iacute;stěn&iacute; s popt&aacute;vkou pokud možno nejbliž&scaron;&iacute;mu zař&iacute;zen&iacute;).
+            </p>
+            <p>V z&aacute;vislosti na použit&yacute;ch datech a nastaven&iacute;ch mohou různ&eacute; c&iacute;le v&eacute;st ke stejn&yacute;m nebo podobn&yacute;m v&yacute;sledkům. Nejvhodněj&scaron;&iacute; je v&scaron;ak zadat c&iacute;l, kter&yacute; nejl&eacute;pe odpov&iacute;d&aacute; va&scaron;&iacute; anal&yacute;ze.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Přiřadit k existujícím zařízením</h2></div>
+        <hr/>
+        <div>
+            <p>Tento c&iacute;l použijte, pokud nechcete vyhledat nov&aacute; zař&iacute;zen&iacute;, ale přiřadit popt&aacute;vku existuj&iacute;c&iacute;m zař&iacute;zen&iacute;m, kter&aacute; mohou m&iacute;t omezenou nebo neomezenou kapacitu.    
+            </p>
+            <p>Tento c&iacute;l přiřad&iacute; popt&aacute;vku zař&iacute;zen&iacute;m na z&aacute;kladě kapacity jednotliv&yacute;ch zař&iacute;zen&iacute; a v&yacute;&scaron;i popt&aacute;vky v přilehl&yacute;ch oblastech. Popt&aacute;vka bude přiřazov&aacute;na nejbliž&scaron;&iacute;mu zař&iacute;zen&iacute;, dokud nedojde k naplněn&iacute; dostupn&eacute; kapacity. Pokud zad&aacute;te maxim&aacute;ln&iacute; přepravn&iacute; vzd&aacute;lenost, nebudou um&iacute;stěn&iacute; s popt&aacute;vkou mimo tuto oblast přiřazena ž&aacute;dn&eacute;mu zař&iacute;zen&iacute;, a to i v př&iacute;padě, že nebyla přidělena ve&scaron;ker&aacute; popt&aacute;vka.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Minimalizovat cestu</h2></div>
+        <hr/>
+        <div>
+            <p>Tento c&iacute;l použijte v př&iacute;padě, že chcete naj&iacute;t zař&iacute;zen&iacute; tak, aby byla minimalizov&aacute;na celkov&aacute; doba j&iacute;zdy nebo vzd&aacute;lenost mezi um&iacute;stěn&iacute;mi s popt&aacute;vkou a zař&iacute;zen&iacute;mi.
+            </p>
+            <p>Tento c&iacute;l je často vhodn&yacute; v př&iacute;padě, že mezi zař&iacute;zen&iacute;m a v&scaron;emi um&iacute;stěn&iacute;mi s popt&aacute;vkou prob&iacute;h&aacute; pravideln&aacute; přeprava. Tento c&iacute;l se např&iacute;klad vyplat&iacute; použ&iacute;t v př&iacute;padě, že chcete minimalizovat celkovou přepravn&iacute; vzd&aacute;lenost zbož&iacute; z distribučn&iacute;ch center do obchodů, př&iacute;padně zvolit m&iacute;sto kon&aacute;n&iacute; konference tak, aby byla pro v&scaron;echny &uacute;častn&iacute;ky minimalizov&aacute;na doba cesty.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Maximalizovat pokrytí</h2></div>
+        <hr/>
+        <div>
+            <p>Tento c&iacute;l použijte, pokud chcete maximalizovat množstv&iacute; popt&aacute;vky pokryt&eacute; v r&aacute;mci specifick&eacute; doby nebo vzd&aacute;lenosti zař&iacute;zen&iacute;.    
+            </p>
+            <p>Tento c&iacute;l vol&iacute; zař&iacute;zen&iacute; tak, aby bylo přiřazeno maximum popt&aacute;vky a aby byla ve&scaron;ker&aacute; popt&aacute;vka z ve&scaron;ker&yacute;ch um&iacute;stěn&iacute; s popt&aacute;vkou přiřazena jedin&eacute;mu nejbliž&scaron;&iacute;mu zař&iacute;zen&iacute;.
+            </p>
+            <p>Pro tento c&iacute;l je nutn&eacute; použ&iacute;t konečnou maxim&aacute;ln&iacute; přepravn&iacute; vzd&aacute;lenost. V opačn&eacute;m př&iacute;padě se může st&aacute;t, že bude ve&scaron;ker&aacute; popt&aacute;vka přiřazena jednomu zař&iacute;zen&iacute;. Um&iacute;stěn&iacute; s popt&aacute;vkou, kter&aacute; se nach&aacute;zej&iacute; mimo vzd&aacute;lenost nebo dobu spojenou s někter&yacute;m ze zař&iacute;zen&iacute;, nebudou přiřazena (d&iacute;ky tomu zjist&iacute;te, kde nedoch&aacute;z&iacute; k naplněn&iacute; popt&aacute;vky a kde mohou b&yacute;t zapotřeb&iacute; dal&scaron;&iacute; zař&iacute;zen&iacute;).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Maximalizovat pokrytí s kapacitou</h2></div>
+        <hr/>
+        <div>
+            <p>Tento c&iacute;l použijte, pokud chcete maximalizovat množstv&iacute; popt&aacute;vky pokryt&eacute; zař&iacute;zen&iacute;mi, maj&iacute;-li zař&iacute;zen&iacute; omezenou kapacitu.    
+            </p>
+            <p>Tento c&iacute;l vol&iacute; zař&iacute;zen&iacute; tak, aby bylo přiřazeno maxim&aacute;ln&iacute; množstv&iacute; popt&aacute;vky a aby nedo&scaron;lo k překročen&iacute; kapacity ž&aacute;dn&eacute;ho ze zař&iacute;zen&iacute;. Ve&scaron;ker&aacute; popt&aacute;vka ze v&scaron;ech um&iacute;stěn&iacute; s popt&aacute;vkou bude přiřazena jedin&eacute;mu nejbliž&scaron;&iacute;mu zař&iacute;zen&iacute;, kter&eacute; m&aacute; dostupnou kapacitu (pokud by přiřazen&iacute; um&iacute;stěn&iacute; s popt&aacute;vkou dan&eacute;mu zař&iacute;zen&iacute; vedlo k překročen&iacute; jeho dostupn&eacute; kapacity, um&iacute;stěn&iacute; s popt&aacute;vkou nebude přiřazeno a nebude přiřazena ani č&aacute;st jeho popt&aacute;vky).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Pokrýt procento poptávky</h2></div>
+        <hr/>
+        <div>
+            <p>Tento c&iacute;l použijte, pokud chcete zjistit minim&aacute;ln&iacute; počet zař&iacute;zen&iacute; nutn&yacute;ch k pokryt&iacute; dan&eacute;ho procenta popt&aacute;vky.
+            </p>
+            <p>Tento c&iacute;l zvol&iacute; minim&aacute;ln&iacute; počet zař&iacute;zen&iacute; nutn&yacute; k dosažen&iacute; zadan&eacute;ho procenta popt&aacute;vky. K um&iacute;stěn&iacute; s popt&aacute;vkou, kter&eacute; se nach&aacute;z&iacute; v r&aacute;mci maxim&aacute;ln&iacute; přepravn&iacute; vzd&aacute;lenosti dvou nebo v&iacute;ce zař&iacute;zen&iacute;, bude popt&aacute;vka rozdělena poměrně mezi zař&iacute;zen&iacute;mi na z&aacute;kladě vzd&aacute;lenosti um&iacute;stěn&iacute; od jednotliv&yacute;ch zař&iacute;zen&iacute;. Tento c&iacute;l se často použ&iacute;v&aacute; v př&iacute;padech, kdy si lid&eacute; mohou zvolit, kter&eacute; zař&iacute;zen&iacute; nav&scaron;t&iacute;v&iacute;, a kdy se předpokl&aacute;d&aacute;, že obecně nav&scaron;t&iacute;v&iacute; nejbliž&scaron;&iacute; zař&iacute;zen&iacute; (za jinak stejn&yacute;ch podm&iacute;nek).
+            </p>
+            <p>Na rozd&iacute;l od ostatn&iacute;ch c&iacute;lů pro volbu zař&iacute;zen&iacute;, ve kter&yacute;ch můžete specifikovat počet zvolen&yacute;ch zař&iacute;zen&iacute;, zvol&iacute; tento c&iacute;l počet zař&iacute;zen&iacute; za v&aacute;s na z&aacute;kladě procenta popt&aacute;vky, kter&eacute; chcete pokr&yacute;t. Tento n&aacute;stroj předpokl&aacute;d&aacute;, že zař&iacute;zen&iacute; nemaj&iacute; omezenou kapacitu.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Měření</h2></div>
+        <hr/>
+        <div>
+            <p>Podobně jako u ostatn&iacute;ch n&aacute;strojů, kter&eacute; v anal&yacute;ze pracuj&iacute; s přepravou, můžete specifikovat, zda m&aacute; b&yacute;t přeprava měřena podle vzd&aacute;lenosti nebo času. Můžete tak&eacute; volit z různ&yacute;ch způsobů přepravy, jako je např&iacute;klad doba chůze, doba j&iacute;zdy, j&iacute;zdn&iacute; vzd&aacute;lenost na venkově atd. Dostupn&eacute; způsoby přepravy jsou určeny administr&aacute;torem organizace. Pokud použ&iacute;v&aacute;te  <b>Dobu j&iacute;zdy</b>, <b>Dobu j&iacute;zdy ve venkovsk&yacute;ch oblastech</b> nebo <b>Dobu j&iacute;zdy n&aacute;kladn&iacute;m vozidlem</b>, můžete volitelně zahrnout informace o dopravě pro konkr&eacute;tn&iacute; den v t&yacute;dnu a denn&iacute; dobu.
+            </p>
+            <p> Aby bylo možn&eacute; um&iacute;stěn&iacute; s popt&aacute;vkou přesně přidělit zař&iacute;zen&iacute;m, je třeba zadat, zda přeprava prob&iacute;h&aacute; ve směru ze zař&iacute;zen&iacute; do um&iacute;stěn&iacute; s popt&aacute;vkou (např&iacute;klad od pož&aacute;rn&iacute;ch stanic k domům) nebo od um&iacute;stěn&iacute; s popt&aacute;vkou k zař&iacute;zen&iacute;m (např&iacute;klad z&aacute;kazn&iacute;ci cestuj&iacute;c&iacute; do knihoven). N&aacute;stroj Zvolit nejlep&scaron;&iacute; zař&iacute;zen&iacute; vezme v potaz směr j&iacute;zdy na jednosměrn&yacute;ch ulic&iacute;ch, možnost odbočit z jedn&eacute; ulice do druh&eacute; nebo fakt, že někter&eacute; křižovatky nepodporuj&iacute; odbočov&aacute;n&iacute; doleva, apod., a to v z&aacute;vislosti na tom, zda přeprava prob&iacute;h&aacute; ze zař&iacute;zen&iacute; do um&iacute;stěn&iacute; s popt&aacute;vkou nebo z um&iacute;stěn&iacute; s popt&aacute;vkou do zař&iacute;zen&iacute;.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Vrstva místa poptávky</h2></div>
+        <hr/>
+        <div>
+            <p>Bodov&eacute; prvky představuj&iacute;c&iacute; um&iacute;stěn&iacute; s popt&aacute;vkou po služb&aacute;ch nab&iacute;zen&yacute;ch zař&iacute;zen&iacute;mi. N&aacute;stroj přiřad&iacute; tato um&iacute;stěn&iacute; s popt&aacute;vkou vhodn&yacute;m zař&iacute;zen&iacute;m na z&aacute;kladě zvolen&eacute;ho c&iacute;le.
+            </p>
+            <p>Um&iacute;stěn&iacute; s popt&aacute;vkou maj&iacute; přiřazen&eacute; množstv&iacute; popt&aacute;vky. Vykazuj&iacute;-li v&scaron;echna um&iacute;stěn&iacute; s popt&aacute;vkou stejn&eacute; množstv&iacute; popt&aacute;vky, použijte konstantn&iacute; hodnotu. Pokud se množstv&iacute; popt&aacute;vky u jednotliv&yacute;ch um&iacute;stěn&iacute; s popt&aacute;vkou li&scaron;&iacute;, zadejte hodnotu pro v&scaron;echna jednotliv&aacute; um&iacute;stěn&iacute; s popt&aacute;vkou do pole ve vrstvě um&iacute;stěn&iacute; s popt&aacute;vkou.
+            </p>
+            <p>Popt&aacute;vka bude přidělov&aacute;na zař&iacute;zen&iacute;m, dokud nebude přidělena ve&scaron;ker&aacute; popt&aacute;vka, bez ohledu na to, jak daleko se um&iacute;stěn&iacute; s popt&aacute;vkou nach&aacute;zej&iacute; od zař&iacute;zen&iacute;. Můžete přiřadit maxim&aacute;ln&iacute; přepravn&iacute; vzd&aacute;lenost pro vrstvu um&iacute;stěn&iacute; s popt&aacute;vkou, č&iacute;mž vytvoř&iacute;te hraničn&iacute; vzd&aacute;lenost nebo čas &ndash; ve&scaron;ker&aacute; um&iacute;stěn&iacute; s popt&aacute;vkou nach&aacute;zej&iacute;c&iacute; se mimo tuto hraničn&iacute; hodnotu nebudou přiřazena. Maj&iacute;-li v&scaron;echna um&iacute;stěn&iacute; s popt&aacute;vkou stejnou maxim&aacute;ln&iacute; přepravn&iacute; vzd&aacute;lenost, použijte konstantn&iacute; hodnotu. Pokud se maxim&aacute;ln&iacute; přepravn&iacute; vzd&aacute;lenost mezi jednotliv&yacute;mi um&iacute;stěn&iacute;mi s popt&aacute;vkou li&scaron;&iacute;, zadejte hodnotu pro v&scaron;echna jednotliv&aacute; um&iacute;stěn&iacute; s popt&aacute;vkou do pole ve vrstvě um&iacute;stěn&iacute; s popt&aacute;vkou.
+            </p>
+            <p>Použ&iacute;v&aacute;te-li typ c&iacute;le  <b>Pokr&yacute;t procento popt&aacute;vky</b>, je nutn&eacute; zadat minim&aacute;ln&iacute; procento popt&aacute;vky, kter&eacute; maj&iacute; zař&iacute;zen&iacute; pokr&yacute;t.
+            </p>
+            <p>Vrstvu můžete vybrat ze sv&eacute; mapy nebo můžete zvolit možnost  <b>Vybrat vrstvu anal&yacute;zy</b>, kter&aacute; se nach&aacute;z&iacute; na konci rozbalovac&iacute;ho seznamu. Pomoc&iacute; t&eacute;to možnosti se otevře galerie, kde můžete proch&aacute;zet a&nbsp;vyb&iacute;rat datov&eacute; sady z&nbsp;různ&yacute;ch vrstev, kter&eacute; můžete použ&iacute;t ve sv&eacute; anal&yacute;ze. 
+            </p>
+            <p>N&aacute;stroj podporuje až 10 000 prvků ve vrstvě um&iacute;stěn&iacute; s popt&aacute;vkou.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Vrstva požadovaných zařízení</h2></div>
+        <hr/>
+        <div>
+            <p>Bodov&eacute; prvky představuj&iacute;c&iacute; um&iacute;stěn&iacute;, kter&aacute; funguj&iacute; jako zař&iacute;zen&iacute;, protože poskytuj&iacute; určitou službu. Požadovan&aacute; zař&iacute;zen&iacute; obvykle představuj&iacute; již existuj&iacute;c&iacute; um&iacute;stěn&iacute;, zat&iacute;mco kandid&aacute;tsk&aacute; zař&iacute;zen&iacute; obvykle představuj&iacute; um&iacute;stěn&iacute;, v nichž budou vybudov&aacute;na nebo um&iacute;stěna nov&aacute; zař&iacute;zen&iacute;. Při přiřazov&aacute;n&iacute; um&iacute;stěn&iacute; s popt&aacute;vkou n&aacute;stroj nejprve použije zař&iacute;zen&iacute; ve  <b>vrstvě požadovan&yacute;ch zař&iacute;zen&iacute;</b> a až pot&eacute; zař&iacute;zen&iacute; ve <b>vrstvě kandid&aacute;tsk&yacute;ch zař&iacute;zen&iacute;.</b>.
+            </p>
+            <p>Požadovan&aacute; zař&iacute;zen&iacute; mohou m&iacute;t neomezenou kapacitu (mohou naplnit ve&scaron;kerou přiřazenou popt&aacute;vku), př&iacute;padně může b&yacute;t jejich kapacita omezena. Maj&iacute;-li v&scaron;echna zař&iacute;zen&iacute; stejnou omezenou kapacitu (třeba počet dom&aacute;cnost&iacute;, kter&eacute; může obsluhovat pož&aacute;rn&iacute; stanice &ndash; např. 4 000), zadejte konstantn&iacute; hodnotu. Pokud se kapacita jednotliv&yacute;ch zař&iacute;zen&iacute; li&scaron;&iacute; (např&iacute;klad počet dostupn&yacute;ch m&iacute;st pro studenty prvn&iacute;ho ročn&iacute;ku na různ&yacute;ch středn&iacute;ch &scaron;kol&aacute;ch), vyplňte pro každ&eacute; zař&iacute;zen&iacute; pole obsahuj&iacute;c&iacute; hodnotu kapacity.
+            </p>
+            <p>N&aacute;stroj podporuje až 100 prvků ve  <b>vrstvě požadovan&yacute;ch zař&iacute;zen&iacute;</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Vrstva kandidátských zařízení</h2></div>
+        <hr/>
+        <div>
+            <p>Bodov&eacute; prvky představuj&iacute;c&iacute; um&iacute;stěn&iacute;, kter&aacute; funguj&iacute; jako zař&iacute;zen&iacute;, protože poskytuj&iacute; určitou službu. Na rozd&iacute;l od požadovan&yacute;ch zař&iacute;zen&iacute;, kter&aacute; obvykle odpov&iacute;daj&iacute; existuj&iacute;c&iacute;m um&iacute;stěn&iacute;m, kandid&aacute;tsk&aacute; zař&iacute;zen&iacute; obvykle představuj&iacute; um&iacute;stěn&iacute;, ve kter&yacute;ch budou vybudov&aacute;na nebo um&iacute;stěna nov&aacute; zař&iacute;zen&iacute;.
+            </p>
+            <p>V z&aacute;vislosti na c&iacute;li va&scaron;&iacute; anal&yacute;zy bude nutn&eacute; specifikovat počet kandid&aacute;tn&iacute;ch zař&iacute;zen&iacute;, kter&aacute; budou zvolena z množiny kandid&aacute;tů. Pokud zad&aacute;te požadovan&aacute; i kandid&aacute;tn&iacute; zař&iacute;zen&iacute;, n&aacute;stroj nejprve použije zař&iacute;zen&iacute; ve  <b>vrstvě požadovan&yacute;ch zař&iacute;zen&iacute;</b> a až pot&eacute; zař&iacute;zen&iacute; ve <b>Vrstvě kandid&aacute;tn&iacute;ch zař&iacute;zen&iacute;.</b>.
+            </p>
+            <p>Kandid&aacute;tsk&aacute; zař&iacute;zen&iacute; mohou m&iacute;t neomezenou kapacitu (mohou uspokojit ve&scaron;kerou přiřazenou popt&aacute;vku) nebo mohou m&iacute;t omezenou kapacitu. Maj&iacute;-li v&scaron;echna zař&iacute;zen&iacute; stejnou omezenou kapacitu (třeba počet dom&aacute;cnost&iacute;, kter&eacute; může obsluhovat pož&aacute;rn&iacute; stanice &ndash; např. 4 000), zadejte konstantn&iacute; hodnotu. Pokud se kapacita jednotliv&yacute;ch zař&iacute;zen&iacute; li&scaron;&iacute; (např&iacute;klad počet dostupn&yacute;ch m&iacute;st pro studenty prvn&iacute;ho ročn&iacute;ku na různ&yacute;ch středn&iacute;ch &scaron;kol&aacute;ch), vyplňte pro každ&eacute; zař&iacute;zen&iacute; pole obsahuj&iacute;c&iacute; hodnotu kapacity.
+            </p>
+            <p>Tento n&aacute;stroj podporuje až 1 000 prvků ve  <b>vrstvě kandid&aacute;tn&iacute;ch zař&iacute;zen&iacute;</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Vybrat vrstvy překážek</h2></div>
+        <hr/>
+        <div>
+            <p> Jeden nebo v&iacute;ce prvků budou sloužit jako dočasn&aacute; omezen&iacute; (přek&aacute;žky) pohybu po př&iacute;slu&scaron;n&yacute;ch pozemn&iacute;ch komunikac&iacute;ch. Přek&aacute;žky můžete zadat pomoc&iacute; bodov&yacute;ch, liniov&yacute;ch nebo polygonov&yacute;ch prvků.
+            </p>
+            <p>Bodovou přek&aacute;žku lze použ&iacute;t k modelov&aacute;n&iacute; spadl&eacute;ho stromu, nehody, spadl&eacute;ho elektrick&eacute;ho veden&iacute; nebo jak&eacute;koli př&iacute;činy zastaven&iacute; dopravy v konkr&eacute;tn&iacute;m m&iacute;stě komunikace. Pohyb je povolen po komunikaci, zat&iacute;mco pohyb skrz přek&aacute;žku nen&iacute; možn&yacute;. Můžete určit až 250 prvků, kter&eacute; budou sloužit jako bodov&eacute; přek&aacute;žky.
+            </p>
+            <p>Liniov&aacute; přek&aacute;žka br&aacute;n&iacute; pohybu v&scaron;ude tam, kde prot&iacute;n&aacute; komunikace. Např&iacute;klad, průvod nebo protest, kter&yacute; zablokuje dopravu např&iacute;č několika ulicemi, může b&yacute;t modelov&aacute;n pomoc&iacute; liniov&eacute; přek&aacute;žky. Pokud v&scaron;echny liniov&eacute; přek&aacute;žky prot&iacute;naj&iacute; dohromady v&iacute;ce než 500 prvků pozemn&iacute; komunikace, n&aacute;stroj vr&aacute;t&iacute; chybu.
+            </p>
+            <p>Polygonov&aacute; přek&aacute;žka br&aacute;n&iacute; pohybu v&scaron;ude tam, kde polygon prot&iacute;n&aacute; komunikace. Př&iacute;kladem použit&iacute; tohoto typu přek&aacute;žky je modelov&aacute;n&iacute; z&aacute;plav, jež postihuj&iacute; č&aacute;sti komunikačn&iacute; s&iacute;tě takov&yacute;m způsobem, že pohyb v těchto &uacute;sec&iacute;ch je znemožněn. Pokud v&scaron;echny polygonov&eacute; přek&aacute;žky prot&iacute;naj&iacute; dohromady v&iacute;ce než 2 000 prvků pozemn&iacute; komunikace, n&aacute;stroj vr&aacute;t&iacute; chybu.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy.  V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud n&aacute;zev vrstvy již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V&yacute;sledn&aacute; vrstva bude obsahovat vrstvu pro každ&eacute; z n&aacute;sleduj&iacute;c&iacute;ch položek: zař&iacute;zen&iacute;, kter&yacute;m je přiřazena popt&aacute;vka, um&iacute;stěn&iacute; s popt&aacute;vkou, kter&aacute; jsou přiřazena zař&iacute;zen&iacute;m a linie přidělen&iacute; spojuj&iacute;c&iacute; um&iacute;stěn&iacute; s popt&aacute;vkou s přiřazen&yacute;mi zař&iacute;zen&iacute;mi. Linie přidělen&iacute; jsou vykresleny jako př&iacute;mky; doba nebo vzd&aacute;lenost cesty mezi zař&iacute;zen&iacute;m a um&iacute;stěn&iacute;m s popt&aacute;vkou v&scaron;ak vždy vych&aacute;z&iacute; ze zadan&eacute;ho způsobu přepravy a nikoli ze vzd&aacute;lenost&iacute; na z&aacute;kladě př&iacute;mek.
+            </p>
+            <p>V rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

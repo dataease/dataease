@@ -1,0 +1,2 @@
+//>>built
+define("dgrid/extensions/nls/ar/columnHider",{popupLabel:"\u0625\u0638\u0647\u0627\u0631 \u0627\u0644\u0623\u0639\u0645\u062f\u0629 \u0623\u0648 \u0625\u062e\u0641\u0627\u0626\u0647\u0627"});

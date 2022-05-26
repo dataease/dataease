@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="aoToolbox">
+        <p>Elementų analizės įrankių rinkinį sudaro daug įvairių įrankių, kuriuos galite pasiekti ir naudoti.  &Scaron;ie įrankiai toliau suskirstyti į kategorijas. &Scaron;ios kategorijos yra tiesiog loginės grupės ir jos neturi įtakos tam, kaip pasieksite ar naudosite įrankius.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="regularsize">
+        <h2>Sumuoti duomenis</h2>
+        <hr/>
+        <p>&Scaron;ie įrankiai apskaičiuoja bendrą elementų, esančių tam tikroje teritorijoje ar &scaron;alia kitų objektų, kiekį, ilgius, plotus ir pagrindinius atributinių laukų statistinius rodiklius.
+            <ul>
+                <li> <b>Agreguoti ta&scaron;kus</b> apskaičiuoja ta&scaron;kų, patenkančių į nurodytas teritorijas, statistiką.
+                </li>
+                <li> <b>Sujungti elementus</b> perkelia atributus i&scaron; vieno sluoksnio ar lentelės į kitą pagal erdvinius ir atributų ry&scaron;ius.
+                </li>
+                <li> <b>Sumuoti &scaron;alia</b> apskaičiuoja tam tikru atstumu esančių elementų ir jų atributų statistiką.
+                </li>
+                <li> <b>Sumuoti viduje</b> apskaičiuoja persidengiančių elementų ir jų atributų statistiką.
+                </li>
+                <li> <b>Sumuoti centrą ir i&scaron;sisklaidymą</b> apskaičiuoja centrinius elementus ir kryptinį i&scaron;sisklaidymą.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Agreguoti taškus</h2></td>
+                    <td>
+                    <img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" class="titleImage" alt="Agreguoti ta&scaron;kus">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Naudojant ta&scaron;kų ir plotinių elementų sluoksnius įrankis randa, kurie ta&scaron;kai patenką į kurią teritoriją bei apskaičiuoja kiekvienos teritorijos ta&scaron;kų statistiką. Pavyzdžiui:
+                <ul>
+                    <li>Turint nusikaltimų ta&scaron;kus, apskaičiuoja nusikaltimų skaičių savivaldybėse ar kitame administraciniame vienete.
+                    </li>
+                    <li>Randa auk&scaron;čiausią ir žemiausią norimo įmonės filialo apyvartą pagal savivaldybę.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sujungti elementus</h2></td>
+                    <td>
+                    <img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" class="titleImage" alt="Sujungti elementus">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Parinktis Sujungti elementus perkelia atributus i&scaron; vieno sluoksnio ar lentelės į kitą pagal erdvinius ir atributų ry&scaron;ius. Pavyzdžiui:
+                <ul>
+                    <li>Prideda bendrą ribų ar demografinę informaciją prie jūsų įvykių duomenų.
+                    </li>
+                    <li>Identifikuoja artimiausią infrastruktūrą &scaron;alia žinomos vietos.
+                    </li>
+                    <li>Nustato gyvenamųjų vietų, kurios patenka į potvynio zonas, skaičių.
+                    </li>
+                    <li>Identifikuoja įvairių laukinės gyvūnijos rū&scaron;ių buveines.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeNearbyTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sumuoti šalia</h2></td>
+                    <td>
+                    <img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" class="titleImage" alt="Sumuoti &scaron;alia">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Randa elementus, kurie yra tam tikru atstumu nutolę nuo įvesties sluoksnio elementų. Atstumas gali būti matuojamas tiesia linija arba naudojant kelius pagal pasirinktą kelionės režimą. Statistiniai rodikliai apskaičiuojami greta esantiems elementams. Pavyzdžiui:
+                <ul>
+                    <li>Apskaičiuoja gyventojų, gyvenančių 5 min. atstumu važiuojant automobiliu nuo planuojamos parduotuvės vietos, skaičių.
+                    </li>
+                    <li>Apskaičiuoja reguliuojamų sankryžų skaičių penkių minučių atstumu nuo pasiūlytos naujos parduotuvės, įvertinant pasiekiamumą.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sumuoti viduje</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Sumuoti viduje">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Randa plotus (arba plotų dalis), kurios tarpusavyje persidengia ir apskaičiuoja statistiką apie persidengimą. Pavyzdžiui:
+                <ul>
+                    <li>Turint baseinų plotų sluoksnį ir žemėnaudos plotų sluoksnį, galima pagal žemėnaudos tipą apskaičiuoti bendrą kiekvieno baseino žemėnaudos plotą. 
+                    </li>
+                    <li>Turint sklypų ir savivaldybių sluoksnius, galima apskaičiuoti neužstatytų sklypų kiekvienoje savivaldybėje skaičių.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeCenterAndDispersionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sumuoti centrą ir išsisklaidymą</h2></td>
+                    <td>
+                    <img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" class="titleImage" alt="Sumuoti centrą ir i&scaron;sisklaidymą">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>&Scaron;is įrankis naudoja ta&scaron;kinius elementus, kad apskaičiuotų centrinį elementą, vidutinį centrą, medianos centrą ir elipsę (i&scaron;sisklaidymą). Pavyzdžiui:
+                <ul>
+                    <li>Turint blokų grupės centroidų rinkinį, galima panaudoti pagal populiaciją pasvertą centrinį elementą norint rasti, kuri miesto dalis yra pasiekiamiausia menų centrui.
+                    </li>
+                    <li>Turint briedžių stebėjimo parke per keletą metų sluoksnį, galima panaudoti vidutinį centrą norint rasti, kur vasarą ir žiemą renkasi briedžiai.
+                    </li>
+                    <li>Turint gaisrų sluoksnį, galima naudoti medianos&nbsp;centrą norint i&scaron;matuoti centrinę gaisrų tendenciją, i&scaron;vengiant periferijos i&scaron;skirčių.
+                    </li>
+                    <li>Turint požeminio vandens &scaron;ulinių pavyzdžių sluoksnį, galima naudoti elipsę norint nustatyti, kaip plinta užkratas.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>Duomenų praturtinimas</h2>
+        <hr/>
+        <p>&Scaron;ie įrankiai leidžia gauti daugiau informacijos apie teritorijas. Nurodytoms teritorijoms pateikiama detali demografinė ir statistinė informacija. 
+            <ul>
+                <li>Įrankis  <b>Praturtinti sluoksnį</b> suteikia informacijos apie žmones, vietas, verslą nurodytoje teritorijoje arba teritorijoje, nutolusioje tam tikru atstumu nuo vietos ar pasiekiamoje per tam tikrą važiavimo laiką.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Praturtinti sluoksnį</h2></td>
+                    <td>
+                    <img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" class="titleImage" alt="Praturtinti sluoksnį">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Suteikia informacijos apie žmones, vietas, verslą nurodytoje teritorijoje arba teritorijoje, nutolusioje tam tikru atstumu nuo vietos ar pasiekiamoje per tam tikrą važiavimo laiką 
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="largesize">
+        <h2>Surasti vietas</h2>
+        <hr/>
+        <p>&Scaron;ie įrankiai naudojami norint nustatyti arba sukurti elementus, kurie atitinka jūsų nurodytus kriterijus.  Kriterijų tipas priklausys nuo to, kurį įrankį naudojate. Pavyzdžiui, jūsų kriterijai gali būti pagrįsti erdvinėmis arba atributų užklausomis, matomomis vietomis pagal nurodytą auk&scaron;tį, konkrečių tėkmės ta&scaron;kų pasroviui esančiomis vietomis arba kelionės laiku tam tikromis eismo sąlygomis.
+            <ul>
+                <li>Naudojant įrankį  <b>Pasirinkti geriausią infrastruktūrą</b>, parenkamos geriausios vietos infrastruktūrai, priskiriant vietas, kuriose yra paklausa tokiai infrastruktūrai ir kurios tinka nurodytam tikslui.
+                </li>
+                <li> <b>Kurti matymo lauką</b> sukuria plotus, kurie matomi i&scaron; jūsų nurodytų vietų.
+                </li>
+                <li> <b>Kurti upių baseinus</b> sukuria upių baseinų plotus remiantis jūsų nurodytomis vietomis.
+                </li>
+                <li> <b>Sukurti naujus elementus</b> i&scaron; vietų jūsų analizuojamame plote sukuria naujus plotus, kurie atitinka tam tikrus kriterijus.
+                </li>
+                <li> <b>Rasti centroidus</b> suranda įvesties elementų geometrinį centrą (centroidą).
+                </li>
+                <li> <b>Rasti esamas vietas</b> suranda esamus sluoksnio plotus, kurie atitinka tam tikrus kriterijus.
+                </li>
+                <li> <b>Rasti pana&scaron;ias vietas</b> suranda vietas, pana&scaron;iausias į vieną ar daugiau lyginamų vietų, atitinkančių nurodytus kriterijus..
+                </li>
+                <li class="PortalOnly">Įrankis  <b>Geokoduoti vietas i&scaron; lentelės</b> konvertuoja adresus i&scaron; lentelės į koordinates. 
+                </li>
+                <li>Įrankis  <b>Trasuoti pasroviui</b> nustato tėkmes, esančias pasroviui nuo jūsų nurodytų vietų.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="ChooseBestFacilitiesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Pasirinkti geriausias paslaugas</h2></td>
+                    <td>
+                    <img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" class="titleImage" alt="Pasirinkti geriausias paslaugas">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Parenkamos geriausios vietos infrastruktūrai, priskiriant vietas, kuriose yra paklausa tokiai infrastruktūrai ir kurios tinka nurodytam tikslui.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Kurti matymo lauką</h2></td>
+                    <td>
+                    <img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" class="titleImage" alt="Kurti matymo lauką">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Sukuria plotus, kurie matomi remiantis jūsų nurodytomis vietomis.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateWatershedsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Kurti upių baseinus</h2></td>
+                    <td>
+                    <img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" class="titleImage" alt="Kurti upių baseinus">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Sukuria upių baseinų plotus remiantis jūsų nurodytomis vietomis.
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveNewLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Nustatyti naujas vietas</h2></td>
+                    <td>
+                    <img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" class="titleImage" alt="Nustatyti naujas vietas">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Sukuria naujus elementus tiriamajame plote, atitinkančius eilę jūsų nurodytų kriterijų. &Scaron;ie kriterijai gali būti paremti atributinėmis užklausomis (pavyzdžiui, sklypai, kurie yra laisvi) arba erdvinėmis užklausomis (pavyzdžiui, 1 mylios atstumu nuo upės). 
+            </p>
+            <br/>
+        </div>
+        <div id="FindCentroidsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rasti centroidus</h2></td>
+                    <td>
+                    <img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" class="titleImage" alt="Rasti centroidus">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Randa kiekvienos įvesties kelių ta&scaron;kų, linijos ar plotinio elemento geometrinį centrą (centroidą).
+            </p>
+            <br/>
+        </div>
+        <div id="FindExistingLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rasti esamas vietas</h2></td>
+                    <td>
+                    <img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" class="titleImage" alt="Rasti esamas vietas">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>I&scaron;renka esamus elementus tiriamame plote, atitinkančius eilę jūsų nurodytų kriterijų. &Scaron;ie kriterijai gali būti paremti atributinėmis užklausomis (pavyzdžiui, sklypai, kurie yra laisvi) arba erdvinėmis užklausomis (pavyzdžiui, 1 mylios atstumu nuo upės). 
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Geokoduoti vietoves iš lentelės</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="Geokoduoti vietoves i&scaron; lentelės">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Adresai konvertuojami į koordinates. Naudokite &scaron;į įrankį adresams, pateiktiems Excel skaičiuoklėje arba CSV faile.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rasti panašias vietas</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="Rasti pana&scaron;ias vietas">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Suranda vietas, pana&scaron;iausias į vieną ar daugiau lyginamų vietų, pagal jūsų nurodytus kriterijus.
+            </p>
+            <br/>
+        </div>
+        <div id="TraceDownstreamTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Trasuoti pasroviui</h2></td>
+                    <td>
+                    <img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" class="titleImage" alt="Trasuoti pasroviui">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Nustatomos tėkmės, esančios pasroviui nuo jūsų nurodytų vietų.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>Dėsningumų analizavimas</h2>
+        <hr/>
+        <p>&Scaron;ie įrankiai leidžia nustatyti, įvertinti ir atvaizduoti erdvinius duomenų dėsningumus.  
+            <ul>
+                <li> <b>Apskaičiuoti tankį</b> naudoja kiekybinę rei&scaron;kinio informaciją ir ją atvaizduoja žemėlapyje.
+                </li>
+                <li> <b>Rasti kar&scaron;tuosius ta&scaron;kus</b> identifikuoja statisti&scaron;kai reik&scaron;mingas elementų sankaupas.
+                </li>
+                <li> <b>Rasti i&scaron;skirtis</b> nustato, ar jūsų duomenyse yra statisti&scaron;kai reik&scaron;mingų i&scaron;skirčių pagal erdvinį požymį.
+                </li>
+                <li>Įrankis  <b>Rasti ta&scaron;kų sankaupas</b> randa ta&scaron;kų elementų sankaupas juos supančioje aplinkoje (triuk&scaron;me) pagal jų pasiskirstymą erdvėje.
+                </li>
+                <li> <b>Interpoliuoti ta&scaron;kus</b> leidžia prognozuoti reik&scaron;mes, atsižvelgiant į ta&scaron;kų rinkinio duomenis.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Apskaičiuoti tankį</h2></td>
+                    <td>
+                    <img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" class="titleImage" alt="Apskaičiuoti tankį">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Tankio analizės įrankis naudoja kiekybinę rei&scaron;kinio informaciją ir ją atvaizduoja žemėlapyje. &Scaron;į įrankį galite naudoti, pavyzdžiui, norėdami pamatyti žaibo smūgių, tornadų koncentracijos vietas ar gyventojų tankį tam tikroje teritorijoje.
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rasti karštuosius taškus</h2></td>
+                    <td>
+                    <img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" class="titleImage" alt="Rasti kar&scaron;tuosius ta&scaron;kus">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>&Scaron;is įrankis pateikia žemėlapį, grafi&scaron;kai parodantį statisti&scaron;kai svarbias elementų sankaupas. Įrankis gali būti naudojamas norint rasti brangaus ir pigaus nekilnojamo turto, nusikaltimų, avarijų, nedarbo, biologinės įvairovės auk&scaron;tos (raudona) ir žemos (mėlyna) koncentracijos židinius.
+            </p>
+            <br/>
+        </div>
+        <div id="FindOutliersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rasti išskirtis</h2></td>
+                    <td>
+                    <img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" class="titleImage" alt="Rasti i&scaron;skirtis">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>&Scaron;is įrankis sukuria žemėlapį, parodantį statisti&scaron;kai svarbias elementų sankaupas ir erdvines i&scaron;skirtis jūsų duomenyse. Naudokite &scaron;į įrankį norėdami identifikuoti elementus, kurių reik&scaron;mės smarkiai skiriasi nuo kaimyninių elementų.  &Scaron;į įrankį galite naudoti, pavyzdžiui, norėdami rasti neįprastas i&scaron;laidų tendencijas, nustatyti, kur yra didžiausias atotrūkis tarp turtingųjų ir nepasiturinčiųjų tam tikroje teritorijoje, arba nustatyti, ar JAV yra apygardų, kurių gyventojų tikėtina gyvenimo trukmė yra neįprastai trumpa, palyginti su kaimyninėmis apygardomis.
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rasti taškų sankaupas</h2></td>
+                    <td>
+                    <img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" class="titleImage" alt="Rasti ta&scaron;kų sankaupas">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>&Scaron;is įrankis aptinka sritis, kuriose ta&scaron;kai koncentruoti ir kuriose juos skiria tu&scaron;čios arba mažo tankio sritys. Sankaupai nepriklausantys ta&scaron;kai pažymimi kaip triuk&scaron;mas.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpoliuoti taškus</h2></td>
+                    <td>
+                    <img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" class="titleImage" alt="Interpoliuoti ta&scaron;kus">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>&Scaron;is įrankis leidžia prognozuoti reik&scaron;mes, atsižvelgiant į ta&scaron;kų rinkinio duomenis. Įrankis naudoja ta&scaron;kinius duomenis su reik&scaron;mėmis kiekviename ta&scaron;ke ir sukuria plotus, klasifikuotus pagal prognozuotas reik&scaron;mes. &Scaron;į įrankį galite naudoti, pavyzdžiui, kritulių lygiui baseine prognozuoti, atsižvelgiant į atskirų kritulių matavimo duomenis.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>Naudoti gretimybes</h2>
+        <hr/>
+        <p>  &Scaron;ie įrankiai leidžia atsakyti vieną dažniausių erdvinės analizės klausimų: &quot;Kas yra &scaron;alia ko?&quot;
+            <ul>
+                <li> <b>Sujungti i&scaron;vykimo ir atvykimo vietas</b> nustato atstumą ar kelionės laiką tarp ta&scaron;kų porų.
+                </li>
+                <li> <b>Kurti buferius</b> sukuria zonas aplink elementus tam tikru atstumu.
+                </li>
+                <li> <b>Sukurti važiavimo laikų plotus</b> randa teritorijas, pasiekiamas per nurodytą laiką.
+                </li>
+                <li> <b>Rasti artimiausią</b> naudojamas norint surasti artimiausius elementus.
+                </li>
+                <li> <b>Planuoti mar&scaron;rutus</b> randa efektyviausią būdą paskirstyti mar&scaron;rutus transporto priemonėms, turinčioms sustoti numatytuose sustojimo ta&scaron;kuose.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ConnectOriginsToDestinationsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sujungti išvykimo ir atvykimo vietas</h2></td>
+                    <td>
+                    <img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" class="titleImage" alt="Sujungti i&scaron;vykimo ir atvykimo vietas">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Sujungti i&scaron;vykimo ir atvykimo vietas nustato atstumą ar kelionės laiką tarp ta&scaron;kų porų. Įrankis gali pateikti atstumus tiesia linija, kelių tinklu ar kelionės laiką. Naudojant &scaron;į įrankį galima
+            </p>
+            <p>
+                <ul>
+                    <li>Apskaičiuoti, kiek laiko darbuotojai sugai&scaron;ta i&scaron; namų pasiekdami darbo vietą.
+                    </li>
+                    <li>Apskaičiuoti, kokiu atstumu atvyksta klientai į parduotuves. Remiantis &scaron;ia informacija galima planuoti komercinę veiklą, reklamos akcijas, naujų parduotuvių įkūrimą.
+                    </li>
+                    <li>Apskaičiuoti automobilių parko planuojamą kilometražą. Vėliau, įrankiu Sumuoti Viduje kilometražą galima apskaičiuoti pagal regionus.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Pagal nurodytus pradžios ir pabaigos ta&scaron;kus, įrankis pateikia sluoksnį, susidedantį i&scaron; mar&scaron;rutų linijų bei jų verčių tarp i&scaron;vykimo ir atvykimo vietų porų.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateBuffersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Kurti buferius</h2></td>
+                    <td>
+                    <img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" class="titleImage" alt="Kurti buferius">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Buferis yra plotas, dengiantis duotą atstumą nuo ta&scaron;kinio, linijinio ar plotinio elementų. 
+            </p>
+            <p>Buferiai dažnai kuriami tam, kad būtų galima atlikti papildomą analizę naudojant kitus įrankius, pavyzdžiui, Perdengti sluoksnius. Tarkime, jei domina, kurie pastatai yra vieno km. atstumu nuo mokyklos, atsakymas gali būti gautas pirmiausia sukūrus vieno kilometro buferį apie mokyklą ir perdengus buferį pastatų sluoksniu. Rezultatas bus sluoksnis i&scaron; pastatų, nutolusių nuo mokyklos nedidesniu nei vieno kilometro atstumu.  
+            </p>
+            <br/>
+        </div>
+        <div id="CreateDriveTimeAreasTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sukurti važiavimo laikų plotus</h2></td>
+                    <td>
+                    <img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" class="titleImage" alt="Sukurti važiavimo laikų plotus">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Pasiekiamumo zona &ndash; tai teritorija, kuri gali būti pasiekta nuvažiavus tam tikrą atstumą arba per tam tikrą kelionės laiką. Įrankis Sukurti važiavimo laikų plotus gali padėti atsakyti tokius klausimus:
+                <ul>
+                    <li>Kur galiu atsidurti per 30 min?
+                    </li>
+                    <li>Kur galiu atsidurti per 30 min., jei i&scaron;važiuosiu 18.00 val. piko metu?
+                    </li>
+                    <li>Kokią miesto dalį gali pasiekti gaisrininkai per penkias minutes? Kaip pagerės prie&scaron;gaisrinė apsauga pastačius naują gaisrinę?
+                    </li>
+                    <li>Kiek parduotuvė aptarnauja žmonių? Kokios vietos yra arčiau nei 10 km atstumu nuo parduotuvių?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindNearestTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rasti artimiausią</h2></td>
+                    <td>
+                    <img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" class="titleImage" alt="Rasti artimiausią">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Apskaičiuoja kelionės kainą tarp įvykių ir infrastruktūros ir kurie yra artimesni vienas kitam. Rezultatas yra sluoksnis, rodantis geriausius mar&scaron;rutus tarp įvykių ir infrastruktūros bei kiekvieno mar&scaron;ruto kelionės kainą (laiką ir atstumą). Pavyzdžiui, rasti avarijos vietai artimiausią ligoninę; artimiausią bankomatą nuo esamos vietos.
+            </p>
+            <br/>
+        </div>
+        <div id="PlanRoutesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Planuoti maršrutus</h2></td>
+                    <td>
+                    <img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" class="titleImage" alt="Planuoti mar&scaron;rutus">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Pateikite sustojimų sąra&scaron;ą ir automobilių, galinčių juos aplankyti skaičių, Planuoti Mar&scaron;rutus apskaičiuos, kaip efektyviai paskirstyti sustojimus automobiliams ir sudarys mar&scaron;rutus.
+            </p>
+            <p>&Scaron;į įrankį galima naudoti mobilios inspektorių, vertintojų, techninės pagalbos ar kitų darbuotojų grupės darbo planavimui; siuntinių priėmimui ir pristatymui; žmonių i&scaron;vežiojimui organizuoti.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>Valdyti duomenis</h2>
+        <hr/>
+        <p>&Scaron;ie bendro pobūdžio įrankiai skirti geografinių duomenų valdymui ir jų paruo&scaron;imui analizei.  
+            <ul>
+                <li> <b>Tirpdyti ribas</b> sujungia besiribojančius ir turinčius tas pačias atributų reik&scaron;mes plotinius objektus.
+                </li>
+                <li> <b>Atsisiųsti duomenis</b> leidžia eksportuoti ir atsisiųsti norimos teritorijos duomenis.
+                </li>
+                <li> <b>Generuoti teseliacijas</b> sukuria teseliacijas pagal jūsų duomenų aprėptį.
+                </li>
+                <li> <b>Sujungti sluoksnius</b> kopijuoja visus dviejų ar daugiau sluoksnių elementus į naują sluoksnį.
+                </li>
+                <li> <b>Perdengti sluoksnius</b> apjungia dviejų ar daugiau sluoksnių informaciją į vieną sluoksnį.  Sluoksnių perdengimą galite įsivaizduoti kaip vienas ant kito sudėtų sluoksnių pervėrimo metu gautą informaciją.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sulieti ribas</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Sulieti ribas">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Persidengiantys ar bendrą ribą turintys objektai yra apjungti į vieną plotą.    
+            </p>
+            <p>Galite pasirinkti, kurie elementai bus apjungiami, nurodydami lauką. Pavyzdžiui, jei turite seniūnijų sluoksnį, kuriame kiekvienas administracinis vienetas turi pavadinimą  <i>State_Name</i> atributiniame lauke, galite apjungti naudodami <i>State_Name</i> atributą. Besiribojančios seniūnijos bus apjungtos, jei turės tą pačią <i>State_Name</i> reik&scaron;mę. Rezultatas bus savivaldybių teritorijos.
+            </p>
+            <br/>
+        </div>
+        <div id="ExtractDataTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Atsisiųsti duomenis</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" class="titleImage" alt="Atsisiųsti duomenis">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Sukuria zip failą, CSV arba KMZ su duomenimis i&scaron; jūsų sluoksnių ir jūsų nurodytos teritorijos.
+            </p>
+            <p> 
+            </p>
+            <br/>
+        </div>
+        <div id="GenerateTessellationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Generuoti teseliacijas</h2></td>
+                    <td>
+                    <img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" class="titleImage" alt="Generuoti teseliacijas">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Generuoja teseliacijas jūsų tiriamoje teritorijoje pagal nurodytą formą ir dydį.
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sujungti sluoksnius</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="Sujungti sluoksnius">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Kopijuoja elementus i&scaron; dviejų ar daugiau esamų sluoksnių į naują sluoksnį, pvz.:
+                <ul>
+                    <li>Turite Anglijos, Velso ir &Scaron;kotijos sluoksnius ir norite juos sujungti į vieną Didžiosios Britanijos sluoksnį. 
+                    </li>
+                    <li>Turite 12 sluoksnių su sklypų duomenimis atskirose seniūnijose. Norite sujungti juos į vieną sluoksnį tik su tais atributais, kurie bendri visiems 12 įvesties sluoksnių.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Perdengti sluoksnius</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" class="titleImage" alt="Perdengti sluoksnius">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Perdengimas sujungia du arba daugiau sluoksnių į vieną sluoksnį. Sluoksnių perdengimą galite įsivaizduoti kaip vienas ant kito sudėtų sluoksnių pervėrimo metu gautą informaciją, pvz.:
+                <ul>
+                    <li>Kurie sklypai patenka į per paskutinius 100 metų potvynių užliejamą teritoriją? (Patenka yra kitas būdas pasakyti yra vir&scaron;)
+                          
+                    </li>
+                    <li>Kokie keliai patenka į kokias seniūnijas?
+                    </li>
+                    <li>Kokios žemėnaudos yra vir&scaron; kokio dirvožemio tipo?
+                         
+                    </li>
+                    <li>Kurie &scaron;uliniai patenka į apleistas karines bazes?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

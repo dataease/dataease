@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/infographics/areaDetails/DefaultAttachmentsStore",["esri/dijit/geoenrichment/when","../../supportClasses/templateJsonUtils/fieldInfo/FieldInfoPreviewAttributeUtil","dojo/i18n!esri/nls/jsapi"],function(c,d,a){a=a.geoenrichment.dijit.ReportPlayer.AreaDetailsInfographic;var b;return{getDefaultAttachmentsStore:function(){return b?b:b={getAttributes:function(){return[{alias:"Building Area (sq. feet)",value:1E3,type:"esriFieldTypeDouble"},{alias:"Frontage (feet)",
+value:100,type:"esriFieldTypeDouble"},{alias:"Parking",value:30,type:"esriFieldTypeInteger"},{alias:"Site Area (sq. feet)",value:500.5,type:"esriFieldTypeDouble"},{alias:"Number of Employees",value:300,type:"esriFieldTypeInteger"},{alias:"Address",value:"123 Main Street, City, State 55555",type:"esriFieldTypeString"}]},getNotes:function(){return[{text:a.noteSample},{text:a.noteSample}]}}},createStoreFromAttributes:function(b){return{getAttributes:function(){var a;a="function"===typeof b?b():b;return c(a,
+function(a){return a?a.map(function(a){return{alias:a.alias,value:d.getAttributePreviewValue(a),type:a.type}}):[]})},getNotes:function(){return[{text:a.noteSample},{text:a.noteSample}]}}}}});

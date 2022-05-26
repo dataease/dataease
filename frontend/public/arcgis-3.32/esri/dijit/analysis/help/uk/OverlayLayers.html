@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Накладення шарів</h2><p/>
+        <h2><img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" alt="Накладення шарів"></h2>
+        <hr/>
+    <p>Накладення поєднує два або більше шарів у один шар. Накладання можна розглядати як стек карт на основі якого створюється одиночна карта, що містить всю інформацію, яка знаходиться в стеку. Накладення &mdash; це значно більше, ніж об&rsquo;єднання геометрії; всі атрибути об'єктів, що беруть участь у накладенні, переносяться в кінцевий продукт. Накладення використовується для відповіді на одне з найголовніших запитань географії, &laquo;Що знаходиться поверх чого?&raquo; Наприклад:
+        <ul>
+            <li>Які ділянки знаходяться в межах зони затоплення в останні 100 років? (&laquo;В межах&raquo; &mdash; це інший спосіб сказати &laquo;поверх&raquo;).
+                  
+            </li>
+            <li>Які дороги розташовані в межах певних округів?
+            </li>
+            <li>Який тип землекористування відповідає якому типу ґрунту?
+                 
+            </li>
+            <li>Які свердловини знаходяться в межах занедбаних військових баз?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Якщо вибрано опцію  <b>Використовувати поточний екстент карти</b>, будуть накладатись тільки ті об&rsquo;єкти у вхідному шарі та шарі накладання, які видимі в межах поточного екстенту карти. Якщо цю опцію не вибрано, будуть накладатись всі об'єкти у вхідному шарі та шарі накладення, навіть якщо вони знаходяться за межами поточного екстенту карти.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Вибрати вхідний шар</h2></div>
+        <hr/>
+        <div>
+            <p>Точковий, лінійний або площадний шар, який буде накладатись.
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="OverlayLayer">
+        <div><h2>Вибрати шар накладення</h2></div>
+        <hr/>
+        <div>
+            <p>Шар для накладення на вхідний шар.  
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p> 
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Вибрати метод накладення</h2></div>
+        <hr/>
+        <div>
+            <p>Метод накладення визначає, як вхідний шар та шар накладення об&rsquo;єднуються.  
+
+                <ul>
+                    <li> <b>Перетин</b> &mdash; результат буде містити тільки ті об'єкти чи частини об'єктів у шарі накладення, які накладаються на об'єкти у вхідному шарі. При перетині лінійних або площадних об'єктів можна вказати тип об'єктів, які треба вивести.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Точки з точками
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Точки та ввід точок">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Точки та точки з виводом точки ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Точки з лініями
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-F1E6C6C8-4F51-4063-984D-0FC8D08EB2D2-web.png" alt="Точки та ввід ліній">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-02CFAFDC-1B3C-4C4B-A58C-7B0B78BA0B56-web.png" alt="Точки та лінії з виводом точки">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Точки з областями
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-5EE90BD6-CC3D-4E2F-A5D0-DC57298E8416-web.png" alt="точки та ввід областей">
+                                </p>
+                            </td>
+                            <td> <img src="../images/GUID-5CCA360F-D4C9-43AB-8FB2-E6E62DE93BD4-web.png" alt="точки та області з виводом точки">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Лінії з лініями 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Лінії та ввід ліній">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-DDCCB226-6490-4914-B87C-299125466256-web.png" alt="Лінії та лінії з виводом точки">
+                                </p>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Лінії та лінії з виводом лінії ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Лінії з областями
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-E38EB7D6-9D35-4E0D-937A-9FEC4144AF2E-web.png" alt="Лінії та ввід областей">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-639F492C-BEE7-4A5F-AEBC-325B74FEC766-web.png" alt="Лінії та області з виводом точки">
+                                </p>
+                                <p> <img src="../images/GUID-58DF5CF6-0A56-4717-AD9C-C3BEC8EA6906-web.png" alt="Лінії та області з виводом лінії">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Області з областями
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Області та ввід областей">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-3F71AD46-A6A2-436D-8BBA-13E014BB94D0-web.png" alt="Області та області з виводом точки">
+                                </p>
+                                <p> <img src="../images/GUID-6AF62F09-6D32-4212-97C6-844580E34A22-web.png" alt="Області та області з виводом лінії">
+                                </p>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="Області та області з виводом області">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Об'єднання</b> &mdash; результат буде містити об'єкти як з вхідного шару, так і шару накладення. Опція &laquo;Об'єднання&raquo; доступна, тільки якщо вхідний шар та шар накладення містять площадні об'єкти.
+                    </li>
+                    <li> <b>Стерти</b> &mdash; результат буде містити об'єкти або частини об'єктів у шарі накладення, які не накладаються на області у вхідному шарі. Шар накладення може містити область, лінійні або точкові об&rsquo;єкти.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Якщо вибрано опцію  <b>Використовувати поточний екстент карти</b>, будуть накладатись тільки ті об&rsquo;єкти у вхідному шарі та шарі накладання, які видимі в межах поточного екстенту карти. Якщо цю опцію не вибрано, будуть накладатись всі об'єкти у вхідному шарі та шарі накладення, навіть якщо вони знаходяться за межами поточного екстенту карти.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Назва результуючого шару</h2></div>
+        <hr/>
+        <div>
+            <p> Це назва шару, який буде створено в <b>Моєму змісті</b> та додано до карти. Він матиме такий самий тип об'єктів (області, лінії або точки), як і шар накладення. Назва за замовчуванням базується на методі накладення та назві вхідного шару. Якщо шар вже існує, вам буде запропоновано надати іншу назву.
+            </p>
+            <p>За допомогою розкривного списку  <b>Зберегти результат в</b> можна вказати назву папки у <b>Моєму змісті</b>, куди буде збережено результат.
+            </p> 
+        </div>
+    </div>
+</div>
+</html>

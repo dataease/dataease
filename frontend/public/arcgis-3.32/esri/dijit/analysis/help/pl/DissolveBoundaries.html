@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Agreguj obszary</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Agreguj obszary"></h2>
+        <hr/>
+    <p>Obszary, kt&oacute;re się nakładają lub mają wsp&oacute;lną granicę zostają połączone w celu utworzenia jednego obszaru.    
+    </p>
+    <p>Możesz wybrać spos&oacute;b łączenia obszar&oacute;w, wskazując konkretne pole. Na przykład, jeśli w warstwie powiat&oacute;w każdy powiat ma atrybut  <i>State_Name</i> (nazwa_stanu), można agregować obszary, korzystając z&nbsp;atrybutu <i>State_Name</i> (nazwa_stanu). Sąsiadujące ze sobą powiaty zostaną połączone, jeśli mają tę samą wartość pola <i>State_Name</i> (nazwa_stanu). Wynikiem końcowym jest warstwa z&nbsp;granicami stan&oacute;w.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę powierzchniową, której granice będą agregowane</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa zawierającą obiekty powierzchniowe przeznaczone do agregacji. 
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Wybierz metodę agregacji</h2></div>
+        <hr/>
+        <div>
+            <p>Można wybrać jedną z dw&oacute;ch metod łączenia obszar&oacute;w:
+                <ul>
+                    <li> <b>Obszary, kt&oacute;re się nakładają lub kt&oacute;re do siebie przylegają</b> &mdash; przynajmniej dwa obszary, kt&oacute;rych granice nakładają się na siebie zostaną połączone. Ponadto obszary, kt&oacute;re do siebie przylegają (tj. mają wsp&oacute;lną granicę) zostaną połączone w jeden obszar.
+                    </li>
+                    <li> <b>Obszary o&nbsp;tej samej wartości pola</b> &mdash; obszary, kt&oacute;re się nakładają lub mają wsp&oacute;lną granicę, zostaną połączone w&nbsp;jeden obszar, jeśli mają tę samą wartość pola.
+                        <p>Na przykład, jeśli w warstwie powiat&oacute;w każdy powiat ma pole  <i>State_Name</i> (nazwa_stanu), można agregować obszary, korzystając z&nbsp;pola <i>State_Name</i> (nazwa_stanu). Sąsiadujące ze sobą powiaty zostaną połączone, jeśli mają tę samą wartość pola <i>State_Name</i> (nazwa_stanu). Wynikiem końcowym jest warstwa z&nbsp;granicami stan&oacute;w.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jeśli zaznaczono opcję  <b>Użyj bieżącego zasięgu mapy</b>, zagregowane zostaną jedynie obiekty w&nbsp;warstwie wejściowej widoczne w&nbsp;zasięgu bieżącej mapy. Jeśli opcja ta nie jest zaznaczona, wszystkie obiekty w warstwie wejściowej zostaną agregowane, nawet jeśli znajdują się one poza bieżącym zasięgiem mapy.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Utwórz obiekty wieloczęściowe</h2></div>
+        <hr/>
+        <div>
+            <p>W systemie ArcGIS obiekt wieloczęściowy to cyfrowa reprezentacja miejsca lub rzeczy składającej się z więcej niż jednej części, ale zdefiniowanej jako jeden obiekt, ponieważ odnosi się do jednego zestawu atrybut&oacute;w. Na przykład w warstwie stan&oacute;w stan Hawaje można uważać za obiekt wieloczęściowy, ponieważ jego osobne części geometryczne są uznawane za jeden stan. Ten parametr logiczny oferuje dwie opcje:
+                <ul>
+                    <li>Prawda (wybrana): usługa wynikowa może zawierać obiekty wieloczęściowe.
+                    </li>
+                    <li>Fałsz (niewybrana): usługa wynikowa będzie zawierać tylko obiekty jednoczęściowe, a dla każdej części zostaną utworzone osobne obiekty.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Dodaj statystyki</h2></div>
+        <hr/>
+        <div>
+            <p>Kiedy obszary są łączone, mogą być sumowane ich wartości atrybut&oacute;w. Jeśli na przykład agregowane są o&nbsp;obszary powiat&oacute;w w&nbsp;oparciu o&nbsp;wartość pola  <i>State_Name</i> (nazwa_stanu), a&nbsp;każdy powiat ma pole <i>Population</i> (Populacja), można obliczyć sumę wartości w polu <i>Population</i> (Populacja) dla danego stanu.
+            </p>
+            <p>Dostępne typy statystyk to:
+            </p>
+            <ul>
+                <li> <b>Suma</b> &mdash; oblicza całkowitą wartość dla określonego pola.
+                    
+
+                </li>
+                <li> <b>Średnia</b> &mdash; oblicza średnią wartość dla określonego pola.
+                    
+
+                </li>
+                <li> <b>Minimum</b> &mdash; wyszukuje najmniejszą wartość ze wszystkich rekord&oacute;w określonego pola.
+                    
+
+                </li>
+                <li> <b>Maksimum</b> &mdash; wyszukuje największą wartość ze wszystkich rekord&oacute;w określonego pola.
+                    
+
+                </li>
+                <li> <b>Odchylenie standardowe</b> &mdash; oblicza standardowe odchylenie wartości dla określonego atrybutu.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli ta nazwa warstwy już istnieje, wyświetlona zostanie prośba o podanie innej nazwy.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

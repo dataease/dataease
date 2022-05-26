@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Identifiera objekt med djupinlärning</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="Identifiera objekt med djupinl&auml;rning"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget k&ouml;r en tr&auml;nad djupinl&auml;rningsmodell p&aring; ett indataraster f&ouml;r att skapa en geoobjektklass som inneh&aring;ller de objekt det hittar. Geoobjekten kan vara begr&auml;nsande boxar eller polygoner runt de hittade objekten, eller punkter i mitten av objekten.
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> &auml;r markerat analyseras endast det rasteromr&aring;de som &auml;r synligt i den aktuella kartutbredningen. Om alternativet inte markeras analyseras hela rastret, &auml;ven om det ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Välj bild som används för att identifiera objekt</h2></div>
+        <hr/>
+        <div>
+            <p>Indatabilden som anv&auml;nds f&ouml;r att identifiera objekt.
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Välj den djupinlärningsmodell som används för att identifiera objekt</h2></div>
+        <hr/>
+        <div>
+            <p>Indataobjektet f&ouml;r djupinl&auml;rningspaketet ( <code>.dlpk</code>).
+            </p>
+            <p>Djupinl&auml;rningspaketet best&aring;r av JSON-filen f&ouml;r Esri-modelldefinitionen ( <code>.emd</code>), filen med djupinl&auml;rningsbin&auml;rmodellen och, som tillval, Python-rasterfunktionen som ska anv&auml;ndas.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Ange modellargument för djupinlärning</h2></div>
+        <hr/>
+        <div>
+            <p>Funktionsargumenten definieras i Python-rasterfunktionsklassen som refereras av indatamodellen. H&auml;r listar du ytterligare djupinl&auml;rningsparametrar och argument f&ouml;r experiment och f&ouml;rfining, t.ex. en konfidenstr&ouml;skel f&ouml;r att justera k&auml;nsligheten.
+            </p>
+            <p>Namnen f&ouml;r argumenten fylls av verktyget genom att l&auml;sa Python-modulen p&aring; rasteranalysservern.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>Ta bort dubblerade geoobjekt från utdata (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Utf&ouml;r icke-maximal nedh&aring;llning d&auml;r dubblerade objekt identifieras och det dubblerade geoobjektet med l&auml;gre konfidensv&auml;rde tas bort. 
+                <ul>
+                    <li>Omarkerat &ndash; Alla objekt som uppt&auml;cks kommer att vara i utdatageoobjektklassen. Det h&auml;r &auml;r standardinst&auml;llningen.
+                        
+
+                    </li>
+                    <li>Markerat &ndash; Tar bort dubbla objekt som uppt&auml;cks.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>Fält för konfidensnivå</h2></div>
+        <hr/>
+        <div>
+            <p>F&auml;ltet i geoobjekttj&auml;nsten som inneh&aring;ller konfidenspo&auml;ngen som utdata vid objektdetekteringsmetoden.
+            </p>
+            <p>Den h&auml;r parametern kr&auml;vs n&auml;r du kontrollerar parametern  <b>Ej maximal nedh&aring;llning</b>.
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>Klassvärdefält</h2></div>
+        <hr/>
+        <div>
+            <p>Klassv&auml;rdef&auml;ltet i utdatageoobjekttj&auml;nsten. Om inget har angetts kommer verktyget att anv&auml;nda standardklassv&auml;rdef&auml;lten  <i>Classvalue</i> och <i>Value</i>. Om dessa f&auml;lt inte finns kommer alla geoobjekt att behandlas som samma geoobjektklass.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>Maximalt överlappningsförhållande</h2></div>
+        <hr/>
+        <div>
+            <p>Det maximala &ouml;verlappningsf&ouml;rh&aring;llandet f&ouml;r tv&aring; &ouml;verlappande geoobjekt, som definieras som f&ouml;rh&aring;llandet mellan korsningsomr&aring;de och unionsomr&aring;de. Standard &auml;r 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Du kan ange namnet p&aring; en mapp i  <b>Mitt inneh&aring;ll</b> d&auml;r resultatet sparas med listrutan <b>Spara resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

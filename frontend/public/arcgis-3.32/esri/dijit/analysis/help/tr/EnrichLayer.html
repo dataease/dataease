@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Katmanı Zenginleştir</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Katmanı Zenginleştir"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, veri konumlarınızı &ccedil;evreleyen insanlar, yerler ve şirketler hakkında bilgiler ekleyerek verinizi zenginleştirir ve tek başına haritalar ile yanıtlayamadığınız yeni soruları yanıtlamanızı sağlayabilir. &Ouml;rneğin: Burada ne t&uuml;r insanlar yaşar? İnsanlar bu b&ouml;lgede neler yapmaktan hoşlanır? Alışkanlıkları ve yaşam tarzları nelerdir? Bu b&ouml;lgede ne t&uuml;r şirketler bulunur?
+    </p>
+    <p>Sonu&ccedil;, verilen veri koleksiyonlarından elde edilen t&uuml;m demografik ve coğrafi bilgileri i&ccedil;eren yeni bir katman olacaktır. Bu yeni bilgi tabloya alanlar olarak eklenir.
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> işaretli ise, yalnızca ge&ccedil;erli harita yayılımında g&ouml;r&uuml;n&uuml;r olan girdi katmanındaki detaylar zenginleştirilir.  İşaretli değilse, girdi katmanındaki t&uuml;m detaylar, ge&ccedil;erli harita yayılımının dışında bile olsa zenginleştirilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Yeni verilerle zenginleştirecek alanı seç</h2></div>
+        <hr/>
+        <div>
+            <p>Yeni &ouml;znitelik verileriyle zenginleştirilecek nokta, &ccedil;izgi ya da alan katmanıdır. 
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Zenginleştirme değişkenleri</h2></div>
+        <hr/>
+        <div>
+            
+            <p> <b>Değişken Se&ccedil;</b> &ouml;ğesine tıklayarak <b>Veri Tarayıcı</b> &ouml;ğesini a&ccedil;ın. <b>Veri Tarayıcı</b>, zenginleştirme değişkenlerini tek tek veya toplu olarak bulmanıza ve se&ccedil;menize yardım eder.
+            </p>
+            <p>B&ouml;lge, verilerinize dayanarak otomatik olarak se&ccedil;ilir. Verileriniz birden fazla &uuml;lkeyi kapsıyorsa, farklı bir b&ouml;lge se&ccedil;ebilirsiniz. 
+            </p>
+            <p>Zenginleştirme değişkenleri kolay erişim a&ccedil;ısından veri koleksiyonları olarak d&uuml;zenlenir. Bir veri koleksiyonu se&ccedil;tiğinizde, tarayıcı s&ouml;z konusu koleksiyondaki en pop&uuml;ler birka&ccedil; zenginleştirme değişkenini g&ouml;sterir.  <b>G&ouml;zatmayı S&uuml;rd&uuml;r</b> altında da ayrıca koleksiyon i&ccedil;indeki kategorileri g&ouml;sterir. Her kategoride alt kategorilerin tamamını se&ccedil;ebileceğiniz gibi, bir alt kategoriye girerek zenginleştirme değişkenlerini tek tek de belirleyebilirsiniz. Ayrıca kategori i&ccedil;indeki belirli bir değişkeni bulmak i&ccedil;in arama kutusunu da kullanabilirsiniz.
+            </p>
+            <p>Zenginleştirmeye eklemek &uuml;zere değişken se&ccedil;tiğinizde, bunlar  <b>Veri Tarayıcı</b> &ouml;ğesinin k&ouml;şesinde bulunan alışveriş sepetine eklenir. Se&ccedil;tiğiniz değişkenlerin sayısını kontrol etmek i&ccedil;in bu alışveriş sepetini kullanabilirsiniz.
+            </p>
+            <p>Her se&ccedil;ilen değişken sonu&ccedil; katmanınıza bir alan olarak eklenir.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Zenginleştirilecek alanları tanımla</h2></div>
+        <hr/>
+        <div>
+            <p>Bir d&uuml;z hat mesafesi ya da se&ccedil;ilen seyahat modunu kullanılarak zenginleştirilecek girdi noktalarınızın veya &ccedil;izgilerinizin etrafındaki alanı tanımlayın. D&uuml;z hatta bir mesafe i&ccedil;in 1609 kilometreye (1000 mil) kadar bir değer girin. Seyahat modları, yalnızca girdi katmanınızda nokta varsa kullanılabilir. Kullanılabilir seyahat modları, kuruluşunuzun y&ouml;neticisi tarafından belirlenir. Bu seyahat modlarından biri kullanılırken, yol veya kaldırım boyunca &ouml;l&ccedil;&uuml;m yapılır ve tek y&ouml;nl&uuml; trafik, d&ouml;n&uuml;ş yasağı ve benzeri ge&ccedil;erli kurallar dikkate alınır. Modunuzu ve &ouml;l&ccedil;&uuml;m biriminizi girdikten sonra s&uuml;re veya mesafe olarak en fazla 5 saat (300 dakika) veya 482,8 kilometre (300 mil) girin.
+            </p>
+            <p> <b>Sonucu sınır alanlar olarak d&ouml;nd&uuml;r</b> işaretlendiğinde, d&ouml;nd&uuml;r&uuml;len sonu&ccedil; yukarıdaki zaman veya mesafe değerleri tarafından tanımlanan detaylar olur.  İşaret kaldırılırsa, d&ouml;nd&uuml;r&uuml;len sonu&ccedil; nokta detayları olur.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adıdır.  Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman adı zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

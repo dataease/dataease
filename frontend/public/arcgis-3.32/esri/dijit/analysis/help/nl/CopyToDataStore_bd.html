@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Kopiëren naar gegevensopslag</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="Kopi&euml;ren naar gegevensopslag"></h2>
+        <hr/>
+    <p>Deze tool neemt een invoerlaag en kopieert het naar een gegevensopslag. U kunt resultaten kopi&euml;ren naar  ArcGIS Data Store (relationele of spatiotemporele big data store) en een laag zal in uw portaal worden aangemaakt of u kunt de resultaten kopi&euml;ren naar een big data-bestand. 
+    </p>
+    <p>U kunt bijvoorbeeld objecten kopi&euml;ren die zijn opgeslagen in een  <code>groot gedeeld databestand</code> naar een <code>relationele gegevensopslag</code> en aangeven dat alleen objecten in de huidige kaart worden gekopieerd. Zo maakt u een gehoste featureservice met alleen de objecten van de opgegeven kaartomvang.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies een laag om te kopiëren</h2></div>
+        <hr/>
+        <div>
+            <p>De laag of tabel die wordt gekopieerd. 
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>U kunt alle objecten gebruiken of een selectie maken (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p>Of u kunt de selectieknop gebruiken om de te kopi&euml;ren locaties te identificeren.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Kies de data store waarnaar u wenst te kopiëren</h2></div>
+        <hr/>
+        <div>
+            <p>De datastore waar de laag naar wordt gekopieerd. Deze parameter heeft voorgang op de selectie in  <b>Analyse-omgevingen</b> De opties omvatten het volgende:
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>Tijdruimtelijk</b>&mdash;Dit is de standaard.
+                            </li>
+                            <li> <b>Relationeel</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>Big Data File Share uitvoertemplates</b>
+                        <ul>
+                            <li>Een lijst met beschikbare big data file share-templates in de indeling  <b>bigDataFileShareName-templateName</b>. Templates voor big data file shares moeten worden geconfigureerd voordat de tool wordt uitgevoerd.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p> De naam van de laag die wordt gemaakt. Als u naar een ArcGIS Data Store,  schrijft, worden uw resultaten opgeslagen in  <b>Mijn Content</b> en toegevoegd aan de kaart. Als u naar een big data file share schrijft, worden uw resultaten opgeslagen in de big data file share en toegevoegd aan het bijhorende manifest. Ze zullen niet worden toegevoegd aan de kaart. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, zal de tool falen.
+            </p>
+            <p>Wanneer u schrijft naar  ArcGIS Data Store (relationele of spatiotemporele big datastore) met behulp van de vervolgkeuzelijst  <b>Resultaat opslaan in</b>, kunt u de naam van een map opgeven in <b>Mijn Content</b>, waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Classificar Píxeis Utilizando Aprendizagem Profunda</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Classificar P&iacute;xeis Utilizando Aprendizagem Profunda"></h2>
+        <hr/>
+    <p>Esta ferramenta executa um modelo treinado de aprendizagem profunda num raster de entrada para produzir um raster classificado e cada p&iacute;xel v&aacute;lido tem atribu&iacute;da uma classe de r&oacute;tulos.
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente a &aacute;rea do raster que &eacute; vis&iacute;vel na extens&atilde;o de mapa atual ser&aacute; analisada. Se n&atilde;o estiver selecionada, todo o raster ser&aacute; analisado, mesmo se estiver fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Escolher imagem utilizada para classificar píxeis</h2></div>
+        <hr/>
+        <div>
+            <p>A imagem de entrada a classificar.
+            </p>
+            <p>Pode ser um URL de servi&ccedil;o de imagem, uma camada raster ou uma camada de servi&ccedil;o de imagem.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Escolher modelo de aprendizagem profunda utilizado para classificar píxeis</h2></div>
+        <hr/>
+        <div>
+            <p>O item do pacote ( <code>.dlpk</code>) de aprendizagem profunda de entrada.
+            </p>
+            <p>O pacote de aprendizagem profunda &eacute; composto pelo ficheiro JSON ( <code>.emd</code>) que define o modelo Esri, o ficheiro bin&aacute;rio da aprendizagem profunda e, opcionalmente, a fun&ccedil;&atilde;o raster em Python a ser utilizada.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Especificar argumentos do modelo de aprendizagem profunda</h2></div>
+        <hr/>
+        <div>
+            <p>Os argumentos da fun&ccedil;&atilde;o s&atilde;o definidos na classe da fun&ccedil;&atilde;o raster em Python, referenciada pelo modelo de entrada. &Eacute; aqui que se listam os par&acirc;metros adicionais de aprendizagem profunda e argumentos para experi&ecirc;ncias e refinamentos, tal como um limite de confian&ccedil;a para ajustar a sensibilidade.
+            </p>
+            <p>Os nomes dos argumentos s&atilde;o preenchidos pela ferramenta ao ler o m&oacute;dulo Python no servidor da an&aacute;lise raster.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se a camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>&Eacute; poss&iacute;vel especificar o nome de uma pasta em  <b>O Meu Conte&uacute;do</b>, onde o resultado ser&aacute; guardado utilizando a op&ccedil;&atilde;o <b>Guardar Resultado em</b> da caixa suspensa.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

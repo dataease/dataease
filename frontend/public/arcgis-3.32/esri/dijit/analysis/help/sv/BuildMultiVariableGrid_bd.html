@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Skapa multivariabelt rutnät</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Arbetsfl&ouml;desschema f&ouml;r Bifoga data"></h2>
+        <hr/>
+    <p>Verktyget Skapa multivariabelt rutn&auml;t arbetar med ett eller flera lager med punkt-, linje- och polygongeoobjekt. Verktyget genererar ett rutn&auml;t av kvadratiska eller sexkantiga klasser och ber&auml;knar v&auml;rden f&ouml;r varje klass baserat p&aring; n&auml;rhet till varje indatalager. Dessa v&auml;rden kan inneh&aring;lla f&ouml;ljande variabler: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Avst&aring;nd till n&auml;rmaste</b> &ndash; Avst&aring;ndet fr&aring;n varje klass till n&auml;rmaste geoobjekt
+            </li>
+            <li> <b>N&auml;rmastes attribut</b> &ndash; Ett f&auml;ltv&auml;rde i geoobjektet n&auml;rmast varje klass
+            </li>
+            <li> <b>&Ouml;versikt &ouml;ver n&auml;rmaste</b> &ndash; En angiven statistik &ouml;ver alla geoobjekt inom ett visst avst&aring;nd fr&aring;n varje klass
+            </li>
+            <li> <b>&Ouml;versikt &ouml;ver korsande</b> &ndash; En angiven statistik &ouml;ver alla geoobjekt som sk&auml;r varje klass
+            </li>
+        </ul>
+        
+    </p>
+    <p>Endast de variabler som du anger kommer att ing&aring; i resultatlagret. Dessa variabler kan hj&auml;lpa dig att f&ouml;rst&aring; n&auml;rhet och f&ouml;rdelning i dina data. Resultaten kan hj&auml;lpa dig att b&ouml;rja besvara fr&aring;gor som de h&auml;r:
+        <ul>
+            <li>Givet flera lager med kollektivtrafikinfrastruktur, vilken del av staden &auml;r minst tillg&auml;nglig med allm&auml;nna kommunikationer?
+            </li>
+            <li>Givet flera lager med vattenleder, t.ex. sj&ouml;ar och floder, vad heter den vattenmassa som befinner sig n&auml;rmast varje plats i USA?
+            </li>
+            <li>Givet ett lager med hush&aring;llens inkomster, var i USA &auml;r inkomstvariationerna i de omgivande 50 km som st&ouml;rst?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Välj den typ av klass som ska användas för att skapa det multivariabla rutnätet</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Typen och storleken f&ouml;r klasser som ska anv&auml;ndas f&ouml;r att skapa det multivariabla rutn&auml;tet. F&ouml;r alternativet  <b>Kvadrat</b> avg&ouml;r siffran och enheterna som angetts kvadratens h&ouml;jd och l&auml;ngd. F&ouml;r alternativet <b>Hexagon</b> avg&ouml;r siffran och enheterna som angetts avst&aring;ndet mellan parallella sidor.
+            </p>
+            <p>Denna analys anv&auml;nder lagringsplatser och kr&auml;ver ett projicerat koordinatsystem. Du kan ange  <b>Bearbetande koordinatsystem</b> i <b>Analysmilj&ouml;</b>. Om ditt bearbetande koordinatsystem inte &auml;r inst&auml;llt som ett projicerat koordinatsystem, blir du uppmanad att st&auml;lla in det n&auml;r du anv&auml;nder <b>K&ouml;r analys</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Välj indatalager och variabler som du vill ta med i rutnätet</h2></div>
+        <hr/>
+        <div>
+            <p>Klicka p&aring; knappen L&auml;gg till ( <b>+</b>) f&ouml;r att &ouml;ppna f&ouml;nstret <b>L&auml;gg till variabler</b> och l&auml;gga till ett lager i din analys. I f&ouml;nstret <b>L&auml;gg till variabler</b> v&auml;ljer du ett indatalager och konfigurerar de variabler du vill ber&auml;kna f&ouml;r det indatalagret.
+            </p>
+            <p>N&auml;r du har valt och konfigurerat de variabler du vill ber&auml;kna visas lagret i verktygets f&ouml;nster med andra valda lager. Klicka p&aring; redigeringsknappen f&ouml;r valfritt lager f&ouml;r att &ouml;ppna f&ouml;nstret  <b>L&auml;gg till variabler</b> och se alla variabler som konfigurerats f&ouml;r det lagret. Klicka p&aring; raderingsknappen f&ouml;r valfritt lager om du vill ta bort det lagret och alla tillh&ouml;rande variabler fr&aring;n analysen.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Lägg till variabler</h2></div>
+        <hr/>
+        <div>
+            <p>I det h&auml;r f&ouml;nstret kan du v&auml;lja ett indatalager och konfigurera de variabler du vill ber&auml;kna f&ouml;r det indatalagret. Till att b&ouml;rja med anv&auml;nder du listrutan  <b>V&auml;lj ett indatalager</b> f&ouml;r att v&auml;lja det punkt-, polygon- eller linjelager som du vill l&auml;gga till i din analys.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+            <p>N&auml;r du har valt ett indatalager klickar du p&aring;  <b>L&auml;gg till en variabel</b> f&ouml;r att &ouml;ppna en ny variabel f&ouml;r redigering. Du m&aring;ste ange ett unikt namn f&ouml;r varje variabel. Detta blir namnet p&aring; det f&auml;lt som skapas i resultatlagrets attributtabell.
+            </p>
+            <p>Anv&auml;nd listrutan f&ouml;r att v&auml;lja den typ av variabel som du vill l&auml;gga till. Varje variabeltyp m&aring;ste konfigureras med en unik upps&auml;ttning parametrar, och alla parametrar &auml;r n&ouml;dv&auml;ndiga.
+            </p>
+            <p>N&auml;r du har lagt till alla &ouml;nskade variabler f&ouml;r det valda lagret klickar du p&aring; knappen  <b>L&auml;gg till </b> f&ouml;r att spara variablerna.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p> Namnet p&aring; lagret som ska skapas.  Om du skriver till en ArcGIS Data Store, sparas dina resultat i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om du skriver till en big data-fildelning, lagras dina resultat i big data-fildelningen och l&auml;ggs till i dess manifest. Det l&auml;ggs inte till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns misslyckas verktyget.
+            </p>
+            <p>N&auml;r du skriver till   ArcGIS Data Store (relationellt eller rumstempor&auml;rt Big Data-datalager) med listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

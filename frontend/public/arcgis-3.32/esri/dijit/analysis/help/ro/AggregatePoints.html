@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Însumare puncte</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="&Icirc;nsumare puncte"></h2>
+        <hr/>
+    <p>Acest instrument funcţionează cu un strat tematic de obiecte spaţiale punct şi cu un strat tematic de obiecte spaţiale suprafaţă. Acesta determină &icirc;nt&acirc;i ce puncte se &icirc;ncadrează &icirc;n fiecare suprafaţă. După determinarea acestei relaţii spaţiale punct - suprafaţă, sunt calculate date statistice privind toate punctele din suprafaţă şi, apoi, sunt atribuite suprafeţei. Cea mai simplă statistică este calculul numărului de puncte din suprafaţă, &icirc;nsă mai puteţi obţine şi alte statistici. 
+    </p>
+    <p>De exemplu, să presupunem că aveţi obiecte spaţiale punct reprezent&acirc;nd locaţii de cafenele şi obiecte spaţiale suprafaţă reprezent&acirc;nd judeţe şi doriţi un rezumat al v&acirc;nzărilor de cafea pe judeţe. Presupun&acirc;nd că fiecare cafenea are un atribut  <i>TOTAL_SALES</i>, puteți obține suma tuturor <i>TOTAL_SALES</i> din fiecare județ sau valoarea minimă sau maximă <i>TOTAL_SALES</i>
+ din fiecare județ sau abaterea standard a v&acirc;nzărilor totale din fiecare județ.
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă hartă</b>, vor fi analizate numai obiectele spaţiale din stratul tematic cu puncte de intrare şi stratul tematic poligon vizibil din extinderea curentă a hărţii.  Dacă nu se bifează, vor fi analizate toate obiectele spaţiale at&acirc;t din stratul tematic de puncte de intrare, c&acirc;t şi din stratul tematic poligon, chiar dacă se află &icirc;n afara extinderii curente a hărţii.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Alegeţi straturi tematice care conţin puncte pentru a le însuma în suprafeţe</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic de puncte care va fi &icirc;nsumat &icirc;n suprafeţe.
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Alegeţi straturi tematice care conţin suprafeţe de însumare</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic cu suprafeţe &icirc;n care vor fi &icirc;nsumate punctele. Toate punctele care cad &icirc;n interiorul graniţelor suprafeţelor din acest strat tematic vor fi numărate şi rezumate opţional utiliz&acirc;ndu-se statisticile alese.  
+            </p>
+            <p>Puteţi alege &icirc;ntre un strat tematic de suprafeţe pe care &icirc;l furnizaţi şi coşuri care sunt generate atunci c&acirc;nd rulează instrumentul.   Atunci c&acirc;nd sunt generate coşuri, pentru  <b>Pătrat</b>, numărul şi unităţile specificate determină &icirc;nălţimea şi lungimea pătratului. Pentru <b>Hexagon</b>, numărul şi unităţile specificate determină distanţa dintre laturi paralele.
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Păstrare suprafeţe fără puncte</h2></div>
+        <hr/>
+        <div>
+            <p>Determină dacă suprafeţele care nu conţin niciun punct apar &icirc;n stratul tematic rezultat. Dacă nu se bifează, suprafeţele fără puncte nu vor apărea &icirc;n rezultat. Dacă se bifează, suprafeţele fără puncte vor apărea &icirc;n rezultat.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Adăugare statistică</h2></div>
+        <hr/>
+        <div>
+            <p>Puteţi calcula statistici despre atribute ale stratului tematic punct de intrare, precum sumă, medie, minim, maxim şi abatere standard. Stratul tematic rezultat va conţine un atribut nou pentru fiecare statistică calculată. Se pot adăuga oric&acirc;te statistici aleg&acirc;nd un atribut şi o statistică (va apărea o nouă casetă derulantă).
+ 
+            </p>
+            <p>Dacă stratul tematic de rezumat nu are niciun c&acirc;mp de numere, statisticile suplimentare nu vor fi disponibile.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Alegere câmp după care să se facă gruparea</h2></div>
+        <hr/>
+        <div>
+            <p> Puteţi crea grupuri statistice utiliz&acirc;nd un atribut din stratul tematic de puncte de intrare.    De exemplu, dacă &icirc;nsumați infracțiunile după granițele cartierului, ați putea avea un atribut <i>Crime_type</i> cu cinci tipuri diferite de infracțiuni. Fiecare tip particular de infracțiune formează un grup, iar statisticile alese se vor calcula pentru fiecare valoare unică de <i>Crime_type</i>.  Statistica pentru fiecare punct &icirc;mpreună cu numărul de puncte vor fi afişate &icirc;n fereastra pop-up a stratului tematic rezultat. C&acirc;nd alegeţi un atribut de grupare, sunt create două rezultate: stratul tematic rezultat şi un tabel rezultat ce conţine statisticile pentru fiecare grup unic.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Adăugare minoritate, majoritate</h2></div>
+        <hr/>
+        <div>
+            <p>Această casetă de selectare este activată c&acirc;nd alegeţi un c&acirc;mp după care să efectuaţi gruparea. Dacă doriţi să aflaţi ce valori de atribute din fiecare grup reprezintă minoritatea (cele mai puţin frecvente) sau majoritatea (cele mai frecvente) din interiorul fiecărei graniţe, selectaţi  <b>Adăugare minoritate, majoritate</b>.   C&acirc;nd selectaţi <b>Adăugare minoritate, majoritate</b>, &icirc;n stratul tematic rezultat sunt adăugate două c&acirc;mpuri noi.   Dacă selectaţi şi opţiunea <b>Adăugare procentaje</b>, &icirc;n stratul tematic rezultat sunt adăugate &icirc;ncă două c&acirc;mpuri, conţin&acirc;nd procentajele valorilor de atribute aflate &icirc;n minoritate şi majoritate &icirc;n fiecare grup.
+            </p>
+            <p>De exemplu, dacă sunteţi arhitect peisagist &icirc;ntr-un oraş şi doriţi să aflaţi ce specii de copaci se află &icirc;n minoritate şi ce specii &icirc;n majoritate &icirc;n toate parcurile din oraş, &icirc;nsumaţi datele despre copaci cu suprafeţele parcurilor şi bifaţi această opţiune.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Adăugare procente</h2></div>
+        <hr/>
+        <div>
+            <p>Această casetă de selectare este activată c&acirc;nd alegeţi un c&acirc;mp după care să efectuaţi gruparea.    Selectați  <b>Adăugare procentaje</b> dacă doriți să aflați procentajul fiecărei valori de atribut din fiecare grup. &Icirc;n tabelul de rezultate este adăugat un nou c&acirc;mp care conţine procentajele fiecărei valori de atribut din fiecare grup. Dacă este bifată și opțiunea <b>Adăugare minoritate, majoritate</b>, &icirc;n stratul tematic rezultat sunt adăugate &icirc;ncă două c&acirc;mpuri cu procentajele valorilor de atribute aflate &icirc;n minoritate și majoritate &icirc;n fiecare grup.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic care va fi creat &icirc;n  <b>Resursele mele</b> și adăugat &icirc;n hartă.  Numele implicit se bazează pe numele instrumentului și numele stratului tematic de intrare. Dacă numele stratului tematic rezultat există deja, vi se va solicita să furnizați un alt nume.
+            </p>
+            <p>Utiliz&acirc;nd meniul derul&acirc;nd  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

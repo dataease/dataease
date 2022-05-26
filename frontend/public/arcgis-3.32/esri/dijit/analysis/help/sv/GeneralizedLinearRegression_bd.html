@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Generaliserad linjär regression</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Arbetsfl&ouml;desdiagram f&ouml;r GeneralizedLinearRegression"></h2>
+        <hr/>
+    <p>Utf&ouml;r Generaliserad linj&auml;r regression 
+(GLR) f&ouml;r att skapa f&ouml;ruts&auml;gelser eller f&ouml;r att modellera en avh&auml;ngig variabel uttryckt i dess relation till en upps&auml;ttning f&ouml;rklarande variabler.  Det h&auml;r verktyget kan anv&auml;ndas f&ouml;r att prova ut kontinuerliga (Gauss), bin&auml;ra (logistiska) och r&auml;kningsmodeller (Poisson).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analystyp</h2></div>
+        <hr/>
+        <div>
+            <p>Anger verktygets driftl&auml;ge. Verktyget kan k&ouml;ras f&ouml;r att tr&auml;na en modell i att enbart utv&auml;rdera prestanda, eller tr&auml;na modellen i att f&ouml;ruts&auml;ga geoobjekt. Det finns f&ouml;ljande f&ouml;ruts&auml;gelsetyper:
+                <ul>
+                    <li> <b>Prova ut en modell f&ouml;r att utv&auml;rdera prestanda</b> &ndash; En modell provas ut och anpassas till indata. Anv&auml;nd det h&auml;r alternativet f&ouml;r att utv&auml;rdera korrektheten hos din modell innan du genererar f&ouml;ruts&auml;gelser p&aring; ett nytt dataset eller f&ouml;rst&aring; relationer och drivande faktorer f&ouml;r din f&ouml;rutsedda variabel. Utdata f&ouml;r det h&auml;r alternativet kommer att vara en geoobjekttj&auml;nst f&ouml;r dina anpassade data och modelldiagnostik.
+                    </li>
+                    <li> <b>Anpassa en modell och f&ouml;ruts&auml;g v&auml;rden</b> &ndash; F&ouml;ruts&auml;gelser eller klassificeringar genereras f&ouml;r indatageoobjekt och f&ouml;ruts&auml;gelsegeoobjekt. F&ouml;rklarande variabler m&aring;ste anges b&aring;de f&ouml;r f&ouml;ruts&auml;gelsegeoobjekten och geoobjekten som ska f&ouml;ruts&auml;gas. Utdata f&ouml;r det h&auml;r alternativet kommer att vara en geoobjekttj&auml;nst f&ouml;r din modell anpassad till dina indata, en geoobjekttj&auml;nst f&ouml;r f&ouml;rutsedda v&auml;rden och modelldiagnostik.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Anpassa en modell att utvärdera modellprestanda</h2></div>
+        <hr/>
+        <div>
+            <p>Anv&auml;nd det h&auml;r l&auml;get om du vill prova ut en modell, och unders&ouml;k hur den passar.
+            </p>
+            <p>Med det h&auml;r valet tr&auml;nas modellen med ett indatalager. Anv&auml;nd det h&auml;r alternativet f&ouml;r att utv&auml;rdera korrektheten hos din modell innan du genererar f&ouml;ruts&auml;gelser p&aring; ett nytt dataset. Det h&auml;r alternativet g&ouml;r att modelldiagnostik visas och till&auml;mpar modellen p&aring; dina tr&auml;ningsdata.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Anpassa en modell och förutsäg värden</h2></div>
+        <hr/>
+        <div>
+            <p>Anv&auml;nd det h&auml;r l&auml;get om du vill prova ut en modell, och till&auml;mpa modellen p&aring; datasetet f&ouml;r att generera f&ouml;ruts&auml;gelser.
+            </p>
+            <p>F&ouml;ruts&auml;gelser eller klassificeringar kommer att genereras f&ouml;r geoobjekt. Utdata f&ouml;r det h&auml;r alternativet kommer att vara en geoobjekttj&auml;nst, modelldiagnostik och en valfri tabell av varierande betydelse.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Välj ett lager att skapa en modell från</h2></div>
+        <hr/>
+        <div>
+            <p>Lagret som inneh&aring;ller punkt-, linje-, area- eller tabellgeoobjekt som inneh&aring;ller de avh&auml;ngiga och f&ouml;rklarande variablerna.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Välj vilket fält som ska modelleras</h2></div>
+        <hr/>
+        <div>
+            <p>Det numeriska f&auml;ltet som inneh&aring;ller de observerade v&auml;rdena som ska modelleras och den typ av v&auml;rde du modellerar. Det finns tre typer av v&auml;rde du kan modellera
+                <ul>
+                    <li>Kontinuerlig &ndash; representerar kontinuerliga v&auml;rden. Modellen som anv&auml;nds &auml;r Gauss, och verktyget utf&ouml;r vanlig minstakvadratenregression.
+                    </li>
+                    <li>Bin&auml;r &ndash; representerar n&auml;rvaro- eller fr&aring;nvarov&auml;rden. V&auml;rdena m&aring;ste best&aring; av 1 och 0. Modellen som anv&auml;nds &auml;r logistisk regression.
+                    </li>
+                    <li>Antal &ndash; representerar diskreta och representerar h&auml;ndelser, t.ex. antal brott, sjukdomsfall eller trafikolyckor. Modellen som anv&auml;nds &auml;r Poisson-regression. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Välj ett lager att förutsäga värden för</h2></div>
+        <hr/>
+        <div>
+            <p>Ett lager med geoobjekt som representerar platser d&auml;r uppskattningar b&ouml;r ber&auml;knas. Varje geoobjekt i datasetet b&ouml;r inneh&aring;lla v&auml;rden f&ouml;r alla specificerade f&ouml;rklarande variabler. Den avh&auml;ngiga variabeln f&ouml;r dessa geoobjekt uppskattas med modellen som kalibrerats f&ouml;r indatalagret.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Välj förklarande fält</h2></div>
+        <hr/>
+        <div>
+            <p>Ett eller flera f&auml;lt som representerar de f&ouml;rklarande variablerna (f&auml;lt) som hj&auml;lper till att f&ouml;ruts&auml;ga v&auml;rdet. Endast numeriska f&auml;lt &auml;r synliga.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Välj hur förklarande fält matchas</h2></div>
+        <hr/>
+        <div>
+            <p>S&aring; h&auml;r matchar motsvarande variabler i indatalagret variablerna i f&ouml;ruts&auml;gelselagret. Endast de variabler som anv&auml;nds f&ouml;r att skapa modellen kommer att ing&aring; i tabellen. Endast numeriska v&auml;rden kan anv&auml;ndas. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p> Namnet p&aring; lagret som ska skapas.  Om du skriver till en ArcGIS Data Store, sparas dina resultat i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om du skriver till en big data-fildelning, lagras dina resultat i big data-fildelningen och l&auml;ggs till i dess manifest. Det l&auml;ggs inte till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns misslyckas verktyget.
+            </p>
+            <p>Resultaten som erh&aring;lls beror p&aring; typen av analys. Om du passar f&ouml;r att utv&auml;rdera modellpassning kommer resultaten att inneh&aring;lla ett lager indata som passar f&ouml;r modellen och resultatinformation som utv&auml;rderar modellpassningen. Om du passar och f&ouml;ruts&auml;ger kommer resultaten att inneh&aring;lla ett lager av indata som passar f&ouml;r modellen, ett lager f&ouml;rutsagda resultat och resultatinformation som utv&auml;rderar modellpassningen.
+            </p>
+            <p>N&auml;r du skriver till   ArcGIS Data Store (relationellt eller rumstempor&auml;rt Big Data-datalager) med listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

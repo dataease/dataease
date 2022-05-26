@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tính toán Mật độ</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="C&ocirc;ng cụ T&iacute;nh to&aacute;n Mật độ"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y tạo ra một bản đồ mật độ từ c&aacute;c đối tượng điểm hoặc đường bằng c&aacute;ch đưa ra số lượng cho trước của một số hiện tượng (thể hiện dưới dạng thuộc t&iacute;nh của điểm hoặc đường) tr&ecirc;n bản đồ. Kết quả l&agrave; một lớp v&ugrave;ng được ph&acirc;n loại từ mật độ &iacute;t nhất đến nhiều nhất.
+    </p>
+    <p>Đối với điểm đầu v&agrave;o, mỗi điểm cần thể hiện vị tr&iacute; của một số sự kiện hoặc sự cố v&agrave; lớp kết quả thể hiện số lượng sự cố tr&ecirc;n một đơn vị diện t&iacute;ch. Gi&aacute; trị mật độ cao hơn ở một vị tr&iacute; mới c&oacute; nghĩa l&agrave; c&oacute; nhiều điểm gần vị tr&iacute; đ&oacute;. Trong nhiều trường hợp, lớp kết quả c&oacute; thể được hiểu l&agrave; một v&ugrave;ng c&oacute; nguy cơ xảy ra c&aacute;c sự kiện trong tương lai. V&iacute; dụ: nếu điểm đầu v&agrave;o đại diện cho vị tr&iacute; s&eacute;t đ&aacute;nh, lớp kết quả c&oacute; thể được hiểu l&agrave; một v&ugrave;ng c&oacute; nguy cơ bị s&eacute;t đ&aacute;nh trong tương lai.
+    </p>
+    <p>Đối với đầu v&agrave;o l&agrave; đường, bề mặt mật độ đường đại diện cho tổng số đường gần mỗi vị tr&iacute;. C&aacute;c đơn vị gi&aacute; trị mật độ t&iacute;nh to&aacute;n l&agrave; độ d&agrave;i đường tr&ecirc;n một đơn vị diện t&iacute;ch. V&iacute; dụ: nếu đường đại diện cho s&ocirc;ng ng&ograve;i, lớp kết quả sẽ đại diện cho tổng độ d&agrave;i của con s&ocirc;ng nằm trong b&aacute;n k&iacute;nh t&igrave;m kiếm. C&oacute; thể sử dụng kết quả n&agrave;y để x&aacute;c định c&aacute;c khu vực ph&ugrave; hợp với động vật ăn cỏ.
+    </p>
+    <p>C&ocirc;ng cụ n&agrave;y được d&ugrave;ng trong c&aacute;c t&igrave;nh huống kh&aacute;c như:
+
+        <ul>
+            <li>Tạo bản đồ mật độ tội phạm để gi&uacute;p ph&ograve;ng cảnh s&aacute;t bố tr&iacute; lực lượng ph&ugrave; hợp đến c&aacute;c khu vực c&oacute; số lượng tội phạm cao.
+                
+ 
+            </li>
+            <li>T&iacute;nh to&aacute;n mật độ bệnh viện trong một quận. Lớp kết quả sẽ hiển thị c&aacute;c khu vực c&oacute; khả năng tiếp cận cao v&agrave; thấp đến c&aacute;c bệnh viện, v&agrave; c&oacute; thể sử dụng th&ocirc;ng tin n&agrave;y để quyết định nơi cần x&acirc;y dựng th&ecirc;m bệnh viện mới.
+                
+ 
+            </li>
+            <li>X&aacute;c định c&aacute;c khu vực c&oacute; nguy cơ ch&aacute;y rừng cao dựa v&agrave;o vị tr&iacute; từng xảy ra ch&aacute;y rừng trong lịch sử.
+                
+ 
+            </li>
+            <li>X&aacute;c định c&aacute;c khu d&acirc;n cư xa đường cao tốc ch&iacute;nh để l&ecirc;n kế hoạch nơi cần x&acirc;y dựng c&aacute;c tuyến đường mới.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>Chọn điểm đầu vào hoặc lớp đường dùng để tính toán mật độ</h2></div>
+        <hr/>
+        <div>
+            <p>Điểm đầu v&agrave;o hoặc lớp đường sẽ được sử dụng để t&iacute;nh lớp mật độ.
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>Sử dụng trường số liệu tính</h2></div>
+        <hr/>
+        <div>
+            <p>Cung cấp một trường x&aacute;c định số lượng sự cố tại mỗi vị tr&iacute;. V&iacute; dụ: nếu bạn c&oacute; c&aacute;c điểm đại diện cho c&aacute;c th&agrave;nh phố, bạn c&oacute; thể sử dụng một trường đại diện cho d&acirc;n số của th&agrave;nh phố l&agrave; trường số liệu t&iacute;nh, v&agrave; lớp mật độ d&acirc;n số kết quả sẽ t&iacute;nh to&aacute;n mật độ d&acirc;n số lớn hơn gần c&aacute;c th&agrave;nh phố c&oacute; d&acirc;n số lớn hơn.
+            </p>
+            <p>Nếu sử dụng lựa chọn mặc định l&agrave;  <b>Kh&ocirc;ng</b>, th&igrave; mỗi vị tr&iacute; giả định sẽ đại diện cho một số liệu t&iacute;nh to&aacute;n duy nhất.
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Khoảng cách tìm kiếm</h2></div>
+        <hr/>
+        <div>
+            <p>Nhập một khoảng c&aacute;ch x&aacute;c định khoảng t&igrave;m kiếm để t&igrave;m c&aacute;c đối tượng điểm hoặc đường khi t&iacute;nh to&aacute;n c&aacute;c gi&aacute; trị mật độ. V&iacute; dụ: nếu bạn cung cấp khoảng c&aacute;ch t&igrave;m kiếm 10.000 m&eacute;t, mật độ của bất kỳ vị tr&iacute; n&agrave;o trong lớp đầu ra được t&iacute;nh to&aacute;n dựa tr&ecirc;n c&aacute;c đối tượng trong phạm vi c&aacute;ch vị tr&iacute; 10.000 m&eacute;t. Bất kỳ vị tr&iacute; n&agrave;o kh&ocirc;ng c&oacute; bất kỳ sự cố n&agrave;o trong phạm vi 10.000 m&eacute;t sẽ nhận được một gi&aacute; trị mật độ bằng kh&ocirc;ng.
+            </p>
+            <p>Nếu kh&ocirc;ng cung cấp khoảng c&aacute;ch, khoảng mặc định sẽ được t&iacute;nh theo vị tr&iacute; của c&aacute;c đối tượng đầu v&agrave;o v&agrave; gi&aacute; trị trong trường số liệu t&iacute;nh (nếu cung cấp trường số liệu t&iacute;nh).
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>Đơn vị diện tích đầu ra</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định đơn vị diện t&iacute;ch đầu ra. Mật độ l&agrave; số liệu t&iacute;nh được ph&acirc;n chia theo v&ugrave;ng v&agrave; tham số n&agrave;y x&aacute;c định đơn vị diện t&iacute;ch trong t&iacute;nh to&aacute;n mật độ.
+            </p>
+            <p>Đơn vị diện t&iacute;ch c&oacute; sẵn l&agrave; Dặm vu&ocirc;ng, Feet vu&ocirc;ng, M&eacute;t vu&ocirc;ng v&agrave; Kil&ocirc;m&eacute;t vu&ocirc;ng.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Kích cỡ ô đầu ra</h2></div>
+        <hr/>
+        <div>
+            <p>K&iacute;ch thước cell v&agrave; đơn vị cho c&aacute;c raster đầu ra.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Bạn c&oacute; thể chỉ định t&ecirc;n của một thư mục trong  <b>Nội dung của t&ocirc;i</b> m&agrave; tại đ&oacute; kết quả sẽ được lưu bằng c&aacute;ch sử dụng hộp xổ xuống <b>Lưu kết quả v&agrave;o</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Klasificiraj piksle z globokim učenjem</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Klasificiraj piksle z globokim učenjem"></h2>
+        <hr/>
+    <p>To orodje izvaja naučeni model globokega učenja na vhodnem rastru za izdelavo klasificiranega rastra in vsak veljavni slikovni piksel ima dodeljeno oznako razreda.
+    </p>
+    <p>Če je obkljukano  <b>Uporabi trenutni obseg karte</b>, bodo analizirana samo rastrska območja, vidna znotraj trenutnega obsega karte. Če ni obkljukano, bo analiziran celoten raster, tudi če je zunaj trenutnega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Izberite sliko, ki se bo uporabljala za klasificiranje pikslov</h2></div>
+        <hr/>
+        <div>
+            <p>Vhodna slika za klasificiranje.
+            </p>
+            <p>Lahko je URL slikovne storitve, rastrski sloj ali sloj slikovne storitve.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Izberite model globokega učenja, ki se bo uporabljal za klasificiranje pikslov</h2></div>
+        <hr/>
+        <div>
+            <p>Element vhodnega paketa globokega učenja ( <code>.dlpk</code>).
+            </p>
+            <p>Paket globokega učenja je sestavljen iz datoteke JSON definicije modela Esri ( <code>.emd</code>), datoteke binarnega modela globokega učenja in, izbirno, rastrske funkcije Python, ki bo uporabljena.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Navedite trditve za model globokega učenja</h2></div>
+        <hr/>
+        <div>
+            <p>Trditve funkcije so določene v razredu rastrske funkcije Python, ki se sklicuje na vhodni model. Tukaj navedete dodatne parametre globokega učenja in trditve za eksperimente in natančno določanje, kot je prag zaupanja za prilagajanje občutljivosti.
+            </p>
+            <p>Imena trditev bodo dopolnjena s pomočjo orodja iz branja modula Python na strežniku za rastrsko analizo.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>Ime sloja, ki bo ustvarjen v odseku  <b>Moja vsebina</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, bo od vas zahtevano, da vnesete drugo ime.
+            </p>
+            <p>Lahko navedete ime mape v  <b>Moji vsebini</b>, kjer bo rezultat shranjen s pomočjo spustnega menija <b>Shrani rezultat v</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

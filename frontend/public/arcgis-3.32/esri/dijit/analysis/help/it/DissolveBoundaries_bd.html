@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Dissolvi Boundary</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Dissolvi Boundary"></h2>
+        <hr/>
+    <p>Le aree che si sovrappongono o che condividono un confine o un valore attributo comune vengono unite per formare una singola area.
+    </p>
+    <p>Per controllare i confini che verranno uniti, specificare un campo. Ad esempio, se si dispone di un layer di regioni e ciascuna regione dispone di un attributo  <pre>State_Name</pre>, &egrave; possibile dissolvere i confini utilizzando l'attributo <pre>State_Name</pre>.  Le regioni vengono unite se presentano lo stesso valore per <pre>State_Name</pre>. Il risultato &egrave; un layer di confini di stato.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegli il layer di area i cui confini verranno dissolti</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer contenente le feature di area che verranno dissolte. 
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Scegli metodo di dissolvenza</h2></div>
+        <hr/>
+        <div>
+            <p>Specifica il metodo usato per dissolvere i campi.
+            </p>
+            <p>&Egrave; possibile selezionare uno dei due metodi per unire feature area:
+                <ul>
+                    <li> <b>Aree sovrapposte o adiacenti</b>: due o pi&ugrave; aree i cui confini si sovrappongono vengono unite in un'unica area. Inoltre, anche le aree adiacenti (ovvero, che condividono un confine comune) vengono unite in un'unica area.
+                    </li>
+                    <li> <b>Aree con lo stesso valore di attributo</b>: due o pi&ugrave; aree vengono unite in un'unica area se dispongono dello stesso valore di attributo.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Crea feature multiparte</h2></div>
+        <hr/>
+        <div>
+            <p>Multiparte &egrave; una rappresentazione di un posto o di una cosa &egrave; composta da pi&ugrave; parti ma viene definita come un&rsquo;unica feature poich&eacute; fa riferimento ad un insieme di attributi. In un layer di stati, ad esempio, le Hawaii possono essere considerate una feature multiparte perch&eacute; le sue parti geometriche distinte sono classificate come singolo stato.
+            </p>
+            <p> <b>Crea feature multiparte</b> offre due opzioni:
+                <ul>
+                    <li>True (selezionato): il servizio di output pu&ograve; contenere feature multiparte.
+                    </li>
+                    <li>Falso (non selezionato): il servizio di output potr&agrave; contenere solo feature monoparte, e verranno create delle feature individuali per ogni parte. Questa &egrave; l'impostazione predefinita.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Aggiungi statistiche (facoltativo)</h2></div>
+        <hr/>
+        <div>
+            <p>Quando le aree vengono unite, &egrave; possibile riepilogare i relativi valori attributo con statistiche significative. Ad esempio, se si dissolve il confine tra regioni in base a  <pre>State_Name</pre>, e ciascuna regione dispone di un campo <i>Population</i>, &egrave; possibile calcolare la somma della <pre>Population</pre> dello stato.
+            </p>
+            <p> &Egrave; possibile calcolare le statistiche su feature riepilogate. Su campi numerici &egrave; possibile calcolare quanto segue:
+                <ul>
+                    <li>Conteggio: calcola il numero di valori nonnull. Pu&ograve; essere utilizzato su campi o stringhe numeriche. Il conteggio di [null, 0, 2] &egrave; 2.
+                    </li>
+                    <li>Somma: la somma dei valori numerici in un campo. La somma di [null, null, 3] &egrave; 3.
+                    </li>
+                    <li>Media: la media di valori numerici. La media di [0, 2, null] &egrave; 1.
+                    </li>
+                    <li>Min: il valore minimo di un campo numerico. Il minimo di [0, 2, null] &egrave; 0. 
+                    </li>
+                    <li>Max: il valore massimo di un campo numerico. Il valore massimo di [0, 2, null] &egrave; 2.
+                    </li>
+                    <li>Intervallo: l'intervallo di un campo numerico. Questo viene calcolato come i valori minimi sottratti dal valore massimo. L'intervallo di [0, null, 1] &egrave; 1. L'intervallo di [null, 4] &egrave; 0.
+                    </li>
+                    <li>Varianza: la varianza di un campo numerico in una traccia. La varianza di [1] is null. La varianza di [null, 1,0,1,1] &egrave; 0,25.
+                    </li>
+                    <li>Deviazione standard: la deviazione standard di un campo numerico. La deviazione standard di [1] &egrave; null. La deviazione standard di [null, 1,0,1,1] &egrave; 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Su campi stringa &egrave; possibile calcolare quanto segue:
+                <ul>
+                    <li>Conteggio: il numero di stringhe nonnull.
+                    </li>
+                    <li>Qualsiasi: questa statistica &egrave; un esempio casuale di un valore stringa nel campo specificato.
+                    </li>
+                </ul>
+                Tutte le statistiche vengono calcolate su valori non null. Il layer risultante includer&agrave; un nuovo campo per ogni statistica calcolata. &Egrave; possibile aggiungere un numero qualsiasi di statistiche scegliendo un attributo e una statistica. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p> Il nome del layer che verr&agrave; creato.  Se si scrive su un ArcGIS Data Store, i risultati saranno salvati in  <b>I miei contenuti</b> e aggiunti alla mappa. Se si scrive su una condivisione file Big Data, i risultati saranno memorizzati nella condivisione file Big Data e aggiunti al suo Manifest. Non saranno aggiunti alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, lo strumento non verr&agrave; eseguito.
+            </p>
+            <p>Quando si scrive su  ArcGIS Data Store (data store relazionale o Spatiotemporal Big Data Store) usando la casella a discesa  <b>Salva risultato in</b>, &egrave; possibile specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

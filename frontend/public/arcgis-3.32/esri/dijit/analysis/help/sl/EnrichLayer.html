@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Geoobogati sloj</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Geoobogati sloj"></h2>
+        <hr/>
+    <p>To orodje obogati va&scaron;e podatke tako, da pridobi dejstva o ljudeh, krajih in podjetjih, ki obkrožajo lokacije va&scaron;ih podatkov in vam omogoča, da odgovorite na nova vpra&scaron;anja o lokacijah, na katera ne morete odgovoriti samo s kartami. Na primer: Kak&scaron;ni ljudje živijo tukaj? Kaj ljudje na tem območju radi počnejo? Kak&scaron;ne so njihove navade in življenjski slogi? Kak&scaron;na podjetja obstajajo na tem območju?
+    </p>
+    <p>Rezultat bo nov sloj, ki vsebuje vse demografske in geografske informacij iz danih zbirk podatkov. Te nove informacije so dodane kot polja v tabeli.
+    </p>
+    <p>Če je obkljukano  <b>Uporabi trenutni obseg karte</b>, bodo obogateni samo geoobjekti vhodnega sloja, ki so vidni znotraj trenutnega obsega karte. Če je možnost odkljukana, bodo geoobogateni vsi geoobjekti v vhodnem sloju, tudi če so zunaj trenutnega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi sloj za obogatitev z novimi podatki</h2></div>
+        <hr/>
+        <div>
+            <p>Točkovni, linijski ali poligonski sloj, ki bo obogaten z novimi atributnimi podatki. 
+            </p>
+            <p>Poleg izbire sloja s karte lahko izberete  <b>Izberi sloj za analizo</b> ki se nahaja v spodnjem delu spustnega menija. Ta možnost odpre galerijo, kjer lahko brskate in izberete sklope podatkov iz različnih virov za uporabo v svoji analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Obogatitvene spremenljivke</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Kliknite  <b>Izberi spremenljivke</b>, da odprete <b>Podatkovni brskalnik</b>. <b>Podatkovni brskalnik</b> vam pomaga najti in izbrati obogatitvene spremenljivke posamezno ali v zbirkah.
+            </p>
+            <p>Na podlagi va&scaron;ih podatkov je samodejno izbrana regija. Če va&scaron;i podatki pokrivajo več kot eno državo, lahko izberete drugo regijo. 
+            </p>
+            <p>Obogatitvene spremenljivke so za preprost dostop organizirane v zbirke podatkov. Ko izberete zbirko podatkov, brskalnik pokaže nekaj najbolj priljubljenih obogatitvenih spremenljivk v tej zbirki. Pod  <b>Nadaljuj brskanje</b> pokaže tudi kategorije znotraj zbirke. V vsaki kategoriji lahko izberete celotne podkategorije ali vstopite v podkategorijo in izberete posamezno geoobogatitveno spremenljivko. Uporabite lahko tudi iskalno polje, da najdete določeno spremenljivko znotraj kategorije.
+            </p>
+            <p>Ko izberete spremenljivke, ki jih boste vključili v geoobogatitev, so dodane v nakupovalno ko&scaron;arico v vogalu  <b>Podatkovnega brskalnika</b>. Uporabite ko&scaron;arico za spremljanje &scaron;tevila izbranih spremenljivk.
+            </p>
+            <p>Vsaka izbrana spremenljivka bo dodana kot polje v va&scaron; sloj z rezultati.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Določi poligone za obogatitev</h2></div>
+        <hr/>
+        <div>
+            <p>Določite poligon okrog svojih vhodnih točk ali linij, ki bo obogaten z uporabo zračne linije ali izbranega načina potovanja. Za zračno linijo vnesite vrednost do 1000 milj (1609 kilometrov). Načine potovanja lahko uporabite samo, ko va&scaron; vhodni sloj vsebuje točke. Razpoložljive načine potovanja določi administrator va&scaron;e organizacije. Ko uporabljate enega izmed načinov potovanja, so meritve narejene vzdolž cest ali pe&scaron;poti in upo&scaron;tevajo veljavna pravila, kot so enosmerne ulice, prepovedano zavijanje itd. Po izbiri načina in merjenja, vnesite trajanje ali razdaljo do 5 ur (300 minut) ali 300 milj (482,8 kilometrov).
+            </p>
+            <p>Če je obkljukano  <b>Vrni rezultate kot omejitvena območja</b>, bodo vrnjeni rezultati poligonski geoobjekti, določeni z zgornjimi vrednostmi časa in razdalje. Če je odkljukano, bodo vrnjeni rezultati točkovni geoobjekti.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>To je ime sloja, ki bo ustvarjen v  <b>Moji vsebini</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če ime sloja že obstaja, boste morali vnesti drugo ime.
+            </p>
+            <p>S pomočjo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,42 @@
+@import "variables.less";
+@import "../common/Heading.less";
+
+h1, h2, h3, h4, h5, h6 {
+	line-height: normal;
+	font-weight: 400;
+	margin: 0;
+}
+
+h1.mblHeading {
+	font-size: @win-font-size-huge;
+}
+
+h2.mblHeading {
+	font-size: @win-font-size-extra-large;
+}
+
+h3.mblHeading {
+	font-size: @win-font-size-large;
+}
+
+h4.mblHeading {
+	font-size: @win-font-size-medium-large;
+}
+
+h5.mblHeading {
+	font-size: @win-font-size-medium;
+}
+
+h6.mblHeading {
+	font-size: @win-font-size-normal;
+}
+
+.mblHeading {
+	& .mblToolBarButton ~ .mblHeadingDivTitle {
+		text-align: center;
+	}
+
+	& .mblToolBarButton.mblToolBarButtonHasRightArrow {
+		float: right;
+	}
+}

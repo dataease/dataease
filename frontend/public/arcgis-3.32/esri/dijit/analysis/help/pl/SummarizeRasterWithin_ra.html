@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Podsumuj raster w ramach</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Narzędzie Podsumuj raster w ramach"></h2>
+        <hr/>
+    <p>To narzędzie podsumowuje raster na podstawie obszar&oacute;w (stref) zdefiniowanych przez pierwszą warstwę wejściową.
+    </p>
+    <p>Poniżej przedstawiono następujące przykładowe zastosowania:
+    </p>
+    <p>
+        <ul>
+            <li>Mając warstwę zlewni i warstwę granic użytkowania terenu według typu użytkowania terenu, oblicz całkowity areał typ&oacute;w użytkowania terenu dla każdej zlewni.
+                
+
+            </li>
+            <li>Uwzględniając warstwę działek w powiecie i warstwę granic miast, podsumuj średnią wartość działek wystawionych na sprzedaż w granicach każdego miasta.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jeśli jest zaznaczona opcja  <b>Użyj bieżącego zasięgu mapy</b>, przeanalizowane zostaną tylko obiekty w&nbsp;warstwie wejściowej i&nbsp;warstwie sumowania widoczne w&nbsp;bieżącym zasięgu mapy. Jeśli powyższa opcja nie jest zaznaczona, analizowane będą wszystkie obiekty w&nbsp;warstwie wejściowej i&nbsp;warstwie sumowania, nawet jeśli znajdują się poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Wybierz warstwę powierzchniową do zsumowania warstwy rastrowej w obrębie zdefiniowanych granic</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa definiująca granice obszar&oacute;w lub stref, kt&oacute;re zostaną podsumowane.
+            </p>
+            <p>Warstwa może zawierać dane rastrowe lub obiektowe. W przypadku rastr&oacute;w strefy są definiowane przez wszystkie lokalizacje w danych wejściowych, kt&oacute;re mają tą samą wartość kom&oacute;rki. Obszary nie muszą być ciągłe.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Wybierz pole do zdefiniowania granic</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to atrybut warstwy, kt&oacute;ry będzie używany do definiowania granic obszar&oacute;w.
+            </p>
+            <p>Zał&oacute;żmy na przykład, że pierwsza warstwa wejściowa definiuje granice jednostki administracyjnej i zawiera atrybuty definiujące region, okręg i identyfikator działki każdej jednostki. Istnieje także warstwa rastrowa definiująca indeks bior&oacute;żnorodności dla każdej lokalizacji. Wybierając odpowiednie pole, można zdecydować, czy obliczyć średnią bior&oacute;żnorodność na poziomie lokalnym, poziomie okręgu czy poziomie regionalnym.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Wybierz warstwę rastrową do sumowania</h2></div>
+        <hr/>
+        <div>
+            <p>Kom&oacute;rki rastrowe w tej warstwie zostaną zsumowane według obszar&oacute;w (stref), do kt&oacute;rych należą.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Wybierz statystykę do obliczenia</h2></div>
+        <hr/>
+        <div>
+            <p>Po wybraniu warstwy do zsumowania można także obliczyć dane statystyczne dowolnych atrybut&oacute;w liczbowych punkt&oacute;w, linii lub obszar&oacute;w znajdujących się w wejściowej warstwie powierzchniowej.
+            </p>
+            <p>W przypadku wybrania pola typu całkowitego dostępne są następujące typy obliczeń statystycznych: średnia, większość, maksimum, mediana, minimum, mniejszość, zakres, odchylenie standardowe, suma i zr&oacute;żnicowanie.
+            </p>
+            <p>W przypadku pola zmiennoprzecinkowego dostępne opcje to: średnia, maksimum, minimum, zakres, odchylenie standardowe i suma.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>W obliczeniach ignoruj brakujące wartości</h2></div>
+        <hr/>
+        <div>
+            <p>Jeśli zostanie wybrana opcja ignorowania brakujących wartości, podczas ustalania wartości wynikowej dla tego obszaru będą używane tylko te kom&oacute;rki, kt&oacute;re mają wartość w warstwie do zsumowania.  W przeciwnym razie, jeśli gdziekolwiek w obszarze brakuje wartości, uznaje się, że nie ma wystarczających informacji do przeprowadzenia obliczeń statystycznych dla wszystkich kom&oacute;rek w tej strefie, a w danych wynikowych temu obszarowi zostanie przypisana wartość pusta (NoData).
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Nazwa warstwy, kt&oacute;ra zostanie utworzona w obszarze  <b>Moje zasoby</b> i dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, wyświetlony zostanie komunikat z monitem o podanie innej nazwy.
+            </p>
+            <p>Za pomocą listy rozwijanej  <b>Zapisz wynik w</b> można podać nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Relier les origines aux destinations</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="Relier les origines aux destinations"></h2>
+        <hr/>
+    <p>Relier les origines aux destinations permet de mesurer le temps de trajet ou la distance &agrave; parcourir entre des paires de points. L'outil peut signaler des distances en ligne droite, des distances bas&eacute;es sur un mode de d&eacute;placement comme la marche ou la conduite, ou des dur&eacute;es de voyage bas&eacute;es sur le mode de d&eacute;placement. Cet outil vous permet d'effectuer les actions suivantes&nbsp;:
+    </p>
+    <p>
+        <ul>
+            <li>Calculez la distance totale ou la dur&eacute;e du trajet que les travailleurs parcourent entre leur domicile et leur lieu de travail.
+            </li>
+            <li>Mesurez la distance que les clients sont pr&ecirc;ts &agrave; parcourir pour effectuer leurs achats dans vos points de vente. Utilisez ces informations pour d&eacute;finir votre rayonnement commercial, en particulier si vous ciblez des campagnes publicitaires ou choisissez des emplacements pour de nouveaux points de vente.
+            </li>
+            <li>Calculez le kilom&eacute;trage attendu pour votre flotte de v&eacute;hicules. Ex&eacute;cutez ensuite l'outil Synth&eacute;tiser - A l'int&eacute;rieur pour signaler le kilom&eacute;trage par r&eacute;gion.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Vous indiquez les points de d&eacute;part et d'arriv&eacute;e et l'outil renvoie une couche contenant des lignes d'itin&eacute;raire, notamment des mesures, entre les origines et les destinations appari&eacute;es. 
+    </p>
+    <p>Si l'option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s qui sont visibles au sein de l'&eacute;tendue courante de la carte seront prises en compte dans l'analyse.  Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent dans la couche en entr&eacute;e seront prises en compte, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Choisissez la couche de points représentant les emplacements d'origine</h2></div>
+        <hr/>
+        <div>
+            <p>Choisissez la couche de points repr&eacute;sentant les origines.  L'outil prend en charge jusqu'&agrave;  5 000&nbsp;origines et  5 000&nbsp;destinations. </p>
+            <p>Si vous choisissez une couche qui comporte une seule origine exactement, elle est reli&eacute;e &agrave; toutes les destinations.
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Choisir la couche de destination</h2></div>
+        <hr/>
+        <div>
+            <p>Choisissez la couche repr&eacute;sentant la ou les destinations auxquelles les origines doivent &ecirc;tre reli&eacute;es. L'outil prend en charge jusqu'&agrave;  5 000&nbsp;origines et  5 000&nbsp;destinations. </p>
+            <p>Si vous choisissez une couche qui comporte une seule destination, toutes les origines sont reli&eacute;es &agrave; cette destination. 
+            </p>
+            <p>S'il existe une seule origine et plusieurs destinations, l'outil relie l'origine &agrave; chacune des destinations.
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+            <p> S'il existe plusieurs origines et plusieurs destinations, deux champs doivent d&eacute;crire les paires origine-destination&nbsp;: <b>Champ d'ID dans les origines</b> et <b>Champ d'ID appari&eacute; dans les destinations</b>. L'outil relie les paires origine-destination au cours de l'analyse. Par exemple, imaginez que vous avez deux origines dont les valeurs des champs d'ID sont <code>Rosie</code> et <code>Harold</code> et deux destinations avec les m&ecirc;mes valeurs d'ID. L'origine <code>Rosie</code> sera reli&eacute;e &agrave; la destination <code>Rosie</code> et l'origine <code>Harold</code> sera reli&eacute;e &agrave; <code>Harold</code>. Aucune autre connexion ou mesure n'est r&eacute;alis&eacute;e.
+            </p>
+            <p>Si le nombre d&rsquo;origines et de destinations est identique, les valeurs d'ID doivent &ecirc;tre uniques au sein de chaque couche. Par exemple, la couche de destination ne peut pas comporter deux valeurs  <code>Rosie</code>. Les valeurs dans les couches d'origine et de destination doivent correspondre exactement pour constituer des paires&nbsp;; l'origine <code>Harold</code> ne sera pas reli&eacute;e &agrave; la valeur <code>Harodl</code> incorrectement orthographi&eacute;e. 
+            </p>
+            <p>L&rsquo;outil prend &eacute;galement en charge la connexion de chaque origine &agrave; plusieurs destinations ou de chaque destination &agrave; plusieurs origines. Dans de tels cas, deux champs restent indispensables pour d&eacute;crire les paires origine-destination. Toutefois, une seule des couches (la couche d&rsquo;origine ou de destination) doit poss&eacute;der des valeurs d&rsquo;ID uniques.
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Mesurer</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Indiquez si vous souhaitez relier les origines aux destinations gr&acirc;ce &agrave; la distance en ligne droite ou un mode de d&eacute;placement. Les itin&eacute;raires en sortie suivront les routes ou voies et respecteront les r&egrave;gles en vigueur, par exemple les rues en sens unique et l'interdiction de faire demi-tour pour les voitures ou les camions.  Les modes de d&eacute;placement &agrave; votre disposition sont d&eacute;termin&eacute;s par l'administrateur de votre organisation.  
+            </p>
+            <p>Lorsque vous choisissez l&rsquo;option  <b>Driving Time (Temps de trajet)</b>, <b>Rural Driving Time (Temps de trajet en zone rurale)</b> ou <b>Trucking Time (Temps de trajet pour camions)</b>, vous disposez d&rsquo;options concernant la mani&egrave;re de mesurer le temps de trajet.
+                <ul>
+                    <li>
+                        <p>D&eacute;cochez  <b>Utiliser le trafic</b> pour trouver les itin&eacute;raires les plus rapides selon des vitesses constantes.
+                        </p>
+                        <p>Choisissez cette option pour mesurer le temps de trajet g&eacute;n&eacute;ral, et non pas selon des conditions de trafic changeantes pour une heure de d&eacute;part sp&eacute;cifique.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Cochez  <b>Utiliser le trafic</b> pour trouver les itin&eacute;raires les plus rapides en fonction d'une heure de d&eacute;part pr&eacute;cise et de conditions de trafic changeantes. Si vous choisissez l'option <b>Trafic r&eacute;el</b>, l'heure de d&eacute;part &agrave; partir des origines est d&eacute;finie sur l'heure actuelle, et les vitesses de trafic actuelles et pr&eacute;vues sont issues de capteurs et de flux afin d'&eacute;tablir les itin&eacute;raires. Les vitesses de trafic pr&eacute;vues sont calcul&eacute;es en faisant r&eacute;f&eacute;rence aux vitesses du trafic r&eacute;el, aux vitesses historiques et aux &eacute;v&eacute;nements actuels (la m&eacute;t&eacute;o par exemple). Les vitesses de trafic &eacute;tant pr&eacute;vues sur 12&nbsp;heures, vous pouvez d&eacute;placer le curseur pour d&eacute;finir l'heure de d&eacute;part jusqu'&agrave;  12&nbsp;heures &agrave; l'avance. </p>
+                        <p>Utilisez ces param&egrave;tres de trafic r&eacute;el afin de trouver les heures de d&eacute;part imm&eacute;diat, de d&eacute;part dans une heure, etc.
+                        </p>
+                    </li>
+                    <li>
+                        <p>En cochant  <b>Utiliser le trafic</b> et en choisissant <b>Trafic bas&eacute; sur des conditions typiques pour</b> un jour et une heure, l'outil trouve les itin&eacute;raires les plus rapides en se basant sur les vitesses historiques moyennes pour chaque intervalle de cinq minutes sur une semaine classique. Les r&eacute;sultats incluent le trafic mais ne tiennent pas compte des conditions de trafic actuelles et des &eacute;v&eacute;nements en cours, qui peuvent varier de mani&egrave;re significative par rapport &agrave; la normale.
+                        </p>
+                        <p>Vous pouvez utiliser ces param&egrave;tres de trafic historique pour demander, par exemple, &quot;Quel est le temps g&eacute;n&eacute;ralement requis pour parvenir &agrave; ces destinations si je pars &agrave; 11&nbsp;h&nbsp;30 un mercredi ?&quot;
+                        </p>
+                        <p>L'heure que vous indiquez se rapporte au fuseau horaire dans lequel vos origines se situent. Par cons&eacute;quent, si vous d&eacute;finissez l'heure sur 8&nbsp;h&nbsp;00 et que vous avez deux origines, une dans la ville de New York et l'autre &agrave; Los Angeles, les itin&eacute;raires sont g&eacute;n&eacute;r&eacute;s pour une heure de d&eacute;part de 8&nbsp;h&nbsp;00. Heure de la c&ocirc;te est et 8h00 Heure du Pacifique, respectivement.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Notez qu'au fur et &agrave; mesure qu'un v&eacute;hicule s'&eacute;loigne de l'origine, le temps s'&eacute;coule et les conditions de trafic &eacute;voluent. L'outil Relier les origines aux destinations tient compte de ces variations lorsque vous cochez  <b>Utiliser le trafic</b>. Cependant, toutes les r&eacute;gions ne prennent pas en charge le trafic. Cliquez sur le lien <b>Voir la disponibilit&eacute;</b> sur l'outil pour savoir si le trafic est disponible dans votre zone d'&eacute;tude.
+            </p>
+            <p>L&rsquo;option  <b>Trucking Time (Temps de trajet pour camions)</b> peut utiliser les vitesses de d&eacute;placement en fonction du trafic mais sans d&eacute;passer la limite de vitesse l&eacute;gale des camions. Par exemple, si la vitesse pour une rue en fonction du trafic en temps r&eacute;el est de 65&nbsp;miles par heure mais que la limite de vitesse des camions pour cette rue est de 55&nbsp;miles par heure, le calcul utilise 55&nbsp;miles par heure pour cette rue.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Sélectionner les couches d’interruptions</h2></div>
+        <hr/>
+        <div>
+            <p> Une ou plusieurs entit&eacute;s qui agissent comme restrictions temporaires (en d&rsquo;autres termes, les interruptions) lors du d&eacute;placement dans les rues sous-jacentes. Vous pouvez pr&eacute;ciser les interruptions &agrave; l&rsquo;aide d&rsquo;entit&eacute;s ponctuelles, lin&eacute;aires ou surfaciques.
+            </p>
+            <p>Une interruption ponctuelle peut mod&eacute;liser un arbre au sol, un accident, une ligne &eacute;lectrique &agrave; terre, ou tout &eacute;l&eacute;ment qui bloque le trafic &agrave; un emplacement donn&eacute; dans la rue. Le d&eacute;placement est autoris&eacute; sur la rue, hormis franchir l&rsquo;interruption. Vous pouvez pr&eacute;ciser jusqu&rsquo;&agrave; 250&nbsp;&eacute;l&eacute;ments comme interruptions ponctuelles.
+            </p>
+            <p>Une interruption lin&eacute;aire interdit le d&eacute;placement l&agrave; o&ugrave; l&rsquo;interruption intersecte les rues. Par exemple, un d&eacute;fil&eacute; ou une manifestation qui bloque la circulation sur plusieurs segments de rue peut &ecirc;tre mod&eacute;lis&eacute; avec une interruption lin&eacute;aire. Si le nombre d&rsquo;entit&eacute;s de rue intersect&eacute;es par toutes les interruptions lin&eacute;aires d&eacute;passe&nbsp;500, l&rsquo;outil renvoie une erreur.
+            </p>
+            <p>Une interruption polygonale interdit le d&eacute;placement l&agrave; o&ugrave; le polygone intersecte les rues. Une utilisation de ce type d&rsquo;interruption consiste &agrave; mod&eacute;liser les inondations couvrant les zones du r&eacute;seau routier et &agrave; identifier la circulation sur la route comme impossible &agrave; ces emplacements pr&eacute;cis. Si le nombre d&rsquo;entit&eacute;s de rue intersect&eacute;es par toutes les interruptions polygonales est sup&eacute;rieur &agrave; 2&nbsp;000, l&rsquo;outil renvoie une erreur.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Forme de l’itinéraire</h2></div>
+        <hr/>
+        <div>
+            <p>Choisissez la forme de l&rsquo;itin&eacute;raire qui connecte chaque origine &agrave; sa destination lorsque vous utilisez un mode de d&eacute;placement&nbsp;:
+            </p>
+            <ul>
+                <li> <b>Follow streets (Suivre les rues)</b>&nbsp;: la forme est bas&eacute;e sur le r&eacute;seau de transport sous-jacent. Cette option est la plus appropri&eacute;e si vous souhaitez g&eacute;n&eacute;rer les itin&eacute;raires entre les origines et les destinations.
+                </li>
+                <li> <b>Straight line (Ligne droite)</b>&nbsp;: la forme est une ligne droite qui connecte la paire origine-destination. Cette option est la plus appropri&eacute;e si vous souhaitez g&eacute;n&eacute;rer des diagrammes en toile d&rsquo;araign&eacute;e ou des lignes de votre choix (par exemple, pour indiquer les magasins visit&eacute;s par les clients).
+                </li>
+            </ul>
+            
+            <p>L&rsquo;itin&eacute;raire optimal entre une origine et la destination correspondante est toujours d&eacute;termin&eacute; en fonction du mode de d&eacute;placement, quelle que soit la forme d&rsquo;itin&eacute;raire s&eacute;lectionn&eacute;e.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche d'entit&eacute;s qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Si la couche d'entit&eacute;s existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom. La couche d'entit&eacute;s contiendra une couche pour chacun des &eacute;l&eacute;ments suivants&nbsp;: itin&eacute;raires, origines non attribu&eacute;es et destinations non attribu&eacute;es lorsque certaines origines n'ont pas pu &ecirc;tre reli&eacute;es &agrave; leurs destinations.
+            </p>
+            <p>Si vous s&eacute;lectionnez  <b>Inclure les couches d'itin&eacute;raires</b>, chaque itin&eacute;raire du r&eacute;sultat est &eacute;galement enregistr&eacute; en tant que couche d'itin&eacute;raires. Une couche d&rsquo;itin&eacute;raire comprend toutes les informations associ&eacute;es &agrave; un itin&eacute;raire en particulier, telles que les arr&ecirc;ts attribu&eacute;s &agrave; l&rsquo;itin&eacute;raire et les feuilles de route. La cr&eacute;ation de couches d&rsquo;itin&eacute;raire est utile si vous voulez partager les itin&eacute;raires individuels avec d&rsquo;autres membres de votre organisation ou si vous souhaitez poursuivre la modification des itin&eacute;raires &agrave; l&rsquo;aide du bouton <b>Directions (Feuille de route)</b> dans la visionneuse de carte. Les couches d&rsquo;itin&eacute;raire utilisent le nom fourni pour la couche d&rsquo;entit&eacute;s comme pr&eacute;fixe, et le nom de l&rsquo;itin&eacute;raire g&eacute;n&eacute;r&eacute; dans le cadre de l&rsquo;analyse qui est ajout&eacute; pour conf&eacute;rer un nom unique &agrave; chaque couche d&rsquo;itin&eacute;raire.
+            </p>
+            <p>Le nombre maximum de couches d'itin&eacute;raires pouvant &ecirc;tre cr&eacute;&eacute;es est de  1 000. Si le r&eacute;sultat contient plus de  1 000 itin&eacute;raires et que l'option  <b>Inclure les couches d'itin&eacute;raires</b> est s&eacute;lectionn&eacute;e, l'outil cr&eacute;e uniquement le service d'entit&eacute;s en sortie.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel la couche d&rsquo;entit&eacute;s et les couches d&rsquo;itin&eacute;raire, si elles sont cr&eacute;&eacute;es, seront enregistr&eacute;es.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

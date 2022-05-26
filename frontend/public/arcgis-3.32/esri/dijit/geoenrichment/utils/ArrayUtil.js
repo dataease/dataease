@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/utils/ArrayUtil",["dojo/_base/array"],function(g){var d={},h={}.toString();d.arraysEqual=function(a,c){if(!a&&!c)return!0;if(!a||!c||a.length!==c.length)return!1;for(var e=0;e<a.length;e++)if(a[e]!==c[e])return!1;return!0};d.composeIdentityFunction=function(a,c){var e="function"===typeof a?a:a?function(b){return b[a]}:function(b){return b};return function(b){return(b=e(b))&&b.toString?b.toString():c&&void 0===b?b:String(b)}};d.removeDuplicates=function(a,c){var e=
+[],b={};c=d.composeIdentityFunction(c,!0);g.forEach(a,function(a,d){var f=c(a);f===h&&(void 0===a["__ArrayUtil.js_uniqueKey__"]&&(a["__ArrayUtil.js_uniqueKey__"]="__ArrayUtil.js_uniqueKey__"+d),f=a["__ArrayUtil.js_uniqueKey__"]);void 0===f||f in b||(b[f]=a,e.push(a))});return e};d.splitArrayToBunches=function(a,c){c=c||100;for(var e=[],b,d=0,g=a.length;d<g;d++)b&&b.length!==c||(b=[],e.push(b)),b.push(a[d]);return e};return d});

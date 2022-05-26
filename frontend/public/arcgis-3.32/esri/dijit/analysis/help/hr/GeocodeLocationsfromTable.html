@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Geokodiranje lokacije iz tablice</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Geokodiranje lokacije iz tablice"></h2>
+        <hr/>
+    <p>Geokodiranje je način pretvorbe adresa u koordinate. Ovaj alat pretvara adrese iz tablice, CSV datoteke ili Excel datoteke u sloj geoobjekata ili izlaznu datoteku s koordinatama kao dodatnim stupcima.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Odaberite ulaznu tablicu</h2></div>
+        <hr/>
+        <div>
+            <p>Tablica s adresama koje će se geokodirati. Ulazni podaci moraju biti u obliku tablice, CSV datoteke ili Excel datoteke.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Odaberite lokator</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite uslugu lokatora kojom će geookodirati. Ako usluga lokatora koju želite upotrijebiti nije u padajućem izborniku, obratite se administratoru da konfigurira uslugu lokatora za skupno geokodiranje.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Zemlja</h2></div>
+        <hr/>
+        <div>
+            <p>Ako su sve va&scaron;e adrese iz jedne zemlje, odaberite tu zemlju kako biste osigurali najtočnije rezultate. Ovo polje parametra možete ostaviti i praznim.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Odaberi polja podataka</h2></div>
+        <hr/>
+        <div>
+            <p>Usluga lokatora očekuje određena polja u podacima, kao &scaron;to su adresa, grad, država i po&scaron;tanski broj. Uparite polja podataka iz svoje ulazne datoteke ili tablice s podacima koje lokator očekuje pomoću padajućeg izbornika. &Scaron;to vi&scaron;e polja mapirate, to će rezultati biti točniji. Ako ulazna tablica ima sve podatke u jednom stupcu, odaberite  <b>Jedno polje</b> i izaberite polje podataka na padajućem izborniku. U suprotnom, odaberite <b>Vi&scaron;e polja</b> i mapirajte odgovarajuća polja lokatora na vi&scaron;e stupaca iz svoje tablice.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Odaberite izlazni format</h2></div>
+        <hr/>
+        <div>
+            <p>Format izlaznih rezultata. Ako odlučite stvoriti uslugu geoobjekata, adrese iz tablice dodat će se na kartu kao sloj točkastih geoobjekata. Opcije CSV i XLS dodaju datoteke s rezultatima geookodiranja u  <b>Moj sadržaj</b> kad se zadatak zavr&scaron;i.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv izlaznog rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će se stvoriti u dijelu  <b>Moj sadržaj</b> i dodati karti.  Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako naziv sloja već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

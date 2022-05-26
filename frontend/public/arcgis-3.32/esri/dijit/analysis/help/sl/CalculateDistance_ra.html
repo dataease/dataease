@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Izračunaj razdaljo</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Izračunaj razdaljo"></h2>
+        <hr/>
+    <p>To orodje izračuna evklidsko razdaljo, smer in dodelitev iz enega vira ali sklopa virov.
+    </p>
+    <p>Primeri uporabe vključujejo odgovore na vpra&scaron;anja, kot so:
+
+        <ul>
+            <li>Kolik&scaron;na je razdalja do najbližjega mesta?
+                
+
+            </li>
+            <li>Kolik&scaron;na je razdalja do najbližje ceste?
+                
+
+            </li>
+            <li>Kolik&scaron;na je razdalja do najbližjega vodnega vira?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Če je obkljukano  <b>Uporabi trenutni obseg karte</b>, bodo analizirani samo tisti geoobjekti vhodnega sloja, ki so vidni znotraj trenutnega obsega karte. Če je možnost odkljukana, bodo analizirani vsi geoobjekti v vhodnem sloju, tudi če so zunaj trenutnega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Izberite raster geoobjektnega lokacijskega sloja za izračun razdalje do</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj, ki definira vire, do katerih bo izračunana razdalja. Sloj je lahko slikovna ali geoobjektna storitev.
+            </p>
+            <p>Za slikovno storitev je vhodni tip lahko celo &scaron;tevilo ali &scaron;tevilo s plavajočo vejico.
+            </p>
+            <p>Za geoobjektno storitev je vhodni tip lahko točka, linija ali poligon.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maksimalna razdalja za izračun</h2></div>
+        <hr/>
+        <div>
+            <p>Maksimalna razdalja, ki bo izračunana. Na primer, če navedete vrednost 10.000 metrov, bo evklidska razdalja izračunana iz izvirnih lokacije do te vrednosti (razdalja).
+            </p>
+            <p>Če ni navedena nobena vrednost, bo razdalja izračunana do navedenega obsega.
+            </p>
+            <p>Razpoložljive enote so kilometri, metri, milje in čevlji.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Velikost izhodne celice</h2></div>
+        <hr/>
+        <div>
+            <p>Velikost celice in enote za rezultate rastra.
+            </p>
+            <p>Enote so lahko v kilometrih, metrih, miljah ali čevljih.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Ime sloja z rezultati razdalje</h2></div>
+        <hr/>
+        <div>
+            <p>Ime sloja, ki bo ustvarjen v odseku  <b>Moja vsebina</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, bo od vas zahtevano, da vnesete drugo ime.
+            </p>
+            <p>Lahko navedete ime mape v  <b>Moji vsebini</b>, kjer bo rezultat shranjen s pomočjo spustnega menija <b>Shrani rezultat v</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Ime sloja z rezultati smeri</h2></div>
+        <hr/>
+        <div>
+            <p>To je ime sloja, ki bo dodan v  <b>Moja vsebina</b>. Navesti morate ime, ki trenutno &scaron;e ne obstaja v <b>Moji vsebini</b>.
+            </p>
+            <p>Lahko navedete ime mape v  <b>Moji vsebini</b>, kjer bo rezultat shranjen s pomočjo spustnega menija <b>Shrani rezultat v</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Ime sloja z rezultati dodelitve</h2></div>
+        <hr/>
+        <div>
+            <p>To je ime sloja, ki bo dodan v  <b>Moja vsebina</b>. Navesti morate ime, ki trenutno &scaron;e ne obstaja v <b>Moji vsebini</b>.
+            </p>
+            <p>Lahko navedete ime mape v  <b>Moji vsebini</b>, kjer bo rezultat shranjen s pomočjo spustnega menija <b>Shrani rezultat v</b>.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Izberi polje za dodelitev</h2></div>
+        <hr/>
+        <div>
+            <p>Polje na vhodnem izvirnem sloju, ki vsebuje vrednosti, ki definirajo posamezen vir. To je lahko polje s celim &scaron;tevilom ali besedilno polje izvirnega sklopa podatkov.
+            </p>
+            <p>Privzeta vrednost je  <i>Value</i>. Če uporabljate geoobjektno storitev in polje z <i>Value</i> ni na voljo, bo uporabljano prvo polje s celim &scaron;tevilom ali besedilom. Če veljavno polje ne obstaja, bo uporabljeno polje ObjectID (na primer OID ali FID, odvisno od tipa vhodnega geoobjekta).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

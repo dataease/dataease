@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/ClassifyObjectsUsingDeepLearning",{root:{toolDefine:"Classify Objects Using Deep Learning",inputFeaturesLabel:"Choose feature layer for objects (optional)",outputLayerName:"${layername}_classifiedObjects",modelLabel:"Choose deep learning model used to classify objects",modelArgsLabel:"Specify deep learning model arguments",classLabelFieldLabel:"Define class label field name (optional)",processingModeLabel:"Processing mode",processAsMosaicLabel:"Process as mosaicked image",
+processAsItemsLabel:"Process all raster items separately",queryModelArgsMsg:"Querying model arguments...",valueLabel:"Value",nameLabel:"Name",analysisLayerLabel:"Choose image used to classify objects",itemDescription:"Analysis Image Service generated from Classify Objects Using Deep Learning",itemTags:"Raster Analysis Result, Classify Objects Using Deep Learning, ${layername}",itemSnippet:"Analysis Image Service generated from Classify Objects Using Deep Learning"},ar:0,bs:0,ca:0,cs:0,da:0,de:0,el:0,
+es:0,et:0,fi:0,fr:0,he:0,hi:0,hr:0,hu:0,id:0,it:0,ja:0,ko:0,lv:0,lt:0,nl:0,nb:0,pl:0,"pt-br":0,"pt-pt":0,ro:0,ru:0,sr:0,sv:0,th:0,tr:0,uk:0,vi:0,"zh-cn":0,"zh-hk":0,"zh-tw":0});

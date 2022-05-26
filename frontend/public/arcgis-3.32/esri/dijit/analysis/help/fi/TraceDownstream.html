@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Jäljitä alavirtaan</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="J&auml;ljit&auml; alavirtaan"></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu m&auml;&auml;ritt&auml;&auml; j&auml;ljityksen tai virran polun l&auml;ht&ouml;karttatason pisteist&auml; alavirran suuntaan.
+    </p>
+    <p>Oletetaan esimerkiksi, ett&auml; k&auml;yt&ouml;ss&auml;si on pistekohteita, jotka edustavat saasteiden l&auml;hteit&auml;, ja haluat selvitt&auml;&auml;, minne saaste virtaa tarkastelualueella. J&auml;ljit&auml; alavirtaan -ty&ouml;kalun avulla voit selvitt&auml;&auml; polun, jota saaste kulkee. T&auml;m&auml;n j&auml;ljityksen voi my&ouml;s jakaa yksitt&auml;isiksi viivasegmenteiksi m&auml;&auml;ritt&auml;m&auml;ll&auml; et&auml;isyysarvo ja yksikk&ouml;. Palautettava viiva voi olla virran polun kokonaispituus, m&auml;&auml;ritetty j&auml;ljityksen enimm&auml;ispituus tai leikatut aluekohteet, kuten tarkastelualue. Jos palautettavana arvona on j&auml;ljityspolun kokonaispituus, useissa tapauksissa se on matka l&auml;hteest&auml; aina mereen saakka.
+    </p>
+    <p>Tuloksena on viiva, joka edustaa alavirran j&auml;ljityst&auml;. Jos  <b>Jaa j&auml;ljitys viivasegmenteiksi</b> -kohtaan m&auml;&auml;ritet&auml;&auml;n et&auml;isyys, j&auml;ljitys jaetaan useaan viivaan, jossa kukin viiva on m&auml;&auml;ritetyn pituinen. Jos l&auml;ht&ouml;piste edustaa esimerkiksi saastevalumaa, ja joki, johon saaste valuu, liikkuu nopeudella 0,6 mailia/tunti tai 15 mailia/p&auml;iv&auml;, haluat ehk&auml; jakaa joen 15 segmenttiin. Jakamalla j&auml;ljityksen 15 mailin v&auml;leihin voit n&auml;hd&auml; suurin piirtein, miss&auml; valuma kulkee kunakin p&auml;iv&auml;n&auml;. Viivaan lis&auml;t&auml;&auml;n symboliikkaa k&auml;ytt&auml;m&auml;ll&auml; et&auml;isyyteen perustuvia liukuv&auml;rej&auml; ja ne merkit&auml;&auml;n et&auml;isyydell&auml; j&auml;ljityksen alusta.
+    </p>
+    <p>Tuloksena syntyviss&auml; j&auml;ljityksiss&auml; on kaikki l&auml;ht&ouml;pisteiden ominaisuustiedot sek&auml; lis&auml;ominaisuustiedot. 
+        <ul>
+            <li> <i>PointID</i> &ndash; sis&auml;lt&auml;&auml; l&auml;ht&ouml;pisteen tunnusarvon.
+                
+
+            </li>
+            <li> <i>LengthKm</i> &ndash; sis&auml;lt&auml;&auml; alavirran j&auml;ljityksen pituuden kilometrein&auml;.
+                
+
+            </li>
+            <li> <i>Description</i> ja <i>DataResolution</i> &ndash; sis&auml;lt&auml;v&auml;t tietoja, jotka liittyv&auml;t j&auml;ljityksen laskennassa tarvittavaan hydrologiseen aineistoon.
+                
+
+            </li>
+            <li> <i>FromDistance</i> ja <i>ToDistance</i> &ndash; sis&auml;lt&auml;v&auml;t kunkin viivasegmentin Mist&auml;- ja Mihin-et&auml;isyydet. N&auml;m&auml; ominaisuustiedot kirjoitetaan, jos <b>Jaa j&auml;ljitys viivasegmenteiksi</b> -asetus on k&auml;yt&ouml;ss&auml;.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jos vaihtoehto  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> on valittuna, vain nykyisess&auml; karttalaajuudessa n&auml;kyv&auml;ss&auml; l&auml;ht&ouml;karttatasossa olevat pistekohteet analysoidaan. Jos vaihtoehto ei ole valittuna, kaikkia kohteita k&auml;ytet&auml;&auml;n, vaikka ne eiv&auml;t kuuluisi karttalaajuuteen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pistekohteet, joita käytetään kunkin alavirran jäljityksen aloitussijaintina</h2></div>
+        <hr/>
+        <div>
+            <p>Pistekohteet, joita k&auml;ytet&auml;&auml;n alavirran j&auml;ljityksen aloitussijaintina. Tulosaineisto sis&auml;lt&auml;&auml; viivan kutakin l&auml;ht&ouml;pistett&auml; kohti.
+            </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Jaa jäljitys viivasegmenteiksi</h2></div>
+        <hr/>
+        <div>
+            <p>J&auml;ljitysviiva jaetaan useaksi viivaksi, jossa kukin viiva on m&auml;&auml;ritetyn pituinen. Jos l&auml;ht&ouml;piste edustaa esimerkiksi saastevalumaa, ja joki, johon saaste valuu, liikkuu nopeudella 0,6 mailia/tunti tai 15 mailia/p&auml;iv&auml;, haluat ehk&auml; jakaa joen 15 segmenttiin. Jakamalla j&auml;ljityksen 15 mailin v&auml;leihin voit n&auml;hd&auml; suurin piirtein, miss&auml; valuma kulkee kunakin p&auml;iv&auml;n&auml;. Viivaan lis&auml;t&auml;&auml;n symboliikkaa k&auml;ytt&auml;m&auml;ll&auml; et&auml;isyyteen perustuvia liukuv&auml;rej&auml; ja ne merkit&auml;&auml;n et&auml;isyydell&auml; j&auml;ljityksen alusta. Tuloksena syntyv&auml;ss&auml; reitiss&auml; on useita viivasegmenttej&auml;, joista kussakin on kent&auml;t  <i>FromDistance</i> ja <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Jäljityksen enimmäisetäisyys</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml; palautettavan viivan kokonaispituuden. Jos m&auml;&auml;rit&auml;t aluekohteet j&auml;ljityksen leikkausta varten, tulos leikataan aluekohteeseen t&auml;ss&auml; antamastasi et&auml;isyydest&auml; riippumatta.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Leikkaa tulosaineisto kohteeseen</h2></div>
+        <hr/>
+        <div>
+            <p>Piirr&auml; tai m&auml;&auml;rit&auml; sen alueen karttataso, johon haluat leikata j&auml;ljityksen. Jos haluat esimerkiksi, ett&auml; j&auml;ljitystulos sis&auml;ltyy vain tarkastelualueeseen, kuten kuntaan, k&auml;yt&auml; l&auml;ht&ouml;aineistona kuntakohdetta, jotta j&auml;ljitys p&auml;&auml;ttyy kunnan rajalle.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen tason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttatason nimi on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+            <p> T&auml;m&auml;n ty&ouml;kalun suorittaminen ei kuluta krediittej&auml;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

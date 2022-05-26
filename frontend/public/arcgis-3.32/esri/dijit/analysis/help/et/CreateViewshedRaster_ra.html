@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Loo vaateväli</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Vaatev&auml;lja loomise t&ouml;&ouml;riist"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist m&auml;&auml;ratleb vaatleja n&auml;htavad alad, olenevalt pinna topograafiast. Sisendipunktid v&otilde;ivad t&auml;histada kas vaatlejaid (nt maapinnal v&otilde;i vaatetornis asuvaid inimesi) v&otilde;i vaadeldavaid objekte (nt tuuleturbiinid, veetornid, s&otilde;idukid v&otilde;i teised inimesed). Tulemitega m&auml;&auml;ratakse alad, mis on vaatleja asukohtadest n&auml;htavad.
+    </p>
+    <p>Nii vaatlejatel kui ka vaadeldavatel objektidel v&otilde;ib olla kindel k&otilde;rgus maapinnast ning neid k&otilde;rgusi kasutatakse n&auml;htavuse m&auml;&auml;ramisel. N&auml;iteks 90 m k&otilde;rguse tuuleturbiini ja maapinnal seisva 180 cm pikkuse inimese jaoks arvutatud vaatev&auml;li on &uuml;ldjuhul suurem kui 60 m k&otilde;rguse tuuleturbiini ning 150 cm pikkuse inimese korral.
+    </p>
+    <p>Tulemkiht j&auml;&auml;dvustab, mitu korda on sisendi pinnarastri iga lahtri asukohta sisendi vaatluspunktides n&auml;ha. N&auml;htamatutele pikslitele antakse v&auml;&auml;rtused NoData.
+    </p>
+    <p>Kui ruut  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, anal&uuml;&uuml;sitakse ainult rasterala ja vaatluspunkte, mis on kaardi praeguses ulatuses n&auml;htavad. Kui see ruut pole m&auml;rgitud, kasutatakse anal&uuml;&uuml;si koostamisel k&otilde;iki sisendkihis olevaid vaatluspunkte ka siis, kui neid pole praegu kaardil n&auml;ha.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Kõrguspind</h2></div>
+        <hr/>
+        <div>
+            <p>K&otilde;rguspind, mida kasutatakse vaatev&auml;lja arvutamiseks.
+            </p>
+            <p>Kui sisendi pinna vertikaalne &uuml;hik erineb horisontaalsest &uuml;hikust (nt kui k&otilde;rguse v&auml;&auml;rtused on jalgades, kuid koordinaats&uuml;steem on meetrites), peab pinnal olema m&auml;&auml;ratletud vertikaalne koordinaats&uuml;steem. P&otilde;hjuseks on see, et t&ouml;&ouml;riist kasutab vertikaalseid (Z) ja horisontaalseid (XY) &uuml;hikuid selleks, et arvutada vaatev&auml;lja anal&uuml;&uuml;si Z-tegur. Kui vertikaalset koordinaats&uuml;steemi pole ja Z-&uuml;hiku teave pole saadaval, eeldab t&ouml;&ouml;riist, et Z-&uuml;hik on samasugune kui XY-&uuml;hik. Selle tulemusena kasutatakse anal&uuml;&uuml;si jaoks sisemist Z-tegurit 1,0, mis v&otilde;ib anda ootamatuid tulemusi.
+            </p>
+            <p>K&otilde;rguspind v&otilde;ib olla t&auml;isarv v&otilde;i ujuva v&auml;&auml;rtusega arv.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Punktobjektid, mis tähistavad vaatleja asukohti</h2></div>
+        <hr/>
+        <div>
+            <p>Punktobjektid, mis t&auml;histavad vaatev&auml;ljade arvutamisel vaatleja asukohti.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimeeri järgmise jaoks</h2></div>
+        <hr/>
+        <div>
+            <p>Optimeerimismeetod, mida kasutatakse vaatev&auml;lja arvutamiseks.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+See meetod on optimeeritud t&ouml;&ouml;tlemiskiiruse jaoks, mist&otilde;ttu on tulemused veidi ebat&auml;psemad. See on vaikimisi valik.
+
+                </li>
+                <li>Accuracy &mdash; 
+See meetod on optimeeritud tulemuste t&auml;psuse jaoks ning t&ouml;&ouml;tlemine v&otilde;tab kauem aega.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Suurim vaatamiskaugus</h2></div>
+        <hr/>
+        <div>
+            <p>Sisestage kaugus, millest alates n&auml;htavate alade arvutamine peatub. Sellest kaugusest edasi pole kindlaks tehtud, kas vaatluspunktid ja muud objektid on &uuml;ksteise vaatev&auml;ljas.
+            </p>
+            <p>You can either specify a numerical value representing a linear distance or select a numerical field from the input observer features. If a field is provided, the values contained in the field must be in the same unit as the xy unit of the input elevation surface.
+            </p>
+            <p>V&otilde;tke arvesse, et suured v&auml;&auml;rtused pikendavad arvutusaega. Kui seda pole m&auml;&auml;ratud, arvutatakse suurima kauguse vaikev&auml;&auml;rtus sisendi k&otilde;rguspinna eraldusv&otilde;ime ja ulatuse p&otilde;hjal.
+            </p>
+            <p>See parameeter on kasulik teatud n&auml;htuste modelleerimiseks. Kui piirate n&auml;iteks n&auml;htavuse ulatust, saate modelleerida ilmastikutingimusi, nt kerget udu. N&auml;htavuse ulatuse piiramine v&otilde;imaldab teil m&otilde;neti kontrollida ka kellaaega, prognoosides videviku m&otilde;ju.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Suurim vaatamiskaugus</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Väikseim vaatamiskaugus</h2></div>
+        <hr/>
+        <div>
+            <p>Sisestage kaugus, millest alates n&auml;htavate alade arvutamine algab. Pinna lahtrid, mis on sellest kaugusest l&auml;hemal, pole v&auml;ljundis n&auml;htavad, kuid v&otilde;ivad siiski blokeerida v&auml;ikseima ja suurima vaatamiskauguse vahele j&auml;&auml;vate lahtrite n&auml;htavust.
+            </p>
+            <p>You can either specify a numerical value representing a linear distance or select a numerical field from the input observer features. If a field is provided, the values contained in the field must be in the same unit as the xy unit of the input elevation surface.
+            </p>
+            <p>See parameeter v&otilde;imaldab reguleerida vaatev&auml;lja anal&uuml;&uuml;siala, mis j&auml;&auml;b vaatlejast kindla kauguse jagu eemale. Kui hindate n&auml;iteks n&auml;htavust hoone tipust kaugelasuva pargini, saate m&auml;&auml;rata v&auml;ikseima vaatamiskauguse, et v&auml;listada l&auml;heduses asuvad mittehuvipakkuvad alad ning saavutada parema t&ouml;&ouml;tlemiskiiruse.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Väikseim vaatamiskaugus</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>Vahemaa on 3D kujul</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rake, kas v&auml;ikseima ja suurima vaatamiskauguse parameetrid on m&otilde;&otilde;detud kolmem&otilde;&otilde;tmelisel viisil v&otilde;i lihtsamal kahem&otilde;&otilde;tmelisel viisil. Kui see suvand on m&auml;rgitud, k&auml;sitletakse vaatamiskaugusi 3D-vahemaana. Kui see pole m&auml;rgitud, k&auml;sitletakse neid 2D-vahemaana.
+            </p> 
+            <p>2D-vahemaa on lihtne lineaarne vahemaa vaatleja ja sihtm&auml;rgi vahel, mille aluseks on v&otilde;etud nende prognoositud asukohad merepinna tasemel. 3D-vahemaa annab realistlikuma v&auml;&auml;rtuse, v&otilde;ttes arvesse nende suhtelisi k&otilde;rgusi.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Vaatleja asukohtade kõrgus</h2></div>
+        <hr/>
+        <div>
+            <p>Sisestage vaatleja asukohtade k&otilde;rgus.
+            </p>
+            <p>V&otilde;ite m&auml;&auml;rata kas arvv&auml;&auml;rtuse, mis t&auml;histab k&otilde;ikide vaatlejate k&otilde;rgust v&otilde;i v&auml;lja, mis t&auml;histab iga vaatleja k&otilde;rgust. V&auml;lja m&auml;&auml;ramisel peab v&auml;ljal sisalduv v&auml;&auml;rtus olema samas &uuml;hikus nagu sisendi k&otilde;rguspinna Z-&uuml;hik.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Vaatleja asukohtade kõrgus</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Vaatlejate kõrgus</h2></div>
+        <hr/>
+        <div>
+            <p>Sisestage vaatleja asukohtade k&otilde;rgus maapinnast.
+            </p> 
+            <p>K&otilde;rguse jaoks saate sisestada numbrilise v&auml;&auml;rtuse v&otilde;i valida v&auml;lja vaatlejat t&auml;histavate sisendobjektide seast. If a field is provided, the value contained in the field must be in the same unit as the z-unit of the input elevation surface.
+            </p>
+            <p>Vaikev&auml;&auml;rtus on 180 cm. Kui asukoht on k&otilde;rgemal (nt vaatlustorn v&otilde;i k&otilde;rge hoone), kasutage hoopis selle k&otilde;rgust. Vaatev&auml;lja arvutamisel lisatakse see v&auml;&auml;rtus vaatleja k&otilde;rgusele (kui see on m&auml;&auml;ratud); vastasel juhul lisatakse see interpoleeritava pinna z-v&auml;&auml;rtusele.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Vaatlejate kõrgus</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Sihtmärgi kõrgus</h2></div>
+        <hr/>
+        <div>
+            <p>Sisestage rajatiste k&otilde;rgus maapinnast v&otilde;i inimeste pikkus, mida kasutatakse n&auml;htavuse arvutamiseks.
+            </p>
+            <p>K&otilde;rguse jaoks saate sisestada numbrilise v&auml;&auml;rtuse v&otilde;i valida v&auml;lja vaatlejat t&auml;histavate sisendobjektide seast. If a field is provided, the value contained in the field must be in the same unit as the z-unit of the input elevation surface.
+            </p>
+            <p>Tulemuseks saadav vaatev&auml;li teeb kindlaks need alad, kus vaatluspunktist n&auml;eb neid maapinnal olevaid objekte. Sama kehtib ka vastupidi: maapinnal olevatest objektidest n&auml;eb vaatluspunkti. 
+            </p>
+            <p>J&auml;rgnevalt on toodud m&otilde;ned sihtm&auml;rgi k&otilde;rguse n&auml;ited.
+            </p>
+            <ul>
+                <li>Kui teie sisendpunktid t&auml;histavad tuuleturbiine ja soovite kindlaks m&auml;&auml;rata, kus n&auml;evad maapinnal seisvad inimesed turbiine, sisestage inimese keskmine pikkus (ligikaudu 180 cm).
+                    
+
+                </li>
+                <li>Kui teie sisendpunktid t&auml;histavad tulet&otilde;rje vaatlustorne ja soovite kindlaks m&auml;&auml;rata, millistest vaatlustornidest n&auml;eb v&auml;hemalt 6 m k&otilde;rgusele t&otilde;usvat suitsujuga, sisestage sihtm&auml;rgi k&otilde;rguseks 6 m.
+                    
+
+                </li>
+                <li>Kui teie sisendpunktid t&auml;histavad looduse imetlemiseks m&otilde;eldud vaatluskohta maantee v&otilde;i teeraja &auml;&auml;res ja soovite kindlaks m&auml;&auml;rata, kust n&auml;eb v&auml;hemalt 120 m k&otilde;rgusi tuuleturbiine, sisestage k&otilde;rguseks 120 m.
+                    
+
+                </li>
+                <li>Kui teie sisendpunktid t&auml;histavad looduse imetlemiseks m&otilde;eldud vaatluskohta ja soovite kindlaks m&auml;&auml;rata, kui suurt maa-ala vaatluskohas seisvad inimesed n&auml;evad, sisestage sihtm&auml;rgi k&otilde;rguseks null. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Vaatlejate kõrgus</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Väljundi kõrgus nähtavaks tegemise jaoks</h2></div>
+        <hr/>
+        <div>
+            <p>Maapinnast k&otilde;rgemal oleva (AGL) v&auml;ljundi nimi. AGL-tulemus on raster, kus iga lahtri v&auml;&auml;rtuseks on minimaalne k&otilde;rgus, mis tuleb lisada muidu n&auml;htamatule lahtrile, et muuta see v&auml;hemalt &uuml;he vaatleja jaoks n&auml;htavaks. Juba n&auml;htavatele pikslitele m&auml;&auml;ratakse selles v&auml;ljundrastris v&auml;&auml;rtus 0.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

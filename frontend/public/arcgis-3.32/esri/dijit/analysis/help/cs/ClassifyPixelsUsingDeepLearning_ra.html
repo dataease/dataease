@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Klasifikovat pixely pomocí deep learningu (Classify Pixels Using Deep Learning)</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Klasifikovat pixely pomoc&iacute; deep learningu"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj spust&iacute; model učen&iacute; deep learningu na vstupn&iacute;m rastru pro vytvořen&iacute; klasifikovan&eacute;ho rastru se tř&iacute;dou popisků přiřazenou ke každ&eacute;mu platn&eacute;mu pixelu.
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t aktu&aacute;ln&iacute; rozsah mapy</b> , budou analyzov&aacute;ny pouze rastrov&eacute; oblasti viditeln&eacute; v&nbsp;aktu&aacute;ln&iacute;m rozsahu mapy. Pokud pole za&scaron;krtnuto nen&iacute;, bude analyzov&aacute;n cel&yacute; rastr, i když se nach&aacute;z&iacute; mimo aktu&aacute;ln&iacute; rozsah mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Vyberte snímek, který bude použit ke klasifikování pixelů</h2></div>
+        <hr/>
+        <div>
+            <p>Vstupn&iacute; sn&iacute;mek ke klasifikaci.
+            </p>
+            <p>Může to b&yacute;t URL image služby, rastrov&aacute; vrstva nebo vrstva image služby.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Vyberte model deep learningu, který bude použit ke klasifikování pixelů</h2></div>
+        <hr/>
+        <div>
+            <p>Vstupem je položka deep learningov&eacute;ho bal&iacute;čku ( <code>.dlpk</code>) .
+            </p>
+            <p>Deep learningov&yacute; bal&iacute;ček je složen ze souboru JSON s definic&iacute; modelu Esri ( <code>.emd</code>), souboru s bin&aacute;rn&iacute;m modelem deep learningu, a volitelně rastrov&eacute; funkce Python k použit&iacute;.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Zadejte argumenty modelu deep learningu</h2></div>
+        <hr/>
+        <div>
+            <p>Argumenty funkce jsou definov&aacute;ny ve tř&iacute;dě rastrov&eacute; funkce jazyka Python, na kterou odkazuje vstupn&iacute; model. Zde uvedete dal&scaron;&iacute; parametry deep learningu a argumenty pro experimenty a zlep&scaron;ov&aacute;n&iacute;, např. hranice spolehlivosti pro nastaven&iacute; citlivosti.
+            </p>
+            <p>N&aacute;zvy argumentů jsou dosazeny n&aacute;strojem z Python modulu na serveru rastrov&eacute; anal&yacute;zy.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>N&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; se do mapy. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>Můžete zadat n&aacute;zev složky v  <b>Můj obsah</b>, kde bude v&yacute;sledek uložen pomoc&iacute; rozbalovac&iacute;ho seznamu <b>Uložit v&yacute;sledek do</b> .
+            </p>
+        </div>
+    </div>
+</div>
+</html>

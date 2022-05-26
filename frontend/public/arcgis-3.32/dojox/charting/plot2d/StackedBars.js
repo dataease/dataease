@@ -1,0 +1,2 @@
+//>>built
+define("dojox/charting/plot2d/StackedBars",["dojo/_base/declare","dojo/_base/lang","./Bars","./commonStacked"],function(c,e,f,d){return c("dojox.charting.plot2d.StackedBars",f,{getSeriesStats:function(){var a=d.collectStats(this.series,e.hitch(this,"isNullValue")),b;a.hmin-=.5;a.hmax+=.5;b=a.hmin;a.hmin=a.vmin;a.vmin=b;b=a.hmax;a.hmax=a.vmax;a.vmax=b;return a},rearrangeValues:function(a,b,c){return d.rearrangeValues.call(this,a,b,c)}})});

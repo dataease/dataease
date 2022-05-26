@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Sažmi sredinu i disperziju</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Sažmi sredinu i disperziju"></h2>
+        <hr/>
+    <p>Ovaj alat pronalazi sredi&scaron;nje geoobjekte i distribucije smjerova.
+Može se koristiti za odgovaranje na pitanja kao &scaron;to su:
+        <ul>
+            <li>Gdje je sredi&scaron;te?
+            </li>
+            <li>Koji je geoobjekt najpristupačniji od svih ostalih geoobjekata?
+            </li>
+            <li>Koliko su raspr&scaron;eni, kompaktni ili integrirani geoobjekti?
+            </li>
+            <li>Postoje li trendovi u kretanju?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, analizirat će se samo geoobjekti u sloju unosa koji su vidljivi unutar trenutačnog obuhvata karte. Ako opcija nije označena, analizirat će se svi geoobjekti u ulaznom sloju, čak i ako se nalaze izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Izaberite sloj koji će se opisati</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti, linijski ili poligonalni sloj koji će se upotrijebiti za pronalaženje sredi&scaron;njih geoobjekata i distribucija smjerova.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Vrste sadržaja</h2></div>
+        <hr/>
+        <div>
+            <p>Metoda sažimanja centra i disperzije. 
+            </p>
+            <ul>
+                <li>Sredi&scaron;nji geoobjekt &ndash; prepoznaje geoobjekt koji se najvi&scaron;e nalazi u sredini u skupu podataka.
+                </li>
+                <li>Srednja sredina &ndash; prepoznaje geografsko sredi&scaron;te (ili sredi&scaron;te koncentracije) skupa geoobjekata.
+                </li>
+                <li>Prosječna sredina &ndash; prepoznaje lokaciju koja smanjuje ukupnu euklidsku udaljenost do geoobjekata u skupu podataka.
+                </li>
+                <li>Elipsa &ndash; stvara elipse standardne devijacije radi sažimanja prostornih karakteristika geoobjekata: usmjerenje prema sredi&scaron;tu, disperzija i trendovi kretanja. Veličina elipsa može se odrediti kao 1, 2 ili 3 standardne devijacije.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Težina prema (neobavezno)</h2></div>
+        <hr/>
+        <div>
+            <p>Polje koje se upotrebljava za vaganje relativne važnosti lokacija. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Grupiraj prema (neobavezno)</h2></div>
+        <hr/>
+        <div>
+            <p>Polje se upotrebljava za grupiranje geoobjekata za različite izračune sredi&scaron;njih geoobjekata ili disperzije. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će se stvoriti u dijelu  <b>Moj sadržaj</b> i dodati karti.  Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako naziv sloja već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Nyomvonal-rekonstrukció</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="Nyomvonal-rekonstrukci&oacute;"></h2>
+        <hr/>
+    <p> Ez az eszk&ouml;z <code>időpillanatot</code> le&iacute;r&oacute; pontszerű vagy ter&uuml;let vektoros elemek időb&eacute;lyeggel ell&aacute;tott r&eacute;teg&eacute;vel dolgozik.   Elősz&ouml;r egy azonos&iacute;t&oacute; seg&iacute;ts&eacute;g&eacute;vel meg&aacute;llap&iacute;tja, hogy mely vektoros elemek tartoznak egy nyomvonalhoz. Az egyes helyek idej&eacute;t felhaszn&aacute;lva sorba rendezi, majd a mozg&aacute;s &uacute;tvonal&aacute;nak időbeli alakul&aacute;s&aacute;t jelző vonall&aacute; vagy ter&uuml;lett&eacute; alak&iacute;tja a nyomvonalakat. A bemenet opcion&aacute;lisan bufferelhető mezővel, ami minden egyes helyen egy ter&uuml;letet hoz l&eacute;tre.  Ezut&aacute;n ezeket a bufferelt pontokat vagy bemeneti ter&uuml;leteket sorba rendezve &eacute;s &ouml;sszekapcsolva egy nyomvonalat hoz l&eacute;tre ter&uuml;let form&aacute;j&aacute;ban, ahol a vizsg&aacute;lt attrib&uacute;tum a sz&eacute;less&eacute;g. Az eredm&eacute;ny&uuml;l kapott nyomvonalak kezd&eacute;si &eacute;s befejez&eacute;si időponttal rendelkeznek, amelyek az időben első &eacute;s utols&oacute; vektoros elemet jelentik az adott nyomvonalon. A nyomvonalak l&eacute;trehoz&aacute;sa ut&aacute;n az eszk&ouml;z kisz&aacute;m&iacute;tja a bemeneti vektoros elemek statisztik&aacute;it, &eacute;s azokat hozz&aacute;rendeli a kimeneti nyomvonalhoz. A legalapvetőbb statisztikai adat a ter&uuml;leten bel&uuml;li pontok sz&aacute;ma, de m&aacute;s statisztikai adatok is sz&aacute;m&iacute;that&oacute;k.
+    </p>
+    <p>Az időb&eacute;lyeggel ell&aacute;tott r&eacute;tegeken l&eacute;vő vektoros elemek k&eacute;tf&eacute;lek&eacute;ppen &aacute;br&aacute;zolhat&oacute;k:
+        <ul>
+            <li>Pillanat &ndash; egyetlen időpillanat
+            </li>
+            <li>Intervallum &ndash; egy kezdő &eacute;s egy befejező időpont
+            </li>
+        </ul>
+        
+    </p>
+    <p>Tegy&uuml;k fel p&eacute;ld&aacute;ul, hogy GPS-m&eacute;r&eacute;sekkel rendelkezik hurrik&aacute;nokr&oacute;l 10 percenk&eacute;nt. Mindegyik GPS-m&eacute;r&eacute;s tartalmazza a hurrik&aacute;n nev&eacute;t, hely&eacute;t, a r&ouml;gz&iacute;t&eacute;s időpontj&aacute;t &eacute;s a sz&eacute;lsebess&eacute;get. Ebből az inform&aacute;ci&oacute;b&oacute;l elk&eacute;sz&iacute;theti mindegyik hurrik&aacute;n nyomvonal&aacute;t a nyomvonal-azonos&iacute;t&oacute; felhaszn&aacute;l&aacute;s&aacute;val, amelyből az eszk&ouml;z l&eacute;trehozza az egyes hurrik&aacute;nok nyomvonal&aacute;t. Ezenk&iacute;v&uuml;l olyan statisztik&aacute;kat sz&aacute;m&iacute;thatna mindegyik hurrik&aacute;nhoz, mint az &aacute;tlag, a maxim&aacute;lis &eacute;s a minim&aacute;lis sz&eacute;lsebess&eacute;g, valamint az egyes nyomvonalon bel&uuml;li m&eacute;r&eacute;sek sz&aacute;ma.
+    </p>
+    <p>A p&eacute;ld&aacute;t folytatva bufferelhetn&eacute; is a nyomvonalat a sz&eacute;lsebess&eacute;g alapj&aacute;n. Ekkor az eszk&ouml;z mindegyik m&eacute;r&eacute;st a sz&eacute;lsebess&eacute;g mező alapj&aacute;n buffereln&eacute; az adott helyen, majd a bufferelt ter&uuml;letek &ouml;sszekapcsol&aacute;s&aacute;val l&eacute;trehozn&aacute; a nyomvonal &uacute;tvonal&aacute;t &eacute;s a sz&eacute;lsebess&eacute;g v&aacute;ltoz&aacute;s&aacute;t &aacute;br&aacute;zol&oacute; ter&uuml;letet a hurrik&aacute;n mozg&aacute;sa k&ouml;zben.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Válassza ki azokat a vektoros elemeket, amelyekből rekonstruálni szeretné a nyomvonalakat</h2></div>
+        <hr/>
+        <div>
+            <p>A pontszerű vagy ter&uuml;let r&eacute;teg, amelyből a nyomvonal rekonstrukci&oacute;ja t&ouml;rt&eacute;nik. A bemenő r&eacute;tegnek időb&eacute;lyeggel ell&aacute;tott r&eacute;tegnek kell lennie olyan vektoros elemekkel, amelyek egy időpillanatot &iacute;rnak le. A r&eacute;tegnek vet&uuml;leti koordin&aacute;ta-rendszerben kell lennie, vagy az alkalmazott t&eacute;rbeli referenci&aacute;t vet&uuml;leti koordin&aacute;ta-rendszerre kell &aacute;ll&iacute;tani az  <b>Elemz&eacute;si k&ouml;rnyezetek</b> seg&iacute;ts&eacute;g&eacute;vel, ha buffert alkalmaz.
+            </p>
+            <p>Ahelyett, hogy egy r&eacute;teget v&aacute;laszt a t&eacute;rk&eacute;p&eacute;ről, v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n l&eacute;vő  <b>Eredm&eacute;nyr&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is, ha a saj&aacute;t tartalomban szeretne big data-f&aacute;jlmegoszt&oacute; adathalmazt vagy vektoros r&eacute;teget keresni.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Válasszon ki egy vagy több mezőt a nyomvonalak azonosításához</h2></div>
+        <hr/>
+        <div>
+            <p>A nyomvonal-azonos&iacute;t&oacute;t jelentő mezők. 
+            </p>
+            <p>Ha p&eacute;ld&aacute;ul hurrik&aacute;nok nyomvonal&aacute;t szeretn&eacute; rekonstru&aacute;lni, a hurrik&aacute;n nev&eacute;t haszn&aacute;lhatja nyomvonal mezők&eacute;nt.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Válassza ki a nyomvonalak rekonstruálásának módszerét</h2></div>
+        <hr/>
+        <div>
+            <p>A nyomvonalak &ouml;sszekapcsol&aacute;s&aacute;hoz &eacute;s a buffer alkalmaz&aacute;s&aacute;hoz haszn&aacute;lt m&oacute;dszer (adott esetben). A  <b>S&iacute;kbeli</b> m&oacute;dszer gyorsabban sz&aacute;molhatja az eredm&eacute;nyeket, de nem k&eacute;sz&iacute;t nyomvonalakat a nemzetk&ouml;zi d&aacute;tumv&aacute;laszt&oacute; vonalon, &eacute;s nem veszi figyelembe a f&ouml;ld t&eacute;nyleges alakj&aacute;t bufferel&eacute;s k&ouml;zben. A <b>Geod&eacute;ziai</b> m&oacute;dszer sz&uuml;ks&eacute;g eset&eacute;n k&eacute;sz&iacute;t nyomvonalakat a nemzetk&ouml;zi d&aacute;tumv&aacute;laszt&oacute; vonalon, &eacute;s geod&eacute;ziai bufferel&eacute;st alkalmaz a f&ouml;ld alakj&aacute;nak figyelembev&eacute;tele &eacute;rdek&eacute;ben.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Hozza létre a bemenő vektoros elemek bufferelésének alapjául szolgáló kifejezést (opcionális)</h2></div>
+        <hr/>
+        <div>
+            <p>A buffer bemenő vektoros elemek k&ouml;r&uuml;li t&aacute;vols&aacute;g&aacute;nak sz&aacute;m&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt egyenlet. Ez az egyenlet a bufferkalkul&aacute;torral hozhat&oacute; l&eacute;tre, &eacute;s t&aacute;mogatja az olyan alapvető műveleteket, mint az &ouml;sszead&aacute;s, a kivon&aacute;s, a szorz&aacute;s &eacute;s az oszt&aacute;s. Az &eacute;rt&eacute;keket az elemz&eacute;si koordin&aacute;ta-rendszerrel sz&aacute;molja. A r&eacute;tegnek vet&uuml;leti koordin&aacute;ta-rendszerben kell lennie, vagy az alkalmazott t&eacute;rbeli referenci&aacute;t vet&uuml;leti koordin&aacute;ta-rendszerre kell &aacute;ll&iacute;tani az  <b>Elemz&eacute;si k&ouml;rnyezetek</b> seg&iacute;ts&eacute;g&eacute;vel, ha buffert alkalmaz.
+            </p>
+            <p>A  <code>$feature.windspeed * 1000</code> egyenlet megad&aacute;sakor az alkalmazott buffer p&eacute;ld&aacute;ul 1000-szer a(z) <i>windspeed</i> mező &eacute;rt&eacute;ke lenne. A bufferkalkul&aacute;torban egyn&eacute;l t&ouml;bb mező is haszn&aacute;lhat&oacute;.
+            </p>
+            <p> K&ouml;vet&eacute;s&eacute;rz&eacute;keny kifejez&eacute;s is megadhat&oacute;. Kisz&aacute;m&iacute;thatja p&eacute;ld&aacute;ul a(z) <i>windspeed</i> mező aktu&aacute;lis vektoros elemhez &eacute;s az előző k&eacute;t vektoros elemhez tartoz&oacute; &eacute;rt&eacute;k&eacute;nek &ouml;sszeg&eacute;t a k&ouml;vetkező egyenlettel: <code>$track.field(windspeed).history(-3)</code>. Az eszk&ouml;z ekkor mindegyik helyen kisz&aacute;m&iacute;tja &eacute;s buffereli a(z) <i>windspeed</i> aktu&aacute;lis &eacute;rt&eacute;k&eacute;nek &eacute;s előző k&eacute;t m&eacute;r&eacute;s&eacute;nek &ouml;sszeg&eacute;t.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Válassza ki az útvonal felosztásához használni kívánt időt (opcionális)</h2></div>
+        <hr/>
+        <div>
+            <p>A nyomvonalak feloszt&aacute;s&aacute;hoz haszn&aacute;lt idő. Ha a bemenő pontok vagy ter&uuml;letek k&ouml;z&ouml;tti időtartam hosszabb, mint a feloszt&aacute;si idő, akkor k&uuml;l&ouml;nb&ouml;ző nyomvonalakra lesznek felosztva.
+            </p>
+            <p>Ha időbeli feloszt&aacute;st &eacute;s t&aacute;vols&aacute;gi feloszt&aacute;st is megad, az eszk&ouml;z az egyik vagy mindk&eacute;t felt&eacute;tel teljes&uuml;l&eacute;se eset&eacute;n osztja fel a nyomvonalakat. 
+            </p>
+            <p>Tegy&uuml;k fel, hogy egy rep&uuml;lőg&eacute;p j&aacute;ratait &aacute;br&aacute;zol&oacute; pontszerű vektoros elemek &aacute;llnak rendelkez&eacute;sre, &eacute;s a nyomvonal mező a rep&uuml;lőg&eacute;p-azonos&iacute;t&oacute;. A rep&uuml;lőg&eacute;p t&ouml;bb utat is megtehet, de ezek egy nyomvonalk&eacute;nt lesznek &aacute;br&aacute;zolva.  Ha tudn&aacute;, hogy az egyes j&aacute;ratok k&ouml;z&ouml;tt 1 &oacute;ra sz&uuml;net van,  <code>1 &oacute;r&aacute;t</code> haszn&aacute;lhatna a nyomvonalfeloszt&aacute;shoz, &eacute;s ekkor az eszk&ouml;z mindegyik j&aacute;ratot saj&aacute;t nyomvonalra osztan&aacute; fel.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Nyomvonalak felosztása (opcionális)</h2></div>
+        <hr/>
+        <div>
+            <p>H&aacute;rom k&uuml;l&ouml;nb&ouml;ző m&oacute;dszerrel oszthatja fel a nyomvonalakat. Ezeket az &ouml;sszes lehets&eacute;ges kombin&aacute;ci&oacute;ban haszn&aacute;lhatja. 
+            </p>
+            <p>A feloszt&aacute;s a k&ouml;vetkező m&oacute;dokon hozhat&oacute; l&eacute;tre:
+                <ul>
+                    <li> <b>A bemenetek k&ouml;z&ouml;tti t&aacute;vols&aacute;g alapj&aacute;n</b>&mdash;Ha a bemenő pontok vagy ter&uuml;letek k&ouml;z&ouml;tti t&aacute;vols&aacute;g sz&eacute;lesebb, mint a megadott t&aacute;vols&aacute;g, akkor k&uuml;l&ouml;nb&ouml;ző nyomvonalakra lesznek felosztva. Ha p&eacute;ld&aacute;ul 10 kilom&eacute;teres t&aacute;vols&aacute;got adott meg, akkor a 10 kilom&eacute;tern&eacute;l nagyobb szekvenci&aacute;lis pontok k&uuml;l&ouml;n nyomvonalak lesznek.
+                    </li>
+                    <li> <b>A bemenetek k&ouml;z&ouml;tti idő alapj&aacute;n</b>&mdash; Ha a bemenő pontok vagy ter&uuml;letek k&ouml;z&ouml;tti időtartam hosszabb, mint a feloszt&aacute;si idő, akkor k&uuml;l&ouml;nb&ouml;ző nyomvonalakra lesznek felosztva. Tegy&uuml;k fel, hogy egy rep&uuml;lőg&eacute;p j&aacute;ratait &aacute;br&aacute;zol&oacute; pontszerű vektoros elemek &aacute;llnak rendelkez&eacute;sre, &eacute;s a nyomvonal-mező a rep&uuml;lőg&eacute;p-azonos&iacute;t&oacute;. A rep&uuml;lőg&eacute;p t&ouml;bb utat is megtehet, de ezek egy nyomvonalk&eacute;nt lesznek &aacute;br&aacute;zolva.  Ha tudn&aacute;, hogy az egyes j&aacute;ratok k&ouml;z&ouml;tt 1 &oacute;ra sz&uuml;net van, <code>1 &oacute;r&aacute;t</code> haszn&aacute;lhatna a nyomvonalfeloszt&aacute;shoz, &eacute;s ekkor az eszk&ouml;z mindegyik j&aacute;ratot saj&aacute;t nyomvonalra osztan&aacute; fel.
+                    </li>
+                    <li> <b>Meghat&aacute;rozott idők&ouml;z&ouml;kn&eacute;l</b>&mdash;Feloszt&aacute;s egy idők&ouml;z &eacute;s egy referenciaidő seg&iacute;ts&eacute;g&eacute;vel megadott, rendszeres idők&ouml;z&ouml;k haszn&aacute;lat&aacute;val. Ha nem ad meg referenciaidőt, akkor a referenciaidő 1970. jan. 1-je lesz. Ha p&eacute;ld&aacute;ul 1 &eacute;vet ad meg 1990. febr. 2. 10.00 &oacute;rai referenciaidővel, akkor 1990. febr. 2. 10.00 &oacute;rakor lesz egy nyomvonalfeloszt&aacute;s, majd ezt k&ouml;vetően 1 &eacute;ves idők&ouml;z&ouml;nk&eacute;nt.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ha t&ouml;bb feloszt&aacute;si opci&oacute;t ad meg, akkor az eszk&ouml;z egy vagy t&ouml;bb felt&eacute;tel teljes&uuml;l&eacute;se eset&eacute;n osztja fel a nyomvonalakat. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Válassza ki az útvonal felosztásához használni kívánt távolságot (opcionális)</h2></div>
+        <hr/>
+        <div>
+            <p>A nyomvonalak feloszt&aacute;s&aacute;hoz haszn&aacute;lt t&aacute;vols&aacute;g. Ha a bemenő pontok vagy ter&uuml;letek k&ouml;z&ouml;tti t&aacute;vols&aacute;g sz&eacute;lesebb, mint a feloszt&aacute;si t&aacute;vols&aacute;g, akkor k&uuml;l&ouml;nb&ouml;ző nyomvonalakra lesznek felosztva.
+            </p>
+            <p>Ha időbeli feloszt&aacute;st &eacute;s t&aacute;vols&aacute;gi feloszt&aacute;st is megad, az eszk&ouml;z az egyik vagy mindk&eacute;t felt&eacute;tel teljes&uuml;l&eacute;se eset&eacute;n osztja fel a nyomvonalakat. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Statisztika hozzáadása (opcionális)</h2></div>
+        <hr/>
+        <div>
+            <p> Statisztik&aacute;kat sz&aacute;m&iacute;that &ouml;sszes&iacute;tett vektoros elemeken. Numerikus mezők&ouml;n a k&ouml;vetkező statisztik&aacute;k sz&aacute;m&iacute;that&oacute;k:
+                <ul>
+                    <li>Sz&aacute;m &ndash; a nem null &eacute;rt&eacute;kek darabsz&aacute;m&aacute;t sz&aacute;m&iacute;tja ki. Numerikus mezők&ouml;n vagy karakterl&aacute;ncokon haszn&aacute;lhat&oacute;. A [null, 0, 2] darabsz&aacute;ma 2.
+                    </li>
+                    <li>&Ouml;sszeg &ndash; egy mezőben l&eacute;vő numerikus &eacute;rt&eacute;kek &ouml;sszege. A [null, null, 3] &ouml;sszege 3.
+                    </li>
+                    <li>&Aacute;tlag &ndash; a numerikus &eacute;rt&eacute;kek &aacute;tlaga. A [0, 2, null] &aacute;tlaga 1.
+                    </li>
+                    <li>Min &ndash; egy numerikus mező legkisebb &eacute;rt&eacute;ke. A [0, 2, null] minimuma 0. 
+                    </li>
+                    <li>Max &ndash; egy numerikus mező legnagyobb &eacute;rt&eacute;ke. A [0, 2, null] maximuma 2.
+                    </li>
+                    <li>Terjedelem &ndash; egy numerikus mező terjedelme. Ennek kisz&aacute;m&iacute;t&aacute;s&aacute;hoz az eszk&ouml;z a legkisebb &eacute;rt&eacute;keket vonja ki a legnagyobb &eacute;rt&eacute;kből. A [0, null, 1] terjedelme 1. A [null, 4] terjedelme 0.
+                    </li>
+                    <li>Variancia &ndash; egy numerikus mező varianci&aacute;ja egy k&ouml;vet&eacute;sben. Az [1] varianci&aacute;ja null &eacute;rt&eacute;kű. A [null, 1, 0, 1, 1] varianci&aacute;ja 0,25.
+                    </li>
+                    <li>Sz&oacute;r&aacute;s &ndash; egy numerikus mező sz&oacute;r&aacute;sa. Az [1] sz&oacute;r&aacute;sa null &eacute;rt&eacute;kű. A [null, 1, 0, 1, 1] sz&oacute;r&aacute;sa 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Karakterl&aacute;nc t&iacute;pus&uacute; mezők&ouml;n a k&ouml;vetkező statisztik&aacute;k sz&aacute;m&iacute;that&oacute;k:
+                <ul>
+                    <li>Sz&aacute;m &ndash; a nem null karakterl&aacute;ncok darabsz&aacute;ma.
+                    </li>
+                    <li>B&aacute;rmelyik &ndash; ez a statisztika a megadott mezőben l&eacute;vő karakterl&aacute;nc egy v&eacute;letlenszerű mint&aacute;ja.
+                    </li>
+                </ul>
+                Mindegyik statisztika sz&aacute;m&iacute;t&aacute;sa nem null &eacute;rt&eacute;keken t&ouml;rt&eacute;nik. Az eredm&eacute;ny&uuml;l kapott r&eacute;teg kisz&aacute;m&iacute;tott statisztikai adatonk&eacute;nt egy-egy &uacute;j mezőt fog tartalmazni. Attrib&uacute;tum &eacute;s statisztika kiv&aacute;laszt&aacute;s&aacute;val tetszőleges sz&aacute;m&uacute; statisztika hozz&aacute;adhat&oacute;. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>ArcGIS Data Store adattár kiválasztása az eredmények mentéséhez</h2></div>
+        <hr/>
+        <div>
+            <p>A geoanalitikai eredm&eacute;nyek ment&eacute;se egy adatt&aacute;rban t&ouml;rt&eacute;nik, &eacute;s a(z)  Portal for ArcGIS vektoros r&eacute;tegeik&eacute;nt szerepelnek. Az eredm&eacute;nyeket t&ouml;bbnyire a t&eacute;rbeli-időbeli adatt&aacute;rban aj&aacute;nlott t&aacute;rolni, &eacute;s az alap&eacute;rtelmezett be&aacute;ll&iacute;t&aacute;s is ez. Egyes esetekben j&oacute; v&aacute;laszt&aacute;s lehet az eredm&eacute;nyek ment&eacute;se a rel&aacute;ci&oacute;s adatt&aacute;rban. Az al&aacute;bbi &eacute;rvek sz&oacute;lnak az eredm&eacute;nyek rel&aacute;ci&oacute;s adatt&aacute;rban t&ouml;rt&eacute;nő t&aacute;rol&aacute;sa mellett: 
+                <ul>
+                    <li>Az eredm&eacute;nyek port&aacute;lok k&ouml;z&ouml;tti egy&uuml;ttműk&ouml;d&eacute;sben haszn&aacute;lhat&oacute;k.
+                    </li>
+                    <li>Enged&eacute;lyezheti az eredm&eacute;nyekkel val&oacute; szinkroniz&aacute;l&aacute;si lehetős&eacute;geket
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nem aj&aacute;nlott a rel&aacute;ci&oacute;s adatt&aacute;r haszn&aacute;lata, ha a geoanalitikai eredm&eacute;nyek mennyis&eacute;g&eacute;nek n&ouml;veked&eacute;se v&aacute;rhat&oacute;, &eacute;s ki kell haszn&aacute;lni a t&eacute;rbeli-időbeli big data-adatt&aacute;r k&eacute;pess&eacute;geit a nagy adatmennyis&eacute;g kezel&eacute;s&eacute;re.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredményréteg neve</h2></div>
+        <hr/>
+        <div>
+            <p> A l&eacute;trehozand&oacute; r&eacute;teg neve.  Ha egy ArcGIS Data Store helyre &iacute;r, akkor  eredm&eacute;nyei a  <b>Saj&aacute;t tartalom</b> alatt lesznek elmentve, &eacute;s hozz&aacute; lesznek adva a t&eacute;rk&eacute;phez. Ha egy big data f&aacute;jlmegoszt&oacute;ba &iacute;r, akkor eredm&eacute;nyei a big data f&aacute;jlmegoszt&oacute;ba lesznek elmentve, &eacute;s hozz&aacute; lesznek adva annak jegyz&eacute;kf&aacute;jlj&aacute;hoz. Nem lesznek hozz&aacute;adva a t&eacute;rk&eacute;phez. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a művelet sikertelen lesz.
+            </p>
+            <p>Ha   ArcGIS Data Store (rel&aacute;ci&oacute;s vagy t&eacute;rbeli-időbeli big data adatt&aacute;rba) &iacute;r az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő mező haszn&aacute;lat&aacute;val, akkor megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

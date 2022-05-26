@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpoluj punkty</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Narzędzie Interpoluj punkty"></h2>
+        <hr/>
+    <p>Jest to narzędzie umożliwiające przewidywanie wartości w&nbsp;nowych lokalizacjach na podstawie pomiar&oacute;w ze zbioru punkt&oacute;w. Korzysta ono z danych punktowych, z kt&oacute;rych każdy ma określoną wartość i zwraca raster przewidywanych wartości.
+    </p>
+    <p>Narzędzie to ma r&oacute;wnież następujące zastosowania:
+
+        <ul>
+            <li>Na obszarze objętym systemem zarządzania jakością powietrza znajdują się czujniki wykonujące pomiary poziomu zanieczyszczenia. Narzędzia Interpoluj punkty można użyć do prognozowania wartości poziomu zanieczyszczeń w miejscach, gdzie nie ma czujnik&oacute;w, na przykład w lokalizacjach, w kt&oacute;rych znajduje się populacja szczeg&oacute;lnie narażona, takich jak na przykład szkoły czy szpitale.
+                
+
+            </li>
+            <li>Przewidywanie zawartości metali ciężkich w zbożach na podstawie pobranych pr&oacute;bek określonych roślin uprawnych.
+                
+
+            </li>
+            <li>Przewidywanie poziom&oacute;w substancji odżywczych w glebie (azot, fosfor, potas itp.) oraz innych właściwości (na przykład przewodność elektryczna gleby) w celu oceny ich wpływu na zbiory oraz ustalenia precyzyjnej ilości nawozu, jaką należy zastosować dla każdej lokalizacji pola.
+                
+
+            </li>
+            <li>Aplikacje meteorologiczne oferują możliwość przewidywania wartości temperatur, opad&oacute;w oraz innych powiązanych zmiennych (na przykład opad&oacute;w kwaśnych deszczy).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Wybierz warstwę punktową zawierającą lokalizacje ze znanymi wartościami</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa punktowa zawierająca punkty, w kt&oacute;rych wartości zostały zmierzone.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Wybierz pole do interpolacji</h2></div>
+        <hr/>
+        <div>
+            <p>Wybierz pole, kt&oacute;rego wartości mają zostać zinterpolowane. Pole musi być typu liczbowego.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optymalizuj dla</h2></div>
+        <hr/>
+        <div>
+            <p>Należy wybrać prędkość lub precyzję, zależnie od preferencji.
+            </p>
+            <p>Wykonanie bardziej precyzyjnych prognoz zajmuje więcej czasu. Ten parametr modyfikuje wartości domyślne kilku innych parametr&oacute;w narzędzia Interpoluj punkty, aby zoptymalizować szybkość obliczeń, dokładność wynik&oacute;w lub zr&oacute;wnoważyć te cechy. Domyślnie narzędzie będzie optymalizować obliczenia w taki spos&oacute;b, aby zachować r&oacute;wnowagę między szybkością a dokładnością obliczeń.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Przekształć dane w rozkład normalny</h2></div>
+        <hr/>
+        <div>
+            <p>Wybierz, czy przekształcić dane w rozkład normalny.
+            </p>
+            <p>Interpolacja jest najbardziej dokładna dla danych o rozkładzie normalnym (krzywa dzwonowa). W przypadku danych o innym rozkładzie należy dokonać transformacji.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Wielkość modeli lokalnych</h2></div>
+        <hr/>
+        <div>
+            <p>Narzędzie Interpoluj punkty działa, budując lokalne modele interpolacji, kt&oacute;re są łączone w celu utworzenia końcowej mapy prognozy. Ten parametr steruje liczbą punkt&oacute;w, kt&oacute;re będą zawarte w poszczeg&oacute;lnych modelach lokalnych. Mniejsze wartości pozwolą uzyskać bardziej lokalne wyniki i ujawnić zjawiska występujące na małą skalę, ale mogą wprowadzić pewną niestabilność w obliczeniach. Większe wartości będą bardziej stabilne, ale mogą powodować pomijanie pewnych zjawisk lokalnych.
+            </p>
+            <p>Wartość może należeć do zakresu od 30 do 500, ale wartości typowe należą do zakresu od 50 do 200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Liczba sąsiadów</h2></div>
+        <hr/>
+        <div>
+            <p>Prognozy są obliczane na podstawie sąsiednich punkt&oacute;w. Ten parametr steruje liczbą punkt&oacute;w, kt&oacute;re zostaną użyte w obliczeniu. Użycie większej liczby sąsiad&oacute;w zwykle wygeneruje dokładniejsze wyniki, ale obliczenia tych wynik&oacute;w potrwają dłużej.
+            </p>
+            <p>Wartość ta może należeć do zakresu od 1 do 64, ale wartości typowe należą do zakresu od 5 do 15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Wielkość komórki danych wynikowych</h2></div>
+        <hr/>
+        <div>
+            <p>Wielkość kom&oacute;rki i jednostka dla rastr&oacute;w wynikowych.
+            </p>
+            <p>Dostępne jednostki to: stopy, mile, metry i kilometry.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Błąd prognozy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Wybierz, czy tworzyć raster błęd&oacute;w standardowych dla przewidywanych wartości.
+            </p>
+            <p>Wyszukanie błęd&oacute;w standardowych jest przydatne, ponieważ dostarcza informacji na temat wiarygodności przewidywanych wartości. Zgodnie z&nbsp;prostą zasadą og&oacute;lną prawidłowa wartość będzie mieścić się w&nbsp;zakresie dw&oacute;ch błęd&oacute;w standardowych o&nbsp;przewidywanej wartości w&nbsp;95% przypadk&oacute;w. Przyjmijmy na przykład, że przewidywana wartość dla nowej lokalizacji to 50, a&nbsp;błąd standardowy wynosi&nbsp;5. Oznacza to, że zgodnie z&nbsp;szacunkami opracowanymi przez narzędzie prawidłowa wartość dla tej lokalizacji to&nbsp;50, jednak r&oacute;wnie prawdopodobnie może wynosić minimalnie&nbsp;40, a&nbsp;maksymalnie&nbsp;60. Aby obliczyć zakres prawdopodobnych wartości, należy pomnożyć wartość błędu standardowego przez&nbsp;2, a&nbsp;następnie dodać tę wartość do przewidywanej wartości, aby uzyskać g&oacute;rną granicę zakresu, i&nbsp;odjąć tę wartość od przewidywanej wartości w&nbsp;celu otrzymania dolnej granicy zakresu.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Nazwa warstwy, kt&oacute;ra zostanie utworzona w obszarze  <b>Moje zasoby</b> i dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, wyświetlony zostanie komunikat z monitem o podanie innej nazwy.
+            </p>
+            <p>Za pomocą listy rozwijanej  <b>Zapisz wynik w</b> można podać nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

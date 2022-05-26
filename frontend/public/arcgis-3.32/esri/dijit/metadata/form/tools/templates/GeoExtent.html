@@ -1,0 +1,36 @@
+<div class="gxeGeoExtent">
+
+  <div class="gxeTop" data-dojo-attach-point="topNode">
+    <div class="gxeLeft gxeFloatLeft">
+      <div class="gxeTabButton current" 
+        data-dojo-attach-point="drawButton"
+        data-dojo-attach-event="onclick: _onDrawClick"
+        >${i18nBase.geoExtent.draw}
+      </div><div class="gxeTabButton" 
+        data-dojo-attach-point="navigateButton"
+        data-dojo-attach-event="onclick: _onNavigateClick"
+        >${i18nBase.geoExtent.navigate}</div>
+    </div>
+    <div class="gxeRight gxeFloatRight">
+      <div class="gxeGeocoder" id="${id}_geocoder"></div>
+    </div>
+    <div class="gxeClear"></div>
+  </div>
+  
+  <div class="gxeMap" id="${id}_map" data-dojo-attach-point="mapNode"></div>
+  
+  <div class="gxeDialogActionBar" data-dojo-attach-point="bottomNode">
+    <div class="gxeLeft gxeFloatLeft">
+      <span class="gxeMessage" data-dojo-attach-point="drawHint"
+        >${i18nBase.geoExtent.drawHint}</span>
+    </div>
+    <div class="gxeRight gxeFloatRight gxeButtons">
+      <button class="gxeButton prominent" data-dojo-attach-point="okButton"
+        data-dojo-attach-event="onclick: _onOkClick">${i18nBase.general.ok}</button>
+      <button class="gxeButton" data-dojo-attach-point="cancelButton"
+        data-dojo-attach-event="onclick: _onCancelClick">${i18nBase.general.cancel}</button>
+    </div>
+    <div class="gxeClear"></div>
+  </div>
+   
+</div>

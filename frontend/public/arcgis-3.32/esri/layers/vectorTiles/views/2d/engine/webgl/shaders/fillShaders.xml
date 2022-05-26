@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  // YF TODO: (doc)
+-->
+<snippets>
+  <snippet name="fillVVUniformsVS">
+    <![CDATA[
+  #if defined(VV_COLOR)|| defined(VV_OPACITY)
+    attribute vec4 a_vv;
+  #endif // VV_COLOR || VV_OPACITY
+
+  #ifdef VV_COLOR
+    uniform float u_vvColorValues[8];
+    uniform vec4 u_vvColors[8];
+  #endif // VV_COLOR
+
+  #ifdef VV_OPACITY
+    uniform float u_vvOpacityValues[8];
+    uniform float u_vvOpacities[8];
+  #endif // VV_OPACITY
+
+    ]]>
+  </snippet>
+
+  <snippet name="fillVVFunctions">
+    <![CDATA[
+    bool isNan(float val) {
+      return !( val < 0.0 || 0.0 < val || val == 0.0 );
+    }
+    
+  #ifdef VV_OPACITY
+    const int VV_OPACITY_N = 8;
+
+    float getVVOpacity(float opacityValue) {
+      if (isNan(opacityValue)) { 
+        return 1.0;
+      }
+
+      if (opacityValue <= u_vvOpacityValues[0]) {
+        return u_vvOpacities[0];
+      }
+
+      for (int i = 1; i < VV_OPACITY_N; ++i) {
+        if (u_vvOpacityValues[i] >= opacityValue) {
+          float f = (opacityValue - u_vvOpacityValues[i-1]) / (u_vvOpacityValues[i] - u_vvOpacityValues[i-1]);
+          return mix(u_vvOpacities[i-1], u_vvOpacities[i], f);
+        }
+      }
+
+      return u_vvOpacities[VV_OPACITY_N - 1];
+    }
+  #endif // VV_OPACITY
+
+  #ifdef VV_COLOR
+    const int VV_COLOR_N = 8;
+
+    vec4 getVVColor(float colorValue, vec4 fallback) {
+      if (isNan(colorValue)) { 
+        return fallback;
+      }
+      
+      if (colorValue <= u_vvColorValues[0]) {
+        return u_vvColors[0];
+      }
+
+      for (int i = 1; i < VV_COLOR_N; ++i) {
+        if (u_vvColorValues[i] >= colorValue) {
+          float f = (colorValue - u_vvColorValues[i-1]) / (u_vvColorValues[i] - u_vvColorValues[i-1]);
+          return mix(u_vvColors[i-1], u_vvColors[i], f);
+        }
+      }
+
+      return u_vvColors[VV_COLOR_N - 1];
+    }
+  #endif // VV_COLOR
+    ]]>
+  </snippet>
+
+  <snippet name="fillVS">
+    <![CDATA[
+      precision mediump float;
+
+      attribute vec2 a_pos;
+      attribute vec4 a_id; // since we need to render the Id as a color we need to break it into RGBA components. so just like a color, the Id is normalized.
+      attribute vec4 a_color;
+      attribute vec4 a_tlbr;
+      attribute vec4 a_aux;
+
+      uniform highp mat4 u_transformMatrix;
+      uniform highp vec2 u_normalized_origin;
+
+      varying lowp vec4 v_color;
+      varying lowp float v_opacity;
+
+      // import the VV inputs and functions (they are #ifdefed, so if the proper #define is not set it will end-up being a no-op)
+      $fillVVUniformsVS
+      $fillVVFunctions
+
+  #ifdef PATTERN
+    uniform mediump float u_zoomFactor;
+    uniform mediump vec2 u_mosaicSize;
+
+    varying mediump vec4 v_tlbr;
+    varying mediump vec2 v_tileTextureCoord;
+  #endif // PATTERN
+
+  #ifdef ID
+    varying highp vec4 v_id;
+  #endif // ID
+
+      void main()
+      {
+  #ifdef VV_OPACITY
+        v_opacity = getVVOpacity(a_vv.y);
+  #else
+        v_opacity = 1.0;
+  #endif
+
+  #ifdef VV_COLOR
+       v_color = getVVColor(a_vv.x, a_color);
+  #else
+       v_color = a_color;
+  #endif // VV_COLOR
+
+  #ifdef ID
+      v_id = a_id;
+  #endif // ID
+
+  #ifdef PATTERN
+       // calculate the pattern matrix
+       mat3 patternMatrix = mat3(1.0, 0.0, 0.0,
+                                 0.0, 1.0, 0.0,
+                                 0.0, 0.0, 1.0);
+       patternMatrix[0][0] = 1.0 / (u_zoomFactor * a_aux.x);
+       patternMatrix[1][1] = 1.0 / (u_zoomFactor * a_aux.y);
+
+       // calculate the texture coordinates of the current vertex. It will of course get interpolated.
+       // The pattern matrix is a 3x3 scale matrix which 'tiles' the texture inside the tile, translating from
+       // tile coordinates to texture coordinates.
+       v_tileTextureCoord = (patternMatrix * vec3(a_pos, 1.0)).xy;
+       v_tlbr = vec4(a_tlbr.x / u_mosaicSize.x, a_tlbr.y / u_mosaicSize.y, a_tlbr.z / u_mosaicSize.x, a_tlbr.w / u_mosaicSize.y);
+  #endif // PATTERN
+
+        gl_Position = vec4(u_normalized_origin, 0.0, 0.0) + u_transformMatrix * vec4(a_pos, 0, 1.0);
+      }
+    ]]>
+  </snippet>
+
+  <snippet name="fillFS">
+    <![CDATA[
+      precision lowp float;
+      uniform lowp float u_opacity;
+
+  #ifdef PATTERN
+      uniform lowp sampler2D u_texture;
+
+      varying mediump vec4 v_tlbr;
+      varying mediump vec2 v_tileTextureCoord;
+  #endif // PATTERN
+
+  #ifdef ID
+    varying highp vec4 v_id;
+  #endif // ID
+
+      varying lowp vec4 v_color;
+      varying lowp float v_opacity;
+
+      void main()
+      {
+  #ifdef PATTERN
+         // normalize the calculated texture coordinate such that it fits in the range of 0 to 1.
+         mediump vec2 normalizedTextureCoord = mod(v_tileTextureCoord, 1.0);
+         // interpolate the image coordinate between the top-left and the bottom right to get the actual position to sample.
+         // after normalizing the position, we get a value ranging between 0 and 1 which refers to the entire texture, however
+         // we need to only sample from area that has our sprite in the mosaic.
+         mediump vec2 samplePos = mix(v_tlbr.xy, v_tlbr.zw, normalizedTextureCoord);
+         // sample the sprite mosaic
+         lowp vec4 color = texture2D(u_texture, samplePos);
+         gl_FragColor = u_opacity * v_opacity * v_color * color;
+  #else
+        gl_FragColor = u_opacity * v_opacity * v_color;
+  #endif // PATTERN
+
+  #ifdef HIGHLIGHT
+        gl_FragColor.a = step(1.0 / 255.0, gl_FragColor.a);
+  #endif // HIGHLIGHT
+
+  #ifdef ID
+      //if (gl_FragColor.a < 1.0 / 255.0) {
+      //  discard;
+      //}
+      gl_FragColor = v_id;
+  #endif // ID
+      }
+    ]]>
+  </snippet>
+</snippets>

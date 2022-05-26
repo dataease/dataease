@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/lv/ClassifyPixelsUsingDeepLearning",{toolDefine:"Funkcija Klasific\u0113t pikse\u013cus, izmantojot Deep Learning",outputLayerName:"${layername} Klasific\u0113t",modelLabel:"Izv\u0113lieties Deep Learning modeli pikse\u013cu klasific\u0113\u0161anai",modelArgsLabel:"Nor\u0101diet Deep Learning mode\u013ca argumentus",nameLabel:"V\u0101rds/nosaukums",valueLabel:"V\u0113rt\u012bba",queryModelArgsMsg:"Notiek mode\u013ca argumentu vaic\u0101jumu izveide...",analysisLayerLabel:"Izv\u0113lieties pikse\u013cu klasific\u0113\u0161anai izmantoto att\u0113lu",
+itemDescription:"Anal\u012bzes att\u0113la serviss, kas \u0123ener\u0113ts no funkcijas Klasific\u0113t pikse\u013cus, izmantojot Deep Learning",itemTags:"Rastra anal\u012bzes rezult\u0101ts, Klasific\u0113t pikse\u013cus, izmantojot Deep Learning, ${layername}",itemSnippet:"Anal\u012bzes att\u0113la serviss, kas \u0123ener\u0113ts no funkcijas Klasific\u0113t pikse\u013cus, izmantojot Deep Learning"});

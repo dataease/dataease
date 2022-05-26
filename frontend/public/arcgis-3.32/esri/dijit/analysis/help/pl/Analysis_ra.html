@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="raToolbox">
+        <p>Analiza rastrowa umożliwia analizowanie dużych zestaw&oacute;w danych rastrowych przy użyciu serwera  ArcGIS Image Server. Umożliwia to szybsze analizowanie większych ilości danych przy wykorzystaniu mocy obliczeniowej serwera. W interfejsie internetowym witryny  Portal for ArcGIS aktualnie dostępny jest następujący zestaw narzędzi:  <b>Sumowanie danych</b>, <b>Analiza zależności przestrzennych</b>, <b>Narzędzia bliskości</b>, <b>Analizuj obraz</b>, <b>Analizuj teren</b>, <b>Zarządzanie danymi</b> oraz <b>Deep Learning</b>.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="smallsize">
+        <h2>Sumowanie danych</h2>
+        <hr/>
+        <p>Ten zestaw narzędzi zawiera narzędzie służące do wykonywania obliczeń statystycznych dla warstwy rastrowej w zdefiniowanych granicach obszaru. 
+            <ul>
+                <li>Narzędzie  <b>Podsumuj raster w ramach
+</b> umożliwia wykonywanie obliczeń statystycznych dla kom&oacute;rek rastra mieszczących się w zdefiniowanych granicach obszaru.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="SummarizeRasterWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Podsumuj raster w ramach</h2></td>
+                    <td>
+                    <img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" class="titleImage" alt="Narzędzie Podsumuj raster w ramach">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Umożliwia obliczanie statystyk zbiorczych dla kom&oacute;rek rastra w zdefiniowanych obszarach.
+            </p>
+            <p>Poniżej przedstawiono następujące przykładowe zastosowania: 
+
+                <ul>
+                    <li>Dysponując warstwą obszar&oacute;w zlewni i rastrową warstwą wysokościową, oblicz zakres wyniesień w obrębie każdej zlewni w celu ustalenia, w kt&oacute;rej z nich wystąpi przepływ ciek&oacute;w o najwyższej energii.
+                        
+
+                    </li>
+                    <li>Dysponując warstwą jednostek administracji publicznej i warstwą rastrową kategorii zagospodarowania terenu, oblicz zr&oacute;żnicowanie wartości zagospodarowania terenu w obszarach zarządzanych przez każdą z jednostek administracyjnych w celu zidentyfikowania tych, kt&oacute;re wymagają najwięcej pracy związanej z planem zagospodarowania.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>Analiza zależności przestrzennych</h2>
+        <hr/>
+        <p>Narzędzia te pomagają w&nbsp;identyfikacji, ocenie ilościowej oraz przestrzennej wizualizacji trend&oacute;w istniejących w&nbsp;danych. 
+
+            <ul>
+                <li> <b>Oblicz zagęszczenie</b> to narzędzie, kt&oacute;re umożliwia utworzenie mapy zagęszczenia na podstawie znanych wartości ilościowych dotyczących pewnego zjawiska przez rozmieszczenie tych wartości na mapie.
+                    
+
+                </li>
+                <li>Narzędzie  <b>Interpoluj punkty</b> służy do przewidywania wartości w&nbsp;nowych lokalizacjach na podstawie pomiar&oacute;w wykonanych na zbiorze punkt&oacute;w.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Oblicz zagęszczenie</h2></td>
+                    <td>
+                    <img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" class="titleImage" alt="Narzędzie Oblicz zagęszczenie">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Analiza zagęszczenia tworzy mapę zagęszczenia na podstawie znanych wartości ilościowych dotyczących danego zjawiska, rozmieszczając te wartości na mapie. Można go użyć na przykład do przedstawienia częstotliwości uderzeń piorun&oacute;w lub wystąpień tornad, poziomu dostępu do opieki medycznej oraz prezentacji gęstości zaludnienia.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsEBKTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpoluj punkty</h2></td>
+                    <td>
+                    <img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" class="titleImage" alt="Narzędzie Interpoluj punkty">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Jest to narzędzie umożliwiające przewidywanie wartości w&nbsp;nowych lokalizacjach na podstawie pomiar&oacute;w dla zbioru punkt&oacute;w. Narzędzie korzysta z danych punktowych, z kt&oacute;rych każdy ma określoną wartość, i wyświetla obszary sklasyfikowane według przewidywanych wartości. Możesz skorzystać z&nbsp;tego narzędzia na przykład w&nbsp;celu opracowania prognozy poziomu opad&oacute;w deszczu na obszarze zlewni przy użyciu wynik&oacute;w pomiar&oacute;w dokonanych w&nbsp;poszczeg&oacute;lnych lokalizacjach deszczomierzy.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>Narzędzia bliskości</h2>
+        <hr/>
+        <p>Narzędzia te pomagają w&nbsp;udzieleniu odpowiedzi na jedno z&nbsp;najczęstszych pytań zadawanych podczas wykonywania analizy przestrzennej: &bdquo;Co znajduje się w&nbsp;pobliżu czego?&rdquo;
+
+            <ul>
+                <li>Narzędzie  <b>Oblicz odległość</b> oblicza odległość euklidesową, kierunek i przydział z pojedynczego źr&oacute;dła lub zestawu źr&oacute;deł.
+                    
+
+                </li>
+                <li>Narzędzie  <b>Wyznacz sieć optymalnego kosztu podr&oacute;ży</b> oblicza sieć optymalnego kosztu na podstawie zestawu region&oacute;w wejściowych.
+                    
+
+                </li>
+                <li>Narzędzie  <b>Określ ścieżkę koszt&oacute;w podr&oacute;ży jako polilinię</b> oblicza ścieżkę poliliniową o najmniejszym koszcie między źr&oacute;dłami, a znanymi miejscami docelowymi.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDistanceTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Oblicz odległość</h2></td>
+                    <td>
+                    <img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" class="titleImage" alt="Oblicz odległość">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>To narzędzie oblicza odległość euklidesową, kierunek i przydział z pojedynczego źr&oacute;dła lub zestawu źr&oacute;deł. Za pomocą tego narzędzia można określić odległość danej lokalizacji od drogi, budynku lub parku. Można także określić kierunek podr&oacute;ży powrotnej najkr&oacute;tszą drogą od określonej lokalizacji. Dla każdej lokalizacji na analizowanym obszarze pokazywana jest najkr&oacute;tsza droga powrotna.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineOptimumTravelCostNetworkTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Wyznacz sieć optymalnego kosztu podróży</h2></td>
+                    <td>
+                    <img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" class="titleImage" alt="Rysunek pokazujący narzędzie Wyznacz sieć optymalnego kosztu podr&oacute;ży">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>To narzędzie oblicza sieć optymalnego kosztu na podstawie zestawu region&oacute;w wejściowych.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineTravelCostPathAsPolylineTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Określ ścieżkę kosztów podróży jako polilinię</h2></td>
+                    <td>
+                    <img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" class="titleImage" alt="Rysunek pokazujący narzędzie Określ ścieżkę koszt&oacute;w podr&oacute;ży jako polilinię">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>To narzędzie oblicza ścieżkę poliliniową o najmniejszym koszcie między źr&oacute;dłami a znanymi miejscami docelowymi.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeImageCategory" class="smallsize">
+        <h2>Analiza obrazu</h2>
+        <hr/>
+        <p>Poniższe narzędzia ułatwiają analizowanie obraz&oacute;w. 
+            <ul>
+                <li>Narzędzie  <b>Zastosuj szablon funkcji rastrowych</b> przetwarza zobrazowanie z użyciem łańcucha funkcji w spos&oacute;b określony przez szablon funkcji rastrowych.
+                </li>
+                <li>Narzędzie  <b>Monitoruj roślinność</b> wykrywa roślinność na obrazie przy użyciu operacji arytmetycznych wykonywanych na pasmach.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ApplyRFxTemplateTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Zastosuj szablon funkcji rastrowych</h2></td>
+                    <td>
+                    <img src="../images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" class="titleImage" alt="Zastosuj szablon funkcji rastrowych">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Przetwarza zobrazowanie za pomocą łańcucha funkcji w spos&oacute;b określony przez szablon funkcji rastrowych.
+            </p>
+            <br/>
+        </div>
+        <div id="MonitorVegetationTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Monitoruj roślinność</h2></td>
+                    <td>
+                    <img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" class="titleImage" alt="Narzędzie portalu Monitoruj roślinność">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Wykonuje operacje arytmetyczne na pasmach wielopasmowych warstw rastrowych w celu pozyskania informacji o zasięgu roślinności na danym obszarze.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeTerrainCategory" class="regularsize">
+        <h2>Analiza terenu</h2>
+        <hr/>
+        <p>Te narzędzia pomagają analizować powierzchnie rastrowe. 
+            <ul>
+                <li> <b>Oblicz spadki</b> oblicza nachylenie terenu.
+                    
+
+                </li>
+                <li> <b>Wyznacz ekspozycje</b> oblicza kierunek największego spadku dla każdej lokalizacji.
+                    
+
+                </li>
+                <li> <b>Utw&oacute;rz widoczność</b> identyfikuje, co może być widoczne z dowolnego punktu w terenie.
+                    
+
+                </li>
+                <li> <b>Zlewnia</b> oblicza obszar spływu powyżej określonych lokalizacji na powierzchni.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateSlopeTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Oblicz spadki</h2></td>
+                    <td>
+                    <img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" class="titleImage" alt="Narzędzie portalu Oblicz spadki">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Identyfikuje powierzchnię przedstawiającą spadki wejściowych danych wysokościowych. Spadek reprezentuje szybkość zmian wysokości dla każdej kom&oacute;rki numerycznego modelu terenu (DEM).
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveAspectTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Wyznacz ekspozycje</h2></td>
+                    <td>
+                    <img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" class="titleImage" alt="Narzędzie portalu Wyznacz ekspozycje">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Identyfikuje kierunek spadku tam, gdzie występuje maksymalna r&oacute;żnica wartości kom&oacute;rki względem kom&oacute;rek sąsiadujących. Ekspozycję można traktować jako kierunek spadku.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Utwórz widoczność</h2></td>
+                    <td>
+                    <img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" class="titleImage" alt="Narzędzie Utw&oacute;rz Widoczność">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Określa lokalizacje na powierzchni rastrowej, kt&oacute;re są widoczne dla zbioru obserwator&oacute;w.
+            </p>
+            <br/>
+        </div>
+        <div id="WatershedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Zlewnia</h2></td>
+                    <td>
+                    <img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" class="titleImage" alt="Zadanie Zlewnia">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Określa obszar powyżej zbioru kom&oacute;rek w rastrze.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>Zarządzanie danymi</h2>
+        <hr/>
+        <p>Narzędzia te są używane zar&oacute;wno do codziennego zarządzania danymi geograficznymi, jak i łączenia danych przed analizą. 
+            <ul>
+                <li>Narzędzie  <b>Wyodrębnij raster</b> przycina fragmenty zestawu danych rastrowych do dalszej analizy.
+                    
+
+                </li>
+                <li>Narzędzie  <b>Ponownie mapuj wartości</b> przypisuje r&oacute;żne wartości kom&oacute;rkom rastra.
+                    
+
+                </li>
+                <li>Narzędzie  <b>Konwertuj obiekt na raster</b> przekształca dane wektorowe w rastrowe.
+                    
+
+                </li>
+                <li>Narzędzie  <b>Konwertuj raster na obiekt
+</b> przekształca dane rastrowe w wektorowe.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ExtractRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Wyodrębnij raster</h2></td>
+                    <td>
+                    <img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" class="titleImage" alt="Narzędzie portalu Wyodrębnij raster
+">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Umożliwia wyodrębnienie kom&oacute;rek z rastra na podstawie wartości, kształtu lub zasięgu innego zestawu danych.
+            </p>
+            <br/>
+        </div>
+        <div id="RemapValuesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Ponownie mapuj wartości</h2></td>
+                    <td>
+                    <img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" class="titleImage" alt="Narzędzie portalu Ponownie mapuj wartości">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Umożliwia przypisanie pojedynczym kom&oacute;rkom lub ich zakresom nowych wartości.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertFeatureToRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Konwertuj obiekt na raster</h2></td>
+                    <td>
+                    <img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" class="titleImage" alt="Narzędzie Konwertuj obiekt na raster">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Umożliwia utworzenie nowego zestawu danych rastrowych na podstawie istniejącego zestawu danych obiektowych.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertRasterToFeatureTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Konwertuj raster na obiekt</h2></td>
+                    <td>
+                    <img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" class="titleImage" alt="Narzędzie portalu Konwertuj raster na obiekt">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Umożliwia utworzenie nowego zestawu danych obiektowych na podstawie istniejącego zestawu danych rastrowych.
+            </p>
+            <br/>
+        </div>
+    <div id="DeepLearningCategory" class="largesize">
+        <h2>Zestaw narzędzi Deep Learning</h2>
+        <hr/>
+        <p>Te narzędzia służą do wykrywania konkretnych obiekt&oacute;w w obrazie lub do klasyfikowania pikseli w zestawie danych rastrowych. Deep Learning to oparty na sztucznej inteligencji typ metody samouczenia się maszyn, kt&oacute;ra pozwala wykrywać obiekty w zobrazowaniach przy użyciu wielu warstw w sieciach neuronowych, z kt&oacute;rych każda umożliwia wyodrębnienie jednego lub większej liczby unikalnych obiekt&oacute;w w obrazie. Te narzędzia korzystają z modeli, kt&oacute;re zostały wytrenowane w zewnętrznych środowiskach Deep Learning, takich jak TensorFlow, CNTK i Keras, pod kątem wykrywania konkretnych obiekt&oacute;w, i generują obiekty wynikowe lub mapy klas.
+            <ul>
+                <li> <b>Klasyfikuj piksele metodą Deep Learning</b> generuje sklasyfikowany raster, korzystając z modelu wytrenowanego metodą Deep Learning.
+                </li>
+                <li> <b>Wykrywaj obiekty metodą Deep Learning</b> generuje klasę obiekt&oacute;w zawierających obiekty znalezione w rastrze wejściowym z użyciem modelu wytrenowanego metodą Deep Learning.
+                </li>
+            </ul>
+             
+        </p>
+    </div>
+        <div id="ClassifyPixelsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Klasyfikuj piksele metodą Deep Learning</h2></td>
+                    <td>
+                    <img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" class="titleImage" alt="Klasyfikuj piksele metodą Deep Learning">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Runs a trained deep learning model on an input raster to produce a classified raster, with each valid pixel having a class label assigned.
+            </p>
+            <br/>
+        </div>
+        <div id="DetectObjectsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Wykrywaj obiekty metodą Deep Learning</h2></td>
+                    <td>
+                    <img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="Wykrywaj obiekty metodą Deep Learning">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Runs a trained deep learning model on an input raster to produce a feature class containing the objects it finds. The features can be bounding boxes or polygons around the objects found, or points at the centers of the objects.
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

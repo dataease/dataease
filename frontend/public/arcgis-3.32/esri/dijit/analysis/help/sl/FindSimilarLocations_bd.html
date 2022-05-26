@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Poišči podobne lokacije</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Najdi podobne lokacije"></h2>
+        <hr/>
+    <p>Glede na kriterije, ki jih navedete, orodje Najdi podobne lokacije meri podobnost lokacij v va&scaron;em sloju z eno ali več referenčnih lokacij. To orodje lahko odgovori na vpra&scaron;anja, kot so 
+        <ul>
+            <li>Katera od va&scaron;ih trgovin je najbolj podobna va&scaron;im trgovinam z najbolj&scaron;imi rezultati po profilih strank?
+            </li>
+            <li>Za katere druge vasi &scaron;e velja visoko tveganje za bolezen, na podlagi značilnosti vasi, ki jih je ta najbolj prizadela?
+            </li>
+        </ul>
+        Da dobite odgovore na tak&scaron;na vpra&scaron;anja, navedite referenčne lokacije, lokacije kandidatov za iskanje in polja, ki predstavljajo kriterije, ki jih želite uporabiti. Prvi vhodni sloj mora vsebovati va&scaron;e referenčne ali vzorčne lokacije. Na primer, morda je to sloj, ki vsebuje va&scaron;e trgovine z najbolj&scaron;imi rezultati ali vasi, ki jih je najbolj prizadela bolezen. Nato navedite sloj, ki vsebuje lokacije kandidatov iskanja. To so lahko vse va&scaron;e trgovine ali vse druge vasi. Končno, identificirajte eno ali več polj za merjenje podobnosti. Orodje Najdi podobne lokacije bo nato vse lokacije kandidatov iskanja razvrstilo po tem, kako tesno se ujemajo z va&scaron;imi referenčnimi lokacijami po vseh izbranih poljih.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi sloj, ki vsebuje referenčne lokacije</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj, ki vsebuje referenčne lokacije za ujemanje. 
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Uporabite lahko vse lokacije ali naredite izbiro</h2></div>
+        <hr/>
+        <div>
+            <p>Če je potrebno, uporabite gumbe za izbiro za identificiranje referenčnih lokacij. Ta možnost je na voljo samo, če so geoobjekti izrisani na karti (ni na voljo za delitev datotek velikih podatkov). Na primer, če vhodni sloj vsebuje vse lokacije, tako referenčne lokacije kot lokacije iskanja kandidata, boste morali uporabiti eno od orodij za izbiro, da identificirate referenčne lokacije. Če ustvarite dva ločena sloja, enega z referenčnimi lokacijami in drugega z vsemi lokacijami za iskanje kandidatov, izbira ni potrebna.
+            </p>
+            <p>Če obstaja več kot ena referenčna lokacija, je ustvarjena ena lokacija s povprečenjem vrednosti za vsako od polj, uporabljenih za analiziranje podobnosti.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Iščite podobne lokacije v</h2></div>
+        <hr/>
+        <div>
+            <p>Geoobjekti iskanja kandidatov bodo v tem sloju razvr&scaron;čeni od najbolj do najmanj podobnih. 
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Podobnost temelji na</h2></div>
+        <hr/>
+        <div>
+            <p>Izbrana polja bodo uporabljena kot kriteriji ocenjevanja podobnosti. Če na primer izberete polji prebivalstvo in prihodek, bodo lokacije iskanja kandidata z najnižje (najbolj&scaron;e) rangiranih mest tista, ki imajo podobne vrednosti &scaron;tevila prebivalstva in prihodka kot va&scaron;e referenčne lokacije.
+            </p>
+        </div>
+    </div>
+    <div id="matchMethod">
+        <div><h2>Določi najbolj in najmanj podobno uporabo</h2></div>
+        <hr/>
+        <div>
+            <p>Metoda, ki jo boste izbrali, določa način določanja ujemanja. 
+                <ul>
+                    <li>Metoda  <b>vrednosti polj</b> uporablja kvadratne razlike standardiziranih vrednosti. To je privzeto.
+                    </li>
+                    <li>Metoda  <b>profili polj</b> uporablja matematično podobnost kosinusov za primerjanje profila standardiziranih vrednosti. Uporaba profilov atributa zahteva uporabo vsaj dveh polj za analizo.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Pokaži mi</h2></div>
+        <hr/>
+        <div>
+            <p>Vidite lahko vse lokacije iskanja kandidatov, razvr&scaron;čene od najbolj do najmanj podobnih, ali pa lahko izberete, koliko rezultatov želite videti. 
+                <ul>
+                    <li>Če navedete  <b>vse lokacije od najbolj do najmanj podobnih</b>, bodo vsi geoobjekti v sloju iskanja kandidata vključeni v razvrstitev v sloju z rezultati. Vrnjenih bo maksimalno 10.000 rezultatov.
+                    </li>
+                    <li>Če navedete  <code>&scaron;tevilo</code> <code>najbolj, najmanj ali najbolj in najmanj</code> <b>podobnih lokacij</b>, s tem določite, koliko najbolj, najmanj ter najbolj in najmanj podobnih kandidatov je treba vključiti v sloj z rezultati. Maksimalna dovoljena vrednost je 10.000.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="appendFields">
+        <div><h2>Izberi polja za dodajanje k rezultatom</h2></div>
+        <hr/>
+        <div>
+            <p>Po želji svojim podatkom dodajte polja iz svojega sloja iskanja. Privzeto bodo dodana vsa polja.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen. Če zapisujete v ArcGIS Data Store, bodo va&scaron;i rezultati shranjeni v  <b>Moji vsebini</b> in dodani na karto. Če zapisujete v delitev datotek velikih podatkov, bodo va&scaron;i rezultati shranjeni v delitev datotek velikih podatkov in dodani v njen manifest. Ne bodo dodani v skupino. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, orodje ne bo uspe&scaron;no.
+            </p>
+            <p>Ta sloj z rezultati bo vseboval referenčne lokacije in &scaron;tevilo razvr&scaron;čenih geoobjektov iskanja kandidatov, ki ste jih določili. Če ime sloja z rezultati že obstaja, boste morali vnesti drugo ime.
+            </p>
+            <p>Ko zapisujete v  ArcGIS Data Store (relacijsko ali prostorsko-časovno shrambo velikih podatkov) s pomočjo spustnega menija  <b>Shrani rezultat v</b>, lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,25 @@
+<snippets>
+  <snippet name="backgroundVS">
+  <![CDATA[
+    attribute vec2 a_pos;
+
+    uniform highp mat4 u_transformMatrix;
+    uniform mediump vec2 u_normalized_origin;
+    uniform mediump float u_coord_range;
+    uniform mediump float u_depth;
+
+    void main() {
+      gl_Position = vec4(u_normalized_origin, u_depth, 0.0) + u_transformMatrix * vec4(u_coord_range * a_pos, 0.0, 1.0);
+    }
+  ]]>
+  </snippet>
+
+  <snippet name="backgroundFS">
+  <![CDATA[
+    uniform lowp vec4 u_color;
+    void main() {
+      gl_FragColor = u_color;
+    }
+  ]]>
+  </snippet>
+</snippets>

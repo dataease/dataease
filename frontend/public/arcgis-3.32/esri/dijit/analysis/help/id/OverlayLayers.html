@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Overlay Layer</h2><p/>
+        <h2><img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" alt="Overlay Layer"></h2>
+        <hr/>
+    <p>Overlay menggabungkan dua layer atau lebih menjadi satu layer tunggal.  Anda dapat membayangkan overlay seperti melihat tumpukan peta sebagai peta tunggal yang berisi semua informasi yang ditemukan dalam tumpukan tersebut.    Overlay lebih dari sekadar menggabungkan garis-garis; semua atribut fitur yang berperan dalam overlay akan terbawa ke produk akhir. Overlay digunakan untuk menjawab salah satu dari pertanyaan paling mendasar mengenai geografi, &quot;Apa berada di atas apa?&quot; Contoh:
+        <ul>
+            <li>Persil bangunan (parcels) mana yang berada di dalam dataran banjir berusia 100 tahun? (&quot;yang berada di dalam&quot; merupakan kata pengganti untuk &quot;di atas.&quot;)
+                  
+            </li>
+            <li>Jalan apa berada di negara mana?
+            </li>
+            <li>Penggunaan lahan seperti apa di atas jenis tanah apa?
+                 
+            </li>
+            <li>Sumur apa yang berada di pangkalan militer kosong?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jika  <b>Use current map extent</b> (Gunakan jangkauan peta saat ini) dicentang, hanya fitur dalam layer input dan layer overlay yang terlihat dalam jangkauan peta saat ini yang akan dioverlay.  Jika tidak dicentang, semua fitur di layer input dan layer overlay akan dioverlay, meskipun fitur tersebut berada di luar jangkauan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pilih layer input</h2></div>
+        <hr/>
+        <div>
+            <p>Layer titik, garis, atau area yang akan dioverlay.
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p>
+        </div>
+    </div>
+    <div id="OverlayLayer">
+        <div><h2>Pilih layer overlay</h2></div>
+        <hr/>
+        <div>
+            <p>Layer yang akan dioverlay pada layer input.  
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p> 
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Pilih metode overlay</h2></div>
+        <hr/>
+        <div>
+            <p>Metode overlay menentukan cara bagaimana layer input dan layer overlay akan digabungkan.  
+
+                <ul>
+                    <li> <b>Intersect</b> (Perpotongan)&mdash;Hasilnya hanya akan berisi fitur atau bagian fitur di layer overlay yang tumpang tindih dengan fitur di layer input. Saat memotong fitur garis atau area, Anda memiliki opsi untuk menentukan tipe fitur yang Anda inginkan sebagai output.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Titik dengan Titik
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Input titik dan titik">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Titik dan titik dengan output titik">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Titik dengan Garis
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-F1E6C6C8-4F51-4063-984D-0FC8D08EB2D2-web.png" alt="Input titik dan garis">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-02CFAFDC-1B3C-4C4B-A58C-7B0B78BA0B56-web.png" alt="Titik dan garis dengan output titik">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Titik dengan Area
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-5EE90BD6-CC3D-4E2F-A5D0-DC57298E8416-web.png" alt="input titik dan area">
+                                </p>
+                            </td>
+                            <td> <img src="../images/GUID-5CCA360F-D4C9-43AB-8FB2-E6E62DE93BD4-web.png" alt="titik dan area dengan output titik">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Garis dengan Garis 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Input garis dan garis">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-DDCCB226-6490-4914-B87C-299125466256-web.png" alt="Garis dan garis dengan output titik">
+                                </p>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Garis dan garis dengan output garis ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Garis dengan Area
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-E38EB7D6-9D35-4E0D-937A-9FEC4144AF2E-web.png" alt="Input garis dan area">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-639F492C-BEE7-4A5F-AEBC-325B74FEC766-web.png" alt="Garis dan area dengan output titik">
+                                </p>
+                                <p> <img src="../images/GUID-58DF5CF6-0A56-4717-AD9C-C3BEC8EA6906-web.png" alt="Garis dan area dengan output garis">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Area dengan Area
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Input area dan area">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-3F71AD46-A6A2-436D-8BBA-13E014BB94D0-web.png" alt="Area dan area dengan output titik">
+                                </p>
+                                <p> <img src="../images/GUID-6AF62F09-6D32-4212-97C6-844580E34A22-web.png" alt="Area dan area dengan output garis">
+                                </p>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="Area dan area dengan output area">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Union</b> (Penyatuan)&mdash;Hasilnya akan berisi fitur dari layer input dan layer overlay. Opsi Penyatuan (Union) hanya tersedia jika layer input dan layer overlay berisi fitur area.
+                    </li>
+                    <li> <b>Hapus</b>&mdash;Hasilnya akan berisi fitur atau bagian fitur di layer overlay yang tidak tumpang tindih dengan area di layer input.  Layer overlay dapat berisi fitur area, garis, atau titik.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jika  <b>Use current map extent</b> (Gunakan jangkauan peta saat ini) dicentang, hanya fitur dalam layer input dan layer overlay yang terlihat dalam jangkauan peta saat ini yang akan dioverlay.  Jika tidak dicentang, semua fitur di layer input dan layer overlay akan dioverlay, meskipun fitur tersebut berada di luar jangkauan peta saat ini.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p> Ini adalah nama layer yang akan dibuat di <b>My Content</b> (Konten Saya) dan ditambahkan ke peta.  Layer ini akan memiliki tipe fitur yang sama (area, garis, atau titik) dengan layer overlay.  Nama default berdasarkan pada metode overlay dan nama layer input. Jika layer sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Menggunakan kotak tarik turun (drop-down box)  <b>Simpan hasil di</b>, Anda dapat menentukan nama folder di <b>Konten Saya</b> tempat hasilnya akan disimpan.
+            </p> 
+        </div>
+    </div>
+</div>
+</html>

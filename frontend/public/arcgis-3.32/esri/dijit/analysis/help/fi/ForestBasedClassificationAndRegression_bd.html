@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Metsäperusteinen luokittelu ja regressio</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Mets&auml;perusteinen luokittelu ja regressio -ty&ouml;nkulkukaavio"></h2>
+        <hr/>
+    <p>Luo malleja ja ennusteita k&auml;ytt&auml;m&auml;ll&auml; Leo Breimanin satunnaisen mets&auml;n algoritmia, joka on valvotun koneoppimismenetelm&auml;n muunnelma. Ennusteet voidaan tehd&auml; sek&auml; kategorisille muuttujille (luokittelu) ja jatkuville muuttujille (regressio). Selitt&auml;v&auml;t muuttujat ovat koulutuskohteiden ominaisuustietotaulun kentti&auml;. Ty&ouml;kalun avulla voi luoda mallin suorituskyvyn arviointia varten tai luoda ensin mallin ja sitten ennustaa tulokset toiseen aineistoryhm&auml;&auml;n.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analyysityyppi</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml; ty&ouml;kalun k&auml;ytt&ouml;tilan. Ty&ouml;kalun avulla voi kouluttaa mallin vain suorituskyvyn arviointia varten tai kouluttaa ensin mallin ja sitten ennustaa kohteisiin. Ennustetyypit ovat seuraavat:
+                <ul>
+                    <li> <b>Arvioi mallin suorituskyky&auml; kouluttamalla sit&auml;</b> &ndash; malli koulutetaan ja sovitetaan l&auml;ht&ouml;aineistoon. T&auml;m&auml;n vaihtoehdon avulla voit arvioida mallin tarkkuutta ennen uuden aineistoryhm&auml;n ennusteiden luontia. T&auml;m&auml;n vaihtoehdon tulosaineistona on sovitetun koulutusaineiston, mallin diagnostiikan ja valinnaisen muuttujan t&auml;rkeystaulun sis&auml;lt&auml;v&auml; kohdepalvelu.
+                    </li>
+                    <li> <b>Kouluta mallia ja ennusta arvoja</b> &ndash; ennusteet tai luokittelut luodaan kohteille. Selitt&auml;v&auml;t muuttuja on m&auml;&auml;ritett&auml;v&auml; sek&auml; koulutuskohteille ett&auml; ennustettaville kohteille. T&auml;m&auml;n vaihtoehdon tulosaineistona on ennustetut arvot, mallin diagnostiikan ja valinnaisen muuttujan t&auml;rkeystaulun sis&auml;lt&auml;v&auml; kohdepalvelu.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Arvioi mallin suorituskykyä kouluttamalla sitä</h2></div>
+        <hr/>
+        <div>
+            <p>K&auml;yt&auml; t&auml;t&auml; tilaa, jos haluat sovittaa mallin ja tutkia sopivuutta.
+            </p>
+            <p>T&auml;m&auml;n vaihtoehdon avulla mallia koulutetaan k&auml;ytt&auml;m&auml;ll&auml; l&auml;ht&ouml;aineiston karttatasoa. T&auml;m&auml;n vaihtoehdon avulla voit arvioida mallin tarkkuutta ennen uuden aineistoryhm&auml;n ennusteiden luontia. T&auml;m&auml; vaihtoehto tulostaa mallin diagnostiikan viesti-ikkunaan ja k&auml;ytt&auml;&auml; mallia koulutusaineistossa.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Kouluta mallia ja ennusta arvoja</h2></div>
+        <hr/>
+        <div>
+            <p>K&auml;yt&auml; t&auml;t&auml; tilaa, jos haluat sovittaa mallin ja k&auml;ytt&auml;&auml; mallia aineistoryhm&auml;ss&auml; ennusteiden luontia varten.
+            </p>
+            <p>Ennusteet ja luokittelut luodaan kohteille. T&auml;m&auml;n vaihtoehdon tulosaineistona on kohdepalvelu, mallin diagnostiikka ja valinnaisen muuttujan t&auml;rkeystaulu.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Valitse koulutuskarttataso</h2></div>
+        <hr/>
+        <div>
+            <p>Kohdekarttataso, joka sis&auml;lt&auml;&auml; ennustettavan muuttujan ja kent&auml;t, joita k&auml;ytet&auml;&auml;n ennusteen luonnissa.
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Valitse karttataso, jonka arvoja haluat ennustaa</h2></div>
+        <hr/>
+        <div>
+            <p>Kohdekarttataso, joka edustaa sijainteja, joissa ennusteet tehd&auml;&auml;n. T&auml;m&auml;n kohdekarttatason on sis&auml;llett&auml;v&auml; my&ouml;s kaikki selitt&auml;v&auml;t muuttujat, jotka on m&auml;&auml;ritetty koulutuskohteiden kentti&auml; vastaavina kenttin&auml;.
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Valitse ennustettava kenttä</h2></div>
+        <hr/>
+        <div>
+            <p>Koulutuskohteiden kentt&auml;, joka sis&auml;lt&auml;&auml; mallin koulutuksessa k&auml;ytett&auml;v&auml;t arvot. T&auml;m&auml; kentt&auml; sis&auml;lt&auml;&auml; niiden muuttujien tunnetut (koulutus-) arvot, joita k&auml;ytet&auml;&auml;n ennustamiseen tuntemattomissa sijainneissa. Jos arvot ovat kategoriset (esimerkiksi Vaahtera, M&auml;nty, Tammi), valitse  <b>Kategorinen</b>-valintaruutu.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Valitse vähintään yksi selittävä muuttuja</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;hint&auml;&auml;n yksi selitt&auml;vi&auml; muuttujia (kentti&auml;) edustava kentt&auml;, josta on apua ennustettavan muuttujan arvon tai luokan ennustamisessa. K&auml;yt&auml; Kategorinen-valintaruutua kaikkien niiden muuttujien kohdalla, jotka edustavat luokkia tai kategorioita (kuten maanpeitett&auml;, olemassaoloa tai puuttumista). M&auml;&auml;rit&auml; muuttujien arvoksi tosi kaikkien niiden muuttujien kohdalla, jotka edustavat luokkia tai kategorioita, kuten maanpeitett&auml;, olemassaoloa tai puuttumista, ja ep&auml;tosi, jos muuttuja on jatkuva.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Puiden määrä</h2></div>
+        <hr/>
+        <div>
+            <p>Mallissa luotavien puiden m&auml;&auml;r&auml;. Mit&auml; enemm&auml;n puita, sit&auml; tarkempia tuloksia malli ennustaa, mutta mallin laskenta kest&auml;&auml; kauemmin. Puiden oletusm&auml;&auml;r&auml; on 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Lehtien vähimmäiskoko</h2></div>
+        <hr/>
+        <div>
+            <p>Niiden havaintojen v&auml;himm&auml;ism&auml;&auml;r&auml;, jotka tarvitaan lehden s&auml;ilytt&auml;miseen (lehti on puun p&auml;&auml;tesolmu, joka ei en&auml;&auml; haaraudu). Oletusarvoinen v&auml;himm&auml;ism&auml;&auml;r&auml; regressiossa on viisi (5) ja luokittelussa yksi (1). Hyvin suurissa aineistoissa n&auml;iden lukujen suurentaminen heikent&auml;&auml; ty&ouml;kalun suoritusaikaa.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Puun enimmäissyvyys</h2></div>
+        <hr/>
+        <div>
+            <p>Niiden haarautumien enimm&auml;ism&auml;&auml;r&auml;, jotka tehd&auml;&auml;n puussa alasp&auml;in. Jos k&auml;ytet&auml;&auml;n suurta enimm&auml;issyvyytt&auml;, haarautumia luodaan enemm&auml;n, mik&auml; voi lis&auml;t&auml; mallin ylisovituksen mahdollisuutta. Oletusarvo on aineistoon perustuva ja riippuu luotavien puiden ja sis&auml;llytett&auml;vien muuttujien m&auml;&auml;r&auml;st&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Saatavilla olevat puukohtaiset tiedot (%)</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml; koulutuskarttatason niiden kohteiden prosenttiosuuden, joita k&auml;ytet&auml;&auml;n kussakin p&auml;&auml;t&ouml;spuussa. Oletusarvo on 100 prosenttia aineistosta. Kunkin puun otokset otetaan satunnaisesti kahdesta kolmasosasta m&auml;&auml;ritetyst&auml; aineistosta.
+            </p>
+            <p>Kukin mets&auml;n p&auml;&auml;t&ouml;spuu luodaan k&auml;ytt&auml;m&auml;ll&auml; k&auml;ytett&auml;viss&auml; olevan koulutusaineiston satunnaisotosta tai osajoukkoa (noin kaksi kolmasosaa). K&auml;ytt&auml;m&auml;ll&auml; alhaisempaa l&auml;ht&ouml;aineiston prosenttiosuutta kussakin p&auml;&auml;t&ouml;spuussa nopeuttaa ty&ouml;kalua hyvin suurilla aineistoryhmill&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Satunnaisesti poimittujen muuttujien määrä</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml; niiden selitt&auml;vien muuttujien m&auml;&auml;r&auml;n, joita k&auml;ytet&auml;&auml;n kunkin p&auml;&auml;t&ouml;spuun luonnissa.
+            </p>
+            <p>Kukin mets&auml;n p&auml;&auml;t&ouml;spuu luodaan k&auml;ytt&auml;m&auml;ll&auml; m&auml;&auml;ritettyjen selitt&auml;vien muuttujien satunnaista osajoukkoa. Lis&auml;&auml;m&auml;ll&auml; kussakin p&auml;&auml;t&ouml;spuussa k&auml;ytett&auml;vien muuttujien m&auml;&auml;r&auml;&auml; lis&auml;&auml; mallin ylisovituksen mahdollisuutta, erityisesti silloin, kun hallitsevia muuttujia on yksi tai muutama. Yleinen k&auml;yt&auml;nt&ouml; on k&auml;ytt&auml;&auml; selitt&auml;vien muuttujien kokonaism&auml;&auml;r&auml;n neli&ouml;juurta, jos ennustettava muuttuja on numeerinen, tai jakaa selitt&auml;vien muuttujien kokonaism&auml;&auml;r&auml; kolmella (3), jos ennustettava muuttuja on kategorinen.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Valitse, miten selittävät kentät täsmäytetään</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml;, miten koulutuskarttatason vastaavat muuttujat t&auml;sm&auml;&auml;v&auml;t ennustekarttatason muuttujien kanssa. Vain koulutuksessa k&auml;ytetyt muuttujat sis&auml;ltyv&auml;t tauluun.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Validointikertojen määrä</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml; koulutuskarttatason niiden kohteiden prosenttiosuuden (0&ndash;50 prosenttia), jotka varataan validoinnin testiaineistoryhm&auml;ksi. Mallia koulutetaan ilman t&auml;t&auml; satunnaista aineiston osajoukkoa ja kohteiden havaittuja arvoja verrataan ennustettuun arvoon. Oletusarvo on 10 prosenttia.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen tason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos taso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Palautettavat arvot m&auml;&auml;r&auml;ytyv&auml;t analyysin tyypin perusteella. Jos koulutat mallin sopivuuden arviointia varten, tulokset sis&auml;lt&auml;v&auml;t malliin sopivan koulutusaineiston karttatason ja tulostiedot, joissa arvioidaan mallin sopivuutta. Jos koulutat ja ennustat, tulokset sis&auml;lt&auml;v&auml;t malliin sopivan koulutusaineiston karttatason, ennustettujen tulosten karttatason ja tulostiedot, joissa arvioidaan mallin sopivuutta.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

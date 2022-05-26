@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Sažmi unutar</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Sažmi unutar"></h2>
+        <hr/>
+    <p>Ovaj alat pronalazi geoobjekte (i dijelove geoobjekata) u prvom ulaznom sloju koji se nalaze unutar zadanih granica poligona.  
+        <ul>
+            <li>Ako imate sloj granica sliva i sloj granica uporabe zemlji&scaron;ta, izračunajte ukupnu poljoprivrednu povr&scaron;inu vrste uporabe zemlji&scaron;ta za svaki sliv. 
+            </li>
+            <li>Ako imate sloj parcela u okrugu i sloj granica grada, sažmite prosječnu vrijednost praznih parcela unutar svake granice grada.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, analizirat će se samo oni geoobjekti ulaznog sloja i sloja koji će se sažeti, a koji su vidljivi unutar trenutačnog obuhvata karte. Ako opcija nije označena, analizirat će se svi geoobjekti ulaznog sloja i sloja koji će se sažeti, čak i ako se nalaze izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Odaberite poligonalni sloj za sažimanje ostalih geoobjekata unutar njegovih granica</h2></div>
+        <hr/>
+        <div>
+            <p>Poligonalni sloj koji će se upotrijebiti za sažimanje geoobjekata koji spadaju unutar njegovih granica. Možete odabrati između sažimanja unutar poligonalnog sloja koji omogućite ili unutar četverokutnih ili &scaron;esterokutnih ćelija koje se generiraju kad alat radi. Prilikom generiranja ćelija za  <b>Četverokut</b>, broj i naznačene jedinice određuju visinu i dužinu kvadrata. Za <b>&Scaron;esterokut</b> broj i naznačene jedinice određuju udaljenost između usporednih strana.
+            </p>
+            <p>Za analizu  <b>kvadratnih</b> ili <b>&scaron;esterokutnih</b> ćelija potreban je predviđeni koordinatni sustav. Možete postaviti <b>Koordinatni sustav obrade</b> u <b>Okruženju za analizu</b>. Ako koordinatni sustav obrade nije postavljen na predviđeni koordinatni sustav, od vas će se tražiti da ga postavite kada <b>pokrenete analizu</b> .
+            </p>
+            <p>Osim odabira sloja s va&scaron;e karte, možete odabrati  <b>Izaberi sloj za analizu</b> na dnu padajućeg popisa za pretraživanje va&scaron;ih sadržaja za skup podataka za dijeljenje datoteka velikih podataka ili sloj geoobjekta.
+            </p>
+        </div>
+    </div>
+    <div id="summaryLayer">
+        <div><h2>Izaberite sloj za sažimanje</h2></div>
+        <hr/>
+        <div>
+            <p>Sažet će se geoobjekti u ovom sloju koji spadaju unutar granica geoobjekata u ulaznom sloju ili gore navedenim ćelijama. 
+            </p>
+            <p>Osim odabira sloja s va&scaron;e karte, možete odabrati  <b>Izaberi sloj za analizu</b> na dnu padajućeg popisa za pretraživanje va&scaron;ih sadržaja za skup podataka za dijeljenje datoteka velikih podataka ili sloj geoobjekta.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Odaberite udaljenost za generiranje ćelija i agregaciju</h2></div>
+        <hr/>
+        <div>
+            <p>Upotrijebljena udaljenost za generiranje ćelija.  
+            </p>
+            <p>Treba postaviti stavke  <b>Veličina ćelije</b> za ćelije ili <b>Poligonalni sloj</b>.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Agregacija upotrebom vremenskih isječaka (neobavezno)</h2></div>
+        <hr/>
+        <div>
+            <p>Ako je ulazni točkasti sloj ovremenjen i ako je instantne vrste, možete analizirati s pomoću stvaranja vremenskih koraka. Tri su parametra koje možete postaviti kada upotrebljavate vrijeme:
+                <ul>
+                    <li> <b>Interval vremenskog koraka</b>
+                    </li>
+                    <li> <b>Učestalost ponavljanja vremenskog koraka</b>
+                    </li>
+                    <li> <b>Vrijeme s kojim se usklađuju vremenski koraci</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Na primjer, ako imate podatke koji predstavljaju jednu godinu i želite ih analizirati it u koracima od tjedna, postavite <b>Interval vremenskog koraka</b> na <code>1 tjedan</code>. 
+            </p>
+            <p>Na primjer, ako imate podatke koji predstavljaju jednu godinu i želite analiziratiprve tjedne u mjesecu, postavite  <b>Interval vremenskog koraka</b> na <code>1 tjedan</code>, <b>Učestalost ponavljanja vremenskog koraka</b> na <code>1 mjesec</code> i <b>Vrijeme s kojim se usklađuju vremenski koraci </b> na <code>1. siječnja u 12:00 h</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Vremenski interval za agregaciju</h2></div>
+        <hr/>
+        <div>
+            <p>Vremenski interval kori&scaron;ten za generiranje vremenskih koraka.  <b>Interval vremenskog koraka</b> može se upotrebljavati samostalno ili s parametrima <b>Učestalost ponavljanja vremenskog koraka</b> ili <b>Vrijeme s kojim se usklađuju vremenski koraci</b>.
+            </p>
+            <p>Na primjer, ako želite izraditi vremenske korake između svakog ponedjeljka od 9:00 h do 10:00 h, postavite  <b>Interval vremenskog koraka</b> na <code>1 sat</code>, <b>Učestalost ponavljanja vremenskog koraka</b> na <code>1 tjedan</code> i <b>Vrijeme s kojim se usklađuju vremenski koraci</b> na <code>9:00:00 h u ponedjeljak</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Vremenski korak za agregaciju</h2></div>
+        <hr/>
+        <div>
+            <p> Korak koji se koristi za izračun vremenskog koraka. <b>Učestalost ponavljanja vremenskog koraka</b> može se upotrebljavati samostalno, s parametrom <b>Interval vremenskog koraka</b>, s parametrom <b>Referentno vrijeme</b> ili s oba parametra <b>Interval vremenskog koraka</b> i <b>Vrijeme s kojim se usklađuju vremenski koraci</b>.
+            </p>
+            <p> Na primjer, ako želite izraditi vremenske korake između svakog ponedjeljka od 9:00 h do 10:00 h, postavite <b>Interval vremenskog koraka</b> na <code>1 sat</code>, <b>Učestalost ponavljanja vremenskog koraka</b> na <code>1 tjedan</code> i <b>Vrijeme s kojim se usklađuju vremenski koraci</b> na <code>9:00:00 h u ponedjeljak</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Referentno vrijeme za poravnanje vremenskih isječaka</h2></div>
+        <hr/>
+        <div>
+            <p>Datum i vrijeme kori&scaron;teni za poravnanje vremenskih isječaka. Stvaranje vremenskih koraka započet će od ovog vremena i nastavit će se unatrag. Ako se ne odabere referentno vrijeme, stvaranje vremenskih koraka poravnat će se s 1. siječnjem 1970. 
+            </p>
+            <p> Na primjer, ako želite izraditi vremenske korake između svakog ponedjeljka od 9:00 h do 10:00 h, postavite <b>Interval vremenskog koraka</b> na <code>1 sat</code>, <b>Učestalost ponavljanja vremenskog koraka</b> na <code>1 tjedan</code> i <b>Vrijeme s kojim se usklađuju vremenski koraci</b> na <code>9:00:00 h u ponedjeljak</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Dodaj statistike (neobavezno)</h2></div>
+        <hr/>
+        <div>
+            <p> Možete izračunati statistiku za geoobjekte koji su sažeti. Možete izračunati sljedeće u brojčanim poljima:
+                <ul>
+                    <li>Ukupni broj &ndash; izračunava broj vrijednosti koje imaju neku vrijednost. Može se upotrebljavati na brojčanim poljima ili u tekstu. Ukupni broj od [nema vrijednosti, 0, 2] je 2.
+                    </li>
+                    <li>Zbroj &ndash; zbroj brojčanih vrijednosti u polju. Zbroj od [nema vrijednosti, nema vrijednosti, 3] je 3.
+                    </li>
+                    <li>Srednja vrijednost &ndash; srednja vrijednost brojčanih vrijednosti. Srednja vrijednost od [0, 2, nema vrijednosti] je 1.
+                    </li>
+                    <li>Min. &ndash; minimalna vrijednost brojčanog polja. Minimum od [0, 2, nema vrijednosti] je 0. 
+                    </li>
+                    <li>Maks. &ndash; maksimalna vrijednost brojčanog polja. Maksimalna vrijednost od [0, 2, nema vrijednosti] je 2.
+                    </li>
+                    <li>Raspon &ndash; raspon brojčanog polja. Izračunava se oduzimanjem minimalnih vrijednosti od maksimalnih vrijednosti. Raspon od [0, nema vrijednosti, 1] je 1. Raspon od [nema vrijednosti, 4] je 0.
+                    </li>
+                    <li>Varijanca &ndash; varijanca brojčanog polja u tragu. Varijanca od [1] nema vrijednosti. Varijanca od [nema vrijednosti, 1,0,1,1] je 0,25.
+                    </li>
+                    <li>Standardna devijacija &ndash; standardna devijacija brojčanog polja. Standardna devijacija od [1] nema vrijednosti. Standardna devijacija od [nema vrijednosti, 1,0,1,1] je 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Možete izračunati sljedeće u poljima teksta:
+                <ul>
+                    <li>Ukupni broj &ndash; broj vrijednosti koje imaju neku vrijednost.
+                    </li>
+                    <li>Bilo koje &ndash; ova je statistika nasumični uzorak vrijednosti teksta u određenom polju.
+                    </li>
+                </ul>
+                Sve se statistike računaju za vrijednosti koje nisu nula. Sloj rezultata sadržavat će novo polje za svaki izračun statistike. Može se dodati bilo koliko statistika odabirom atributa i statistike. 
+            </p>
+            <p>Osim te statistike izračunat će se statistika omjera na svim brojčanim poljima:
+                <ul>
+                    <li>Zbroj&mdash;zbroj svakog polja pomnožen s omjerom sloja sažetka unutar poligona. 
+                    </li>
+                    <li>Zbroj&mdash;zbroj ponderiranih vrijednosti u svakom polju. Pri tome je primijenjen ponder omjer sloja sažetka unutar poligona.
+                    </li>
+                    <li>Srednja vrijednost&mdash;ponderirana srednja vrijednost vrijednosti u svakom polju. Pri tome je primijenjen ponder omjer sloja sažetka unutar poligona.
+                    </li>
+                    <li>Min.&mdash;minimum ponderiranih vrijednosti u svakom polju. Pri tome je primijenjen ponder omjer sloja sažetka unutar poligona.
+                    </li>
+                    <li>Maks.&mdash;maksimum ponderiranih vrijednosti u svakom polju. Pri tome je primijenjen ponder omjer sloja sažetka unutar poligona.
+                    </li>
+                    <li>Raspon&mdash;razlika između maksimalnih i minimalnih ponderiranih vrijednosti.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ovisno o vrsti geoobjekata koje sažimate, izračunat će se ukupan zbroj točaka u blizini, ukupna duljina linija ili ukupno područje.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Odaberite polje za grupiranje</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je atribut geoobjekata  <b>Sažmi</b> koji možete upotrijebiti za računanje statistika zasebno za svaku jedinstvenu atributnu vrijednost. Primjerice, pod pretpostavkom da prvi ulazni sloj sadrži granice grada i geoobjekti sažimanja jesu parcele. Jedan od atributa parcela je <i>Status</i> koji sadrži dvije vrijednosti: PRAZNO i ZAUZETO. Za izračun ukupne povr&scaron;ine praznih i zauzetih parcela unutar granica gradova, upotrijebite <i>Status</i> za grupiranje po atributu. Statistike za svaku grupu, kao i zbroj geoobjekata unutar svake granice poligona, prikazat će se u skočnom prozoru sloja rezultata.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Dodaj manjinu, većinu</h2></div>
+        <hr/>
+        <div>
+            <p>Ovaj se potvrdni okvir omogući kada odaberete polje za grupiranje. Ako želite saznati koje su vrijednosti atributa unutar svake grupe manjina (najmanje prevladavaju) ili većina (najvi&scaron;e prevladavaju) unutar svake granice prvog ulaznog sloja, odaberite  <b>Dodaj manjinu, većinu</b>. Kada odaberete <b>Dodaj manjinu, većinu</b>, va&scaron;em sloju rezultata dodaju se dva nova polja. Ako također odaberete <b>Dodaj postotke</b>, dodat će se dva dodatna polja sloju rezultata koji će sadržavati postotke manjine i većine vrijednosti atributa unutar svake grupe.
+            </p>
+            <ul>
+                <li>Ako sažimate točke, minimalne i maksimalne vrijednosti računaju se na temelju zbroja točaka unutar svakog graničnog područja u poligonalnom ulaznom sloju.  
+                </li>
+                <li>Ako sažimate linije, minimalne i maksimalne vrijednosti računaju se na temelju duljine linija unutar svakog graničnog područja u poligonalnom ulaznom sloju.  
+                </li>
+                <li>Ako sažimate povr&scaron;ine, minimalne i maksimalne vrijednosti računaju se na temelju povr&scaron;ina unutar svakog graničnog područja u poligonalnom ulaznom sloju.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Dodaj postotke</h2></div>
+        <hr/>
+        <div>
+            <p>Ovaj se potvrdni okvir omogući kada odaberete polje za grupiranje.    Odaberite opciju  <b>Dodaj postotke</b> ako želite pronaći postotak svake vrijednosti atributa unutar svake grupe.  Dodaje se novo polje tablici rezultata koja sadrži postotke svake vrijednosti atributa unutar svake grupe.   Ako označite i opciju <b>Dodaj manjinu, većinu</b>, dodat će se dva dodatna polja sloju rezultata koji sadrži postotke manjine i većine vrijednosti atributa unutar svake grupe.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Izaberi spremište podataka</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultati geoanalitika pohranjuju se u spremnik podataka i otkriveni su kao sloj geoobjekata u  Portal for ArcGIS. U većini slučajeva rezultate bi trebalo pohraniti u spremniku prostorno-vremenskih podataka i to je zadana postavka. U nekim je slučajevima, spremanje rezultata u spremnik relacijskih podataka dobra opcija. Razlozi za&scaron;to biste htjeli pohraniti rezultate u spremnik relacijskih podataka navedeni su u nastavku: 
+                <ul>
+                    <li>Možete upotrijebiti rezultate u suradnji portal-do-portala.
+                    </li>
+                    <li>Možete omogućiti mogućnosti sinkronizacije rezultata.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ne biste trebali upotrebljavati spremnik relacijskih podataka ako očekujete da će se va&scaron;i geoanalitički podaci povećati i trebate iskoristiti mogućnosti spremnika prostorno-vremenskih podataka za rukovanje velikim količinama podataka.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p> Naziv sloja koji će se stvoriti. Ako pi&scaron;ete na ArcGIS Data Store, va&scaron;i će se rezultati spremiti u  <b>Mojem sadržaju</b> i dodati karti. Ako pi&scaron;ete na dijeljenje datoteka velikih podataka, va&scaron;i će se rezultati pohraniti u dijeljenje datoteka velikih podataka i dodati u manifest. Neće se dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, alat neće biti uspje&scaron;an.
+            </p>
+            <p>Kada pi&scaron;ete na  ArcGIS Data Store (relacijski ili prostorno-vremenski spremnik velikih podataka), upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

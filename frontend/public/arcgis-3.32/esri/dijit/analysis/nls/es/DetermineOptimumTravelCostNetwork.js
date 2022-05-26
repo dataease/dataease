@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/es/DetermineOptimumTravelCostNetwork",{inputLayerLabel:"Elegir la capa de ubicaci\u00f3n de entidad o r\u00e1ster entre la que se determinar\u00e1n rutas de viaje",inputCostRasterLabel:"Elegir capa r\u00e1ster de coste de viaje",outputOptimumNetworkName:"Nombre de la capa de resultados de polil\u00edneas de rutas \u00f3ptimas",outputNeighborNetworkName:"Nombre de la capa de resultados de polil\u00edneas de rutas vecinas (opcional)",outputLayerName:"Determinar gastos de viaje \u00f3ptimos para ${layername}",
+itemDescription:"Capa de entidades generada al ejecutar Determinar red de gastos de viaje \u00f3ptimos en ${layerName}. ",itemTags:"Resultados del an\u00e1lisis, Determinar red de gastos de viaje \u00f3ptimos, ${layername} ${fieldname}",itemSnippet:"Capa de entidades generada a partir de Determinar red de gastos de viaje \u00f3ptimos."});

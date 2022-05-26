@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Klasifikuoti pikselius naudojant gilųjį mokymąsi</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Klasifikuoti pikselius naudojant gilųjį mokymąsi"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis įvesties rastrui naudoja apmokytą giliojo mokymosi modelį, kad sukurtų klasifikuotą rastrą, ir kiekvienam tinkamam pikseliui priskiriama klasės žymė.
+    </p>
+    <p>Jei parinktis  <b>Naudoti esamą žemėlapio aprėptį</b> pažymėta, bus analizuojama tik dabartinėje žemėlapio aprėptyje matomas rastro plotas. Jei nepažymėta, bus analizuojamas visas rastras, net jei jis nepatenka į esamą žemėlapio aprėptį.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Pasirinkite, kuris vaizdas bus naudojamas klasifikuoti pikselius</h2></div>
+        <hr/>
+        <div>
+            <p>Klasifikuotinas įvesties vaizdas.
+            </p>
+            <p>Tai gali būti vaizdų paslaugos URL, rastrinis sluoksnis arba vaizdų paslaugos sluoksnis.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Pasirinkite, kokį gilaus mokymosi modelį naudoti klasifikuojant pikselius</h2></div>
+        <hr/>
+        <div>
+            <p>Įvesties giliojo mokymosi paketo ( <code>.dlpk</code>) elementas.
+            </p>
+            <p>Giliojo mokymosi paketą sudaro Esri modelio apra&scaron;o JSON failas ( <code>.emd</code>), giliojo mokymosi dvinario modelio failas ir (nebūtinai) naudojama Python rastrinė funkcija.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Nurodykite gilaus mokymosi modelio argumentus</h2></div>
+        <hr/>
+        <div>
+            <p>Funkcijos argumentai apibrėžiami įvesties modelyje nurodytoje Python rastro funkcijos klasėje. Būtent čia nurodote papildomus giliojo mokymosi parametrus ir argumentus, skirtus eksperimentuoti ir tobulinti, pavyzdžiui, pasitikėjimo ribą jautrumo korekcijoms.
+            </p>
+            <p>Argumentų pavadinimus įrankis i&scaron;platina skaitydamas Python modulį rastrų analizės serveryje.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnio, kuris bus sukurtas puslapyje  <b>Turinys</b> ir įtrauktas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau egzistuoja, būsite papra&scaron;yti pateikti kitą pavadinimą.
+            </p>
+            <p>Galite nurodyti aplanko  <b>Turinyje</b>, kuriame rezultatai bus įra&scaron;yti naudojant i&scaron;&scaron;okantįjį meniu <b>Rezultatą įra&scaron;yti į</b>, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

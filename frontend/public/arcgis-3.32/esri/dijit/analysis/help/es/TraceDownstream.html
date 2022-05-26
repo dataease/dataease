@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Seguimiento aguas abajo</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Seguimiento aguas abajo"></h2>
+        <hr/>
+    <p>Esta herramienta determina el seguimiento, o ruta de flujo, en direcci&oacute;n aguas abajo desde los puntos de tu capa de entrada.
+    </p>
+    <p>Por ejemplo, sup&oacute;n que tienes entidades de puntos que representan fuentes de contaminaci&oacute;n h&iacute;drica y deseas determinar hacia qu&eacute; parte de tu &aacute;rea de estudio fluir&aacute; la contaminaci&oacute;n. Podr&aacute;s usar el seguimiento aguas abajo para identificar la ruta que tomar&aacute; la contaminaci&oacute;n. Este seguimiento tambi&eacute;n puede dividirse en segmentos de l&iacute;nea especificando un valor y unidades de distancia. La l&iacute;nea devuelta puede ser la longitud total de la ruta de flujo, una longitud m&aacute;xima de seguimiento o se recortar&aacute; a entidades de &aacute;rea como su &aacute;rea de estudio. En muchos casos, si se devuelve la longitud total de la ruta del seguimiento, ser&aacute; desde el origen hasta el oc&eacute;ano.
+    </p>
+    <p>El resultado es una l&iacute;nea que representa el seguimiento aguas abajo. Si se especifica una distancia para  <b>Dividir el seguimiento en segmentos de l&iacute;nea</b>, la l&iacute;nea de seguimiento se dividir&aacute; en m&uacute;ltiples l&iacute;neas, teniendo cada una la longitud especificada.  Por ejemplo, si tu punto de entrada representa un vertido contaminante y el r&iacute;o hacia el que fluye se mueve a una velocidad de 0,6 millas por hora, o 15 millas por d&iacute;a, puede que desees dividir el r&iacute;o en segmentos de 15 millas. Si se divide el seguimiento en intervalos de 15 millas, podr&aacute; verse aproximadamente d&oacute;nde viajar&aacute; el vertido cada d&iacute;a. La l&iacute;nea se simbolizar&aacute; mediante colores graduados basados en la distancia y se etiquetar&aacute; con la distancia desde el inicio del seguimiento.
+    </p>
+    <p>El seguimiento resultante contendr&aacute; todos los atributos de tus puntos de entrada y atributos adicionales. 
+        <ul>
+            <li> <i>PointID</i>: contiene el valor del Id. del punto de entrada.
+                
+
+            </li>
+            <li> <i>LengthKm</i>: contiene la longitud total en kil&oacute;metros del seguimiento aguas abajo.
+                
+
+            </li>
+            <li> <i>Description</i> y <i>DataResolution</i>: contienen informaci&oacute;n perteneciente a los datos hidrol&oacute;gicos usados para calcular el seguimiento.
+                
+
+            </li>
+            <li> <i>FromDistance</i> y <i>ToDistance</i>: contienen la distancia inicial y final de cada segmento de l&iacute;nea. Estos atributos se escribir&aacute;n si se usa <b>Dividir el seguimiento en segmentos de l&iacute;nea</b>
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si  <b>Usar la extensi&oacute;n del mapa actual</b> se ha activado, solo se analizar&aacute;n las entidades de puntos de la capa de entrada que est&aacute;n visibles en la extensi&oacute;n de mapa actual.  Si no se ha activado, se utilizar&aacute;n todas las entidades de la capa de entrada, aunque est&eacute;n fuera de la extensi&oacute;n del mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Entidades de puntos que se van a usar como ubicaciones de inicio para cada seguimiento aguas abajo</h2></div>
+        <hr/>
+        <div>
+            <p>Entidades de puntos que se van a usar como ubicaciones de inicio del seguimiento aguas abajo. La salida contendr&aacute; una l&iacute;nea para cada punto de entrada.
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Dividir el seguimiento en segmentos de línea</h2></div>
+        <hr/>
+        <div>
+            <p>La l&iacute;nea de seguimiento se dividir&aacute; en m&uacute;ltiples l&iacute;neas, teniendo cada una la longitud especificada. Por ejemplo, si tu punto de entrada representa un vertido contaminante y el r&iacute;o hacia el que fluye se mueve a una velocidad de 0,6 millas por hora, o 15 millas por d&iacute;a, puede que desees dividir el r&iacute;o en segmentos de 15 millas. Si se divide el seguimiento en intervalos de 15 millas, podr&aacute; verse aproximadamente d&oacute;nde viajar&aacute; el vertido cada d&iacute;a. La l&iacute;nea se simbolizar&aacute; mediante colores graduados basados en la distancia y se etiquetar&aacute; con la distancia desde el inicio del seguimiento. El seguimiento resultante tendr&aacute; varios segmentos de l&iacute;neas, cada uno con los campos  <i>FromDistance</i> y <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Distancia máxima del seguimiento</h2></div>
+        <hr/>
+        <div>
+            <p>Determina la longitud total de l&iacute;nea que se devolver&aacute;. Si proporcionas entidades de &aacute;rea para recortar el seguimiento, el resultado se recortar&aacute; para la entidad de &aacute;rea, independientemente de la distancia que introduzcas aqu&iacute;.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Recortar salida a</h2></div>
+        <hr/>
+        <div>
+            <p>Dibuja o proporciona una capa del &aacute;rea en la que deseas que se recorte el seguimiento. Por ejemplo, si quieres que el resultado del seguimiento est&eacute; solo dentro de tu &aacute;rea de estudio, como tu condado, usa la entidad de condado como entrada, de forma que el seguimiento se detenga en el l&iacute;mite del condado.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa.  El nombre predeterminado se basa en el nombre de la herramienta y el nombre de la capa de entrada. Si el nombre de capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Con el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+            <p> Ejecutar esta herramienta no consume cr&eacute;ditos.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Regresión lineal generalizada</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Diagrama del flujo de trabajo de Regresi&oacute;n lineal generalizada"></h2>
+        <hr/>
+    <p>Realiza una Regresi&oacute;n lineal generalizada 
+(GLR) para generar predicciones o para modelar una variable dependiente en t&eacute;rminos de su relaci&oacute;n con un conjunto de variables explicativas. Esta herramienta se puede usar para ajustar modelos continuos (Gausiano), binarios (log&iacute;sticos) y de recuento (Poisson).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Tipo de análisis</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el modo de funcionamiento de la herramienta. La herramienta puede ejecutarse para entrenar un modelo solo para evaluar rendimientos, o para entrenar un modelo y predecir entidades. Los tipos de predicci&oacute;n son los siguientes:
+                <ul>
+                    <li> <b>Ajustar un modelo para evaluar el rendimiento del modelo</b>: el modelo se ajustar&aacute; y aplicar&aacute; a los datos de entrada. Utilice esta opci&oacute;n para evaluar la precisi&oacute;n de su modelo antes de generar las predicciones en un dataset nuevo o para comprender las relaciones y los factores de la variable predicha. La salida de esta opci&oacute;n ser&aacute; un servicio de entidades con sus datos ajustados y diagn&oacute;sticos de modelo.
+                    </li>
+                    <li> <b>Ajustar un modelo y predecir valores</b>: se generar&aacute;n predicciones o clasificaciones para las entidades de entrada y las entidades de predicci&oacute;n. Se deben proporcionar variables explicativas tanto para las entidades de predicci&oacute;n como para las entidades que se desea predecir. La salida de esta opci&oacute;n ser&aacute; un servicio de entidades con su modelo ajustado a sus datos de entrada, un servicio de entidades de valores predichos y diagn&oacute;sticos de modelo.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Ajustar un modelo para evaluar el rendimiento del modelo</h2></div>
+        <hr/>
+        <div>
+            <p>Utilice este modelo si desea ajustar un modelo e investigue el ajuste.
+            </p>
+            <p>Con esta elecci&oacute;n, el modelo se entrenar&aacute; con una capa de entrada. Utilice esta opci&oacute;n para evaluar la precisi&oacute;n de su modelo antes de generar las predicciones en un dataset nuevo. Esta opci&oacute;n generar&aacute; diagn&oacute;sticos de modelo y aplicar&aacute; el modelo a sus datos de entrenamiento.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Ajustar un modelo y predecir valores</h2></div>
+        <hr/>
+        <div>
+            <p>Utilice este modelo si desea ajustar un modelo y aplique el modelo al dataset para generar predicciones.
+            </p>
+            <p>Se generar&aacute;n predicciones o clasificaciones para las entidades. La salida de esta opci&oacute;n ser&aacute; un servicio de entidades, diagn&oacute;sticos de modelo y una tabla opcional de importancia variable.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Elegir una capa a partir de la cual generar un modelo</h2></div>
+        <hr/>
+        <div>
+            <p>La capa que contiene las entidades tabulares, de &aacute;reas, l&iacute;neas o puntos que a su vez contienen las variables explicativas y dependientes.
+            </p>
+            <p>Adem&aacute;s de elegir una capa en el mapa, puede elegir  <b>Elegir capa de an&aacute;lisis</b> en la parte inferior de la lista desplegable para examinar el contenido del dataset o la capa de entidades de un recurso compartido de archivos de big data.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Elegir el campo que se va a modelar</h2></div>
+        <hr/>
+        <div>
+            <p>El campo num&eacute;rico que contiene los valores observados que se van a modelar y el tipo de valor que est&aacute; modelando. Puede modelar tres tipos de valores:
+                <ul>
+                    <li>Continuo: representa valores continuos. El modelo que se usa es Gausiano y la herramienta realiza una regresi&oacute;n de m&iacute;nimos cuadrados ordinarios.
+                    </li>
+                    <li>Binario: representa valores de presencia o ausencia. Los valores de este tipo deben ser 1 y 0. El modelo que se usa es Regresi&oacute;n log&iacute;stica.
+                    </li>
+                    <li>Recuento: es discreto y representa eventos, por ejemplo, recuentos de delitos, incidentes de enfermedades o accidentes de tr&aacute;fico. El modelo que se usa es Regresi&oacute;n Poisson. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Elegir una capa para la que predecir valores</h2></div>
+        <hr/>
+        <div>
+            <p>Una capa con entidades que representan las ubicaciones donde se deben realizar los c&aacute;lculos. Cada entidad en este dataset debe incluir valores para todas las variables explicativas especificadas. La variable dependiente para estas entidades se calcular&aacute; con el modelo calibrado para la capa de entrada.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Elegir los campos explicativos</h2></div>
+        <hr/>
+        <div>
+            <p>Uno o varios campos que representan a las variables explicativas (campos) que ayudan a predecir el valor. Solamente estar&aacute;n visibles los campos num&eacute;ricos.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Elegir la forma de concordar campos explicativos</h2></div>
+        <hr/>
+        <div>
+            <p>El modo en que las variables correspondientes de la capa de entrada concordar&aacute;n con las variables de la capa de predicci&oacute;n. Solamente se incluir&aacute;n en la tabla las variables utilizadas para generar el modelo. &Uacute;nicamente pueden utilizarse valores num&eacute;ricos. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p> El nombre de la capa que se crear&aacute;.  Si escribe en un ArcGIS Data Store, sus resultados se guardar&aacute;n en  <b>Mi contenido</b> y se agregar&aacute;n al mapa. Si escribe en un recurso compartido de archivos de big data, sus resultados se almacenar&aacute;n en el recurso compartido de archivos de big data y se agregar&aacute;n a su manifiesto. No se agregar&aacute;n al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, la herramienta fallar&aacute;.
+            </p>
+            <p>Los resultados devueltos depender&aacute;n del tipo de an&aacute;lisis. Si est&aacute; ajustando para evaluar el ajuste del modelo, los resultados contendr&aacute;n una capa del ajuste de los datos de entrada al modelo e informaci&oacute;n de resultado que eval&uacute;a el ajuste del modelo. Si est&aacute; ajustando y prediciendo, los resultados contendr&aacute;n una capa del ajuste de los datos de entrada al modelo, una capa de los resultados predichos e informaci&oacute;n de resultado que eval&uacute;a el ajuste del modelo.
+            </p>
+            <p>Cuando escriba en  ArcGIS Data Store (big data store espaciotemporal o relacional) con el cuadro desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

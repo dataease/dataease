@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Calculer la pente</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="Outil Calculer la pente pour le portail"></h2>
+        <hr/>
+    <p>Cet outil cr&eacute;e une surface qui illustre la pente des donn&eacute;es d'altitude en entr&eacute;e. L'inclinaison repr&eacute;sente le taux de changement d'altitude pour chaque cellule du mod&egrave;le num&eacute;rique de terrain (MNT).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisir les données en entrée pour calculer la pente</h2></div>
+        <hr/>
+        <div>
+            <p>La couche d'altitude &agrave; partir de laquelle la pente est calcul&eacute;e.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>Spécifier le facteur d'échelle pour l'altitude</h2></div>
+        <hr/>
+        <div>
+            <p>Saisissez un facteur&nbsp;z.
+            </p>
+            <p>Le facteur Z est un facteur d'&eacute;chelle utilis&eacute; pour convertir les valeurs d'altitude dans deux buts :
+ 
+                <ul>
+                    <li>pour convertir les unit&eacute;s altim&eacute;triques (telles que les m&egrave;tres ou les pieds) en unit&eacute;s de coordonn&eacute;es horizontales de la couche, qui peuvent &ecirc;tre des pieds, des m&egrave;tres ou des degr&eacute;s&nbsp;;
+                        
+  
+                    </li>
+                    <li>pour ajouter une exag&eacute;ration verticale comme effet visuel.
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>A partir des pieds
+                    </p>
+                </td>
+                <td>
+                    <p>A partir des m&egrave;tres
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>A partir des pieds
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0.3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>A partir des m&egrave;tres
+                    </p>
+                </td>
+                <td>
+                    <p>3.28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

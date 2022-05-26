@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>監控植被</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="入口網站的監控植被工具"></h2>
+        <hr/>
+    <p>此工具可在多頻段點陣圖層的頻段上執行算術運算，以透露研究區域的植被涵蓋範圍資訊。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇輸入資料</h2></div>
+        <hr/>
+        <div>
+            <p>選擇多頻段點陣圖層。確定輸入點陣具有適合的可用頻段。
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>選擇要監控植被的方法</h2></div>
+        <hr/>
+        <div>
+            <p>選擇用來建立植被指數圖層的方法。不同的植被指數可協助突顯特定的圖徵或減少各種雜訊。
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI 是全球環境監控之衛星影像的非線性植被指數。其類似於 NDVI，但對大氣效應較不敏感。它會受裸土影響；因此不建議在稀疏或中等密集的植被區域中使用。
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+GVI 一開始是從 Landsat MSS 影像設計，但已修改為使用 Landsat TM 影像。它也稱為「Landsat TM 穗帽」緣色植被指數。此監控指數也可與影像搭配使用，該影像的頻段則分享相同的光譜特性。
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 為植被指數，可試著將 SAVI 方法的祼土影響降到最低。
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI 是標準化指數，可讓您產生圖片來顯示綠度或相對生物數量。此指數可利用多光譜點陣資料集之兩個頻段的特性對比；紅色頻段中的葉綠素色素吸收，及近紅外線 (NIR) 頻段中的植物體的高反射性。
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI 類似於差異植被指數；不過，它對大氣變化很敏感。使用此方法來比較不同的圖片時，應將其使用於已修正大氣因素的圖片中。此資訊可由您的資料供應商提供。
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI 為植被指數，可嘗試使用土壤亮度修正係數，將土壤亮度的影響降至最低。這通常使用於植被覆蓋範圍不足的乾旱地區。
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Sultan's 公式程序會採用一張六頻段 8 位元圖片，並對該圖片套用特定的演算法來產生一張三頻段 8 位元圖片。結果圖片突顯出岩層，稱為海岸線的蛇綠岩。此公式是根據 Landsat 5 或 7 場景的 TM 和 ETM 頻段所設計。
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+轉換的 SAVI 為植被指數，可假設土壤線具有任意的坡度和截面，從而試著將土壤亮度的影響降至最低。
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>指定 NIR 頻段和紅色頻段的指數</h2></div>
+        <hr/>
+        <div>
+            <p>指定 NIR 和紅色頻段的頻段指數。
+            </p>
+            <p>每一個衛星感應器和航空攝影機都會捕捉細分為頻段指數的資訊。每一個頻段指數皆包含電磁光譜的特定組件資訊。此植被監控方法會要求您指定用於擷取 NIR 和紅色波長的頻段指數。
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>污水管的坡度</h2></div>
+        <hr/>
+        <div>
+            <p>土壤線的坡度。波度是散點圖上 NIR 與紅色頻段之間的近似線性關係。
+            </p>
+            <p>此參數只對「轉換之泥土調整的植被指數」方法有效。
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>攔截</h2></div>
+        <hr/>
+        <div>
+            <p>這是當特定土壤線的「紅色」頻段的反射值為 0 時的 NIR 值。
+            </p>
+            <p> <code>(a = NIR - sRed)</code> ，當「紅色」為 0 時。
+            </p> 
+            <p>此參數只對「轉換之泥土調整的植被指數」方法有效。
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>綠色植被涵蓋的數量</h2></div>
+        <hr/>
+        <div>
+            <p>指定 SAVI 方法需要的綠色植被涵蓋的數量。
+            </p>
+            <p>以下是有效值： 
+
+                <ul>
+                    <li>1 = 不包含綠色植被涵蓋的區域
+                        
+ 
+                    </li>
+                    <li>0.5 = 包含適度綠色植被涵蓋的區域
+                        
+ 
+                    </li>
+                    <li>0 = 包含高度綠色植被涵蓋的區域
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>調整因子</h2></div>
+        <hr/>
+        <div>
+            <p>指定調整因子以協助將土壤影響降到最低，這是「轉換之泥土調整的植被指數」方法所需要的。預設值是 0.08。
+            </p>
+            <p>低值意味正在忽略土壤效應。高值意味土壤將影響結果。
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果已存在該名稱的圖層，系統將提示您提供其他名稱。
+            </p>
+            <p>您可以使用 <b>將結果儲存到</b>下拉式方塊，在 <b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

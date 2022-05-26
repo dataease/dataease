@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Vypočítat vzdálenost (Calculate Distance)</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Vypoč&iacute;tat vzd&aacute;lenost"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj vypoč&iacute;t&aacute; euklidovskou vzd&aacute;lenost, směr a přiřazen&iacute; z jedin&eacute;ho zdroje nebo sady zdrojů.
+    </p>
+    <p>Př&iacute;klady použit&iacute; zahrnuj&iacute; i odpovědi na ot&aacute;zky jako např:
+
+        <ul>
+            <li>Jak&aacute; je vzd&aacute;lenost do nejbliž&scaron;&iacute;ho města?
+                
+
+            </li>
+            <li>Jak&aacute; je vzd&aacute;lenost k nejbliž&scaron;&iacute; silnici?
+                
+
+            </li>
+            <li>Jak&aacute; je vzd&aacute;lenost k nejbliž&scaron;&iacute;mu vodn&iacute;mu zdroji?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t rozsah aktu&aacute;ln&iacute; mapy</b>, budou analyzov&aacute;ny pouze prvky ve vstupn&iacute; vrstvě, kter&eacute; jsou viditeln&eacute; v rozsahu aktu&aacute;ln&iacute; mapy. Pokud pole za&scaron;krtnuto nen&iacute;, budou analyzov&aacute;ny v&scaron;echny prvky ve vstupn&iacute; vrstvě, včetně těch, kter&eacute; se nach&aacute;zej&iacute; mimo aktu&aacute;ln&iacute; rozsah mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Zvolte vrstvu rastru nebo umístění prvku, ke kterému se vypočítá vzdálenost</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva, kter&aacute; definuje zdroje, ke kter&yacute;m se vypoč&iacute;t&aacute; vzd&aacute;lenost. Tato vrstva může b&yacute;t image služba nebo feature služba.
+            </p>
+            <p>Typ vstupu u image služby může b&yacute;t cel&eacute; č&iacute;slo nebo desetinn&eacute; č&iacute;slo.
+            </p>
+            <p>Vstup u feature služby může b&yacute;t bod, linie nebo polygon.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maximální vzdálenost pro výpočet</h2></div>
+        <hr/>
+        <div>
+            <p>Maxim&aacute;ln&iacute; vzd&aacute;lenost, kter&aacute; bude vypoč&iacute;t&aacute;na. Pokud např&iacute;klad zad&aacute;te hodnotu 10 000 metrů, bude vypoč&iacute;t&aacute;na euklidovsk&aacute; vzd&aacute;lenost ze zdrojov&yacute;ch lokac&iacute; do t&eacute;to hodnoty (vzd&aacute;lenosti).
+            </p>
+            <p>Pokud nezad&aacute;te ž&aacute;dnou hodnotu, vypoč&iacute;t&aacute; se vzd&aacute;lenost v definovan&eacute;m rozsahu.
+            </p>
+            <p>Dostupn&eacute; jednotky jsou kilometry, metry, m&iacute;le a stopy.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Výstupní velikost buňky</h2></div>
+        <hr/>
+        <div>
+            <p>Velikost buňky a jednotka pro v&yacute;stupn&iacute; rastry.
+            </p>
+            <p>Jednotky mohou b&yacute;t v kilometrech, metrech, m&iacute;l&iacute;ch nebo stop&aacute;ch.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Název výsledné vrstvy vzdálenosti</h2></div>
+        <hr/>
+        <div>
+            <p>N&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; se do mapy. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>Můžete zadat n&aacute;zev složky v  <b>Můj obsah</b>, kde bude v&yacute;sledek uložen pomoc&iacute; rozbalovac&iacute;ho seznamu <b>Uložit v&yacute;sledek do</b> .
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Název výsledné vrstvy směru</h2></div>
+        <hr/>
+        <div>
+            <p>N&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b>. Mus&iacute;te zadat n&aacute;zev, kter&yacute; je&scaron;tě ve složce <b>Můj obsah</b> neexistuje.
+            </p>
+            <p>Můžete zadat n&aacute;zev složky v  <b>Můj obsah</b>, kde bude v&yacute;sledek uložen pomoc&iacute; rozbalovac&iacute;ho seznamu <b>Uložit v&yacute;sledek do</b> .
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Název výsledné vrstvy přiřazení</h2></div>
+        <hr/>
+        <div>
+            <p>N&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b>. Mus&iacute;te zadat n&aacute;zev, kter&yacute; je&scaron;tě ve složce <b>Můj obsah</b> neexistuje.
+            </p>
+            <p>Můžete zadat n&aacute;zev složky v  <b>Můj obsah</b>, kde bude v&yacute;sledek uložen pomoc&iacute; rozbalovac&iacute;ho seznamu <b>Uložit v&yacute;sledek do</b> .
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Zvolte pole přiřazení</h2></div>
+        <hr/>
+        <div>
+            <p>Pole na vstupn&iacute; vrstvě zdroje, kter&eacute; obsahuje hodnoty definuj&iacute;c&iacute; každ&yacute; zdroj. Může se jednat o celoč&iacute;seln&eacute; nebo řetězcov&eacute; pole datov&eacute; sady zdroje.
+            </p>
+            <p>V&yacute;choz&iacute; hodnota je  <i>Value</i>. Pokud použ&iacute;v&aacute;te feature službu a nen&iacute; k dispozici ž&aacute;dn&eacute; pole <i>Value</i>, použije se prvn&iacute; dostupn&eacute; pole cel&eacute;ho č&iacute;sla nebo řetězce. Pokud neexistuje ž&aacute;dn&eacute; platn&eacute; pole, použije se pole ObjectID (např. OID nebo FID, v z&aacute;vislosti na typu vstupu prvku).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

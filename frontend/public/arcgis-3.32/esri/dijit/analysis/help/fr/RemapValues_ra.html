@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Valeurs de classification</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="Outil Valeurs de classification pour le portail"></h2>
+        <hr/>
+    <p>Cet outil vous permet de modifier ou de reclasser les valeurs de pixel des donn&eacute;es raster. Les valeurs de pixel sont r&eacute;appari&eacute;es en sp&eacute;cifiant une plage de valeurs de pixel &agrave; apparier &agrave; une valeur de pixel en sortie. La valeur de pixel en sortie peut &ecirc;tre une valeur valide ou une valeur NoData, c'est-&agrave;-dire des pixels auxquels aucune valeur connue n'est associ&eacute;e.
+    </p>
+    <p>Si l&rsquo;option  <b>Use current map extent (Utiliser l&rsquo;&eacute;tendue actuelle de la carte)</b> est s&eacute;lectionn&eacute;e, seules ces cellules visibles au sein de l&rsquo;&eacute;tendue actuelle de la carte seront r&eacute;appari&eacute;es. Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les cellules du raster sont trait&eacute;es, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue actuelle de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Données en entrée</h2></div>
+        <hr/>
+        <div>
+            <p>Les donn&eacute;es en entr&eacute;e dont les valeurs seront r&eacute;appari&eacute;es.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Classification des valeurs de pixel en de nouvelles valeurs</h2></div>
+        <hr/>
+        <div>
+            <p>Vous saisissez une plage de valeurs en sp&eacute;cifiant une valeur minimale et maximale, puis attribuez &agrave; la plage sp&eacute;cifi&eacute;e une valeur en sortie ou une valeur NoData.
+            </p>
+            <p>Pour r&eacute;apparier une nouvelle plage de valeurs, cliquez sur  <b>Ajouter</b>. Cette op&eacute;ration a pour effet d'ajouter une ligne. Cliquez sur chaque valeur pour mettre &agrave; jour la table sur les plages et r&eacute;apparier la valeur requise. Lorsque vous sp&eacute;cifiez les plages de valeurs, deux r&egrave;gles importantes doivent &ecirc;tre respect&eacute;es&nbsp;:
+                <ul>
+                    <li>La valeur minimale de la plage est inclusive et la valeur maximale est exclusive.
+                    </li>
+                    <li>Les lignes de la table sont trait&eacute;es du haut vers le bas.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>La table ci-dessous montre que la valeur minimale est incluse au sein de la sortie, mais la valeur maximale n'est pas incluse dans la sortie.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>L'ordre des plages sp&eacute;cifi&eacute; dans la table est &eacute;galement important. La ligne sup&eacute;rieure de la table est trait&eacute;e en premier, puis la ligne suivante est trait&eacute;e. Les deux tables ci-dessous montrent comment les m&ecirc;mes plages de valeurs g&eacute;n&egrave;rent des r&eacute;sultats diff&eacute;rents, selon l'ordre des lignes des tables.
+            </p> 
+            <p>La table ci-dessous indique la valeur en sortie lorsque la premi&egrave;re colonne est class&eacute;e dans l&rsquo;ordre num&eacute;rique&nbsp;:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>La table ci-dessous montre qu&rsquo;un classement diff&eacute;rent des lignes influe sur les valeurs produites en sortie.
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Les deux r&egrave;gles sont respect&eacute;es pour r&eacute;organiser les valeurs. Comme chaque ligne est trait&eacute;e du haut vers le bas, ces valeurs ont priorit&eacute; lors de la d&eacute;finition de la sortie, m&ecirc;me lorsque les m&ecirc;mes plages sont utilis&eacute;es.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

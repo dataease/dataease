@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Configuración del entorno de análisis de Portal</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>  Configuraci&oacute;n del entorno para an&aacute;lisis en Portal for ArcGIS y  ArcGIS Online. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Sobrescribir capa de resultados</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Especifica si se deben sobrescribir las capas existentes.    Cuando est&aacute; activada, si ya existe una capa con el mismo nombre en el contenido, esta se sobrescribir&aacute;.
+            </p>
+            <p>
+                <ul>
+                    <li>Activado: si ya existe una capa con el mismo nombre en el contenido, esta se sobrescribir&aacute;. La salida tendr&aacute; el mismo sistema de coordenadas que la entrada.
+                    </li>
+                    <li>Desactivado: si el nombre de la capa de resultados indicado ya existe, se producir&aacute; un error y ser&aacute; necesario cambiar el nombre de la capa de resultados para poder ejecutar la herramienta. Esta es la opci&oacute;n predeterminada.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Cerrar widget de análisis después de ejecutar análisis</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica si se debe mantener el cuadro de di&aacute;logo de an&aacute;lisis abierto y habilitado mientras se procesa la herramienta.     Este par&aacute;metro le permite realizar modificaciones en los par&aacute;metros del an&aacute;lisis mientras el trabajo de an&aacute;lisis anterior se sigue ejecutando.  El an&aacute;lisis es un proceso iterativo y, al mantener el cuadro de di&aacute;logo de la herramienta abierto, puede cambiar los par&aacute;metros y volver a ejecutar el an&aacute;lisis.
+            </p>
+            <p>
+                <ul>
+                    <li>Activado: el cuadro de di&aacute;logo de la herramienta de an&aacute;lisis se cerrar&aacute; y se volver&aacute; a la tabla de contenido. Esta es la configuraci&oacute;n predeterminada
+                    </li>
+                    <li>Desactivado: el cuadro de di&aacute;logo de la herramienta de an&aacute;lisis permanecer&aacute; abierto y habilitado.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Guardar resultados de análisis como capas de entidades alojadas</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Especifica si la capa de resultados creada a partir del an&aacute;lisis ser&aacute; un conjunto de entidades o una capa de entidades alojada. 
+            </p>
+            <p>
+                <ul>
+                    <li>Activado: los resultados del an&aacute;lisis crear&aacute;n una capa de entidades alojada y se crear&aacute; un elemento en el contenido. Esta es la opci&oacute;n predeterminada.
+                    </li>
+                    <li>Desactivado: los resultados del an&aacute;lisis crear&aacute;n un conjunto de entidades.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Sistema de coordenadas de salida</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el sistema de coordenadas de la capa de resultados para an&aacute;lisis de r&aacute;ster.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Como la entrada</b>: el resultado del an&aacute;lisis estar&aacute; en el mismo sistema de coordenadas que la entrada. Esta es la opci&oacute;n predeterminada.
+                    </li>
+                    <li> <b>Seg&uacute;n se especifica</b>: el resultado del an&aacute;lisis estar&aacute; en el sistema de coordenadas que elija.   Si esta opci&oacute;n est&aacute; seleccionada, haga clic en el bot&oacute;n de globo y elija un valor de una lista de sistemas de coordenadas conocidos, o agregue el WKID de la referencia espacial en el cuadro correspondiente.
+                    </li>
+                    <li> <b>Capa
+&lt;nombre&gt;</b>: el resultado del an&aacute;lisis estar&aacute; en el mismo sistema de coordenadas que la capa existente que elija de su mapa web.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Procesando sistema de coordenadas</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el sistema de coordenadas que se utilizar&aacute; en el an&aacute;lisis durante la ejecuci&oacute;n del an&aacute;lisis de GeoAnalytics.   
+            </p>
+            <p>Para el geoan&aacute;lisis, en algunos an&aacute;lisis es necesario que el proceso se ejecute en un sistema de coordenadas proyectadas.   Cualquier herramienta que haya implementado la colocaci&oacute;n de bins de unidades de datos o lineales requiere un sistema de coordenadas proyectadas. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Como la entrada</b>: el an&aacute;lisis se procesar&aacute; en el mismo sistema de coordenadas que la entrada. Esta es la opci&oacute;n predeterminada.
+                    </li>
+                    <li> <b>Seg&uacute;n se especifica</b>: su an&aacute;lisis estar&aacute; en el sistema de coordenadas que elija.   Si esta opci&oacute;n est&aacute; seleccionada, haga clic en el bot&oacute;n de globo y elija un valor de una lista de sistemas de coordenadas proyectadas conocidos, o agregue el WKID de la referencia espacial en el cuadro correspondiente.
+                    </li>
+                    <li> <b>Capa
+&lt;nombre&gt;</b>: su an&aacute;lisis estar&aacute; en el mismo sistema de coordenadas que la capa existente que elija de su mapa web.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Extensión</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica la extensi&oacute;n o el l&iacute;mite que se utilizar&aacute; durante la ejecuci&oacute;n del an&aacute;lisis.  En el an&aacute;lisis se utilizar&aacute;n todas las entidades de entrada que est&eacute;n completamente dentro de la extensi&oacute;n especificada o que la intersequen.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Predeterminado</b>: la extensi&oacute;n proporcionada por la herramienta.
+                    </li>
+                    <li> <b>Seg&uacute;n se especifica</b>: la extensi&oacute;n se define por las coordenadas que proporcione.
+                    </li>
+                    <li> <b>Capa
+&lt;nombre&gt;</b>: la extensi&oacute;n utilizada para procesar el an&aacute;lisis ser&aacute; la misma que la extensi&oacute;n espacial de la capa existente que elija de su mapa web. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Alinear ráster</h2></div>
+        <hr/>
+        <div>
+            <p>Ajusta la extensi&oacute;n de la capa r&aacute;ster de salida para que coincida con la alineaci&oacute;n de celda de la capa de  <b>Alinear r&aacute;ster</b> especificada en el an&aacute;lisis de r&aacute;ster.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Tamaño de celda</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el tama&ntilde;o o la resoluci&oacute;n de celda que se utilizar&aacute; para crear la capa r&aacute;ster de salida en el an&aacute;lisis de r&aacute;ster. La resoluci&oacute;n de salida predeterminada se determina seg&uacute;n el tama&ntilde;o de celda m&aacute;s grande de la capa r&aacute;ster de entrada.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Cantidad m&iacute;nima de entradas</b>: utiliza el tama&ntilde;o de celda m&aacute;s peque&ntilde;o de todas las capas de entrada.
+                    </li>
+                    <li> <b>Cantidad m&aacute;xima de entradas</b>: utiliza el tama&ntilde;o de celda m&aacute;s grande de todas las capas de entrada. Esta es la opci&oacute;n predeterminada.
+                    </li>
+                    <li> <b>Seg&uacute;n se especifica</b>: especifique un valor num&eacute;rico para definir el tama&ntilde;o de celda. Si se selecciona esta opci&oacute;n, el valor predeterminado es 1.
+                    </li>
+                    <li> <b>&lt;Nombre&gt; de capa</b>: define el tama&ntilde;o de celda seg&uacute;n la capa r&aacute;ster elegida.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Máscara</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica la capa que se utilizar&aacute; para definir el &aacute;rea de inter&eacute;s del an&aacute;lisis de r&aacute;ster.   Solo se incluir&aacute;n en la operaci&oacute;n de an&aacute;lisis aquellas celdas que queden dentro de la m&aacute;scara de an&aacute;lisis.
+            </p>
+            <ul>
+                <li>La m&aacute;scara puede ser un r&aacute;ster o una capa de entidades.
+                </li>
+                <li>Si la m&aacute;scara de an&aacute;lisis es un r&aacute;ster, se considerar&aacute;n todas las celdas que tienen un valor para definir la m&aacute;scara. Las celdas en un r&aacute;ster de m&aacute;scara que son NoData se considerar&aacute;n fuera de la m&aacute;scara y ser&aacute;n NoData en la capa de resultados del an&aacute;lisis. 
+                </li>
+                <li>Si la m&aacute;scara de an&aacute;lisis es una capa de entidades, se convertir&aacute; internamente en un r&aacute;ster en la ejecuci&oacute;n. Por este motivo, aseg&uacute;rese de que
+ <b>Tama&ntilde;o de celda</b> y <b>Alinear r&aacute;ster</b> se establezcan adecuadamente para el an&aacute;lisis.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Almacenamiento de datos</h2></div>
+        <hr/>
+        <div>
+            <p>Los resultados de GeoAnalytics pueden almacenarse en un  ArcGIS Data Store y exponerse como capa de entidades en  Portal for ArcGIS o un recurso compartido de archivos de big data ya configurado. 
+            </p>
+            <p>Si almacena un resultado en  ArcGIS Data Store, en la mayor&iacute;a de los casos, conviene almacenar los resultados en el data store espaciotemporal. Esta es la opci&oacute;n predeterminada. A continuaci&oacute;n, se exponen motivos por los que resulta buena idea guardar resultados en un almac&eacute;n de datos relacional: 
+                <ul>
+                    <li>Para utilizar los resultados en la colaboraci&oacute;n entre portales
+                    </li>
+                    <li>Para habilitar los recursos de sincronizaci&oacute;n con los resultados
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Conviene no usar un almac&eacute;n de datos relacionales si espera que los resultados de GeoAnalytics aumenten y quiere aprovechar las capacidades del almac&eacute;n de big data espaciotemporal para manejar grandes cantidades de datos. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Factor de procesamiento en paralelo</h2></div>
+        <hr/>
+        <div>
+            <p>Distribuye an&aacute;lisis por varias instancias de servicio de Procesamiento de r&aacute;ster. 
+            </p>
+            <p>Las herramientas que respetan el entorno de  <b>Factor de procesamiento en paralelo</b> le permiten controlar el n&uacute;mero de instancias de servicio de procesamiento de r&aacute;ster que se pueden utilizar para procesar los datos.
+            </p>
+            <p>Si la herramienta no respeta el  <b>Tipo de procesador</b>, o si el entorno de <b>Tipo de procesador</b> est&aacute; establecido en <b>CPU</b>, el entorno de <b>Factor de procesamiento en paralelo</b> controla las instancias de servicio (CPU) de procesamiento de r&aacute;ster. Si el <b>Tipo de procesador</b> est&aacute; establecido en <b>GPU</b>, el entorno de <b>Factor de procesamiento en paralelo</b> controla el n&uacute;mero de instancias GPU de procesamiento de r&aacute;ster.
+            </p> 
+            <p>Al establecer el  <b>Factor de procesamiento en paralelo</b>, puede solicitar el n&uacute;mero de trabajadores en paralelo que el servidor de im&aacute;genes de an&aacute;lisis de r&aacute;ster utiliza para procesar una sola tarea de an&aacute;lisis de r&aacute;ster. Sin embargo, si el n&uacute;mero total de procesos en paralelo supera el n&uacute;mero m&aacute;ximo de instancias de servicio (CPU o GPU) de procesamiento de r&aacute;ster, los procesos en paralelo adicionales se pondr&aacute;n en cola.
+            </p>
+            <p>Si no se ha especificado el  <b>Factor de procesamiento en paralelo</b>, lo cual es la configuraci&oacute;n predeterminada, la herramienta utilizar&aacute; el 80 por ciento del n&uacute;mero m&aacute;ximo de instancias de servicio de procesamiento de r&aacute;ster. Como factor de procesamiento en paralelo puede especificar un n&uacute;mero entero o un porcentaje.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>Tipo de procesador</h2></div>
+        <hr/>
+        <div>
+            <p>Las herramientas que respetan la configuraci&oacute;n del entorno  <b>Tipo de procesador</b> le permiten elegir d&oacute;nde y c&oacute;mo desea procesar sus datos. Puede procesar sus datos con la CPU o la GPU del equipo de servidor.  Si el entorno de <b>Tipo de procesador</b> est&aacute; vac&iacute;o, la herramienta utiliza la CPU para procesar los datos. Esta es la opci&oacute;n predeterminada.
+            </p> 
+            <p>El procesamiento de CPU se puede paralelizar en varios n&uacute;cleos e instancias, tal y como lo gestiona el  <b>Factor de procesamiento en paralelo</b>.
+            </p>
+            <p>Las GPU son eficaces en el procesamiento de im&aacute;genes y gr&aacute;ficos; su estructura altamente paralela hace que sean eficientes a la hora de procesar grandes bloques de datos de manera repetitiva. Las herramientas de An&aacute;lisis de r&aacute;ster que respetan este entorno pueden distribuir su trabajo en varias instancias de GPU en varios equipos de servidor de an&aacute;lisis de r&aacute;ster, tal y como lo gestiona el  <b>Factor de procesamiento en paralelo</b>.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b>: los datos se procesar&aacute;n con la unidad de procesamiento de gr&aacute;ficos.
+                    </li>
+                    <li> <b>CPU</b>: los datos se procesar&aacute;n con la unidad central de procesamiento del equipo.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Generalizált lineáris regresszió</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Generaliz&aacute;lt line&aacute;ris regresszi&oacute; munkafolyamat diagramja"></h2>
+        <hr/>
+    <p>Generaliz&aacute;lt line&aacute;ris regresszi&oacute;t 
+(GLR) hajt v&eacute;gre előrejelz&eacute;sek l&eacute;trehoz&aacute;s&aacute;ra vagy egy f&uuml;ggő v&aacute;ltoz&oacute; modellez&eacute;s&eacute;re magyar&aacute;z&oacute; v&aacute;ltoz&oacute;khoz val&oacute; kapcsolata tekintet&eacute;ben.  Az eszk&ouml;z haszn&aacute;lhat&oacute; folytonos (Gauss-modell), bin&aacute;ris (logisztikus modell) &eacute;s sz&aacute;m&iacute;t&aacute;si modellek (Poisson-modell) illeszt&eacute;s&eacute;re.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Elemzés típusa</h2></div>
+        <hr/>
+        <div>
+            <p>Meghat&aacute;rozza az eszk&ouml;z műk&ouml;d&eacute;si m&oacute;dj&aacute;t. Az eszk&ouml;z futtat&aacute;s&aacute;val egy modellnek megtan&iacute;that&oacute;, hogy csak teljes&iacute;tm&eacute;nyt &eacute;rt&eacute;keljen, vagy tan&iacute;t&aacute;ssal l&eacute;trehozhat&oacute; egy modell vektoros elemek előrejelz&eacute;s&eacute;re. Az előrejelz&eacute;st&iacute;pusok a k&ouml;vetkezők:
+                <ul>
+                    <li> <b>Modell illeszt&eacute;se modellteljes&iacute;tm&eacute;ny &eacute;rt&eacute;kel&eacute;s&eacute;re</b>&mdash;Modell illeszt&eacute;se &eacute;s alkalmaz&aacute;sa a bemeneti adatokra. Ezzel az opci&oacute;val &eacute;rt&eacute;kelheti modellje pontoss&aacute;g&aacute;t, mielőtt előrejelz&eacute;seket gener&aacute;lna &uacute;j adathalmazra, vagy megismerheti az előrejelzett v&aacute;ltoz&oacute; kapcsolatait &eacute;s drivereit. Az opci&oacute; kimenete: az illesztett adatok vektoros szolg&aacute;ltat&aacute;sa &eacute;s modelldiagnosztika.
+                    </li>
+                    <li> <b>Modell illeszt&eacute;se &eacute;s &eacute;rt&eacute;kek előrejelz&eacute;se</b>&mdash; Előrejelz&eacute;seket vagy oszt&aacute;lyoz&aacute;sokat gener&aacute;l bemeneti &eacute;s előrejelz&eacute;si vektoros elemekre. Magyar&aacute;z&oacute; v&aacute;ltoz&oacute;kat meg kell adni mind az előrejelz&eacute;si vektoros elemekhez, mind az előrejelzendő vektoros elemekhez. Az opci&oacute; kimenete: a bementi adatokhoz illesztett modell vektoros szolg&aacute;ltat&aacute;sa, az előrejelzett &eacute;rt&eacute;kek vektoros szolg&aacute;ltat&aacute;sa &eacute;s modelldiagnosztika.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Modell illesztése modellteljesítmény értékelésére</h2></div>
+        <hr/>
+        <div>
+            <p>Alkalmazza ezt az opci&oacute;t, ha illeszteni akar egy modellt, majd meg akarja vizsg&aacute;lni az illeszt&eacute;st.
+            </p>
+            <p>Ezzel az opci&oacute;val megtan&iacute;thatja a modellnek egy bemeneti r&eacute;teg haszn&aacute;lat&aacute;t. Ezzel az opci&oacute;val &eacute;rt&eacute;kelheti modellje pontoss&aacute;g&aacute;t, mielőtt előrejelz&eacute;seket gener&aacute;lna &uacute;j adathalmazra. Az opci&oacute; kimenete: modelldiagnosztika, a modell tan&iacute;t&aacute;si adatokra val&oacute; alkalmaz&aacute;sa.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Modell illesztése és értékek előrejelzése</h2></div>
+        <hr/>
+        <div>
+            <p>Alkalmazza ezt az opci&oacute;t, ha illeszteni akar egy modellt, majd alkalmazni akarja a modellt az adathalmazra előrejelz&eacute;sek l&eacute;trehoz&aacute;sa &eacute;rdek&eacute;ben.
+            </p>
+            <p>A program ekkor előrejelz&eacute;set vagy oszt&aacute;lyoz&aacute;sokat gener&aacute;l vektoros elemekre. Az opci&oacute; kimenete: vektoros szolg&aacute;ltat&aacute;s, modelldiagnosztika &eacute;s opcion&aacute;lisan a v&aacute;ltoz&oacute;k jelentős&eacute;g&eacute;nek t&aacute;bl&aacute;ja.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Válasszon egy réteget, amelyből modellt akar létrehozni</h2></div>
+        <hr/>
+        <div>
+            <p>Olyan pontszerű, vonalas, ter&uuml;leti vagy t&aacute;bl&aacute;zatos vektoros elemeket tartalmaz&oacute; r&eacute;teg, amelyek tartalmazz&aacute;k a f&uuml;ggő &eacute;s magyar&aacute;z&oacute; v&aacute;ltoz&oacute;kat.
+            </p>
+            <p>Ahelyett, hogy egy r&eacute;teget v&aacute;laszt a t&eacute;rk&eacute;p&eacute;ről, v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n l&eacute;vő  <b>Eredm&eacute;nyr&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is, ha a saj&aacute;t tartalomban szeretne big data-f&aacute;jlmegoszt&oacute; adathalmazt vagy vektoros r&eacute;teget keresni.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Válassza ki a modellezendő mezőt</h2></div>
+        <hr/>
+        <div>
+            <p>Az a numerikus mező, amely tartalmazza a megfigyelt, modellezendő &eacute;rt&eacute;keket &eacute;s a modellezni k&iacute;v&aacute;nt &eacute;rt&eacute;k t&iacute;pus&aacute;t. H&aacute;rom t&iacute;pus&uacute; &eacute;rt&eacute;ket modellezhet
+                <ul>
+                    <li>Folytonos&mdash;folytonos &eacute;rt&eacute;keket reprezent&aacute;l. Itt a Gauss-modell ker&uuml;l alkalmaz&aacute;sra, &eacute;s az eszk&ouml;z a legkisebb n&eacute;gyzetek m&oacute;dszer&eacute;vel hajtja v&eacute;gre a regresszi&oacute;t.
+                    </li>
+                    <li>Bin&aacute;ris&mdash;Megl&eacute;vő vagy hi&aacute;nyz&oacute; &eacute;rt&eacute;keket reprezent&aacute;l. Az &eacute;rt&eacute;k teh&aacute;t lehet 1 vagy 0. Az itt alkalmazott modell a logisztikus regresszi&oacute;.
+                    </li>
+                    <li>Sz&aacute;m&iacute;t&aacute;si&mdash;diszkr&eacute;t, esem&eacute;nyeket reprezent&aacute;l, p&eacute;ld&aacute;ul bűncselekm&eacute;nyek sz&aacute;m&aacute;t, betegs&eacute;gek előfordul&aacute;s&aacute;t vagy k&ouml;z&uacute;ti baleseteket. Az itt alkalmazott modell a Poisson-regresszi&oacute;. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Válasszon egy réteget, amelyre előre akar jelezni értékeket</h2></div>
+        <hr/>
+        <div>
+            <p>R&eacute;teg olyan vektoros elemekkel, amelyek azokat a helyeket reprezent&aacute;lj&aacute;k, amelyekre becsl&eacute;seket akarunk v&eacute;gezni. Ebben az adathalmazban minden vektoros elemnek tartalmaznia kell &eacute;rt&eacute;keket valamennyi megadott magyar&aacute;z&oacute; v&aacute;ltoz&oacute;ra. Ezen vektoros elemek f&uuml;ggő v&aacute;ltoz&oacute;it a program a bemeneti r&eacute;tegre kalibr&aacute;lt modell haszn&aacute;lat&aacute;val becsli meg.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Magyarázó mezők kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>Egy vagy t&ouml;bb, azokat a magyar&aacute;z&oacute; v&aacute;ltoz&oacute;kat (mezőket) reprezent&aacute;l&oacute; mező, amelyek seg&iacute;tenek előrejelzeni az &eacute;rt&eacute;ket. Csak numerikus &eacute;rt&eacute;kek lesznek l&aacute;that&oacute;k.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Magyarázó változók párosítási módjának kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>Hogyan lesznek p&aacute;ros&iacute;tva a bemeneti r&eacute;teg megfelelő v&aacute;ltoz&oacute;i az előrejelz&eacute;si r&eacute;teg v&aacute;ltoz&oacute;ival. Csak a modell l&eacute;trehoz&aacute;s&aacute;hoz haszn&aacute;lt v&aacute;ltoz&oacute;k ker&uuml;lnek be a t&aacute;bl&aacute;ba. Csak numerikus &eacute;rt&eacute;kek haszn&aacute;lhat&oacute;k. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredményréteg neve</h2></div>
+        <hr/>
+        <div>
+            <p> A l&eacute;trehozand&oacute; r&eacute;teg neve.  Ha egy ArcGIS Data Store helyre &iacute;r, akkor  eredm&eacute;nyei a  <b>Saj&aacute;t tartalom</b> alatt lesznek elmentve, &eacute;s hozz&aacute; lesznek adva a t&eacute;rk&eacute;phez. Ha egy big data f&aacute;jlmegoszt&oacute;ba &iacute;r, akkor eredm&eacute;nyei a big data f&aacute;jlmegoszt&oacute;ba lesznek elmentve, &eacute;s hozz&aacute; lesznek adva annak jegyz&eacute;kf&aacute;jlj&aacute;hoz. Nem lesznek hozz&aacute;adva a t&eacute;rk&eacute;phez. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a művelet sikertelen lesz.
+            </p>
+            <p>A kapott eredm&eacute;nyek az elemz&eacute;s t&iacute;pus&aacute;t&oacute;l f&uuml;ggenek. Ha a modellilleszt&eacute;s &eacute;rt&eacute;kel&eacute;s&eacute;t illeszti, akkor az eredm&eacute;nyek tartalmazni fogj&aacute;k a modellhez illő bemeneti adatok r&eacute;teg&eacute;t &eacute;s a modellilleszt&eacute;st &eacute;rt&eacute;kelő eredm&eacute;nyinform&aacute;ci&oacute;kat. Ha illeszt &eacute;s előrejelez, akkor az eredm&eacute;nyek tartalmazni fogj&aacute;k a modellhez illő bemeneti adatok r&eacute;teg&eacute;t, az előrejelzett eredm&eacute;nyek r&eacute;teg&eacute;t &eacute;s a modellilleszt&eacute;st &eacute;rt&eacute;kelő eredm&eacute;nyinform&aacute;ci&oacute;kat.
+            </p>
+            <p>Ha   ArcGIS Data Store (rel&aacute;ci&oacute;s vagy t&eacute;rbeli-időbeli big data adatt&aacute;rba) &iacute;r az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő mező haszn&aacute;lat&aacute;val, akkor megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

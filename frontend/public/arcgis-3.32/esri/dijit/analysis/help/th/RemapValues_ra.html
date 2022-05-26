@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>ปรับค่าตามตาราง</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="เครื่องมือรีแมพข้อมูลสำหรับพอร์ทัล"></h2>
+        <hr/>
+    <p>เครื่องมือนี้ช่วยให้คุณสามารถเปลี่ยนหรือจัดประเภทรายการค่าพิกเซลของข้อมูลแรสเตอร์ ค่าพิกเซลที่รีแมพ โดยการระบุช่วงของค่าพิกเซลลงในแผนที่เป็นค่าพิกเซลเอาต์พุต ค่าพิกเซลที่ส่งออก อาจเป็นค่าที่ถูกต้อง หรือ เป็นค่าไม่มีข้อมูล หากตัวเลขที่มีสีไม่ตรงกับค่าที่เกี่ยวข้อง
+    </p>
+    <p>ถ้า  <b>ใช้ขอบเขตแผนที่ปัจจุบัน</b> ถูกเลือก เฉพาะเซลล์ที่แสดงอยู่ภายในขอบเขตแผนที่ปัจจุบันจะถูกรีแมพ ถ้าไม่เลือกทุกเซลล์ในแรสเตอร์จะถูกประมวลผลถึง แม้ว่าจะอยู่นอกขอบเขตแผนที่ปัจจุบัน
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>ข้อมูลเข้า</h2></div>
+        <hr/>
+        <div>
+            <p>ข้อมูลเข้าที่จะมีค่าที่ต้อการรีแมพ
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>เทียบค่าพิกเซลให้เป็นค่าใหม่</h2></div>
+        <hr/>
+        <div>
+            <p>คุณป้อนช่วงของค่าโดยการระบุค่าต่ำสุดและสูงสุด และจากนั้นกำหนดค่าที่ต้องการส่งออก หรือค่าที่จะเป็นไม่มีข้อมูล ตามช่วงที่ระบุ
+            </p>
+            <p>เพื่อทำการรีแมพช่วงใหม่ของค่าคลิก <b>เพิ่ม</b> ซึ่งจะเพิ่มแถว คลิกที่แต่ละค่าเพื่อแก้ไขตาราง เพื่อเป็นช่วงในการรีแมพ ตามค่าที่คุณต้องการ เมื่อคุณระบุช่วงค่า มีสองกฎที่สำคัญต่อการทำงาน:
+                <ul>
+                    <li>ต้องค่าต่ำสุดของช่วงนั้น และไม่ต้องมีค่าสูงสุด
+                    </li>
+                    <li>แถวในตารางมีการประมวลผลจากบนลงล่าง
+                    </li>
+                </ul>
+                
+            </p>
+            <p>ตารางด้านล่างแสดงให้เห็นว่าค่าต่ำสุดจะรวมอยู่ในการส่งออก แต่ค่าสูงสุดไม่ได้รวมอยู่ในการส่งออก
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10-19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>ลำดับของช่วงที่ระบุไว้ในตารางเป็นสิ่งสำคัญ แถวบนสุดของตารางจะถูกประมวลผลก่อนแล้วแถวล่างจึงจะมีการประมวลผล สองตารางด้านล่างแสดงให้เห็นว่าช่วงที่มีมูลค่าเท่ากันจะผลิตผลลัพธ์ที่แตกต่างเนื่องจากลำดับของของแถวในตาราง
+            </p> 
+            <p>ตารางด้านล่างแสดงค่าเอาท์พุตเมื่อคอลัมน์แรกถูกเรียงตามตัวเลข:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1-14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>ตารางด้านล่างแสดงการจัดอันดับที่แตกต่างกันของแถวที่จะสร้างค่าเอาท์พุตที่แตกต่างกัน:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>กฎทั้งสอง ใช้กำหนดการเรียงลำดับค่า เนื่องจากแต่ละแถวมีการประมวลผลจากบนลงล่าง ค่าเหล่านี้จะมีความสำคัญ เมื่อพิจารณาการส่งออก แม้ในขณะที่มีการใช้ช่วงเดียวกัน
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>ชื่อของชั้นข้อมูลผลลัพธ์</h2></div>
+        <hr/>
+        <div>
+            <p>ชื่อของชั้นข้อมูลที่จะถูกสร้างขึ้นใน  <b>เนื้อหาของฉัน</b> และเพิ่มไปยังแผนที่ ชื่อเริ่มต้นจะขึ้นอยู่กับชื่อเครื่องมือและชื่อชั้นข้อมูลอินพุต ถ้าชั้นข้อมูลนี้มีอยู่แล้ว คุณจะถูกขอให้ตั้งชื่อใหม่
+            </p>
+            <p>คุณสามารถระบุชื่อโฟลเดอร์ใน  <b>My Content</b> ที่ผลลัพธ์จะบันทึกโดยการใช้ <b>กล่อง drop-down</b> บันทึกผลใน
+            </p>
+        </div>
+    </div>
+</div>
+</html>

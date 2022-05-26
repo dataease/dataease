@@ -1,0 +1,30 @@
+<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="row: 0">
+    <div class="BreadcrumbHeight"></div>
+    <div class="DataCollectionsPage_Panel DataCollectionsPage_PanelTop">
+        <div class="DataBrowserVarHeader DataCollectionsPage_Header" data-dojo-attach-point="categoryName"></div>
+        <input type="text"
+               data-dojo-type="esri/dijit/geoenrichment/DataBrowser/SearchTextBox"
+               data-dojo-attach-point="txbSearch"
+               data-dojo-props="prompt:'${nls.search}'"
+               data-dojo-attach-event="onSearch: _search"
+               class="DataCollectionsPage_Search" />
+        <div class="DataBrowserVarHeader DataCollectionsPage_Header">
+            ${nls.mapPopVar}
+        </div>
+        <div data-dojo-attach-point="divVariables" class="DataCollectionsPage_PopularVariables"></div>
+        <div class="DataBrowserVarHeader DataCollectionsPage_Header">
+            ${nls.keepBrowse}
+        </div>
+    </div>
+</div>
+<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="row: 1" class="DataCollectionsPage_ContentPane_DataCollectionContainer">
+    <div class="DataCollectionsPage_DataCollectionContainer">
+        <div data-dojo-type="esri/dijit/geoenrichment/Pagination" data-dojo-attach-point="pagination" data-dojo-attach-event="onSelect: _onSelectCollection"></div>
+    </div>
+    <div data-dojo-attach-point="progressDiv"></div>
+</div>
+<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="row: 2">
+    <div class="DataCollectionsPage_Panel DataCollectionsPage_PanelBottom">
+        <div data-dojo-attach-point="spnShowAll" class="Wizard_Link DataCollectionsPage_ShowAll" data-dojo-attach-event="onClick: _showAll"></div>
+    </div>
+</div>

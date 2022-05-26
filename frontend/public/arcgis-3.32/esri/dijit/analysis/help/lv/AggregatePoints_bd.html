@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Punktu apkopošana</h2><p/>
+        <h2><img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" alt="Apkopotie punkti"></h2>
+        <hr/>
+    <p>&Scaron;is rīks darbojas ar punktu elementu slāni un teritorijas elementu slāni. Ievades teritorijas elementi var būt no laukuma slāņa, vai arī kvadrāta vai se&scaron;stūra nodalījumi, kas tiek aprēķināti, startējot rīku. Rīks vispirms nosaka, kuri punkti ietilpst katrā norādītajā teritorijā. Pēc tam, kad ir noteikta punktu skaita apgabalā telpiskā attiecība, tiek aprēķināta un pie&scaron;ķirta statistika par visiem punktiem laukumā. Visvienkār&scaron;ākā statistika ir punktu skaits laukumā, bet jūs varat iegūt arī citu statistiku. 
+
+    </p>
+    <p>Pieņemsim, ka jums ir kafijas veikalu izvietojuma punktu elementi un apgabala laukumu elementi un jūs vēlaties apkopot kafijas pārdo&scaron;anas apjomus apgabalā. Pieņemot, ka kafijas veikaliem ir atribūts  <i>TOTAL_SALES</i>, varat iegūt visu summu <i>TOTAL_SALES</i> katrā apgabalā vai arī minimālo vai maksimālo vērtību <i>TOTAL_SALES</i>
+ katra apgabala ietvaros, vai citu statistiku, piemēram, skaitu, diapazonu, standarta novirzi un dispersiju.
+    </p>
+    <p>&Scaron;is rīks var izmantot arī datus ar iespējotu laiku. Ja ievades punktos ir iespējots laiks, ir pieejamas laika sektoru opcijas. Laika sektori ļauj aprēķināt attiecību punktu-skaita-teritorijā, apskatot noteiktu laika sektoru. Piemēram, varat apskatīt intervālus stundu griezumā, kā rezultātā var iegūt izvades katrai stundai. 
+    </p>
+    <p>Lai apskatītu laika piemēru, pieņemsim, ka ir pieejami punktu elementi, atbilsto&scaron;i darījumiem, veiktiem dažādās kafijas veikalu atra&scaron;anās vietās, bet nav teritorijas slāņa. Dati ir reģistrēti gada periodā, un katram darījumam ir atra&scaron;anās vieta un laikspiedols. Pieņemot, ka katram darījumam ir atribūts <i>TOTAL_SALES</i> varat iegūt visu vienumu <i>TOTAL_SALES</i> summu intere&scaron;u laikā un telpā. Ja &scaron;ie darījumi ir veikti vienā pilsētā, ir iespējams ģenerēt teritorijas, kas ir 1&nbsp;kilometra režģi, un skatīt nedēļas laika sektorus, lai apkopotu darījumus laikā un telpā.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Izvēlēties slāni, kas satur teritorijās apkopojamos punktus</h2></div>
+        <hr/>
+        <div>
+            <p>Punktu slānis, kas tiks apkopots teritorijās. Punktu slāņiem, kas tiek apkopoti nodalījumos  <b>Kvadrāts </b> vai <b>Se&scaron;stūris</b>, apstrādes telpiskā atskaite ir jāiestata uz plānoto koordinātu sistēmu, izmantojot <b>Analīzes darba vidi</b>.
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="inputAggregation">
+        <div><h2>Apkopošanai izvēlieties teritorijas slāni</h2></div>
+        <hr/>
+        <div>
+            <p>Teritorijas, kurās tiks apkopots punktu slānis. Varat izvēlēties savu teritorijas slāni vai nodalījumus, kas tiek ģenerēti, palaižot rīku. Ģenerējot nodalījumus,  <b>Kvadrātam</b> norādītais skaitlis un mērvienības nosaka kvadrāta augstumu un garumu. <b>Se&scaron;stūrim</b> norādītais skaitlis un mērvienības nosaka attālumu starp paralēlajām skaldnēm.
+            </p>
+            <p>Lai veiktu analīzi, izmantojot nodalījumu  <b>Kvadrāts</b> vai <b>Se&scaron;stūris</b>, ir nepiecie&scaron;ama plānota koordinātu sistēma. Varat iestatīt <b>Apstrādes koordinātu sistēmu</b> <b>Analīzes darba vidē</b>. Ja apstrādes koordinātu sistēma nav iestatīta kā projicētā koordinātu sistēma, jūs saņemsit pamudinājumu to iestatīt, veicot darbību <b>Darbināt analīzi</b> .
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Izvēlieties teritoriju slāni, kurā veikt apkopošanu</h2></div>
+        <hr/>
+        <div>
+            <p>Teritorijas slānis, kuram tiks apkopoti punkti. Visi punkti, kas ietilpst &scaron;ī slāņa teritorijas robežās, tiks saskaitīti un pēc izvēles apkopoti, izmantojot jūsu izvēlēto statistiku. 
+            </p>
+            <p>Ir jāiestata  <b>Nodalījuma lielums</b> nodalījumiem vai <b>Apgabalu slānis </b>.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Izvēlieties attālumu, lai ģenerētu nodalījumus un tajos apkopotu</h2></div>
+        <hr/>
+        <div>
+            <p>Attālums, kas tiek izmantots, lai ģenerētu nodalījumus ievades punktu apkopo&scaron;anai. Kvadrāta nodalījuma lielums apzīmē kvadrāta augstumu. Se&scaron;stūra nodalījuma lielums apzīmē se&scaron;stūra augstumu (paralēlo malu).  
+            </p>
+            <p>Ir jāiestata  <b>Nodalījuma lielums</b> nodalījumiem vai <b>Apgabalu slānis </b>.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Apkopot, izmantojot laika soļus (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p>Ja ievades punktu slānī ir aktivizēts laiks, kura veids ir tūlītējs, varat analizēt, lietojot laika soļus. Lietojot laiku, varat iestatīt trīs parametrus:
+                <ul>
+                    <li> <b>Laika soļa intervāls</b>
+                    </li>
+                    <li> <b>Laika soļa atkārto&scaron;anas biežums</b>
+                    </li>
+                    <li> <b>Laiks laika soļu līdzinā&scaron;anai</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Piemēram, ja jums ir dati, kas raksturo laiku gada griezumā, un jūs vēlaties analizēt to, izmantojot nedēļas soļus, iestatiet parametru  <b>Laika soļu intervāls</b> uz <code>1 nedēļu</code>. 
+            </p>
+            <p>Piemēram, ja jums ir dati, kas raksturo laiku gada griezumā, un jūs vēlaties analizēt to, izmantojot mēne&scaron;a pirmo nedēļu, iestatiet parametru  <b>Laika soļu intervāls</b> uz <code>1 nedēļu</code>, lauku <b>Laika soļa atkārto&scaron;anas biežums</b>&nbsp;&mdash; uz <code>1 mēnesi</code> un lauku <b>Laiks laika soļu līdzinā&scaron;anai</b>&nbsp;&mdash; uz <code>1. janvāri plkst. 12:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Laika soļa intervāls</h2></div>
+        <hr/>
+        <div>
+            <p>Laika intervāls, kas tiek izmantots laika soļu ģenerē&scaron;anai.  <b>Laika soļu intervālu</b> var izmantot vienu pa&scaron;u vai kopā ar parametru <b>Laika soļa atkārto&scaron;anas biežums</b> vai <b>Laiks laika soļu līdzinā&scaron;anai</b>.
+            </p>
+            <p>Piemēram, jajūs vēlaties izveidot laika soļus, kasnotiek katru pirmdienu no plkst. 9:00 līdz 10:00, iestatiet parametru  <b>Laika soļa intervāls</b> uz <code>1 stundu</code>, <b>Laika soļa atkārto&scaron;anas biežums</b>&nbsp;&mdash; uz <code>1 nedēļu</code> un <b>Laiks laika soļu līdzinā&scaron;anai</b>&nbsp;&mdash; uz <code>pirmdienas plkst. 9:00:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Cik bieži atkārtot laika soli</h2></div>
+        <hr/>
+        <div>
+            <p> Laika soļa aprēķinā lietotais solis. <b>Laika soļa atkārto&scaron;anas biežums</b> var tikt lietots viens pats, kopā ar parametru <b>Laika soļa intervāls</b> vai kopā ar parametru <b>Atsauces laiks</b>, bet var tikt izmantots arī kopā gan ar parametru <b>Laika soļa intervāls</b> un <b>Laiks laika soļu līdzinā&scaron;anai</b>.
+            </p>
+            <p> Piemēram, ja jūs vēlaties izveidot laika soļus, kas notiek katru pirmdienu no plkst. 9:00 līdz 10:00, iestatiet parametru <b>Laika soļa intervāls</b> uz <code>1 stundu</code>, <b>Laika soļa atkārto&scaron;anas biežums</b>&nbsp;&mdash; uz <code>1 nedēļu</code> un <b>Laiks laika soļu līdzinā&scaron;anai</b>&nbsp;&mdash; uz <code>pirmdienas plkst. 9:00:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Laiks laika soļu līdzināšanai</h2></div>
+        <hr/>
+        <div>
+            <p>Laiks un datums, kas izmantots laika sektoru līdzinā&scaron;anai. Laika soļu atskaite sāksies un turpināsies atpakaļ no &scaron;ī laika. Ja nav izvēlēts atsauces laiks, laika solis tiks līdzināts ar 1970.&nbsp;gada 1.&nbsp;janvāri. 
+            </p>
+            <p> Piemēram, javēlaties izveidot laika soļus, kas notiek katru pirmdienu no plkst. 9:00 līdz 10:00, iestatiet parametru <b>Laika soļa intervāls</b> uz <code>1 stundu</code>, <b>Laika soļa atkārto&scaron;anas biežums</b>&nbsp;&mdash; uz <code>1 nedēļu</code> un <b>Laiks laika soļa līdzinā&scaron;anai</b>&nbsp;&mdash; uz <code>pirmdienas plkst. 9:00:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Pievienot statistiku (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p> Varat aprēķināt apkopoto elementu statistikuJūs varat aprēķināt tālāk norādītās vērtības ciparu laukos.
+                <ul>
+                    <li>Skaits&nbsp;&mdash; aprēķina vērtību skaitu, kas nav nulle. To var izmantot ciparu laukiem un virknēm. [nulle, 0, 2] skaits ir&nbsp;2.
+                    </li>
+                    <li>Summa&nbsp;&mdash; katra lauka skaitlisko vērtību summa. [nulle, nulle, 3] summa ir&nbsp;3.
+                    </li>
+                    <li>Vidējais&nbsp;&mdash; vidējā skaitliskā vērtība. [0, 2, nulle] vidējā vērtība ir&nbsp;1.
+                    </li>
+                    <li>Minimums&nbsp;&mdash; ciparu lauka minimālā vērtība. [0, 2, nulle] minimums ir&nbsp;0. 
+                    </li>
+                    <li>Maksimums&nbsp;&mdash; ciparu lauka maksimālā vērtība. [0, 2, nulle] maksimums ir&nbsp;2.
+                    </li>
+                    <li>Diapazons&nbsp;&mdash; ciparu lauka diapazons. To aprēķina, minimālo vērtību atņemot no maksimālās vērtības. [0, nulle, 1] diapazons ir&nbsp;1. [nulle, 4] diapazons ir&nbsp;0.
+                    </li>
+                    <li>Novirze&nbsp;&mdash; mar&scaron;ruta ciparu lauka novirze. [1] novirze ir nulle. [null, 1, 0, 1, 1] novirze ir 0,25.
+                    </li>
+                    <li>Standarta novirze&nbsp;&mdash; ciparu lauka standarta novirze. [1] standarta novirze ir nulle. [null, 1, 0, 1, 1] standartnovirze ir 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jūs varat aprēķināt tālāk norādītās vērtības virkņu laukos.
+                <ul>
+                    <li>Skaits&nbsp;&mdash; virkņu, kas nav nulle, skaits.
+                    </li>
+                    <li>Jebkāda. &Scaron;ī statistika ir nejau&scaron;s virknes vērtības paraugs norādītajā laukā.
+                    </li>
+                </ul>
+                Jebkāda statistika tiek aprēķināta no vērtībām, kas nav nulle. Rezultātu slānī ir ietverts jauns lauks par katru aprēķināto statistiku. Jebkurus statistikas datus var pievienot, izvēloties atribūtu un statistikas datus. 
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir pagaidu pirmsizlaides parametrs, lai iestatītu apstrādes telpisko atskaiti. Daudziem big data rīkiem nepiecie&scaron;ams apstrādei kā telpisko atskaiti lietot projekcijas koordinātu sistēmu. Pēc noklusējuma rīks lietos ievades koordinātu sistēmu, bet tas pārstās darboties, ja tā ir ģeogrāfisko koordinātu sistēma. Lai iestatītu projekcijas koordinātu sistēmu, ievadiet WKID. Piemēram,  <b>Web Mercator</b> jāievada kā <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Izvēlieties ArcGIS datu krātuvi, kur saglabāt rezultātus</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics rezultāti tiek saglabāti datukrātuvē un parādīti kā elementa slānis  Portal for ArcGIS. Vairumā gadījumu rezultāti jāglabā laika un telpas datu krātuvē, kas tiek darīts pēc noklusējuma. Dažos gadījumos, noderīga iespēja ir rezultātu glabā&scaron;ana saistītajā datu krātuvē. Iemesli rezultātu glabā&scaron;anai  saistītajā datu krātuvē: 
+                <ul>
+                    <li>Jūs varat izmantot rezultātus portāla sadarbībā ar portālu.
+                    </li>
+                    <li>Jūs varataktivizēt sinhronizācijas iespējas ar rezultātiem.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Saistīto datu krātuvi nevajadzētu izmantot tad, ja ir sagaidām GeoAnalytics rezultātu apjoma palielinā&scaron;anās, kā arī tad, ja ir nepiecie&scaron;ams izmantot telpas un laika lielo datu krātuves iespējas, lai rīkotos ar lielu datu apjomu.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p> Slāņa nosaukums, kas tiks izveidots. Ja rakstāt uz ArcGIS Data Store, rezultāti tiks saglabāti mapē  <b>Mans saturs</b> un pievienoti kartei. Ja rakstā uz lielu datu failu koplietojumu,, rezultāti tiks saglabāti lielajā datu failu koplietojumā un pievienot  tā sarakstam. Tas netiks pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja slānis jau pastāv, rīks nedarbosies.
+            </p>
+            <p>Rakstot uz   ArcGIS Data Store  (relāciju vai telpas un laika lielo datu krātuvi), izmantojot nolaižamo lodziņu  <b>Saglabāt rezultātu,</b> var norādīt mapes nosaukumu mapē <b>Mans saturs,</b> kurā tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

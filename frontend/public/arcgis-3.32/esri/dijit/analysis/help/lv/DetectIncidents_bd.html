@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Noteikt negadījumus</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Noteikt negadījumus"></h2>
+        <hr/>
+    <p> &Scaron;is rīks darbojas ar laika iespējotu punktu, līniju, laukumu vai tabulu elementu slāni, kas apzīmē laika mirkli. Izmantojot secīgi sakārtotus elementus, ko dēvē par mar&scaron;rutiem, &scaron;is rīks nosaka, kādi elementi ir interesējo&scaron;ie atgadījumi. Negadījumus nosaka pēc jūsu norādītajiem kritērijiem.
+    </p>
+    <p>Vispirms rīks nosaka, kādi elementi attiecas uz mar&scaron;rutu, izmantojot vienu vai vairākus laukus. Izmantojot laiku katrā elementā, mar&scaron;ruti tiek sakārtoti secīgi, piemērojot negadījuma stāvokli. Elementi, kas atbilst sākotnējam negadījuma stāvoklim, tiek atzīmēti kā negadījums. Varat papildus lietot negadījuma beigu stāvokli; kad beigu stāvoklis ir patiess (true), elements vairs nav negadījums Rezultāti tiks uzrādīti ar sākotnējiem elementiem&nbsp;&mdash; ar jaunām kolonnām, kas norāda negadījuma nosaukumu&nbsp;&mdash; norādot, kur&scaron; elements atbilst negadījuma stāvoklim. Ir iespējams uzrādīt visus sākotnējos elementus vai tikai tos elementus, kas ir negadījumi.
+    </p>
+    <p>Piemēram, pieņemsim, ka jums ir ik pēc 10&nbsp;minūtēm veikti GPS mērījumi par viesuļvētru. Katrs GPS mērījums reģistrē viesuļvētras nosaukumu, atra&scaron;anās vietu, ieraksta laiku un vēja ātrumu. Izmantojot &scaron;o laukus, varat izveidot negadījumu, kad jebkur&scaron; mērījums ar vēja ātrumu, kas pārsniedz 208&nbsp;km/h, ir negadījums, ko apzīmē par  <code>katastrofisku</code>. Neiestatot beigu stāvokli, negadījums beigsies, ja elements vairs neatbildīs sākuma nosacījumam (vēja ātrums kļūst mazāks par 208&nbsp;km/h).
+    </p>
+    <p>Cits piemērs: pieņemsim, ka jūs uzraugāt kādas ķīmiskas vielas koncentrāciju vietējās ūdensapgādes cauruļvados, izmantojot lauku  <code>contanimateLevel</code>. Jūs zināt, ka ieteicamais līmenis ir mazāks par 0,01&nbsp;mg/l, bet bīstams līmenis pārsniedz 0,03&nbsp;mg/l. Lai noteiktu negadījumus, kad līmenis virs 0,03&nbsp;mg/l ir negadījums un tāds paliek, līdz piesārņojums samazinās līdz pieļaujamam līmenim, varat izveidot negadījumu, izmantojot sākuma nosacījumu <code>contaminateLevel &gt; 0.03</code> un beigu nosacījumu <code>contaminateLevel &lt; 0.01</code>. Tādējādi tiks atzīmēta jebkura secība, kurā vērtības pārsniedz 0,03&nbsp;mg/l, līdz rādījums nekļūs mazāks par 0,01&nbsp;mg/l.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlieties slāni, kurā jānosaka negadījumi</h2></div>
+        <hr/>
+        <div>
+            <p>Punkti, līnijas, laukumi vai tabulas, kas tiks izmantoti negadījumu atra&scaron;anai. Ievades slānim jābūt ar laiku pamatotam un ar elementiem, kas parāda laika mirkli, kā arī ar vienu vai vairākiem laukiem, ko var izmantot mar&scaron;rutu noteik&scaron;anai.
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Izvēlieties vienu vai vairākus laukus, lai identificētu maršrutus</h2></div>
+        <hr/>
+        <div>
+            <p>Lauki, kas apzīmē mar&scaron;rutu identifikatoru. Lai norādītu unikālas mar&scaron;rutu vērtības, varat lietot vienu vai vairākus laukus.
+            </p>
+            <p>Piemēram, ja rekonstruējat viesuļvētru mar&scaron;rutus, varat izmantot viesuļvētras nosaukumu kā mar&scaron;ruta lauku.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Izveidojiet izteiksmes stāvokli, lai raksturotu negadījuma sākšanos</h2></div>
+        <hr/>
+        <div>
+            <p>Pievienojiet nosacījumu, izmantojot izteiksmes veidotāju, lai noteiktu kāda veida negadījums tas ir. Ja nosacījums, ko norādāt, ir atbilsto&scaron;s, elements ir negadījums. Ja nenorādāt beigu stāvokli, negadījums beidzas tad, ja sākuma nosacījums vairs netiek izpildīts.
+            </p>
+            <p>Piemēram: pieņemsim, ka vēlaties tikt brīdināts, ja lauka  <code>concentration_1</code> un <code>concentration_2</code> summa ir lielāka par <code>concentration_3</code>. Lai to izdarītu, lietojiet izteiksmi <code>($feature[&quot;concentration_1&quot;] un $feature[&quot;concentration_2&quot;])&nbsp;&gt;&nbsp;$feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>Ja ir interese par piesārņojuma izmaiņām laika gaitā un vēlaties saņemt brīdinājumu, kad pa&scaron;reizējā koncentrācija  <code>concentration_1</code> ir lielāka par iepriek&scaron;ējiem diviem <code>concentration_2</code> mērījumiem, varat izmantot, piemēram, &scaron;ādu izteiksmi: <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Izveidojiet izteiksmes stāvokli, lai raksturotu negadījuma izbeigšanos (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p>Papildus pievienojiet stāvokli, izmantojot izteiksmes veidotāju, lai noteiktu negadījuma beig&scaron;anos. Ja beigu stāvoklis, ko norādāt, ir atbilsto&scaron;s, elements vairs nav negadījums. Ja nenorādāt beigu stāvokli, negadījums beidzas tad, ja sākuma nosacījums vairs netiek izpildīts.    
+            </p>
+            <p>Piemēram: pieņemsim, ka vēlaties tikt brīdināts, ja lauka  <code>concentration_1</code> un <code>concentration_2</code> summa ir lielāka par <code>concentration_3</code>, un jūsu gribētu, lai negadījums beidzas tad, ja <code>concentration_4</code> ir mazāka par <code>concentration_1</code>. Lai to izdarītu, lietojiet <code>($feature[&quot;concentration_1&quot;] sākumstāvokli un $feature[&quot;concentration_2&quot;])&nbsp;&gt;&nbsp;($join[&quot;income&quot;] * .20)</code> <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code> beigu stāvokli.
+            </p>
+            <p>Ja vēlaties, lai negadījums beigtos, kad vidējais no pa&scaron;reizējās koncentrācijas  <code>concentration_1</code> un iepriek&scaron;ējiem četriem mērījumiem ir lielāki par pirmo mērījumu, varat izmantot, piemēram, &scaron;ādu izteiksmi: <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Parādīt</h2></div>
+        <hr/>
+        <div>
+            <p>Visas izvades metodes pievienos laukus sākotnējiem elementiem. Pastāv divi veidi, kā noteikt, kuri elementi tiek uzrādīti:
+                <ul>
+                    <li> <b>Visi elementi</b>&nbsp;&mdash; &scaron;is ir noklusējuma iestatījums. Tiks uzrādīti visi elementi ievadē.
+                    </li>
+                    <li> <b>Tikai negadījumi</b>&nbsp;&mdash; &scaron;ī metode uzrādīs tikai tos elementus, kas ir negadījumi. Elementi, kas netika noteikti kā negadījumi, netiks uzrādīti.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analizēt datus ar laika intervāliem (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p>Norādiet, vai vēlaties noteikt incidentus, izmantojot laika intervālus, kas segmentē jūsu ievades elementus analīzei. Ja izmantojat laika intervālus, ir jāiestata vajadzīgais laika intervāls un pēc izvēles jānorāda atsauces laiks. Ja nenorādāt atsauces laiku, tiks izmantots 1970. gada 1. janvāris. 
+            </p>
+            <p>Piemēram, ja iestatāt laika robežu 1 diena, sākot ar 9:00 no rīta 1990. gada 1. janvārī, tad katra ieraksta vērtība tiks saīsināta 9:00 no rīta katrai dienai un analizēta &scaron;ajā segmentā. 
+            </p>
+            <p>Laika intervālu izmanto&scaron;ana ir ātrs veids, kā paātrināt skaitļo&scaron;anas laiku, jo tas ātri rada īsākos mar&scaron;rutus analīzei. Ja analīzei ir lietderīgi sadalīt ar atkārtotiem intervāliem, tas ir ieteicams lielai datu apstrādei.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p> Slāņa nosaukums, kas tiks izveidots. Ja rakstāt uz ArcGIS Data Store, rezultāti tiks saglabāti mapē  <b>Mans saturs</b> un pievienoti kartei. Ja rakstā uz lielu datu failu koplietojumu,, rezultāti tiks saglabāti lielajā datu failu koplietojumā un pievienot  tā sarakstam. Tas netiks pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja slānis jau pastāv, rīks nedarbosies.
+            </p>
+            <p>Rakstot uz   ArcGIS Data Store  (relāciju vai telpas un laika lielo datu krātuvi), izmantojot nolaižamo lodziņu  <b>Saglabāt rezultātu,</b> var norādīt mapes nosaukumu mapē <b>Mans saturs,</b> kurā tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

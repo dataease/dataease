@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Clasificare și regresie pe baza unei păduri de arbori decizionali</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Diagrama fluxului de lucru &icirc;n Clasificarea și regresia pe baza unei păduri de arbori decizionali"></h2>
+        <hr/>
+    <p>Creează modele și generează predicții folosind o adaptare a algoritmului lui Leo Breiman bazat pe o pădure aleatoare, care reprezintă o metodă de machine learning supervizată Predicțiile pot fi efectuate at&acirc;t pentru variabilele categorice (clasificare), c&acirc;t și pentru variabilele continue (regresie). Variabilele explicative sunt c&acirc;mpuri din tabelul de atribute al obiectelor spațiale de antrenare. Instrumentul poate fi executat pentru a genera un model pentru a evalua performanța sau pentru a genera un model și a prezice rezultatele la alte seturi de date.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Tip analiză</h2></div>
+        <hr/>
+        <div>
+            <p>Specifică modul de funcționare a instrumentului. Instrumentul poate fi executat pentru a antrena un model doar pentru a evalua performanța sau pentru a antrena un model și a prezice rezultatele altor obiecte spațiale. Tipurile de predicție sunt după cum urmează:
+                <ul>
+                    <li> <b>Antrenarea unui model pentru a evalua performanța modelului</b> - Un model va fi antrenat și potrivit cu datele de intrare. Utilizați această opțiune pentru a evalua precizia modelului dvs. &icirc;nainte de a genera predicții pe un nou set de date. Rezultatul acestei opțiuni va fi un serviciu de obiecte spațiale a datelor de antrenare potrivite, diagnosticarea modelului și un tabel opțional de importanță variabilă.
+                    </li>
+                    <li> <b>Antrenarea unui model și prezicerea de valori</b> - Vor fi generate predicții sau clasificări pentru obiecte spațiale. Trebuie furnizate variabile explicative at&acirc;t pentru obiectele spațiale de antrenare, c&acirc;t și pentru obiectele spațiale pentru care urmează să se facă predicții. Rezultatul acestei opțiuni va fi un serviciu de obiecte spațiale al valorilor estimate, diagnosticarea modelului și un tabel opțional de importanță variabilă.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Antrenarea unui model pentru evaluarea performanței modelului</h2></div>
+        <hr/>
+        <div>
+            <p>Utilizați acest mod dacă doriți să potriviți un model și să investigați potrivirea acestuia.
+            </p>
+            <p>Prin această opțiune modelul vor fi antrenat folosind un strat tematic de intrare. Utilizați această opțiune pentru a evalua precizia modelului dvs. &icirc;nainte de a genera predicții pe un nou set de date. Această opțiune va afișa diagnosticul modelului &icirc;n fereastra de mesaje și va aplica modelul datelor de antrenare.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Antrenarea unui model și prezicerea de valori</h2></div>
+        <hr/>
+        <div>
+            <p>Utilizați acest mod dacă doriți să potriviți un model și să aplicați modelul la setul de date pentru a genera predicții.
+            </p>
+            <p>Se vor genera predicții sau clasificări pentru obiecte spațiale. Rezultatul acestei opțiuni va fi un serviciu de obiecte spațiale, diagnosticarea modelului și un tabel opțional de importanță variabilă.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Selectați stratul tematic de antrenare</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic de obiecte spațiale care conține variabila pentru care să se facă predicții și c&acirc;mpurile care vor fi folosite pentru a genera predicția.
+            </p>
+            <p>&Icirc;n afară de a alege un strat tematic din harta dvs., puteţi selecta opţiunile  <b>Alegere strat tematic de analiză</b> &icirc;n partea inferioară a listei verticale pentru a răsfoi conţinutul pentru stratul tematic sau setul de date pentru partajarea de fişiere big data.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Alegeți un strat tematic pentru care să preziceți valori</h2></div>
+        <hr/>
+        <div>
+            <p>Un strat tematic de obiecte spațiale reprezent&acirc;nd locațiile &icirc;n care se vor face predicțiile. Acest strat tematic de obiecte spațiale trebuie să conțină, de asemenea, orice variabile explicative furnizate &icirc;n calitate de c&acirc;mpuri care corespund celor utilizate de obiectele spațiale de antrenament.
+            </p>
+            <p>&Icirc;n afară de a alege un strat tematic din harta dvs., puteţi selecta opţiunile  <b>Alegere strat tematic de analiză</b> &icirc;n partea inferioară a listei verticale pentru a răsfoi conţinutul pentru stratul tematic sau setul de date pentru partajarea de fişiere big data.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Alegeţi câmpul pentru care doriţi să faceți predicții</h2></div>
+        <hr/>
+        <div>
+            <p>C&acirc;mpul din obiectele spațiale de antrenament care conține valorile care trebuie utilizate pentru antrenarea modelului. Acest c&acirc;mp conține valori cunoscute (de antrenament) ale variabilei care va fi utilizată pentru prezicerea &icirc;n locații necunoscute. Dacă valorile sunt categorice (de exemplu Arțar, Pin, Stejar), selectați caseta de bifat  <b>Valori categorice</b>.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Alegeți una sau mai multe variabile explicative</h2></div>
+        <hr/>
+        <div>
+            <p>Unul sau mai multe c&acirc;mpuri care reprezintă variabilele explicative (c&acirc;mpuri) care ajută la prezicerea valorii sau a categoriei unei variabile de prezis. Utilizați caseta de bifat pentru valori categorice pentru orice variabile care reprezintă clase sau categorii (cum ar fi acoperirea terenului sau prezența sau absența). Specificați variabila ca fiind adevărată pentru orice reprezintă clase sau categorii cum ar fi acoperirea terenului sau prezența sau absența și falsă dacă variabila este continuă.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Numărul de arbori</h2></div>
+        <hr/>
+        <div>
+            <p>Numărul de arbori de creat &icirc;n model. &Icirc;n general mai mulți arbori vor genera o predicție a modelului mult mai precisă, dar va dura mai mult timp pentru a calcula modelul. Numărul implicit de arbori este de 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Dimensiunea minimă a frunzei</h2></div>
+        <hr/>
+        <div>
+            <p>Numărul minim de observații necesare pentru a păstra o frunză (adică nodul terminal pe un arbore fără alte subdivizări). Valoarea implicită pentru regresie este de 5, iar valoarea implicită pentru clasificare este 1. Pentru date foarte mari, creșterea acestor numere va reduce timpul de funcționare al instrumentului.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Adâncimea maximă a arborelui</h2></div>
+        <hr/>
+        <div>
+            <p>Numărul maxim de divizări care vor fi făcute pe un arbore. Folosind o ad&acirc;ncime maximă mare, vor fi create mai multe divizări, ceea ce poate spori șansele unui model cu asupra de date. Valoarea implicită este determinată de date și depinde de numărul de arbori creați și de numărul de variabile incluse.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Datele disponibile pe arbore (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Specifică procentul de obiecte spațiale din stratul tematic de antrenament folosit pentru fiecare arbore de decizie. Valoarea implicită este procent de 100% din date. Eșantioanele pentru fiecare arbore sunt luate aleatoriu din două treimi din datele specificate.
+            </p>
+            <p>Fiecare arbore de decizie din pădure este creat utiliz&acirc;nd un eșantion sau un subset aleator (aproximativ două treimi) din datele de antrenament disponibile. Folosind un procent mai mic din datele de intrare pentru fiecare arbore de decizie crește viteza instrumentului pentru seturi de date foarte mari.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Numărul de variabile alese în mod aleatoriu</h2></div>
+        <hr/>
+        <div>
+            <p>Specifică numărul de variabile explicative utilizate pentru crearea fiecărui arbore de decizie.
+            </p>
+            <p>Fiecare arbore de decizie din pădure este creat folosind un subset aleatoriu al variabilelor explicative specificate. Creșterea numărului de variabile utilizate &icirc;n fiecare arbore de decizie va crește șansele de asupra de date pentru modelul dvs., mai ales dacă există una sau două variabile dominante. O practică obișnuită este folosirea rădăcinii pătrate a numărului total de variabile explicative dacă variabila de prezis este numerică sau &icirc;mpărțiți numărul total al variabilelor explicative cu 3 dacă variabila de prezis este de tip categorie.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Alegeți cum sunt potrivite câmpurile explicative</h2></div>
+        <hr/>
+        <div>
+            <p>Modul &icirc;n care variabilele corespunzătoare din stratul de antrenament se vor potrivi cu variabilele din stratul de predicție. Numai variabilele utilizate &icirc;n antrenament vor fi incluse &icirc;n tabel.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Numărul de rulări pentru validare</h2></div>
+        <hr/>
+        <div>
+            <p>Specifică procentul de obiecte spațiale (&icirc;ntre 0% și 50%) din stratul de antrenament care trebuie rezervat ca set de date de testare pentru validare. Modelul va fi antrenat fără acest subset de date aleatorii, iar valorile observate pentru aceste obiecte spațiale vor fi comparate cu valoarea estimată. Valoarea implicită este 10%.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic care va fi creat &icirc;n  <b>Resursele mele</b> și adăugat &icirc;n hartă.  Numele implicit se bazează pe numele instrumentului și numele stratului tematic de intrare. Dacă stratul tematic rezultat există deja, vi se va solicita să furnizați un alt nume.
+            </p>
+            <p>Rezultatele returnate vor depinde de tipul de analiză. Dacă faceți antrenament pentru a evalua potrivirea modelului, rezultatele vor conține un strat tematic de date de antrenament potrivite modelului și informații rezultat ce evaluează potrivirea modelului. Dacă faceți antrenament și predicție, rezultatele vor conține un strat tematic de date de antrenament potrivite modelulului, un strat tematic de rezultate prezise, și informații rezultat ce evaluează potrivirea modelului.
+            </p>
+            <p>Utiliz&acirc;nd caseta derulantă  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

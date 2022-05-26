@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Converte feature in raster</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Strumento Converte feature in raster"></h2>
+        <hr/>
+    <p>Questo strumento converte le feature in un dataset raster.
+    </p>
+    <p>Qualunque feature class che contiene feature punto, linea o poligono pu&ograve; essere convertita in un dataset raster.
+    </p>
+    <p>Il centro della cella viene utilizzato per decidere il valore del pixel del raster di output.
+    </p>
+    <p>Il tipo di campo di input determina il tipo di raster di output. Se il campo &egrave; un intero, il raster di output sar&agrave; intero; se &egrave; a virgola mobile, l'output sar&agrave; a virgola mobile.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegli feature layer da convertire</h2></div>
+        <hr/>
+        <div>
+            <p>Il feature layer di input da convertire in un dataset raster.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Scegli campo</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere il campo che verr&agrave; utilizzato per assegnare i valori al raster di output.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Dimensione cella di output</h2></div>
+        <hr/>
+        <div>
+            <p>La dimensione della cella e l'unit&agrave; per i raster di output.
+            </p>
+            <p>Le unit&agrave; disponibili sono miglia, piedi, chilometri e metri. L'impostazione predefinita &egrave; piedi.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome.
+            </p>
+            <p>&Egrave; possibile specificare il nome di una cartella in  <b>I miei contenuti</b> in cui salvare il risultato usando la casella a discesa <b>Salva risultato in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

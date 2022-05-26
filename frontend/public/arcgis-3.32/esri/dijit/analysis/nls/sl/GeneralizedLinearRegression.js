@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/sl/GeneralizedLinearRegression",{modifiedTitle:"Posplo\u0161ena linearna regresija \u2013 ${goal}",fit:"Prilagodi",fitAndPredict:"Prilagodi in napovej",selectGoal:"Kaj \u017eelite narediti?",fitGoal:"Prilagodi model za vrednotenje u\u010dinkovitosti delovanja modela",fitAndPredictGoal:"Prilagodi model in napovej vrednosti",inputLayerLabel:"Izberite sloj za ustvarjanje modela iz",chooseDependentField:"Izberite polje za model",chooseDataType:"Izberite tip podatkov, ki jih modelirate.",
+continuousData:"Neprekinjeno",binaryData:"Binarno",countData:"\u0160tevilo",chooseExplanatoryField:"Izberite pojasnjevalna polja",chooseFeaturesToPredict:"Izberi sloj za napoved vrednosti za",chooseExplainMatch:"Izberi, kako se ujemajo pojasnjevalna polja",outputLayerName:"GLR ${inputLayerName}",itemDescription:"Geoobjektni sloj, ustvarjen iz izvajanja re\u0161itev posplo\u0161ene linearne regresije ${goal}.",itemTags:"Rezultat analize, posplo\u0161ena linearna regresija, ${inputLayerName}, ${goal}",
+itemSnippet:"Geoobjektni sloj, ustvarjen iz posplo\u0161ene linearne regresije (${goal})."});

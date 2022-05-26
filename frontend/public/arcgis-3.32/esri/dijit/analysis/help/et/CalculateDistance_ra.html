@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Arvuta vahemaa</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Arvuta vahemaa"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist arvutab Eukleidese kauguse, suuna ja paigutuse &uuml;hestainsast l&auml;htepunktist v&otilde;i l&auml;htepunktide komplektist.
+    </p>
+    <p>N&auml;idisrakendused, sealhulgas allj&auml;rgnevatele k&uuml;simustele vastamine:
+
+        <ul>
+            <li>Milline on vahemaa l&auml;hima linnani?
+                
+
+            </li>
+            <li>Milline on vahemaa l&auml;hima maanteeni?
+                
+
+            </li>
+            <li>Milline on vahemaa l&auml;hima veekoguni?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Kui ruut  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, anal&uuml;&uuml;sitakse ainult neid sisendkihi objekte, mis on n&auml;htavad kaardi praeguses ulatuses. Kui see ruut pole m&auml;rgitud, kasutatakse anal&uuml;&uuml;si koostamisel k&otilde;iki sisendkihis olevaid objekte ka siis, kui neid pole praegu kaardil n&auml;ha.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Vahemaa arvutamiseks valige objekti asukohakihi raster</h2></div>
+        <hr/>
+        <div>
+            <p>Kiht, mis m&auml;&auml;rab l&auml;htepunktid, milleni vahemaa arvutatakse. Kiht v&otilde;ib olla pilditeenus v&otilde;i objektiteenus.
+            </p>
+            <p>Pilditeenuse puhul v&otilde;ib sisendt&uuml;&uuml;p olla t&auml;isarv v&otilde;i ujuvpunkt.
+            </p>
+            <p>Objektiteenuse puhul v&otilde;ib sisend olla punkt, joon v&otilde;i hulknurk.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maksimaalne arvutatav vahemaa</h2></div>
+        <hr/>
+        <div>
+            <p>Maksimaalne vahemaa, mis tuleb arvutada. Kui esitate n&auml;iteks v&auml;&auml;rtuse 10 000 meetrit, arvutatakse Eukleidese kaugus l&auml;htepunktidest kuni selle v&auml;&auml;rtuseni (kaugus).
+            </p>
+            <p>Kui v&auml;&auml;rtust ei esitata, arvutatakse kaugus kuni m&auml;&auml;ratletud ulatuseni.
+            </p>
+            <p>Kasutatavad &uuml;hikud on kilomeeter, meeter, miil ja jalg.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Väljundpiksli suurus</h2></div>
+        <hr/>
+        <div>
+            <p>The cell size and unit for the output rasters.
+            </p>
+            <p>The units can be kilometers, meters, miles, or feet.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Tulemkauguse kihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Tulemsuuna kihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Jaotises  <b>Minu sisu</b>loodava kihi nimi. You must provide a name that does not currently exist in <b>My Content</b>.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Tulempaigutuse kihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Jaotises  <b>Minu sisu</b>loodava kihi nimi. You must provide a name that does not currently exist in <b>My Content</b>.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Vali paigutusväli</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;li sisendallika kihis, mis sisaldavad igat allikat m&auml;&auml;ratlevaid v&auml;&auml;rtusi. See v&otilde;ib olla t&auml;isarv v&otilde;i l&auml;hte-andmekogumi stringiv&auml;li.
+            </p>
+            <p>Vaikev&auml;&auml;rtus on  <i>Value</i>. Kui kasutatakse objektiteenust ja v&auml;&auml;rtuse <i>Value</i> v&auml;li ei ole saadaval, siis kasutatakse esimest saadaolevat t&auml;isarvu v&otilde;i stringi v&auml;lja. Kui kehtivaid v&auml;lju ei ole, kasutatakse v&auml;lja objekti ID-d (objekti sisendi t&uuml;&uuml;bist s&otilde;ltuvalt n&auml;iteks OID v&otilde;i FID).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

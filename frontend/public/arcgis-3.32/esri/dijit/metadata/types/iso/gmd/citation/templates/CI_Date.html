@@ -1,0 +1,16 @@
+<div data-dojo-attach-point="containerNode">
+  <div data-dojo-type="esri/dijit/metadata/form/iso/AbstractObject" 
+    data-dojo-props="target:'gmd:CI_Date',minOccurs:0">
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'gmd:date',label:'${i18nIso.CI_Date.date}'">
+      <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement" 
+        data-dojo-props="target:'gco:Date'">
+        <div data-dojo-type="esri/dijit/metadata/form/InputDate"></div>
+      </div>
+    </div>
+    <div data-dojo-type="esri/dijit/metadata/form/iso/CodeListReference"
+      data-dojo-props="target:'gmd:dateType',label:'${i18nIso.CI_DateTypeCode.caption}'">
+      <div data-dojo-type="esri/dijit/metadata/types/iso/gmd/citation/CI_DateTypeCode"></div>
+    </div>
+  </div>
+</div>

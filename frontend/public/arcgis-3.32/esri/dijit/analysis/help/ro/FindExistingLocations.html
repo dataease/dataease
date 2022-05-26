@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Găsire locaţii existente</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Găsire locaţii existente"></h2>
+        <hr/>
+    <p>Acest instrument selectează obiecte spaţiale existente &icirc;n suprafaţa dvs. de studiu, care &icirc;ndeplinesc o serie de criterii specificate de dvs. Aceste criterii pot fi bazate pe interogări de atribute (de exemplu, parcele vacante) și interogări spațiale (de exemplu, pe o rază de o milă față de un r&acirc;u). 
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă hartă</b>, vor fi analizate numai obiectele spaţiale din stratul tematic de intrare care sunt vizibile din extinderea curentă a hărţii.  Dacă nu se bifează, toate obiectele spaţiale vor fi analizate, chiar dacă se află &icirc;n afara extinderii curente a hărţii.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Alegeţi stratul tematic care conţine obiectele spaţiale pe care doriţi să le găsiţi utilizând atributele şi interogările spaţiale</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic de puncte, linii sau suprafeţe pentru care doriţi să găsiţi obiecte spaţiale &icirc;n baza unei combinaţii de atribute şi interogări spaţiale specificate mai jos.
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Creaţi o interogare pentru a găsi obiecte spaţiale</h2></div>
+        <hr/>
+        <div>
+            <p>Faceţi clic pe butonul  <b>Adăugare expresie</b> pentru a defini o expresie.  Puteţi adăuga mai multe expresii.  După ce introduceţi expresiile şi faceţi clic pe butonul <b>Executare analiză</b>, obiectele spaţiale din stratul tematic de intrare sunt filtrate prin fiecare expresie.  Obiectele spațiale care satisfac toate expresiile sunt scrise &icirc;n stratul tematic rezultat.
+            </p>
+            <p>Există două tipuri de bază pentru expresiile pe care le puteţi crea: de atribute şi spaţiale. Expresiile de atribute sunt interogări asupra valorilor de c&acirc;mp, cum ar fi  <code>acolo unde numele este &bdquo;San Francisco&rdquo;</code>.  Există patru tipuri de expresii spațiale:
+                <ul>
+                    <li> <b>&icirc;n cadrul unei distanţe de</b>: obiectul spaţial trebuie să se afle &icirc;n cadrul unei distanţe faţă de un obiect spaţial dintr-un alt strat tematic.  De exemplu, găsiți parcele pe o rază de 500 de metri față de r&acirc;ul Los Angeles.
+                    </li>
+                    <li> <b>conţine &icirc;n mod complet</b>: obiectul spaţial trebuie să conţină &icirc;n &icirc;ntregime un obiect spaţial dintr-un alt strat tematic.  De exemplu, găsiți cumpenele apelor care conțin &icirc;n mod complet parcele destinate utilizării industriale. Nicio parte a parcelei nu se poate situa &icirc;n afara cumpenei apelor.
+                    </li>
+                    <li> <b>&icirc;n mod complet &icirc;n cadrul</b>: obiectul spaţial trebuie să fie &icirc;nconjurat &icirc;n &icirc;ntregime de un obiect spaţial dintr-un alt strat tematic.  De exemplu, găsiți districtele școlare care se află &icirc;n mod complet &icirc;n interiorul limitelor unui oraș. Nicio parte a districtului școlar nu se poate situa &icirc;n afara limitei orașului.
+                    </li>
+                    <li> <b>se intersectează cu</b>: obiectul spaţial conţine o parte a unui obiect spaţial dintr-un alt strat tematic.  De exemplu, găsiți parcele care se intersectează cu r&acirc;uri. Orice parte a r&acirc;ului care traversează parcela sau atinge limita parcelei se intersectează cu parcela.
+                    </li>
+                    <li> <b>cel mai apropiat</b>: obiectul spațial trebuie să fie cel mai apropiat de un alt obiect spațial dintr-un alt strat tematic. De exemplu, găsiți restaurantul care este cel mai apropiat de fiecare hotel.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Fiecare expresie spațială are un corespondent negativ, cu excepția  <b>cel mai apropiat</b>; <b>nu se află &icirc;n cadrul unei distanțe de</b>, <b>nu conține &icirc;n mod complet</b>, <b>nu se află &icirc;n mod complet &icirc;n</b> și <b>nu se intersectează cu</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic care va fi creat &icirc;n  <b>Resursele mele</b> și adăugat &icirc;n hartă.  Numele implicit se bazează pe numele instrumentului și numele stratului tematic de intrare. Dacă numele stratului tematic rezultat există deja, vi se va solicita să furnizați un alt nume.
+            </p>
+            <p>Utiliz&acirc;nd meniul derul&acirc;nd  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

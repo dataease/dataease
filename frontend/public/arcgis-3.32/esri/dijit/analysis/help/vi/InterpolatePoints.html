@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Các điểm Nội suy</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="C&aacute;c điểm Nội suy"></h2>
+        <hr/>
+    <p>   C&ocirc;ng cụ Nội suy Điểm cho ph&eacute;p bạn dự đo&aacute;n c&aacute;c gi&aacute; trị tại vị tr&iacute; mới dựa tr&ecirc;n c&aacute;c ph&eacute;p đo từ một bộ sưu tập c&aacute;c điểm. C&ocirc;ng cụ n&agrave;y lấy dữ liệu điểm với c&aacute;c gi&aacute; trị tại từng điểm v&agrave; trả về c&aacute;c khu vực được ph&acirc;n loại theo gi&aacute; trị dự đo&aacute;n. V&iacute; dụ:
+        <ul>
+            <li>Đối với một quận quản l&yacute; chất lượng kh&ocirc;ng kh&iacute; c&oacute; bộ cảm biến d&ugrave;ng để đo mức độ &ocirc; nhiễm. Nội suy Điểm c&oacute; thể được sử dụng để dự đo&aacute;n mức độ &ocirc; nhiễm tại c&aacute;c vị tr&iacute; kh&ocirc;ng c&oacute; cảm biến, chẳng hạn như vị tr&iacute; c&oacute; d&acirc;n số chịu rủi ro&mdash;v&iacute; dụ như bệnh viện hoặc trường học.
+            </li>
+            <li>Dự đo&aacute;n nồng độ kim loại nặng ở c&acirc;y trồng dựa tr&ecirc;n c&aacute;c mẫu được lấy từ c&aacute;c c&acirc;y ri&ecirc;ng lẻ.
+            </li>
+            <li>Dự đo&aacute;n mức độ dinh dưỡng (đạm, l&acirc;n, kali, v.v.) v&agrave; c&aacute;c chỉ số kh&aacute;c (như độ dẫn điện) để nghi&ecirc;n cứu c&aacute;c mối quan hệ về năng suất c&acirc;y trồng v&agrave; quy định số lượng ph&acirc;n b&oacute;n ch&iacute;nh x&aacute;c cho từng vị tr&iacute; trong c&aacute;nh đồng.
+
+            </li>
+            <li>C&aacute;c ứng dụng kh&iacute; tượng bao gồm dự b&aacute;o nhiệt độ, lượng mưa, v&agrave; c&aacute;c biến li&ecirc;n quan (chẳng hạn như mưa axit). 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Chọn lớp điểm có chứa các vị trí với giá trị đã biết</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp điểm sẽ sử dụng l&agrave;m cơ sở nội suy.  
+
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Chọn trường để nội suy</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn trường c&oacute; chứa c&aacute;c gi&aacute; trị m&agrave; bạn muốn nội suy.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Tối ưu hóa cho</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn sự ưu ti&ecirc;n của bạn về tốc độ so với độ ch&iacute;nh x&aacute;c. Dự đo&aacute;n ch&iacute;nh x&aacute;c hơn sẽ mất thời gian l&acirc;u hơn để t&iacute;nh to&aacute;n.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Sai số dự đoán đầu ra</h2></div>
+        <hr/>
+        <div>
+            <p> Nếu chọn, lớp sai số ti&ecirc;u chuẩn cho c&aacute;c dự đo&aacute;n nội suy sẽ được tạo. T&ecirc;n của lớp đầu ra sẽ l&agrave; t&ecirc;n lớp kết quả với 'Sai số' k&egrave;m theo.
+            </p>
+            <p>Sai số ti&ecirc;u chuẩn rất hữu &iacute;ch v&igrave; ch&uacute;ng cung cấp th&ocirc;ng tin về độ tin cậy của c&aacute;c gi&aacute; trị dự đo&aacute;n. Theo kinh nghiệm đơn giản th&igrave; gi&aacute; trị thực sẽ nằm trong v&ograve;ng hai sai số ti&ecirc;u chuẩn của gi&aacute; trị 95 phần trăm thời gian được dự đo&aacute;n. V&iacute; dụ, giả sử một vị tr&iacute; mới c&oacute; gi&aacute; trị dự đo&aacute;n 50 với sai số ti&ecirc;u chuẩn l&agrave; 5. Điều n&agrave;y c&oacute; nghĩa l&agrave; dự đo&aacute;n tốt nhất của c&ocirc;ng cụ n&agrave;y c&oacute; gi&aacute; trị thực sự tại vị tr&iacute; đ&oacute; l&agrave; 50, nhưng gi&aacute; trị hợp l&yacute; c&oacute; thể chỉ thấp ở mức 40 hoặc cao ở mức 60. Để t&iacute;nh to&aacute;n khoảng gi&aacute; trị hợp l&yacute;, nh&acirc;n sai số ti&ecirc;u chuẩn với 2, cộng gi&aacute; trị n&agrave;y với gi&aacute; trị dự đo&aacute;n để biết được gi&aacute; trị đầu tr&ecirc;n của khoảng n&agrave;y, v&agrave; trừ đi gi&aacute; trị dự đo&aacute;n để c&oacute; được gi&aacute; trị đầu dưới của khoảng n&agrave;y.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Phân loại theo</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn c&aacute;ch ph&acirc;n loại c&aacute;c gi&aacute; trị dự đo&aacute;n trong v&ugrave;ng.
+                <ul>
+                    <li>Khoảng h&igrave;nh học&mdash;C&aacute;c v&ugrave;ng dựa v&agrave;o khoảng lớp c&oacute; c&aacute;c chuỗi h&igrave;nh học. Phương ph&aacute;p n&agrave;y đảm bảo rằng từng khoảng loại c&oacute; số lượng gi&aacute; trị xấp xỉ nhau trong phạm vi từng lớp v&agrave; sự thay đổi giữa c&aacute;c khoảng l&agrave; nhất qu&aacute;n.
+                    </li>
+                    <li>Khoảng bằng nhau&mdash;C&aacute;c v&ugrave;ng được tạo ra để dải gi&aacute; trị dự đo&aacute;n bằng nhau cho từng v&ugrave;ng.
+                    </li>
+                    <li>Khu vực bằng nhau&mdash;C&aacute;c v&ugrave;ng được tạo để m&agrave; số lượng gi&aacute; trị dữ liệu của từng v&ugrave;ng l&agrave; bằng nhau. 
+V&iacute; dụ, nếu dữ liệu c&oacute; nhiều gi&aacute; trị lớn hơn so với c&aacute;c gi&aacute; trị nhỏ, nhiều v&ugrave;ng kh&aacute;c sẽ được tạo ra cho c&aacute;c gi&aacute; trị lớn.
+                    </li>
+                    <li>Thủ c&ocirc;ng&mdash;T&ugrave;y chọn n&agrave;y cho ph&eacute;p bạn x&aacute;c định khoảng gi&aacute; trị ri&ecirc;ng cho từng khu vực. C&aacute;c gi&aacute; trị n&agrave;y sẽ được nhập v&agrave;o tham số  <b>Gi&aacute; trị điểm ph&acirc;n lớp</b> b&ecirc;n dưới.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Số loại</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định số loại (khoảng gi&aacute; trị dự đo&aacute;n) trong lớp kết quả. Mỗi loại x&aacute;c định ranh giới khu vực. Gi&aacute; trị c&aacute;c lớp n&agrave;y sẽ được x&aacute;c định bằng tham số 
+ <b>Ph&acirc;n lớp như</b> b&ecirc;n tr&ecirc;n.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Giá trị điểm phân lớp</h2></div>
+        <hr/>
+        <div>
+            <p>Nhập c&aacute;c gi&aacute; trị điểm ph&acirc;n lớp được ph&acirc;n t&aacute;ch bằng dấu c&aacute;ch. V&iacute; dụ, nếu bạn muốn điểm ph&acirc;n loại c&oacute; c&aacute;c gi&aacute; trị 1,5, 3, v&agrave; 7, nhập  <code>1,5 3 7</code>. C&aacute;c gi&aacute; trị n&agrave;y sẽ x&aacute;c định giới hạn tr&ecirc;n của từng loại, do đ&oacute; số loại sẽ bằng số gi&aacute; trị được nhập. Sẽ kh&ocirc;ng tạo ra được c&aacute;c khu vực cho bất kỳ vị tr&iacute; n&agrave;o c&oacute; c&aacute;c gi&aacute; trị dự đo&aacute;n tr&ecirc;n gi&aacute; trị điểm ngắt lớn nhất được nhập. Bạn phải nhập &iacute;t nhất hai gi&aacute; trị v&agrave; kh&ocirc;ng qu&aacute; 32.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Cắt xén đầu vào tới</h2></div>
+        <hr/>
+        <div>
+            <p>Vẽ hoặc cung cấp một lớp với việc x&aacute;c định khu vực m&agrave; bạn muốn kết quả được vẽ. V&iacute; dụ, nếu bạn đang nội suy c&aacute;c ph&eacute;p đo sự &ocirc; nhiễm trong hồ, bạn c&oacute; thể sử dụng ranh giới hồ trong tham số n&agrave;y v&agrave; lớp đầu ra sẽ chỉ vẽ trong phạm vi ranh giới hồ.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Dự đoán tại các vị trí này</h2></div>
+        <hr/>
+        <div>
+            <p>Vẽ hoặc cung cấp một lớp chỉ định c&aacute;c vị tr&iacute; điểm để t&iacute;nh to&aacute;n c&aacute;c gi&aacute; trị dự đo&aacute;n. Điều n&agrave;y cho ph&eacute;p bạn đưa ra c&aacute;c dự đo&aacute;n tại vị tr&iacute; quan t&acirc;m cụ thể. V&iacute; dụ, nếu lớp đầu v&agrave;o thể hiện c&aacute;c ph&eacute;p đo mức độ &ocirc; nhiễm, bạn c&oacute; thể sử dụng tham số n&agrave;y để dự đo&aacute;n mức độ &ocirc; nhiễm của vị tr&iacute; với d&acirc;n số chịu rủi ro cao, v&iacute; dụ trường học hoặc bệnh viện. Sau đ&oacute; bạn c&oacute; thể sử dụng th&ocirc;ng tin n&agrave;y để đưa ra c&aacute;c khuyến c&aacute;o cho c&aacute;c c&aacute;n bộ y tế tại c&aacute;c vị tr&iacute; đ&oacute;.
+            </p>
+            <p>Nếu được cung cấp, c&ocirc;ng cụ n&agrave;y sẽ tạo ra một lớp điểm dự đo&aacute;n tại c&aacute;c vị tr&iacute; cụ thể. T&ecirc;n của lớp đầu ra sẽ l&agrave; t&ecirc;n lớp kết quả với 'Điểm' được k&egrave;m theo.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu t&ecirc;n lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> menu thả xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Pretvori raster u geoobjekt</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Alat Pretvori raster u geoobjekt"></h2>
+        <hr/>
+    <p>Ovaj alat pretvara raster u skup podataka geoobjekta, kao &scaron;to su točke, linije ili poligoni.
+    </p>
+    <p>Parametar  <b>Odaberite polje</b> omogućuje vam da odaberete koje će polje atributa unesenog skupa podataka rastera postati atribut u rezultatu klase geoobjekta. Ovaj je parametar dostupan samo za rastere cijelih brojeva koji imaju dodatne atribute u povezanoj tablici.
+    </p>
+    <p>Uneseni raster može imati ćelije bilo koje veličine.
+    </p>
+    <p>Rasteri cijelih brojeva mogu se pretvoriti u točkaste, linijske ili poligonalne geoobjekte; međutim, rasteri plutajuće točke mogu se pretvoriti samo u točkaste geoobjekte.
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, pretvorit će se samo ćelije rastera koje su vidljive u trenutačnom obuhvatu karte. Ako opcija nije označena, pretvorit će se sve ćelije u sloju rastera, čak i ako se nalaze izvan trenutačnog obuhvata karte. Imajte to na umu ako je sloj rastera prevelik ili ima previsoku razlučivost.
+    </p>
+    <p>Slučajevi upotrebe za ovaj alat uključuju sljedeće:
+ 
+        <ul>
+            <li>Stvorite poligonalne geoobjekte od klasifikacijskog rastera za uporabu na tlu.
+                
+ 
+            </li>
+            <li>Potoci otkriveni u DEM-u mogu se pretvoriti u linijske geoobjekte.
+                
+
+            </li>
+            <li>DEM se može pretvoriti u točkaste geoobjekte koji se mogu upotrebljavati u radnom tijeku koji se ne temelju na rasteru.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite sloj rastera za pretvaranje</h2></div>
+        <hr/>
+        <div>
+            <p>Uneseni sloj rastera koji će se pretvoriti u slojeve geoobjekta.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Odaberite polje</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite polje koje označava vrijednost koja će se koristiti za konverziju.
+            </p>
+            <p>To može biti bilo koji cijeli broj ili tekstualna vrijednost.
+            </p>
+            <p>Polje koje sadrži vrijednosti plutajuće točke može se upotrebljavati samo ako se izvozi u točkasti skup podataka.
+            </p>
+            <p>Zadani izbor je kori&scaron;tenje polja  <i>Value</i> koje sadrži vrijednost u pojedinim ćelijama rastera.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Izaberite vrstu izvoza</h2></div>
+        <hr/>
+        <div>
+            <p>Izaberite vrstu izvoza između točke, linije ili poligona.
+            </p>
+            <ul>
+                <li>Točka &ndash; raster će se pretvoriti u točkasti skup podataka.
+                    
+ 
+                </li>
+                <li>Linija &ndash; raster će se pretvoriti u skup podataka linijskih geoobjekata.
+                    
+ 
+                </li>
+                <li>Poligon &ndash; raster će se pretvoriti u skup podataka poligonalnih geoobjekata.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Pojednostavni linije ili poligone</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite ako treba pojednostavniti geoobjekte.
+            </p>
+            <p>Ako se označi (zadano), izgladit će se linijski ili poligonalni geoobjekti kako bi nastao općenitiji rezultat. Ako se ova opcija ne označi, linearni geoobjekti pratit će ograničenja ćelija skupa podataka rastera.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će se stvoriti u stavci  <b>Moj sadržaj</b> i dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Možete odrediti naziv mape u  <b>Mojem sadržaju</b> gdje će se rezultat spremiti pomoću padajućeg izbornika <b>Spremi rezultat u</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

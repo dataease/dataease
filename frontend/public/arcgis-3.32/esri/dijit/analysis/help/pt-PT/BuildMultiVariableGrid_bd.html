@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Construi Grelha Multivariável</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Diagrama de fluxo de trabalho Anexar Dados"></h2>
+        <hr/>
+    <p>A ferramenta Construir Grelha Multivari&aacute;vel funciona com uma ou mais camadas de elementos de ponto, linha ou pol&iacute;gono. A ferramenta gera uma grelha de caixas quadradas ou hexagonais e calcula valores para cada caixa com base na proximidade de cada camada de entrada. Estes valores podem incluir as seguintes vari&aacute;veis: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Dist&acirc;ncia para Mais Pr&oacute;ximo</b>&mdash;A dist&acirc;ncia entre cada caixa e o elemento mais pr&oacute;ximo
+            </li>
+            <li> <b>Atributo de Mais Pr&oacute;ximo</b>&mdash;Um valor de campo do elemento mais pr&oacute;ximo de cada caixa
+            </li>
+            <li> <b>Resumo de Proximidade</b>&mdash;Uma estat&iacute;stica especificada de todos os elementos a determinada dist&acirc;ncia de cada caixa
+            </li>
+            <li> <b>Resumo de Interse&ccedil;&otilde;es</b>&mdash;Uma estat&iacute;stica especificada de todos os elementos que intersetam cada caixa
+            </li>
+        </ul>
+        
+    </p>
+    <p>Apenas vari&aacute;veis que especificar ser&atilde;o inclu&iacute;das na camada resultante. Estas vari&aacute;veis podem ajud&aacute;-lo a compreender a proximidade e distribui&ccedil;&atilde;o dos seus dados. Os resultados podem ajud&aacute;-lo a come&ccedil;ar a responder a quest&otilde;es tais como as seguintes:
+        <ul>
+            <li>Tendo em conta v&aacute;rias camadas de infraestruturas de transportes p&uacute;blicos, que parte da cidade &eacute; menos acess&iacute;vel com recurso a transportes p&uacute;blicos?
+            </li>
+            <li>Tendo em conta camadas de vias aqu&aacute;ticas, tais como lagos e rios, qual &eacute; o nome do corpo aqu&aacute;tico mais pr&oacute;ximo de cada localiza&ccedil;&atilde;o nos E.U.A.?
+            </li>
+            <li>Tendo em conta a camada de rendimento familiar, em que os E.U.A. representam a varia&ccedil;&atilde;o de rendimento, em que parte dos E.U.A. se encontra a maior varia&ccedil;&atilde;o de rendimento nas 50 milhas circundantes?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Selecione o tipo de caixas que serão utilizadas para construir a grelha multivariável</h2></div>
+        <hr/>
+        <div>
+             
+            <p>O tipo e o tamanho das caixas que ser&atilde;o utilizadas para criar a grelha multivari&aacute;vel Para a op&ccedil;&atilde;o  <b>Quadrado</b> , o n&uacute;mero e unidades especificados determinam a altura e o comprimento do quadrado. Para a op&ccedil;&atilde;o <b>Hex&aacute;gono</b> , o n&uacute;mero e unidades especificados determinam a dist&acirc;ncia entre lados paralelos.
+            </p>
+            <p>Esta an&aacute;lise utiliza caixas e requer um sistema de coordenadas projetado. Pode definir o  <b>Sistema de coordenadas de processamento</b> nos <b>Ambientes de An&aacute;lise</b>. Se o seu sistema de coordenadas de processamento n&atilde;o se encontra definido para um sistema de coordenadas projetado, ser&aacute; instado a defini-lo quando <b>Correr An&aacute;lise</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Selecione camadas de entrada e variáveis que pretende incluir na grelha</h2></div>
+        <hr/>
+        <div>
+            <p>Clique no bot&atilde;o  adicionar ( <b>+</b>) para abrir a janela <b>Adicionar Vari&aacute;veis</b> e adicionar uma camada &agrave; sua an&aacute;lise. Na janela <b>Adicionar Vari&aacute;veis</b> , selecione uma camada de entrada e configure as vari&aacute;veis que pretende calcular para essa camada de entrada.
+            </p>
+            <p>Ap&oacute;s ter escolhido e configurado as vari&aacute;veis que pretende calcular, a camada ser&aacute; listada na janela da ferramenta com quaisquer outras camadas selecionadas. Clique no bot&atilde;o editar em qualquer camada para abrir a janela  <b>Adicionar Vari&aacute;veis</b> e visualizar todas as vari&aacute;veis configuradas para essa camada. Clique no bot&atilde;o eliminar em qualquer camada para remover essa camada e todas as vari&aacute;veis relacionadas da an&aacute;lise.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Adicionar variáveis</h2></div>
+        <hr/>
+        <div>
+            <p>Esta janela permite-lhe selecionar uma camada de entrada e configurar as vari&aacute;veis que pretende calcular para essa camada de entrada. Para come&ccedil;ar, utilize o menu pendente  <b>Selecionar uma camada de entrada</b> para selecionar a camada de ponto, pol&iacute;gono ou linha que pretende adicionar &agrave; sua an&aacute;lise.
+            </p>
+            <p>Para al&eacute;m de escolher uma camada do seu mapa, pode escolher  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista pendente para navegar at&eacute; aos seus conte&uacute;dos de um conjunto de dados de partilha de ficheiros de big data ou camada de elementos.
+            </p>
+            <p>Ap&oacute;s ter selecionado uma camada de entrada, clique no bot&atilde;o  <b>Adicionar uma vari&aacute;vel</b> para abrir uma nova vari&aacute;vel para edi&ccedil;&atilde;o. Tem de atribuir um nome &uacute;nico a cada vari&aacute;vel. Este ser&aacute; o nome do campo que &eacute; criado na tabela de atributos da camada resultante.
+            </p>
+            <p>Utilize o menu pendente para selecionar o tipo de vari&aacute;vel a adicionar. Cada tipo de vari&aacute;vel tem de ser configurado com um conjunto de par&acirc;metros &uacute;nico, e todos os par&acirc;metros s&atilde;o obrigat&oacute;rios.
+            </p>
+            <p>Ap&oacute;s ter adicionado todas as vari&aacute;veis pretendidas para a camada selecionada, clique no bot&atilde;o  <b>Adicionar</b> para guardar as vari&aacute;veis.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se estiver a escrever para ArcGIS Data Store, os seus resultados ser&atilde;o gravados em  <b>O Meu Conte&uacute;do</b> e adicionados ao mapa. Se estiver a escrever para uma partilha de ficheiros big data, os seus resultados ser&atilde;o guardados numa partilha de ficheiros big data e adicionados ao seu manifesto. N&atilde;o ser&atilde;o adicionados ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Caso a camada j&aacute; existe, a ferramenta ir&aacute; falhar.
+            </p>
+            <p>Ao escrever para   ArcGIS Data Store  (armazenamento relacional ou espaciotemporal de dados big data) utilizando a caixa suspensa  <b>Guardar resultado em</b> pode especificar o nome de uma pasta em <b>O Meu Conte&uacute;do</b>, onde ser&aacute; armazenado o resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

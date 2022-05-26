@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Beregn tetthet</h2><p/>
+        <h2><img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" alt="Beregn tetthet"></h2>
+        <hr/>
+    <p>Beregn Tetthet-verkt&oslash;yet lager et tetthetskart fra punktgeoobjekter ved &aring; spre kjente mengder av et fenomen (vises som attributter for punktene) over kartet. Resultatet er et lag som best&aring;r av omr&aring;der klassifisert fra minst til h&oslash;yest tetthet.   
+
+    </p>
+    <p>For punktinndata b&oslash;r hvert punkt representere plasseringen av en hendelse, og resultatlaget representere en telling av hendelsen per arealenhet. En h&oslash;yere tetthetsverdi p&aring; en ny lokasjon betyr at det er flere punkter n&aelig;r den lokasjonen. I mange tilfeller kan resultatlaget tolkes som en risikoflate for fremtidige hendelser. Hvis inndatapunktene representerer lokasjoner for lynnedslag, kan resultatlaget tolkes som en risikoflate for fremtidige lynnedslag.
+    </p>
+    <p>Andre bruksm&aring;ter av dette verkt&oslash;yet omfatter f&oslash;lgende:
+        <ul>
+            <li>Opprette kriminalitetstetthetskart for &aring; hjelpe politiet med &aring; fordele ressurser til omr&aring;der med mye kriminalitet.
+            </li>
+            <li>Beregne tettheten av sykehus innenfor et fylke. Resultatlaget vil vise omr&aring;der med h&oslash;y og lav tilgjengelighet til sykehus, og denne informasjonen kan brukes til &aring; bestemme hvor nye sykehus skal bygges.
+            </li>
+            <li>Identifisere omr&aring;der som har h&oslash;y risiko for skogbrann p&aring; bakgrunn av p&aring; tidligere skogbranner.
+            </li>
+            <li>Finne lokalsamfunn som er langt fra de store motorveiene for &aring; planlegge hvor nye veier skal bygges.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg et punktlag som tettheten skal beregnes fra</h2></div>
+        <hr/>
+        <div>
+            <p>Punktlaget som tettheten skal beregnes p&aring;.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Velg et eller flere felt å beregne tettheten fra (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Ta med et eller flere felt som angir antall hendelser p&aring; hvert sted. Hvis du f.eks. har punkter som representerer byer, kan du bruke et felt som representerer befolkningen i byen som antallfelt, og det resulterende befolkningstetthetslaget vil beregne st&oslash;rre befolkningstetthet n&aelig;r byer med st&oslash;rre populasjon.
+            </p>
+            <p>Tettheten for antallet punkter vil alltid bli beregnet.   Hvis ingen felt er valgt, vil hver lokasjon antas &aring; representere en enkelt telling.
+            </p>
+        </div>
+    </div>
+    <div id="binType">
+        <div><h2>Velg en bin-form</h2></div>
+        <hr/>
+        <div>
+            <p>Formen p&aring; beholderne som punkter samles i og brukes til tetthetsberegningen.
+            </p>
+            <p>Analyse ved hjelp av beholderne  <b>Kvadrat</b> eller <b>Heksagon</b> krever et projisert koordinatsystem. Du kan angi <b>Behandlende koordinatsystem</b> i <b>Analysemilj&oslash;er</b>. Hvis koordinatsystemet for behandling ikke er angitt som et projisert koordinatsystem, blir du bedt om &aring; angi det n&aring;r du bruker funksjonen <b>Kj&oslash;r analyse</b> .
+            </p>
+        </div>
+    </div>
+    <div id="binSizing">
+        <div><h2>Velg lagerplasstørrelse for aggregering</h2></div>
+        <hr/>
+        <div>
+            <p>St&oslash;rrelsen p&aring; beholderne som genereres. For en kvadratisk beholder representerer st&oslash;rrelsen h&oslash;yden p&aring; kvadratet. For en heksagon beholder representerer st&oslash;rrelsen h&oslash;yden p&aring; heksagonet (fra parallelle sider).
+            </p>
+        </div>
+    </div>
+    <div id="weight">
+        <div><h2>Velg tetthetsvektingen som skal brukes</h2></div>
+        <hr/>
+        <div>
+            <p>Typen vekting som brukes i tetthetsberegningen. Det finnes to typer:
+                <ul>
+                    <li> <b>Uniform</b> &ndash; Denne beregner  styrken per omr&aring;de.
+                    </li>
+                    <li> <b>Kjerne</b> &ndash; Bruker en kjernefunksjon til &aring; feste en jevn konet overflate til hvert punkt.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Velg nabolagstørrelse</h2></div>
+        <hr/>
+        <div>
+            <p>St&oslash;rrelsen p&aring; omr&aring;det som brukes til &aring; beregne tettheten. Nabolagst&oslash;rrelsen m&aring; v&aelig;re st&oslash;rre enn bin-st&oslash;rrelsen.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Velg utdataenheter på resultatet for tetthet</h2></div>
+        <hr/>
+        <div>
+            <p>De &oslash;nskede utdataenhetene for tetthetsverdiene. Som standard er dette stilt inn p&aring; kvadratkilometer eller kvadratmile, alt etter hvilke standardenheter som er angitt i profilen Hvis tetthetsverdiene er sv&aelig;rt sm&aring;, kan du &oslash;ke st&oslash;rrelsen p&aring; arealenhetene (for eksempel kvadratmeter til kvadratkilometer) for &aring; f&aring; st&oslash;rre verdier. Verdiene skalerer bare resultatet.  
+
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Beregn tetthet ved hjelp av tidssteg (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Hvis tid er aktivert i dette inndatapunktlaget og det er av typen umiddelbart, kan du analysere med tidssteg. Det er tre parametere du kan angi n&aring;r du bruker tid:
+                <ul>
+                    <li> <b>Tidsstegintervall</b>
+                    </li>
+                    <li> <b>Hvor ofte skal tidssteget gjentas</b>
+                    </li>
+                    <li> <b>Tid som tidssteg justeres mot</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Hvis du for eksempel har data som representerer et &aring;r i tid, og du vil analysere dem ved &aring; bruke ukentlige trinn, setter du  <b>Tidsstegintervall</b> til <code>1 uke</code>. 
+            </p>
+            <p>Hvis du for eksempel har data som representerer et &aring;r i tid, og du vil analysere dem ved &aring; bruke den f&oslash;rste uken i m&aring;neden, setter du  <b>Tidsstegintervall</b> til <code>1 uke</code>, <b>Hvor ofte skal tidssteget gjentas</b> til <code>1 m&aring;ned</code>, og <b>Tid som tidssteg justeres mot</b> til <code>1. Januar kl. 12:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Tidsstegintervall</h2></div>
+        <hr/>
+        <div>
+            <p>Intervallene som brukes til &aring; generere tidssteg.  <b>Tidsstegintervall</b> kan brukes alene eller sammen med parameterne <b>Hvor ofte skal tidssteget gjentas</b> eller <b>Tid som tidssteg justeres mot</b> .
+            </p>
+            <p>Hvis du for eksempel vil opprette tidssteg som finner sted hver mandag fra kl. 09:00 til kl. 10:00, setter du  <b>Tidsstegintervall</b> til <code>1 time</code>, <b>Hvor ofte skal tidssteget gjentas</b> til <code>1 uke</code>, og <b>Tid som tidssteg justeres mot</b> til <code>kl. 09:00:00 p&aring; en mandag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Hvor ofte skal tidssteget gjentas</h2></div>
+        <hr/>
+        <div>
+            <p> Trinnet som brukes til &aring; beregne et tidssteg. <b>Hvor ofte skal tidssteget gjentas</b> kan brukes alene, sammen med <b>Tidsstegintervall</b>, med <b>Referansetid</b>, eller med b&aring;de <b>Tidsstegintervall</b> og <b>Tid som tidssteg justeres mot</b>.
+            </p>
+            <p> Hvis du for eksempel vil opprette tidssteg som finner sted hver mandag fra kl. 09:00 til kl.&nbsp;10:00, setter du <b>Tidsstegintervall</b> til <code>1 time</code>, <b>Hvor ofte skal tidssteget gjentas</b> til <code>1 uke</code>, og <b>Tid som tidssteg justeres mot</b> til <code>kl. 09:00:00 p&aring; en mandag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Tid som tidssteg justeres mot</h2></div>
+        <hr/>
+        <div>
+            <p>Datoen og tidspunktet som brukes til &aring; justere tidsinndelingene. Tidssteg starter fra p&aring; og fortsetter bakover fra denne tiden. Hvis ingen referansetid velges, justeres tidssteg mot 1. januar 1970. 
+            </p>
+            <p> Hvis du for eksempel vil opprette tidssteg som finner sted hver mandag fra kl. 09:00 til kl. 10:00, setter du <b>Tidsstegintervall</b> til <code>1 time</code>, <b>Hvor ofte skal tidssteget gjentas</b> til <code>1 uke</code>, og <b>Tid som tidssteg justeres mot</b> til <code>kl. 09:00:00 p&aring; en mandag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er en midlertidig parameter for forh&aring;ndslansering, for &aring; angi den romlige referansen for behandling. Mange big data-verkt&oslash;y krever at et projisert koordinatsystem blir anvendt som den romlige referansen for behandling. Som standard vil verkt&oslash;yet bruke inndatakoordinatsystemet, men vil mislykkes hvis det er et geografisk koordinatsystem. Hvis du vil angi et projisert koordinatsystem, skriver du inn WKID. For eksempel angis  <b>Web Mercator</b> som <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Velg datalager</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-resultater lagre s p&aring; et datalager og vises som et geoobjektlag i  Portal for ArcGIS. Resultatene b&oslash;r i de fleste tilfeller lagres i et geotemporalt datalager, og dette er standarden. I enkelte tilfeller, er det en god l&oslash;sning &aring; lagre resultatene i relasjonsdatalageret. Du kan velge &aring; lagre resultatene i relasjonsdatalageret av f&oslash;lgende grunner: 
+                <ul>
+                    <li>Du kan bruke resultater i portal-til-portal-samarbeid.
+                    </li>
+                    <li>Du kan aktivere synkroniseringsfunksjoner for resultatene dine.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du b&oslash;r ikke bruke relasjonsdatalageret hvis du forventer at GeoAnalytics-resultatene skal &oslash;ke, og du &oslash;nsker &aring; dra fordeler av det geotemporale stordatalagerets funksjoner til &aring; h&aring;ndtere store mengder data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; laget som opprettes. Hvis du skriver til en ArcGIS Data Store, blir resultatene dine lagret i  <b>Mitt innhold</b> og lagt til kartet. Hvis du skriver til et fildelingsomr&aring;de for stordata, blir resultatene lagret i fildelingsomr&aring;det for stordata og lagt til dets innholdsoversikt. De blir ikke lagt til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget allerede eksisterer, vil verkt&oslash;yet mislykkes.
+            </p>
+            <p>N&aring;r du skriver til  ArcGIS Data Store (fildelingsomr&aring;de for relasjons- eller geotemporale stordata) via rullegardinlisten  <b>Lagre resultat i</b>, kan du angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatet skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Enrich From Multi-Variable Grid</h2><p/>
+        <h2><img src="./images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Enrich from Multi-Variable Grid"></h2>
+        <hr/>
+    <p>The  Enrich From Multi-Variable Grid tool efficiently joins attributes from a multi-variable grid to a point layer.
+    </p>
+    <p>A multi-variable grid is any layer created with the Build Multi-Variable Grid tool, which compiles attributes from multiple layers into a single grid of polygons.  Using a multi-variable grid for enrichment allows you to quickly add large and diverse collections of information to point data for use in further spatial analysis.
+    </p>
+    <p>For example, suppose you've obtained a layer of new crime events that have occurred in the past year throughout a city. You want to model the relationships between crime frequency and a variety of demographic, economic, and geographic factors. You have access to data that describes these factors, but it is  stored in five different layers with differing geometry types. In addition, some layers are stored in a big data file share while others are stored as feature services. By creating a multi-variable grid to store this information and then joining the grid to your crime events with the  Enrich From Multi-Variable Grid tool, you are able to efficiently join a wide variety of attributes to your point layer with only two tool runs. You can then use the joined attributes as explanatory variables and begin to build a model of crime frequency with the result layer.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Choose the point features to enrich</h2></div>
+        <hr/>
+        <div>
+            <p>The point features that will be enriched by the multi-variable grid.
+            </p>
+            <p>In addition to choosing a layer from your map, you can choose  <b>Choose Analysis Layer</b> at the bottom of the drop-down list to browse to your contents for a big data file share dataset or feature layer. You may optionally apply a filter on your input layer or apply a selection on hosted layers added to your map. Filters and selections are only applied for analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Choose the multi-variable grid to enrich from</h2></div>
+        <hr/>
+        <div>
+            <p>The multi-variable grid layer containing attributes that will be joined to the input point features. The layer must have been created using  the Build Multi-Variable Grid tool and must be a hosted feature layer. Multi-variable grid layers stored in a big data file Sshare are not supported as input to this tool.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Choose the variables to add</h2></div>
+        <hr/>
+        <div>
+            <p>The attributes in the multi-variable grid layer that will be joined to the input point features whenever the point features intersect the grid.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p> The name of the layer that will be created.  If you are writing to an ArcGIS Data Store, your results will be saved in  <b>My
+Content</b> and added to the map. If you are writing to a big data file share, your results will be stored in the big data file share and added to its manifest. It will not be added to the map. The default name is based on the
+tool name and the input layer name. If the layer already exists, the tool will fail.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

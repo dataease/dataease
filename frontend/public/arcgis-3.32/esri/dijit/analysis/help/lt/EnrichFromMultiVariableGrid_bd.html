@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Praturtinti iš kelių kintamųjų tinklelio</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Praturtinti i&scaron; kelių kintamųjų tinklelio"></h2>
+        <hr/>
+    <p>Įrankis  Praturtinti i&scaron; kelių kintamųjų tinklelio efektyviai sujungia atributus i&scaron; kelių kintamųjų tinklelio į ta&scaron;kinį sluoksnį.
+    </p>
+    <p>Kelių tinkamųjų tinklelis yra bet koks sluoksnis, sukurtas įrankiu Kurti kelių kintamųjų tinklelį, kuris kompiliuoja atributus i&scaron; kelių sluoksnių į vieną plotų tinklelį. Kelių kintamųjų tinklelio naudojimas praturtinimui leidžia greitai pridėti didelius ir įvairius informacijos rinkinius, kad būtų galima nukreipti duomenis tolesnei erdvinei analizei.
+    </p>
+    <p>Pavyzdžiui, gavote nusikalstamų veikų, įvykusių mieste pernai metais, sluoksnį. Norite sumodeliuoti ry&scaron;ius tarp nusikalstamų veikų dažnumo ir įvairių demografinių, ekonominių bei geografinių veiksnių. Turite prieigą prie duomenų, apra&scaron;ančių tuos veiksnius, bet jie saugomi penkiuose skirtinguose sluoksniuose su skirtingų tipų geometrija. Be to, kai kurie sluoksniai saugomi didelių duomenų failo bendrinime, o kiti saugomi kaip elementų paslaugos. Sukurdami kelių kintamųjų tinklelį &scaron;iai informacijai saugoti ir sujungdami tinklelį su savo nusikalstamom veikom, naudodami įrankį  Praturtinti i&scaron; kelių kintamųjų tinklelio, galite veiksmingai sujungti įvairiausius atributus ir savo ta&scaron;kų sluoksnį vos dviem įrankiais. Tada galite naudoti sujungtus atributus kaip paai&scaron;kinančius kintamuosius ir pradėti kurti nusikalstamų veikų dažnumo modelį rezultatų sluoksnyje.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Pasirinkite praturtintinus taškinius elementus</h2></div>
+        <hr/>
+        <div>
+            <p>Ta&scaron;kiniai elementai, kuriuos kelių kintamųjų tinklelis praturtins.
+            </p>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti didelių duomenų rinkinio arba elemento sluoksnio.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Pasirinkite, kuriuo kelių kintamųjų tinkleliu praturtinti</h2></div>
+        <hr/>
+        <div>
+            <p>Kelių kintamųjų tinklelis su atributais, kuris bus sujungtas su įvesties ta&scaron;kiniais elementais. &Scaron;is sluoksnis turi būti sukurtas naudojant įrankį Kurti kelių kintamųjų tinklelį ir turi būti talpinamas elementų sluoksnis. Kelių kintamųjų tinklelio sluoksniai, saugomi didelių duomenų failo bendrinime, netinka būti &scaron;io įrankio įvestimi.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Pasirinkite pridedamus kintamuosius</h2></div>
+        <hr/>
+        <div>
+            <p>Kelių kintamųjų tinklelio sluoksnio atributai, kurie bus jungiami su įvesties ta&scaron;kiniais elementais, kai jie kirsis su tinkleliu.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p> Pavadinimas sluoksnio, kuris bus sukurtas. Jei įra&scaron;ote į ArcGIS Data Store, jūsų rezultatai bus įra&scaron;yti į  <b>Turinį</b> ir įtraukti į žemėlapį. Jei įra&scaron;ote į didelių duomenų failo bendrinimą, jūsų rezultatai bus saugomi didelių duomenų failo bendrinime ir pridedami į jo deklaraciją. Jie nebus įtraukti į žemėlapį. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau yra, įrankis neveiks.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

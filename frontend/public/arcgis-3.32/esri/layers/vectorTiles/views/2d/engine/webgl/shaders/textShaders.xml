@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Add your GLSL snippets to this file. You should start from
+  importing your old GLSL files. For instance, if you have a
+  file such as myShader.vs.glsl you should create a new <snippet name="myShaderVS">
+  and then copy and paste the GLSL source as the content. You will then convert your
+  code to use the {@link esri/views/2d/engine/webgl/glShaderSnippets glShaderSnippets}
+  instance to access the GLSL code, instead of importing it directly with require("dojo/text!...").
+-->
+<snippets>
+
+<snippet name="textVVUniformsVS">
+    <![CDATA[
+  #if defined(VV_COLOR) || defined(VV_SIZE_MIN_MAX_VALUE) || defined(VV_SIZE_SCALE_STOPS) || defined(VV_SIZE_FIELD_STOPS) || defined(VV_SIZE_UNIT_VALUE) || defined(VV_OPACITY) || defined(VV_ROTATION)
+    attribute vec4 a_vv;
+  #endif // VV_COLOR || VV_SIZE_MIN_MAX_VALUE || VV_SIZE_SCALE_STOPS || VV_SIZE_FIELD_STOPS || VV_SIZE_UNIT_VALUE || VV_OPACITY || VV_ROTATION
+
+  #ifdef VV_COLOR
+    uniform float u_vvColorValues[8];
+    uniform vec4 u_vvColors[8];
+  #endif // VV_COLOR
+
+  #ifdef VV_SIZE_MIN_MAX_VALUE
+    uniform vec4 u_vvSizeMinMaxValue;
+  #endif // VV_SIZE_MIN_MAX_VALUE
+
+  #ifdef VV_SIZE_SCALE_STOPS
+    uniform float u_vvSizeScaleStopsValue;
+  #endif // VV_SIZE_SCALE_STOPS
+
+  #ifdef VV_SIZE_FIELD_STOPS
+    uniform float u_vvSizeFieldStopsValues[6];
+    uniform float u_vvSizeFieldStopsSizes[6];
+  #endif // VV_SIZE_FIELD_STOPS
+
+  #ifdef VV_SIZE_UNIT_VALUE
+    uniform float u_vvSizeUnitValueWorldToPixelsRatio;
+  #endif // VV_SIZE_UNIT_VALUE
+
+  #ifdef VV_OPACITY
+    uniform float u_vvOpacityValues[8];
+    uniform float u_vvOpacities[8];
+  #endif // VV_OPACITY
+
+  #ifdef VV_ROTATION
+    uniform lowp float u_vvRotationType;
+  #endif // VV_ROTATION
+    ]]>
+  </snippet>
+
+  <snippet name="textVVFunctions">
+    <![CDATA[
+    bool isNan(float val) {
+      return !( val < 0.0 || 0.0 < val || val == 0.0 );
+    }
+
+  #ifdef VV_SIZE_MIN_MAX_VALUE
+    float getVVMinMaxSize(float sizeValue, float fallback) {
+      if (isNan(sizeValue)) {
+        return fallback;
+      }
+
+      // we need to multiply by 8 in order to translate to tile coordinates
+      float interpolationRatio = (sizeValue  - u_vvSizeMinMaxValue.x) / (u_vvSizeMinMaxValue.y - u_vvSizeMinMaxValue.x);
+      return clamp(u_vvSizeMinMaxValue.z + interpolationRatio * (u_vvSizeMinMaxValue.w - u_vvSizeMinMaxValue.z), u_vvSizeMinMaxValue.z, u_vvSizeMinMaxValue.w);
+    }
+  #endif // VV_SIZE_MIN_MAX_VALUE
+
+  #ifdef VV_SIZE_FIELD_STOPS
+    const int VV_SIZE_N = 6;
+    float getVVStopsSize(float sizeValue, float fallback) {
+      if (isNan(sizeValue)) {
+        return fallback;
+      }
+
+      if (sizeValue <= u_vvSizeFieldStopsValues[0]) {
+        return u_vvSizeFieldStopsSizes[0];
+      }
+
+      for (int i = 1; i < VV_SIZE_N; ++i) {
+        if (u_vvSizeFieldStopsValues[i] >= sizeValue) {
+          float f = (sizeValue - u_vvSizeFieldStopsValues[i-1]) / (u_vvSizeFieldStopsValues[i] - u_vvSizeFieldStopsValues[i-1]);
+          return mix(u_vvSizeFieldStopsSizes[i-1], u_vvSizeFieldStopsSizes[i], f);
+        }
+      }
+
+      return u_vvSizeFieldStopsSizes[VV_SIZE_N - 1];
+    }
+  #endif // VV_SIZE_FIELD_STOPS
+
+  #ifdef VV_SIZE_UNIT_VALUE
+    float getVVUnitValue(float sizeValue, float fallback) {
+      if (isNan(sizeValue)) {
+        return fallback;
+      }
+
+      return u_vvSizeUnitValueWorldToPixelsRatio * sizeValue;
+    }
+  #endif // VV_SIZE_UNIT_VALUE
+
+  #ifdef VV_OPACITY
+    const int VV_OPACITY_N = 8;
+    float getVVOpacity(float opacityValue) {
+      if (isNan(opacityValue)) {
+        return 1.0;
+      }
+
+      if (opacityValue <= u_vvOpacityValues[0]) {
+        return u_vvOpacities[0];
+      }
+
+      for (int i = 1; i < VV_OPACITY_N; ++i) {
+        if (u_vvOpacityValues[i] >= opacityValue) {
+          float f = (opacityValue - u_vvOpacityValues[i-1]) / (u_vvOpacityValues[i] - u_vvOpacityValues[i-1]);
+          return mix(u_vvOpacities[i-1], u_vvOpacities[i], f);
+        }
+      }
+
+      return u_vvOpacities[VV_OPACITY_N - 1];
+    }
+  #endif // VV_OPACITY
+
+  #ifdef VV_ROTATION
+    mat4 getVVRotation(float rotationValue) {
+      // YF TODO: if the symbol has rotation we need to combine the symbo's rotation with the VV one
+      if (isNan(rotationValue)) {
+        return mat4(1, 0, 0, 0,
+                    0, 1, 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 0, 1);
+      }
+
+      float rotation = rotationValue;
+      if (u_vvRotationType == 1.0) {
+        rotation = 90.0 - rotation;
+      }
+
+      float angle = C_DEG_TO_RAD * rotation;
+
+      float sinA = sin(angle);
+      float cosA = cos(angle);
+
+      return mat4(cosA, sinA, 0, 0,
+                  -sinA,  cosA, 0, 0,
+                  0,     0, 1, 0,
+                  0,     0, 0, 1);
+    }
+  #endif // VV_ROTATION
+
+  #ifdef VV_COLOR
+    const int VV_COLOR_N = 8;
+
+    vec4 getVVColor(float colorValue, vec4 fallback) {
+      if (isNan(colorValue)) {
+        return fallback;
+      }
+
+      if (colorValue <= u_vvColorValues[0]) {
+        return u_vvColors[0];
+      }
+
+      for (int i = 1; i < VV_COLOR_N; ++i) {
+        if (u_vvColorValues[i] >= colorValue) {
+          float f = (colorValue - u_vvColorValues[i-1]) / (u_vvColorValues[i] - u_vvColorValues[i-1]);
+          return mix(u_vvColors[i-1], u_vvColors[i], f);
+        }
+      }
+
+      return u_vvColors[VV_COLOR_N - 1];
+    }
+  #endif // VV_COLOR
+    ]]>
+  </snippet>
+
+  <snippet name="textVS">
+    <![CDATA[
+      precision mediump float;
+
+      const float C_DEG_TO_RAD = 3.14159265359 / 180.0;
+
+      attribute vec2 a_pos;           // 2 * 2 (2 x signed 16)
+      attribute vec4 a_id;            // 4 (4 x unsigned byte)
+      attribute vec4 a_color;         // 4 (4 x unsigned byte)
+      attribute vec2 a_vertexOffset; // 2 * 2 // (2 x signed 16) offset from the anchor point of the string
+      attribute vec4 a_texFontSize; // 4 (4 x unsigned byte) texture coordinatesm and font size
+
+      attribute lowp float  a_visible; // a one byte controlling the visibility of the vertex (a separate visibility buffer), values are 0 or 1 (visible)
+
+      // the relative transformation of a vertex given in tile coordinates to a relative normalized coordinate
+      // relative to the tile's upper left corner
+      // the extrusion vector.
+      uniform highp mat4 u_transformMatrix;
+      // the extrude matrix which is responsible for the 'anti-zoom' as well as the rotation
+      uniform highp mat4 u_extrudeMatrix;
+      // u_normalized_origin is the tile's upper left corner given in normalized coordinates
+      uniform highp vec2 u_normalized_origin;
+      // the size of the mosaic given in pixels
+      uniform vec2 u_mosaicSize;
+      uniform float u_pixelRatio;
+
+      // the opacity of the layer
+      uniform mediump float u_opacity;
+
+      varying mediump vec4 v_color;
+      varying mediump float v_antialiasingWidth;
+      varying mediump float v_edgeDistanceOffset;
+
+      // the interpolated texture coordinate value to be used by the fragment shader in order to sample the sprite texture
+      varying mediump vec2 v_tex;
+      // the calculated transparency to be applied by the fragment shader. It is incorporating both the fade as well as the
+      // opacity of the layer given by the painter
+      varying lowp float v_transparency;
+
+      // the vertex offsets are given in integers, therefore in order to maintain a reasonable precission we multiply the values
+      // by 16 and then at the shader devide by the same number
+      const float offsetPrecision = 1.0 / 8.0;
+      const float outlineScale = 1.0 / 10.0;
+      const float sdfFontSize = 24.0;
+
+      // maximum SDF distance of 8 pixels represent the distance values that range from -2 inside the geometry to 6 on the outside.
+      // 6 is actually the maximum distance outside the glyph, therefore it is the limitation of the halo which is 1/4 of the geometry size.
+      const float maxSdfDistance = 8.0;
+
+  #ifdef ID
+    varying highp vec4 v_id;
+  #endif // ID
+
+      // import the VV inputs and functions (they are #ifdefed, so if the proper #define is not set it will end-up being a no-op)
+      $textVVUniformsVS
+      $textVVFunctions
+
+      void main()
+      {
+        // make sure to clip the vertices in case that given record is marked as invisible
+        float z = 2.0 * (1.0 - a_visible);
+
+        // we use the list significant bit of the position in order to store the indication whethe the vertex is of a halow of a glyph
+        mediump float halo = mod(a_pos, 2.0).x;
+
+  #if defined(VV_SIZE_MIN_MAX_VALUE) || defined(VV_SIZE_SCALE_STOPS) || defined(VV_SIZE_FIELD_STOPS) || defined(VV_SIZE_UNIT_VALUE)
+
+  #ifdef VV_SIZE_MIN_MAX_VALUE
+        // vv size override the original symbol's size
+        vec2 size = vec2(getVVMinMaxSize(a_vv.x, a_texFontSize.z));
+  #endif // VV_SIZE_MIN_MAX_VALUE
+
+  #ifdef VV_SIZE_SCALE_STOPS
+        vec2 size = vec2(u_vvSizeScaleStopsValue);
+  #endif // VV_SIZE_SCALE_STOPS
+
+  #ifdef VV_SIZE_FIELD_STOPS
+        vec2 size = vec2(getVVStopsSize(a_vv.x, a_texFontSize.z));
+  #endif // VV_SIZE_FIELD_STOPS
+
+  #ifdef VV_SIZE_UNIT_VALUE
+        vec2 size = vec2(getVVUnitValue(a_vv.x, a_texFontSize.z));
+  #endif // VV_SIZE_UNIT_VALUE
+
+        float fontSize = size.x;
+  #else // this generic case, no VV
+        float fontSize = a_texFontSize.z;
+  #endif // defined(VV_SIZE_MIN_MAX_VALUE) || defined(VV_SIZE_SCALE_STOPS) || defined(VV_SIZE_FIELD_STOPS) || defined(VV_SIZE_UNIT_VALUE)
+
+        float fontScale = fontSize / sdfFontSize;
+        // we need to scale the extrude matrix by the font-scale in order to get the right text size
+        mat4 extrudeMatrix = fontScale * u_extrudeMatrix;
+
+        // If the label rotates with the map, and if the rotated label is upside down, hide it
+        //gl_Position = vec4(u_normalized_origin, 0.0, 0.0) + u_transformMatrix * vec4(floor(a_pos * 0.5), z, 1.0) + extrudeMatrix * vec4(offsetPrecision * a_vertexOffset, 0.0, 0.0);
+
+    #ifdef VV_ROTATION
+        gl_Position = vec4(u_normalized_origin, 0.0, 0.0) + u_transformMatrix * vec4(floor(a_pos * 0.5), z, 1.0) + extrudeMatrix * getVVRotation(a_vv.w) * vec4(offsetPrecision * a_vertexOffset, 0.0, 0.0);
+    #else
+        gl_Position = vec4(u_normalized_origin, 0.0, 0.0) + u_transformMatrix * vec4(floor(a_pos * 0.5), z, 1.0) + extrudeMatrix * vec4(offsetPrecision * a_vertexOffset, 0.0, 0.0);
+    #endif // VV_ROTATION
+
+        v_tex = a_texFontSize.xy / u_mosaicSize;
+        v_antialiasingWidth = 0.105 * sdfFontSize / fontSize / u_pixelRatio;
+        // if halo.x is zero (not a halo) v_edgeDistanceOffset will end up being zero as well.
+        v_edgeDistanceOffset = halo * outlineScale * a_texFontSize.w / fontScale / maxSdfDistance;
+
+    #ifdef VV_OPACITY
+        v_transparency = getVVOpacity(a_vv.z);
+    #else
+        v_transparency = u_opacity;
+    #endif // VV_OPACITY
+
+    #ifdef VV_COLOR
+       // we don't want to override the halo color
+       v_color = halo * a_color + (1.0 - halo) * getVVColor(a_vv.y, a_color);
+    #else
+        v_color = a_color;
+    #endif // VV_COLOR
+
+  #ifdef ID
+        v_id = a_id;
+  #endif // ID
+      }
+    ]]>
+  </snippet>
+
+  <snippet name="textFS">
+    <![CDATA[
+      precision lowp float;
+
+      uniform lowp sampler2D u_texture;
+
+      varying mediump vec4 v_color;
+      varying mediump float v_antialiasingWidth;
+      varying mediump float v_edgeDistanceOffset;
+      varying mediump vec2 v_tex;
+      varying lowp float v_transparency;
+
+  #ifdef ID
+      varying highp vec4 v_id;
+  #endif // ID
+
+      void main()
+      {
+        // read the distance from the SDF texture
+        lowp float dist = texture2D(u_texture, v_tex).a;
+
+        // the edge distance if a factor of the outline width
+        float glyphEdgeDistance = 0.75 - v_edgeDistanceOffset;
+
+        // use a smooth-step in order to calculate the geometry of the shape given by the distance field
+        lowp float alpha = smoothstep(glyphEdgeDistance - v_antialiasingWidth, glyphEdgeDistance + v_antialiasingWidth, dist) * v_transparency;
+
+        gl_FragColor = alpha * v_color;
+
+  #ifdef ID
+        if (gl_FragColor.a < 1.0 / 255.0) {
+          discard;
+        }
+        gl_FragColor = v_id;
+  #endif // ID
+      }
+    ]]>
+  </snippet>
+</snippets>

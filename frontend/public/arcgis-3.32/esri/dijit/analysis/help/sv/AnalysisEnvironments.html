@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Miljöinställningar för portalanalys</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>  Milj&ouml;inst&auml;llningar f&ouml;r analyser i Portal for ArcGIS och  ArcGIS Online. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Skriv över resultatlager</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Anger om befintliga lager ska skrivas &ouml;ver. Om det eventuellt finns ett befintligt lager med samma namn i inneh&aring;llet n&auml;r det h&auml;r alternativet &auml;r markerat skrivs det befintliga lagret &ouml;ver.
+            </p>
+            <p>
+                <ul>
+                    <li>Markerat &ndash; Om det redan finns ett lager med samma namn i ditt inneh&aring;ll kommer det att skrivas &ouml;ver. Utdata kommer att f&aring; samma koordinatsystem som indata.
+                    </li>
+                    <li>Avmarkerat &ndash; Om namnet som anges f&ouml;r resultatlagret redan finns, intr&auml;ffar ett fel och resultatlagret m&aring;ste f&aring; ett nytt namn innan verktyget kan k&ouml;ras. Det h&auml;r &auml;r standardinst&auml;llningen.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Stäng analyswidgeten efter att analysen körts</h2></div>
+        <hr/>
+        <div>
+            <p>Anger om analysdialogrutan ska beh&aring;llas &ouml;ppen och aktiverad medan verktyget k&ouml;rs. Den h&auml;r inst&auml;llningen g&ouml;r att du kan &auml;ndra analysparametrarna samtidigt som det f&ouml;reg&aring;ende analysjobbet forts&auml;tter att k&ouml;ras. Analysen &auml;r en process som best&aring;r av flera steg. Genom att h&aring;lla verktygsdialogrutan &ouml;ppen kan du &auml;ndra parametrarna och k&ouml;ra analysen igen.
+            </p>
+            <p>
+                <ul>
+                    <li>Markerat &ndash; Verktygsdialogrutan f&ouml;r analys st&auml;ngs och fokus &aring;terg&aring;r till inneh&aring;llsf&ouml;rteckningen. Det h&auml;r &auml;r standardinst&auml;llningen
+                    </li>
+                    <li>Avmarkerat &ndash; Verktygsdialogrutan f&ouml;r analys f&ouml;rblir &ouml;ppen och aktiverad.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Lagra resultaten av analysen som driftade geoobjektlager</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Anger om resultatet som lagret skapade av analysen ska vara en geoobjektsamling eller ett v&auml;rdbaserat geoobjektlager. 
+            </p>
+            <p>
+                <ul>
+                    <li>Markerat &ndash; Resultaten av din analys anv&auml;nds f&ouml;r att skapa ett driftat geoobjektlager och ett objekt skapas i ditt inneh&aring;ll. Det h&auml;r &auml;r standardinst&auml;llningen.
+                    </li>
+                    <li>Avmarkerat &ndash; Resultaten av din analys anv&auml;nds f&ouml;r att skapa en geoobjektsamling.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Utdatakoordinatsystem</h2></div>
+        <hr/>
+        <div>
+            <p>Anger koordinatsystem f&ouml;r resultatlagret f&ouml;r rasteranalys.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Samma som indata</b> &ndash; Analysresultatet anv&auml;nder samma koordinatsystem som indata. Det h&auml;r &auml;r standardinst&auml;llningen.
+                    </li>
+                    <li> <b>Som angivet</b> &ndash; Analysresultatet anv&auml;nder det koordinatsystem du v&auml;ljer. N&auml;r det h&auml;r alternativet har valts kan du klicka p&aring; jordglobsknappen och v&auml;lja alternativ i en lista med k&auml;nda koordinatsystem eller l&auml;gga till den geografiska referensen WKID i den angivna rutan.
+                    </li>
+                    <li> <b>Lager
+&lt;namn&gt;</b> &ndash; Analysresultatet anv&auml;nder samma koordinatsystem som ett befintligt lager du v&auml;ljer i webbkartan.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Bearbetande koordinatsystem</h2></div>
+        <hr/>
+        <div>
+            <p>Anger det koordinatsystem som analysen ska anv&auml;nda under k&ouml;rningen av GeoAnalytics-analysen.   
+            </p>
+            <p>F&ouml;r en del analyser i GeoAnalytics kr&auml;vs att bearbetningen k&ouml;rs i ett projicerat koordinatsystem.   Alla verktyg som har implementerat gruppering av data eller linj&auml;ra enheter kr&auml;ver ett projicerat koordinatsystem. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Samma som indata</b> &ndash; Analysen bearbetas i samma koordinatsystem som indata. Det h&auml;r &auml;r standardinst&auml;llningen.
+                    </li>
+                    <li> <b>Som angivet</b> &ndash; Analysen anv&auml;nder det koordinatsystem du v&auml;ljer. N&auml;r det h&auml;r alternativet har valts kan du klicka p&aring; jordglobsknappen och v&auml;lja alternativ i en lista med k&auml;nda projicerade koordinatsystem eller l&auml;gga till den geografiska referensen WKID i den angivna rutan.
+                    </li>
+                    <li> <b>Lager
+&lt;namn&gt;</b> &ndash; Analysen anv&auml;nder samma koordinatsystem som ett befintligt lager du v&auml;ljer i webbkartan.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Utbredning</h2></div>
+        <hr/>
+        <div>
+            <p>Anger den utbredning eller de gr&auml;nser som ska anv&auml;ndas n&auml;r analysen k&ouml;rs. Alla indatageoobjekt som ligger helt inom eller korsar den angivna utbredningen kommer att anv&auml;ndas i analysen.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Standard</b> &ndash; Den utbredning som anges av verktyget.
+                    </li>
+                    <li> <b>Som angivet</b> &ndash; Utbredningen definieras av de koordinater du anger.
+                    </li>
+                    <li> <b>Lager
+&lt;namn&gt;</b> &ndash; Utbredningen som anv&auml;nds f&ouml;r att bearbeta din analys &auml;r samma som den geografiska utbredningen i ett befintligt lager du v&auml;ljer i webbkartan. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Snappa raster</h2></div>
+        <hr/>
+        <div>
+            <p>Justerar utdatarasterlagrets utbredning s&aring; att den matchar celljusteringen f&ouml;r det angivna  <b>Snappa raster</b>-lagret i rasteranalysen.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Cellstorlek</h2></div>
+        <hr/>
+        <div>
+            <p>Anger cellstorlek eller uppl&ouml;sning som ska anv&auml;ndas f&ouml;r att skapa utdatarasterlagret i rasteranalysen. Standardutdatauppl&ouml;sningen avg&ouml;rs av den st&ouml;rsta cellstorleken f&ouml;r indatarasterlagret.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Minimum f&ouml;r indata</b> &ndash; Anv&auml;nd den minsta cellstorleken f&ouml;r alla indatalager.
+                    </li>
+                    <li> <b>Maximum f&ouml;r indata</b> &ndash; Anv&auml;nd den st&ouml;rsta cellstorleken f&ouml;r alla indatalager. Det h&auml;r &auml;r standardinst&auml;llningen.
+                    </li>
+                    <li> <b>Enligt vad som anges</b> &ndash; Ange ett numeriskt v&auml;rde f&ouml;r inst&auml;llning av cellstorleken. Om det h&auml;r alternativet &auml;r valt blir standardv&auml;rdet 1.
+                    </li>
+                    <li> <b>Lager &lt;namn&gt;</b> &ndash; Anger cellstorleken till det valda rasterlagret.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Maska</h2></div>
+        <hr/>
+        <div>
+            <p>Anger ett lager som ska anv&auml;ndas f&ouml;r att definiera din aktuella yta i rasteranalysen.   Det &auml;r endast de celler som hamnar inom analysmasken som anv&auml;nds i analys&aring;tg&auml;rden.
+            </p>
+            <ul>
+                <li>Masken kan vara antingen ett raster eller ett geoobjektlager.
+                </li>
+                <li>Om analysmasken &auml;r ett raster kommer alla celler som har ett v&auml;rde att anv&auml;ndas f&ouml;r att definiera masken. Celler i ett maskraster som har v&auml;rdet NoData anses ligga utanf&ouml;r masken och f&aring;r v&auml;rdet NoData i analysresultatlagret. 
+                </li>
+                <li>Om analysmasken &auml;r ett geoobjektlager omvandlas den internt till ett raster vid k&ouml;rningen. D&auml;rf&ouml;r b&ouml;r du se till att
+ <b>Cellstorlek</b> och <b>Snappa raster</b> st&auml;lls in p&aring; l&auml;mpligt s&auml;tt f&ouml;r analysen.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Datalager</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-resultat kan antingen lagras i ett  ArcGIS Data Store och visas som ett geoobjektlager i  Portal for ArcGIS eller en konfigurerad big data-fildelning. 
+            </p>
+            <p>N&auml;r du lagrar ett resultat i  ArcGIS Data Store, b&ouml;r i de flesta fall resultat lagras i det rumstemporala datalagret. Det h&auml;r &auml;r standardinst&auml;llningen. F&ouml;ljande &auml;r anledningar till varf&ouml;r du kanske vill spara resultat i ett relationellt datalager: 
+                <ul>
+                    <li>f&ouml;r att anv&auml;nda resultaten i samarbete portal till portal
+                    </li>
+                    <li>f&ouml;r att aktivera synkroniseringsfunktioner med dina resultat.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du b&ouml;r inte anv&auml;nda ett relationellt datalager om du f&ouml;rv&auml;ntar dig att dina GeoAnalytics-resultat kommer att &ouml;ka och vill anv&auml;nda det rumstemporala big data-lagrets funktioner till att hantera stora m&auml;ngder data. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Parallellbearbetningsfaktor</h2></div>
+        <hr/>
+        <div>
+            <p>Distribuerar analys &ouml;ver flera rasterbearbetningstj&auml;nstinstanser. 
+            </p>
+            <p>Verktyg som tar h&auml;nsyn till milj&ouml;n  <b>Parallellbearbetningsfaktor</b> ger dig m&ouml;jlighet att styra antalet rasterbearbetningstj&auml;nstinstanser som kan anv&auml;ndas f&ouml;r att bearbeta dina data.
+            </p>
+            <p>Om verktyget inte tar h&auml;nsyn till   <b>Processortyp</b>, eller om <b>Processortyp</b>-milj&ouml;n &auml;r inst&auml;lld p&aring; <b>CPU</b>, styr milj&ouml;n <b>Parallellbearbetningsfaktor</b> rasterbearbetningstj&auml;nstinstanser (CPU). Om <b>Processortyp</b> &auml;r inst&auml;lld p&aring; <b>GPU</b>, styr milj&ouml;n <b>Parallellbearbetningsfaktor</b> antalet rasterbearbetningsinstanser f&ouml;r GPU.
+            </p> 
+            <p>Genom att st&auml;lla in  <b>Parallellbearbetningsfaktor</b>, kan du beg&auml;ra det antal parallella arbetare som rasteranalysbildservern anv&auml;nder f&ouml;r att bearbeta en rasteranalys&aring;tg&auml;rd. Om det totala antalet parallella processer &ouml;verstiger det maximala antalet rasterbearbetningsinstanser (CPU eller GPU), l&auml;ggs de ytterligare parallella processerna i k&ouml;.
+            </p>
+            <p>Om  <b>Parallellbearbetningsfaktor</b> inte anges, vilket &auml;r standard, anv&auml;nder verktyget 80 procent av det maximala antalet rasterbearbetningstj&auml;nstinstanser. Antingen ett heltal eller en procentsats kan anges som parallellbearbetningsfaktor.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>Processortyp</h2></div>
+        <hr/>
+        <div>
+            <p>Med verktyg som tar h&auml;nsyn till  <b>Processortyp</b>-milj&ouml;n kan du v&auml;lja var och hur du vill bearbeta dina data. Du kan bearbeta dina data med serverdatorns CPU eller GPU.  Om <b>Processortyp</b>-milj&ouml;n &auml;r tom anv&auml;nder verktyget CPU:n f&ouml;r att bearbeta data. Det h&auml;r &auml;r standardinst&auml;llningen.
+            </p> 
+            <p>CPU-bearbetning kan parallelliseras &ouml;ver flera k&auml;rnor och instanser, vilket hanteras av  <b>Parallellbearbetningsfaktorn</b>.
+            </p>
+            <p>GPU:er &auml;r effektiva f&ouml;r grafik och bildbearbetning, d&auml;r deras h&ouml;gt parallella struktur g&ouml;r dem effektiva p&aring; att bearbeta stora block data p&aring; ett repetitivt s&auml;tt. Rasteranalysverktygen som tar h&auml;nsyn till denna milj&ouml; kan distribuera sitt jobb &ouml;ver GPU-instanser p&aring; flera rasteranalysservrar, vilket hanteras av  <b>Parallellbearbetningsfaktorn</b>.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b> &ndash; Data bearbetas av grafikprocessorn.
+                    </li>
+                    <li> <b>CPU</b> &ndash; Data bearbetas av datorns centralprocessor.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

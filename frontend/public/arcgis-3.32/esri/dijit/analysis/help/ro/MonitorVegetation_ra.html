@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Monitorizare vegetaţie</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Instrument de monitorizare vegetaţie pentru portal"></h2>
+        <hr/>
+    <p>Acest instrument efectuează o operaţie aritmetică a benzilor unui strat tematic raster cu benzi multiple pentru a afişa informaţiile privind acoperirea vegetaţiei &icirc;n zona de studiu.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Selectare date de intrare</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeţi stratul tematic raster cu benzi multiple. Asiguraţi-vă că rasterul de intrare are benzile corespunzătoare disponibile.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Selectare metodă de monitorizare vegetaţie</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeţi metoda pentru a crea stratul tematic de indexare a vegetaţiei. Indecşii diferiţi pentru vegetaţie pot contribui la evidenţierea anumitor obiecte spaţiale sau pot contribui reducerea zgomotului variat.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI este un index non-linear pentru vegetaţie destinat monitorizării globale a mediului prin imagini satelitare. Este similar cu NDVI, dar este mai puţin sensibil la efecte atmosferice. Este afectat de solul gol; prin urmare, nu se recomandă utilizarea &icirc;n zonele cu vegetaţie rară sau moderată.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+GVI a fost iniţial proiectat din imaginile Landsat MSS &icirc;nsă a fost modificat pentru utilizare cu imaginile Landsat TM. Este cunoscut şi sub numele de index de vegetaţie verde Landsat TM Tasseled Cap. Acest index de monitorizare poate fi, de asemenea, utilizat cu imagini ale căror benzi au aceleaşi caracteristici spectrale.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 este un index de vegetaţie care &icirc;ncearcă să minimizeze influenţele solului gol din metoda SAVI.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI este un index standardizat care vă permite să generaţi o imagine care afişează intensitatea verdelui sau biomasa relativă. Acest index profită de contrastul caracteristicilor celor două benzi dintr-un set de date raster multispectrale: absorbţiile pigmentului clorofilei din banda roşie şi reflectivitatea ridicată a materialelor plantelor din banda aproape infraroşie (NIR).
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI este similar cu un index de vegetaţie de diferenţă; totuşi, este sensibil la variaţiile atmosferice. Atunci c&acirc;nd utilizaţi această metodă pentru a compara imagini diferite, ar trebui utilizate doar imagini care au fost corectate atmosferic. Aceste informaţii pot fi oferite de furnizorul de date.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI este un index de vegetaţie care &icirc;ncearcă să minimizeze influenţele strălucirii solului utiliz&acirc;nd un factor de corecţie a strălucirii solului. Acesta este adesea utilizat &icirc;n regiuni aride &icirc;n care acoperirea vegetaţiei este redusă.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Procesul Formula lui Sultan foloseşte o imagine de 8 biţi cu şase benzi şi aplică un algoritm specific pentru a produce o imagine de 8 biţi cu trei benzi. Imaginea rezultată evidenţiază formarea de roci denumite ofiolite pe ţărmuri. Această formulă a fost concepută &icirc;n baza benzilor TM şi ETM ale scenei Landsat 5 sau 7.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+Indexul de vegetaţie ajustat cu solul transformat (Transformed-SAVI) este un index de vegetaţie care &icirc;ncearcă să minimizeze influenţele strălucirii solului asum&acirc;nd că linia solului are o interceptare şi o &icirc;nclinaţie arbitrară.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Specificarea indecşilor benzilor NIR şi Roşu</h2></div>
+        <hr/>
+        <div>
+            <p>Specificarea indecşilor de bandă pentru benzile NIR şi roşii.
+            </p>
+            <p>Fiecare senzor de satelit şi fiecare cameră aeriană capturează informaţii care sunt &icirc;mpărţite &icirc;n indecşi de bandă. Fiecare index de bandă conţine informaţiile pentru o parte specifică a spectrului electromagnetic. Această monitorizare a vegetaţiei necesită specificarea indexului de bandă care a capturat lungimile de undă NIR şi Roşu.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Panta liniei solului</h2></div>
+        <hr/>
+        <div>
+            <p>Panta liniei solului. Panta este relaţia liniară aproximativă dintre benzile NIR şi roşii pe un grafic de dispersie.
+            </p>
+            <p>Acest parametru este valid doar pentru metoda Indice de vegetaţie ajustat cu solul transformat.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Interceptare</h2></div>
+        <hr/>
+        <div>
+            <p>Valoarea pentru NIR atunci c&acirc;nd valoarea de reflexie pentru banda roşie (Roşu) este 0 pentru liniile specifice ale solului.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , c&acirc;nd roşu este 0.
+            </p> 
+            <p>Acest parametru este valid doar pentru metoda Indice de vegetaţie ajustat cu solul transformat.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Valoare acoperirii cu vegetaţie verde</h2></div>
+        <hr/>
+        <div>
+            <p>Specifică cantitatea acoperirii cu vegetaţie verde, care este necesară metodei SAVI.
+            </p>
+            <p>Valorile valabile sunt următoarele: 
+
+                <ul>
+                    <li>1 = Zone fără acoperire cu vegetaţie verde
+                        
+ 
+                    </li>
+                    <li>0,5 = zone cu acoperire moderată cu vegetaţie verde
+                        
+ 
+                    </li>
+                    <li>0 = zone cu acoperire ridicată cu vegetaţie verde
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Factor de ajustare</h2></div>
+        <hr/>
+        <div>
+            <p>Specifică factorul de ajustare pentru a ajuta la reducerea la minimum a efectului de sol, care este necesar metodei Indice de vegetaţie ajustat cu solul transformat. Valoarea implicită este 0.08.
+            </p>
+            <p>O valoare mai mică &icirc;nseamnă că ignoraţi efectul solului. O valoare ridicată &icirc;nseamnă că solul va afecta rezultatul.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic ce va fi creat &icirc;n  <b>Resursele mele</b> şi va fi adăugat pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic rezultat există deja, vi se va solicita să furnizaţi un alt nume.
+            </p>
+            <p>Puteți specifica numele folderului &icirc;n  <b>Resursele mele</b> unde se va salva rezultatul folosind caseta drop-down <b>Salvați rezultatele &icirc;n</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

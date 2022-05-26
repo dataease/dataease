@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/id/FindPointClusters",{clustersLabel:"Untuk layer ${inputLayerName} temukan gugusnya.",chooseLayerLabel:"Pilih layer tempat mencari gugus",minClusterPtsLabel:"Jumlah titik minimum untuk dapat dianggap gugus",minClustersPtsGAXLbl:"Jumlah minimal poin untuk dapat menyemai klaster",limitSearchLabel:"Batasi rentang pencarian hingga (opsional)",limitSearchReqLabel:"Batasi rentang pencarian menjadi",outputLayerName:"Temukan Gugus untuk ${inputLayerName}",itemDescription:"Feature layer yang dihasilkan dari menjalankan solusi Temukan Gugus Titik untuk ${inputLayerName}.",
+itemTags:"Hasil Analisis, Temukan Gugus Titik, ${inputLayerName}",itemSnippet:"Feature layer dihasilkan dari Temukan Gugus Titik",chooseClusteringMethod:"Pilih metode pembuatan klaster yang akan digunakan",dbscanLabel:"Jarak Ditentukan (DBSCAN)",hdbscanLabel:"Penyesuaian diri (HDBSCAN)",useTimeToFindCLusters:"Gunakan waktu untuk menemukan klaster",limitSearchDurLabel:"Batasi durasi pencarian menjadi"});

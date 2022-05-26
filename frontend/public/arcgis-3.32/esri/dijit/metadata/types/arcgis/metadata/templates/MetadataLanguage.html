@@ -1,0 +1,17 @@
+<div data-dojo-attach-point="containerNode">
+
+  <!-- language and country -->
+  <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+    data-dojo-props="target:'mdLang',minOccurs:0,label:'${i18nArcGIS.metadata.mdLang}'">
+    <div data-dojo-type="esri/dijit/metadata/types/arcgis/common/LanguageCode"></div>
+    <div data-dojo-type="esri/dijit/metadata/types/arcgis/common/CountryCode"
+      data-dojo-props="noIndent:true"></div>
+  </div>
+  
+  <!-- character set -->
+  <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+    data-dojo-props="target:'mdChar',minOccurs:0,label:'${i18nArcGIS.codelist.MD_CharacterSetCode}'">
+    <div data-dojo-type="esri/dijit/metadata/types/arcgis/common/CharSetCd"></div>
+  </div>
+  
+</div>

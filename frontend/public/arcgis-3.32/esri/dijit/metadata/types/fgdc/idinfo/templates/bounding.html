@@ -1,0 +1,45 @@
+<div data-dojo-attach-point="containerNode">
+
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'bounding',label:'${i18nFgdc.idinfo.spdom.bounding.caption}'">
+    
+    <div class="gxeGeoExtentSection">  
+      
+      <div class="gxeGeoExtentCoordinates">        
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'westbc',value:-180,
+            label:'${i18nFgdc.idinfo.spdom.bounding.westbc}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputNumber"
+            data-dojo-props="hint:'${i18nBase.hints.longitude}'">
+            <div data-dojo-type="esri/dijit/metadata/form/fgdc/GeoExtentTool"
+              data-dojo-props="label:'${i18nBase.geoExtent.button}'"></div>
+          </div>
+        </div>
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'eastbc',value:180,
+            label:'${i18nFgdc.idinfo.spdom.bounding.eastbc}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputNumber"
+            data-dojo-props="hint:'${i18nBase.hints.longitude}'"></div>
+        </div>
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'northbc',value:90,
+            label:'${i18nFgdc.idinfo.spdom.bounding.northbc}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputNumber"
+            data-dojo-props="hint:'${i18nBase.hints.latitude}'"></div>
+        </div>
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'southbc',value:-90,
+            label:'${i18nFgdc.idinfo.spdom.bounding.southbc}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputNumber"
+            data-dojo-props="hint:'${i18nBase.hints.latitude}'"></div>
+        </div>
+      </div>
+      
+      <div class="gxeGeoExtentViewSection gxeViewOnly"></div>
+      <div class="gxeGeoExtentBottom"></div>
+      
+    </div>  
+        
+  </div>
+    
+</div>

@@ -1,0 +1,12 @@
+/*
+	Copyright (c) 2004-2016, The JS Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+//>>built
+define("dojo/request/script","module ./watch ./util ../_base/kernel ../_base/array ../_base/lang ../on ../dom ../dom-construct ../has ../_base/window".split(" "),function(p,q,h,r,t,u,n,v,w,l,x){function y(a,b){a.canDelete&&f._remove(a.id,b.options.frameDoc,!0)}function z(a){g&&g.length&&(t.forEach(g,function(a){f._remove(a.id,a.frameDoc);a.frameDoc=null}),g=[]);return a.options.jsonp?!a.data:!0}function A(a){return!!this.scriptLoaded}function B(a){return(a=a.options.checkString)&&eval("typeof("+a+
+') !\x3d\x3d "undefined"')}function C(a,b){if(this.canDelete){var d=this.response.options;g.push({id:this.id,frameDoc:d.ioArgs?d.ioArgs.frameDoc:d.frameDoc});d.ioArgs&&(d.ioArgs.frameDoc=null);d.frameDoc=null}b?this.reject(b):this.resolve(a)}function f(a,b,d){var e=h.parseArgs(a,h.deepCopy({},b));a=e.url;b=e.options;var c=h.deferred(e,y,z,b.jsonp?null:b.checkString?B:A,C);u.mixin(c,{id:m+D++,canDelete:!1});b.jsonp&&((new RegExp("[?\x26]"+b.jsonp+"\x3d")).test(a)||(a+=(~a.indexOf("?")?"\x26":"?")+
+b.jsonp+"\x3d"+(b.frameDoc?"parent.":"")+m+"_callbacks."+c.id),c.canDelete=!0,k[c.id]=function(a){e.data=a;c.handleResponse(e)});h.notify&&h.notify.emit("send",e,c.promise.cancel);if(!b.canAttach||b.canAttach(c)){var g=f._attach(c.id,a,b.frameDoc,function(a){if(!(a instanceof Error)){var d=Error("Error loading "+(a.target?a.target.src:"script"));d.source=a;a=d}c.reject(a);f._remove(c.id,b.frameDoc,!0)});if(!b.jsonp&&!b.checkString)var l=n(g,E,function(a){if("load"===a.type||F.test(g.readyState))l.remove(),
+c.scriptLoaded=a})}q(c);return d?c:c.promise}l.add("script-readystatechange",function(a,b){return"undefined"!==typeof b.createElement("script").onreadystatechange&&("undefined"===typeof a.opera||"[object Opera]"!==a.opera.toString())});var m=p.id.replace(/[\/\.\-]/g,"_"),D=0,E=l("script-readystatechange")?"readystatechange":"load",F=/complete|loaded/,k=r.global[m+"_callbacks"]={},g=[];f.get=f;f._attach=function(a,b,d,e){d=d||x.doc;var c=d.createElement("script");if(e)n.once(c,"error",e);c.type="text/javascript";
+try{c.src=b}catch(G){e&&e(c)}c.id=a;c.async=!0;c.charset="utf-8";return d.getElementsByTagName("head")[0].appendChild(c)};f._remove=function(a,b,d){w.destroy(v.byId(a,b));k[a]&&(d?k[a]=function(){delete k[a]}:delete k[a])};f._callbacksProperty=m+"_callbacks";return f});

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Lisa andmed</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Lisa andmete t&ouml;&ouml;voo skeem"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist lisab andmeid olemasolevale &uuml;lem-objektikihile. Funktsioon Lisa andmed muudab algset sisendkihti ja ei genereeri uut v&auml;ljundkihti. Saate sobitada v&auml;ljasid v&auml;ljanime ja v&auml;ljat&uuml;&uuml;bi p&otilde;hjal v&otilde;i kasutada keerulisemaid sobitusmeetodeid.
+    </p>
+    <p>Allpool on esitatud n&auml;ited: 
+        <ul>
+            <li>T&ouml;&ouml;tate suures kindlustusettev&otilde;ttes, kes genereerib iga kuu m&uuml;&uuml;gikirjed. Teie aastaaruande jaoks tuleb anal&uuml;&uuml;si tegemiseks panna kokku &uuml;he kuu andmed. M&uuml;&uuml;gianal&uuml;&uuml;si k&auml;ivitamiseks saate funktsiooni Lisa andmed rakendada 2018. aasta aruande v&auml;rskendamiseks, kui iga kuu arvud muutuvad k&auml;ttesaadavaks. Kuna teate, et teie organisatsioon rakendab iga kuu &uuml;hesugust skeemi, saate kasutada v&auml;lja kaardistamise vaikemeetodit, et lisada efektiivselt funktsioone v&auml;ljanime ja -t&uuml;&uuml;bi p&otilde;hjal.
+            </li>
+            <li>K&uuml;mme keskkonnar&uuml;hma teevad sadu tuhandeid kliimam&otilde;&otilde;tmisi oma jurisdiktsiooni piires. Need organisatsioonid soovivad kokku panna oma andmed selleks, et paremini m&otilde;ista regionaalseid ja globaalseid mustreid. Iga organisatsioon m&auml;&auml;rab oma andmekomplekti skeemi. K&otilde;ik nad m&auml;&auml;ravad erinevad v&auml;ljanimed temperatuuri ja tuulekiiruse andmete kohta.  V&otilde;ttes arvesse andmekogumite v&auml;ljanimede erinevusi,  msaab v&auml;lja kaardistamist kasutada, et m&auml;&auml;rata, kuidas lisada vastavatele v&auml;ljadele temperatuuri ja tuulekiiruse m&otilde;&otilde;teandmeid.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valige kiht, millele lisada</h2></div>
+        <hr/>
+        <div>
+            <p>Tabeli, punkti, joone ja hulknurga objektid, millele andmed lisatakse.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Kihti, millele lisatakse, muudetakse t&ouml;&ouml;riista rakendamise ajal. Enne j&auml;tkamist veenduge, et soovite seda kihti muuta.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikiht</b>, et otsida oma sisust &uuml;lem-objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Valige lisatav kiht</h2></div>
+        <hr/>
+        <div>
+            <p>Tabeli, punkti, joone ja hulknurga objektid, mis lisatakse sisendkihile.
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Lisage kõik objektid või määratlege alamhulk (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab lisatavad objektid. See parameeter on valikuline.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Valige, kuidas välju lisada (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab, kuidas lisatava kihi v&auml;ljad lisatakse sisendkihile. Vaikimisi lisatakse k&otilde;ik kokkusobivad sisendv&auml;ljad ja lisatavad v&auml;ljad. V&auml;ljad on kokkusobivad, kui neil on sama v&auml;ljanimi ja sama v&auml;ljat&uuml;&uuml;p. Valikuliselt saate valida v&auml;ljade sobitamise viisi ja arvutada v&auml;ljav&auml;&auml;rtuste levitamiseks Arcade&rsquo;i avaldised.
+            </p>
+            <p>N&auml;iteks on teil sisendkiht v&auml;ljadega  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i> ja lisatav kiht v&auml;ljadega <i>field_string</i>, <i>field_number</i> ja <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>Vaikimisi sobitab t&ouml;&ouml;riist v&auml;lja  <i>field_number</i> sisendkihis v&auml;ljaga <i>field_number</i> lisatavas kihis ja stringi <i>field_string</i>  sisendkihis stringiga <i>field_string</i> lisatavas kihis.
+                    </li>
+                    <li>Vaikimisi t&auml;idetakse sisendkihi v&auml;ljad  <i>date_field</i> ja <i>unused_field</i> v&auml;&auml;rtusega <i>null</i>, sest neil ei ole lisatavas kihis kokkusobivat v&auml;lja.
+                    </li>
+                    <li>Valikuliselt saate lisada v&auml;&auml;rtusi v&auml;ljadele, mida ei sobitatud vaikimisi automaatselt. Nii n&auml;iteks v&otilde;ib v&auml;lja  <i>date_field</i> sisendkihis sobitada kokku lisatava v&auml;ljaga <i>MY_DATE_FIELD</i>. Kasutage selleks v&auml;lja <i>date_field</i> k&otilde;rval esimeses veerus olevat rippmen&uuml;&uuml;d ja valige rippmen&uuml;&uuml; teisest veerust v&auml;li <i>MY_DATE_FIELD</i>.
+                    </li>
+                </ul>
+                 Teises n&auml;ites on sisendkihil numbrilised v&auml;ljad <i>value_1</i>, <i>value_2</i>, <i>value_3</i> ja <i>my_Average</i> ning lisataval kihil on numbrilised v&auml;ljad <i>value_1</i>, <i>value_2</i> ja <i>value_3</i>.
+                <ul>
+                    <li>Vaikimisi sobitatakse kokku ja lisatakse v&auml;&auml;rtused  <i>value_1</i>, <i>value_2</i> ja <i>value_3</i>.
+                    </li>
+                    <li>Lisaks vaikimisi toimingule v&otilde;ib v&auml;&auml;rtused arvutada v&auml;ljale  <i>my_Average</i>. Selleks tuleb kasutada mitut v&auml;lja ja matemaatilisi operatsioone, valides rippmen&uuml;&uuml; suvandi <b>Avaldis</b> veerus, mis asub v&auml;lja <i>my_Average</i> k&otilde;rval ja moodustades kohandatud Arcade&rsquo;i avaldise, n&auml;iteks <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

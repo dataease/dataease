@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>כיסוי שכבות</h2><p/>
+        <h2><img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" alt="כיסוי שכבות"></h2>
+        <hr/>
+    <p>כיסוי משלב שתי שכבות או יותר ליצירת שכבה יחידה אחת. ניתן לחשוב על כיסוי כהתבוננות בערימה של מפות ויצירת מפה אחת שמכילה את כל המידע שנמצא בערימה.    כיסוי זה הרבה יותר מאשר מיזוג של עבודת קו; כל המאפיינים של הישויות שנוטלות חלק בכיסוי מועברות למוצר הסופי. כיסוי משמש לצורך מענה על אחת מהשאלות הבסיסיות ביותר של גאוגרפיה, &quot;מה נמצא מעל מה?&quot; לדוגמה:
+        <ul>
+            <li>אילו חלקות נמצאות בתוך מישור ההצפה 100-שנה? (&quot;בתוך&quot; זו פשוט דרך אחרת לומר &quot;מעל&quot;.)
+                  
+            </li>
+            <li>אילו כבישים נמצאים בתוך אילו ארצות?
+            </li>
+            <li>איזה שימוש בקרקע נמצא מעל איזה סוג קרקע?
+                 
+            </li>
+            <li>אילו בארות נמצאות בתוך בסיסים צבאיים נטושים?
+            </li>
+        </ul>
+        
+    </p>
+    <p>אם האפשרות  <b>השתמש בתיחום המפה הנוכחי</b> מסומנת, רק הישויות בשכבת הקלט והכיסוי שנראות בתוך תיחום המפה הנוכחי יכוסו.  אם האפשרות לא מסומנת, כל הישויות הן בשכבת הקלט והן בשכבת הכיסוי יכוסו, גם אם הן מחוץ לתיחום המפה הנוכחי.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>בחר שכבת קלט</h2></div>
+        <hr/>
+        <div>
+            <p>שכבת הנקודה, הקו או האזור שיכוסו.
+            </p>
+            <p>בנוסף לבחירת שכבה מהמפה שלך, באפשרותך לבחור באפשרות  <b>בחר שכבת ניתוח</b> בתחתית הרשימה הנפתחת. אפשרות זו פותחת גלריה שבה באפשרותך לעיין ולבחור ערכות נתונים ממקורות שונים לצורך שימוש בניתוח. 
+            </p>
+        </div>
+    </div>
+    <div id="OverlayLayer">
+        <div><h2>בחר שכבת כיסוי</h2></div>
+        <hr/>
+        <div>
+            <p>השכבה לכיסוי בשכבת הקלט.  
+            </p>
+            <p>בנוסף לבחירת שכבה מהמפה שלך, באפשרותך לבחור באפשרות  <b>בחר שכבת ניתוח</b> בתחתית הרשימה הנפתחת. אפשרות זו פותחת גלריה שבה באפשרותך לעיין ולבחור ערכות נתונים ממקורות שונים לצורך שימוש בניתוח. 
+            </p> 
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>בחר צורת כיסוי</h2></div>
+        <hr/>
+        <div>
+            <p>צורת הכיסוי מגדירה כיצד שכבת הקלט ושכבת הכיסוי ישולבו.  
+
+                <ul>
+                    <li> <b>חתוך</b> - התוצאה תכיל רק את הישויות או חלקי הישויות בשכבת הכיסוי אשר חופפים עם הישויות בשכבת הקלט. בעת חיתוך ישויות קו או אזור, באפשרותך לציין את סוג המאפיינים הרצוי כפלט.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>נקודות עם נקודות
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="קלט נקודות ונקודות">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="נקודות ונקודות עם פלט נקודות">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>נקודות עם קווים
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-F1E6C6C8-4F51-4063-984D-0FC8D08EB2D2-web.png" alt="קלט נקודות וקווים">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-02CFAFDC-1B3C-4C4B-A58C-7B0B78BA0B56-web.png" alt="נקודות וקווים עם פלט נקודות">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>נקודות עם אזורים
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-5EE90BD6-CC3D-4E2F-A5D0-DC57298E8416-web.png" alt="קלט נקודות ואזורים">
+                                </p>
+                            </td>
+                            <td> <img src="../images/GUID-5CCA360F-D4C9-43AB-8FB2-E6E62DE93BD4-web.png" alt="נקודות ואזורים עם קלט נקודות">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>קווים עם קווים 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="קווים וקלט קווים">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-DDCCB226-6490-4914-B87C-299125466256-web.png" alt="קווים וקווים עם קלט נקודות">
+                                </p>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="קווים וקווים עם פלט קווים ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>קווים עם אזורים
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-E38EB7D6-9D35-4E0D-937A-9FEC4144AF2E-web.png" alt="קווים וקלט אזורים">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-639F492C-BEE7-4A5F-AEBC-325B74FEC766-web.png" alt="קווים ואזורים עם פלט נקודות">
+                                </p>
+                                <p> <img src="../images/GUID-58DF5CF6-0A56-4717-AD9C-C3BEC8EA6906-web.png" alt="קווים ואזורים עם פלט קווים">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>אזורים עם אזורים
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="אזורים וקלט אזורים">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-3F71AD46-A6A2-436D-8BBA-13E014BB94D0-web.png" alt="אזורים ואזורים עם פלט נקודות">
+                                </p>
+                                <p> <img src="../images/GUID-6AF62F09-6D32-4212-97C6-844580E34A22-web.png" alt="אזורים ואזורים עם פלט קווים">
+                                </p>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="אזורים ואזורים עם פלט אזורים">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>איחוד</b> - התוצאה תכיל ישויות הן משכבת הקלט והן משכבת הכיסוי. האפשרות 'איחוד' זמינה רק אם גם שכבת הקלט וגם שכבת הכיסוי מכילות ישויות אזור.
+                    </li>
+                    <li> <b>מחק</b> - התוצאה תכיל ישויות או חלקי ישויות בשכבת הכיסוי שלא חופפים עם האזורים בשכבת הקלט.  שכבת הכיסוי יכולה להכיל ישויות אזור, קו או נקודה.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>אם האפשרות  <b>השתמש בתיחום המפה הנוכחי</b> מסומנת, רק הישויות בשכבת הקלט והכיסוי שנראות בתוך תיחום המפה הנוכחי יכוסו. אם האפשרות לא מסומנת, כל הישויות הן בשכבת הקלט והן בשכבת הכיסוי יכוסו, גם אם הן מחוץ לתיחום המפה הנוכחי.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>שם שכבת התוצאה</h2></div>
+        <hr/>
+        <div>
+            <p> זהו השם של השכבה שתיווצר ב <b>התוכן שלי</b> ותתווסף למפה. יהיה לא אותו סוג ישות (אזורים, קווים או נקודות) כמו לשכבת הכיסוי.  שם ברירת המחדל מבוסס על צורת הכיסוי ושם שכבת הקלט. אם השכבה כבר קיימת, תתבקש לספק שם אחר.
+            </p>
+            <p>בעזרת התיבה הנפתחת  <b>שמור תוצאה ב</b>, באפשרותך לציין את שם התיקייה ב <b>תוכן שלי</b> שבה התוצאה תישמר.
+            </p> 
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Trekk ut data</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Ekstraher data"></h2>
+        <hr/>
+    <p>Med dette verkt&oslash;yet kan du velge og laste ned data for et bestemt interesseomr&aring;de. Lagene du velger, legges til i en ZIP-, CSV- eller KMZ-fil.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Lag som skal trekkes ut</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er lagene i innholdsfortegnelsen som du kan trekke ut geoobjekter fra. Lagene det er merket av for, trekkes ut og inkluderes i en resulterende ZIP-fil eller CSV-fil.
+            </p>
+            <p>For at et lag skal vises i listen over lag som skal trekkes ut, m&aring; du enten eie dataene eller dataenes eier m&aring; aktivere eksport av dataene. Slik aktiverer du eksport av data du eier: 
+                <ul>
+                    <li>&Aring;pne elementbeskrivelsen for dataene.
+                    </li>
+                    <li>Klikk p&aring;  <b>Innstillinger</b>-fanen.
+                    </li>
+                    <li>Bla ned til  <b>Eksporter data</b>-delen.
+                    </li>
+                    <li>Merk av for  <b>Tillat at andre eksporterer til forskjellige formater</b>.  Klikk p&aring; <b>Lagre</b> n&aring;r du er ferdig.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Hvis analyselaget inneholder vedlegg, m&aring; du v&aelig;re oppmerksom p&aring; at vedleggene bare ekstraheres hvis utdataformatet er i en filgeodatabase og det ikke er merket av for  <b>Beskj&aelig;r geoobjekter</b>.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Studieområde</h2></div>
+        <hr/>
+        <div>
+            <p>Omr&aring;det som definerer hvilke geoobjekter som skal inkluderes i ZIP-filen eller CSV-filen. Du kan velge blant f&oslash;lgende:
+                <ul>
+                    <li>Gjeldende synlige kartutstrekning ( <b>Samme som skjerm</b>).
+                    </li>
+                    <li>Ett av lagene i innholdsfortegnelsen. Hvis det valgte laget er punkt- eller linjebaserte geoobjekter, blir lagets utstrekning brukt som studieomr&aring;de.
+                    </li>
+                    <li>Tegn et omr&aring;de for &aring; definere studieomr&aring;det.
+                    </li>
+                </ul>
+                 Alle geoobjekter som er helt innenfor kartutstrekningen, trekkes ut. For geoobjekter som krysser eller avskj&aelig;rer grensen for kartutstrekningen, men ikke er helt innenfor utstrekningen, har du to alternativer:
+                <ul>
+                    <li> <b>Velg geoobjekter</b> &ndash; Hele geoobjekter som krysser grenselinjen for studieomr&aring;det, trekkes ut.
+                    </li>
+                    <li> <b>Beskj&aelig;r geoobjekter</b> &ndash; Kun de delene av geoobjektene som er innenfor studieomr&aring;det, trekkes ut.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Utdataformat</h2></div>
+        <hr/>
+        <div>
+            <p>Formatet p&aring; dataene som trekkes ut. N&aring;r du eksporterer linjer eller polygoner til CSV-filer, er det bare ikke-geografiske attributter som trekkes ut. N&aring;r du eksporterer punktgeoobjekter, trekkes b&aring;de romlige og ikke-romlige attributter ut.  
+            </p>
+            <p>Dataene som trekkes ut, bruker Web Mercator 1984-projeksjon.  For CSV-filer legges feltene  <i>Lat</i> og <i>Long</i> ved dataene med koordinater i Web Mercator 1984.
+            </p> 
+            <p>F&oslash;lgende utdataformater st&oslash;ttes:
+                <ul>
+                    <li>Kommadelt fil (CSV) &ndash;  <code>.csv</code> eller <code>.zip</code>
+                    </li>
+                    <li>Filgeodatabase &ndash;  <code>.zip</code>
+                    </li>
+                    <li>KML-fil (Keyhole Markup Language) &ndash;  <code>.kmz</code> eller <code>.zip</code>
+                    </li>
+                    <li>Shapefile &ndash;  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Navn på resultatfil</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; elementet som legges til i  <b>Mitt innhold</b>.  Elementnavnet baseres p&aring; valgt <b>Utdataformat</b>. Hvis elementet allerede finnes, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Bruk rullegardinlisten  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

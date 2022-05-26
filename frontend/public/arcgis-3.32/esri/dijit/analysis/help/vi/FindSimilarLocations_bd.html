@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tìm các Vị trí Tương tự</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="T&igrave;m c&aacute;c Vị tr&iacute; Tương tự"></h2>
+        <hr/>
+    <p>Dựa tr&ecirc;n ti&ecirc;u ch&iacute; bạn chỉ định, c&ocirc;ng cụ T&igrave;m c&aacute;c Vị tr&iacute; Tương tự sẽ đo lường c&aacute;c vị tr&iacute; tương đương trong lớp t&igrave;m kiếm ứng vi&ecirc;n với một hoặc nhiều vị tr&iacute; tham chiếu. C&ocirc;ng cụ n&agrave;y c&oacute; thể trả lời c&aacute;c c&acirc;u hỏi như 
+        <ul>
+            <li>Cửa h&agrave;ng n&agrave;o của bạn giống nhất với những người quản l&yacute; h&agrave;ng đầu li&ecirc;n quan đến th&ocirc;ng tin kh&aacute;ch h&agrave;ng?
+            </li>
+            <li>Căn cứ v&agrave;o đặc điểm của c&aacute;c ng&ocirc;i l&agrave;ng chịu ảnh hưởng nặng nhất từ dịch bệnh, những ng&ocirc;i l&agrave;ng n&agrave;o kh&aacute;c cũng c&oacute; nguy cơ cao?
+            </li>
+        </ul>
+        Để trả lời c&aacute;c c&acirc;u hỏi như thế n&agrave;y, bạn cần cung cấp c&aacute;c vị tr&iacute; tham chiếu, c&aacute;c vị tr&iacute; t&igrave;m kiếm ứng vi&ecirc;n, v&agrave; c&aacute;c trường đại diện cho c&aacute;c ti&ecirc;u ch&iacute; m&agrave; bạn muốn kết hợp. Lớp đầu v&agrave;o đầu ti&ecirc;n phải bao gồm c&aacute;c vị tr&iacute; tham chiếu hoặc vị tr&iacute; ti&ecirc;u chuẩn. V&iacute; dụ, đ&acirc;y c&oacute; thể l&agrave; một lớp chứa c&aacute;c cửa h&agrave;ng hoạt động h&agrave;ng đầu hoặc ng&ocirc;i l&agrave;ng chịu ảnh hưởng nặng nhất của dịch bệnh. Sau đ&oacute; bạn sẽ chỉ định lớp chứa c&aacute;c vị tr&iacute; t&igrave;m kiếm ứng vi&ecirc;n. Đ&acirc;y c&oacute; thể l&agrave; tất cả cửa h&agrave;ng hoặc tất cả c&aacute;c ng&ocirc;i l&agrave;ng kh&aacute;c. Cuối c&ugrave;ng, bạn x&aacute;c định một hoặc nhiều trường d&ugrave;ng để đo lường t&iacute;nh tương tự. C&ocirc;ng cụ T&igrave;m c&aacute;c Vị tr&iacute; Tương tự sau đ&oacute; sẽ xếp hạng tất cả c&aacute;c vị tr&iacute; t&igrave;m kiếm ứng vi&ecirc;n theo mức độ khớp nhất với vị tr&iacute; tham chiếu tr&ecirc;n tất cả c&aacute;c trường m&agrave; bạn đ&atilde; chọn.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Chọn lớp có chứa các vị trí tham chiếu</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp c&oacute; chứa vị tr&iacute; tham chiếu để tr&ugrave;ng khớp với. 
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp dữ liệu từ bản đồ, bạn c&oacute; thể chọn mục  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới danh s&aacute;ch thả xuống để t&igrave;m đến nội dung của m&igrave;nh cho bộ dữ liệu chia sẻ tệp dữ liệu lớn hoặc lớp đối tượng.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Bạn có thể sử dụng mọi vị trí hoặc lựa chọn</h2></div>
+        <hr/>
+        <div>
+            <p>Nếu cần thiết, sử dụng c&aacute;c n&uacute;t lựa chọn để x&aacute;c định c&aacute;c vị tr&iacute; tham chiếu. Lựa chọn n&agrave;y chỉ c&oacute; nếu c&oacute; thể vẽ đối tượng tr&ecirc;n bản đồ (kh&ocirc;ng c&oacute; để chia sẻ tập tin dữ liệu lớn) V&iacute; dụ như nếu lớp đầu v&agrave;o c&oacute; chứa tất cả c&aacute;c vị tr&iacute; - c&aacute;c vị tr&iacute; tham chiếu cũng như vị tr&iacute; t&igrave;m kiếm ứng vi&ecirc;n - bạn sẽ cần phải sử dụng một trong những c&ocirc;ng cụ lựa chọn để x&aacute;c định c&aacute;c vị tr&iacute; tham chiếu. Nếu bạn tạo ra hai lớp ri&ecirc;ng biệt, một với c&aacute;c vị tr&iacute; tham chiếu v&agrave; lớp kia với tất cả c&aacute;c vị tr&iacute; t&igrave;m kiếm ứng vi&ecirc;n, bạn kh&ocirc;ng cần phải đưa ra lựa chọn.
+            </p>
+            <p>Nếu c&oacute; nhiều hơn một vị tr&iacute; tham chiếu, một vị tr&iacute; duy nhất được tạo ra bằng c&aacute;ch t&iacute;nh trung b&igrave;nh c&aacute;c gi&aacute; trị cho mỗi trường được sử dụng để ph&acirc;n t&iacute;ch t&iacute;nh tương tự.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Tìm kiếm các vị trí tương tự tại</h2></div>
+        <hr/>
+        <div>
+            <p>T&iacute;nh năng t&igrave;m kiếm ứng vi&ecirc;n trong lớp n&agrave;y sẽ được xếp hạng từ giống nhiều nhất đến giống &iacute;t nhất. 
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp dữ liệu từ bản đồ, bạn c&oacute; thể chọn mục  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới danh s&aacute;ch thả xuống để t&igrave;m đến nội dung của m&igrave;nh cho bộ dữ liệu chia sẻ tệp dữ liệu lớn hoặc lớp đối tượng.
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Đặc tính tương tự trên</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c trường bạn chọn sẽ l&agrave; ti&ecirc;u ch&iacute; được d&ugrave;ng để đ&aacute;nh gi&aacute; t&iacute;nh tương tự. Nếu bạn chọn một trường d&acirc;n số v&agrave; thu nhập, v&iacute; dụ, c&aacute;c vị tr&iacute; t&igrave;m kiếm ứng cử vi&ecirc;n với mức thấp nhất (tốt nhất), bảng xếp hạng sẽ l&agrave; những gi&aacute; trị d&acirc;n số v&agrave; một trường thu nhập tương tự đến c&aacute;c vị tr&iacute; tham chiếu của bạn.
+            </p>
+        </div>
+    </div>
+    <div id="matchMethod">
+        <div><h2>Xác định việc sử dụng giống nhiều nhất và ít nhất</h2></div>
+        <hr/>
+        <div>
+            <p>Phương ph&aacute;p m&agrave; bạn chọn sẽ x&aacute;c định mức độ tr&ugrave;ng khớp 
+                <ul>
+                    <li>Phương ph&aacute;p  <b>gi&aacute; trị của trường</b> sử dụng c&aacute;c kh&aacute;c biệt vu&ocirc;ng g&oacute;c của gi&aacute; trị được ti&ecirc;u chuẩn h&oacute;a. Điều n&agrave;y l&agrave; mặc định.
+                    </li>
+                    <li>Phương ph&aacute;p  <b>th&ocirc;ng tin trường</b> sử dụng phương thức to&aacute;n học khoảng c&aacute;ch cosine để so s&aacute;nh th&ocirc;ng tin của c&aacute;c gi&aacute; trị được ti&ecirc;u chuẩn h&oacute;a. Việc sử dụng c&aacute;c th&ocirc;ng tin thuộc t&iacute;nh đ&ograve;i hỏi phải sử dụng &iacute;t nhất hai trường ph&acirc;n t&iacute;ch.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Hiển thị cho tôi</h2></div>
+        <hr/>
+        <div>
+            <p>Bạn c&oacute; thể xem tất cả c&aacute;c vị tr&iacute; t&igrave;m kiếm ứng vi&ecirc;n được xếp hạng từ giống nhiều nhất đến giống &iacute;t nhất, hoặc bạn c&oacute; thể chỉ định số lượng kết quả m&agrave; bạn muốn xem. 
+                <ul>
+                    <li>Nếu bạn n&ecirc;u r&otilde;  <b>tất cả vị tr&iacute; từ giống nhiều nhất đến giống &iacute;t nhất</b>, tất cả đối tượng trong lớp t&igrave;m kiếm ứng vi&ecirc;n sẽ được đưa v&agrave;o thứ tự xếp hạng trong lớp kết quả. Tối đa 10.000 kết quả sẽ được trả về.
+                    </li>
+                    <li>Nếu bạn n&ecirc;u r&otilde;  <code>con số vị tr&iacute; giống</code> <code>nhiều nhất, &iacute;t nhất, hoặc nhiều nhất v&agrave; &iacute;t nhất</code> <b></b>, bạn x&aacute;c định số lượng ứng cử vi&ecirc;n giống nhiều nhất, giống &iacute;t nhất hoặc giống nhiều nhất v&agrave; giống &iacute;t nhất sẽ được bao gồm trong lớp kết quả. Gi&aacute; trị tối đa cho ph&eacute;p l&agrave; 10.000.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="appendFields">
+        <div><h2>Chọn các trường để thêm vào kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>T&ugrave;y &yacute; bổ sung th&ecirc;m c&aacute;c trường v&agrave;o dữ liệu của bạn từ lớp t&igrave;m kiếm. Theo mặc định, tất cả c&aacute;c trường sẽ được bổ sung.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p> T&ecirc;n lớp sẽ được tạo. Nếu bạn đang ghi v&agrave;o ArcGIS Data Store, kết quả của bạn sẽ được lưu v&agrave;o phần  <b>Nội dung của t&ocirc;i</b> v&agrave; được th&ecirc;m v&agrave;o bản đồ. Nếu bạn đang ghi v&agrave;o một phần chia sẻ tệp dữ liệu lớn, kết quả của bạn sẽ được lưu v&agrave;o phần chia sẻ tệp dữ liệu lớn v&agrave; được th&ecirc;m v&agrave;o bản k&ecirc; của n&oacute;. N&oacute; sẽ kh&ocirc;ng được th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, c&ocirc;ng cụ sẽ thất bại.
+            </p>
+            <p>Lớp kết quả n&agrave;y sẽ bao gồm c&aacute;c vị tr&iacute; tham chiếu v&agrave; số lượng c&aacute;c đối tượng t&igrave;m kiếm ứng vi&ecirc;n được xếp hạng m&agrave; bạn đ&atilde; chỉ định. Nếu đ&atilde; c&oacute; t&ecirc;n lớp kết quả, bạn sẽ được y&ecirc;u cầu đặt lại t&ecirc;n lớp.
+            </p>
+            <p>Khi ghi v&agrave;o  ArcGIS Data Store (kho dữ liệu lớn li&ecirc;n quan hoặc kho dữ liệu lớn kh&ocirc;ng gian thời gian) sử dụng hộp xổ xuống  <b>Lưu kết quả v&agrave;o</b>, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong mục <b>Nội dung của t&ocirc;i</b> để lưu trữ kết quả v&agrave;o.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Kurti buferius</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="Kurti buferius"></h2>
+        <hr/>
+    <p>Buferis &ndash; tai plotas, dengiantis nurodytą atstumą aplink ta&scaron;kinį, linijinį ar plotinį elementą. 
+    </p>
+    <p>Buferiai dažnai kuriami tam, kad būtų galima atlikti papildomą analizę naudojant kitus įrankius. Tarkime, jei domina, kurie pastatai yra 1 mylios atstumu nuo mokyklos, atsakymą sužinosite sukūrę 1 mylios buferį aplink mokyklą ir perdengę jį pastatų sluoksniu. Rezultatas &ndash; sluoksnis i&scaron; pastatų, nutolusių nuo mokyklos 1&nbsp;mylios atstumu.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pasirinkite sluoksnį, kuriam taikysite buferį</h2></div>
+        <hr/>
+        <div>
+            <p>Ta&scaron;kų, linijų ar plotų elementai, kurie bus įkelti į buferį. Įvesties sluoksniai turi būti projekcinėje koordinačių sistemoje arba projekcinė koordinačių sistema turi būti nustatyta naudojant  <b>Analizės aplinką</b>.
+            </p>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti didelių duomenų rinkinio arba elemento sluoksnio.
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>Pasirinkite taikytino buferio tipą</h2></div>
+        <hr/>
+        <div>
+            <p>Įvesties elementų buferio dydį galite nurodyti trimis būdais: 
+                <ul>
+                    <li>Nurodyti atstumą, taikomą visiems elementams.
+                    </li>
+                    <li>Nurodyti lauką įvesties sluoksnyje, kuriame nurodyta atstumo reik&scaron;mė. Naudoti tekstinį arba skaitinį lauką. Jei matavimo vienetas nėra nurodytas, bus naudojami koordinačių sistemos vienetai. Jei naudojate geografinę koordinačių sistemą, lauko, kurio vienetai nėra nurodyti, vienetais bus laikomi metrai. 
+                    </li>
+                    <li>Sukurkite i&scaron;rai&scaron;ką su keliais laukais ir matematiniais veiksmais. Pavyzdžiui, norėdami sukurti buferį, kurio reik&scaron;mė 10 kartų didesnė už lauko  <i>wind_speed</i> reik&scaron;mę, įtraukite i&scaron;rai&scaron;ką <i>$feature[&quot;wind_speed&quot;] x 10</i>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Pasirinkite buferio metodą</h2></div>
+        <hr/>
+        <div>
+            <p>Galite pasirinkti naudoti  <b>Plok&scaron;tuminį</b> arba <b>Geodezinį</b> metodą. <b>Plok&scaron;tuminis</b> metodas gali būti greitesnis ir labiau tinkamas duomenų, turinčių projekcinę koordinačių sistemą, vietinei analizei. <b>Geodezinis</b> metodas tinka dideliems plotams ir bet kokiai geografinei koordinačių sistemai.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>Pasirinkite tirpdymo metodo tipą</h2></div>
+        <hr/>
+        <div>
+            <p>Tirpdymo metodo parinktys.   Pasirinkę tirpdymo metodą, galėsite kurti kelių dalių ar vienos dalies plotus ir apskaičiuoti statistiką pagal pateiktus laukus.
+                <ul>
+                    <li> <b>Visi</b> &ndash; i&scaron;tirpdomi visi elementai. Jei leidžiami kelių dalių elementai, visi elementai bus i&scaron;tirpdyti ir sujungti į vieną elementą. Jei kelių dalių elementai neleidžiami, bus i&scaron;tirpdyti ir sujungti tie elementai, kurie yra vienas greta kito arba persidengia.
+                    </li>
+                    <li> <b>Laukai</b> &ndash; i&scaron;tirpdomi ir sujungiami tie elementai, kurie turi bendrą nurodytą lauką arba laukų kombinaciją. Jei leidžiami kelių dalių elementai, visi elementai, kurie turi bendrą lauką, bus i&scaron;tirpdyti ir sujungti į vieną elementą. Jei kelių dalių elementai neleidžiami, bus i&scaron;tirpdyti ir sujungti tie elementai, kurie turi bendrą lauką ir yra vienas greta kito arba persidengia.
+                    </li>
+                    <li> <b>Nė vienas</b> &ndash; nei&scaron;tirpdomi jokie elementai. Tai numatytasis nustatymas.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Leisti kelių dalių elementus</h2></div>
+        <hr/>
+        <div>
+            <p>Parinktis, kuria galite nurodyti, ar jūsų rezultatai apims vienos dalies, ar kelių dalių elementus. 
+
+            </p>
+            <p>
+                <ul>
+                    <li>Pažymėta &ndash; jūsų analizės rezultatai apims kelių dalių elementus.   
+                    </li>
+                    <li>Nepažymėta &ndash; jūsų analizės rezultatai apims vienos dalies elementus. Tai yra numatytoji parinktis.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Pridėti statistiką (pasirinktinis nustatymas)</h2></div>
+        <hr/>
+        <div>
+            <p> Galite apskaičiuoti susumuotų elementų statistiką. Galite skaičiuoti &scaron;iuos skaitinius laukus:
+                <ul>
+                    <li>Skaičius &ndash; apskaičiuojamas nenulinių reik&scaron;mių skaičius.Galima naudoti skaitiniams laukams arba eilutėms. [nulinis, 0, 2] skaičius yra 2.
+                    </li>
+                    <li>Suma &ndash; lauke nurodytų skaitinių reik&scaron;mių suma. [nulinis, 0, 3] suma yra 3.
+                    </li>
+                    <li>Vidurkis &ndash; skaitinių reik&scaron;mių vidurkis. [0, 2, nulinis] vidurkis yra 1.
+                    </li>
+                    <li>Minimumas &ndash; skaitinio lauko reik&scaron;mės minimumas. [0, 2, nulinis] minimumas yra 0. 
+                    </li>
+                    <li>Maksimumas &ndash; skaitinio lauko reik&scaron;mės maksimumas. [0, 2, nulinis] maksimumas yra 2.
+                    </li>
+                    <li>Intervalas  &ndash; skaitinio lauko intervalas. Apskaičiuojamas i&scaron; maksimalios reik&scaron;mės atėmus minimalią reik&scaron;mę. [0, nulinis, 1] intervalas yra 1. [nulinis, 4] intervalas yra 0.
+                    </li>
+                    <li>Nuokrypis &ndash; skaitinio laiko nuokrypis trajektorijoje. [1] nuokrypis yra nulinis. [nulinis, 1,0,1,1] nuokrypis yra 0,25.
+                    </li>
+                    <li>Standartinis nuokrypis &ndash; skaitinio laiko standartinė deviacija. [1] standartinis nuokrypis yra nulinis. [nulinis, 1,0,1,1] standartinis nuokrypis yra 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Galite skaičiuoti &scaron;iuos tekstinius laukus:
+                <ul>
+                    <li>Skaičius &ndash; nenulinių eilučių skaičius.
+                    </li>
+                    <li>Bet kokį rodiklį &ndash; &scaron;is statistinis rodiklis yra atsitiktinės eilutės reik&scaron;mės i&scaron; nurodyto lauko pavyzdys.
+                    </li>
+                </ul>
+                Visi statistiniai rodikliai apskaičiuojami tik su nenulinėmis reik&scaron;mėmis. Gautame sluoksnyje bus kiekvieno apskaičiuoto statistinio rodiklio naujas laukas. Pasirenkant atributą ir statistinį rodiklį, gali būti pridėtas neribotas statistinių rodiklių kiekis. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Pasirinkite ArcGIS Data Store, kad įrašytumėte rezultatus į</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics rezultatai yra saugomi ArcGIS duomenų saugykloje ir rodomi  Portal for ArcGIS kaip elementų sluoksnis. Daugeliu atvejų rezultatai turi būti saugomi erdvinių-laiko duomenų saugykloje, ir tai yra numatytasis nustatymas. Kai kuriais atvejais, galima rezultatus įra&scaron;yti į releacinę duomenų saugyklą. Toliau pateikiame priežastis, kodėl reikėtų rezultatus įra&scaron;yti į releacinių duomenų saugyklą: 
+                <ul>
+                    <li>Galite rezultatus naudoti dviejų portalų bendradarbiavime.
+                    </li>
+                    <li>Galite įjungti savo rezultatų sinchronizavimą.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nenaudokite releacinių duomenų saugyklos, jei jūsų GeoAnalytics rezultatų turėtų padaugėti, ir apdorojant didelius duomenų kiekius reikės pasinaudoti erdvės ir laiko didelių duomenų saugyklos galimybėmis.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p> Pavadinimas sluoksnio, kuris bus sukurtas. Jei įra&scaron;ote į ArcGIS Data Store, jūsų rezultatai bus įra&scaron;yti į  <b>Turinį</b> ir įtraukti į žemėlapį. Jei įra&scaron;ote į didelių duomenų failo bendrinimą, jūsų rezultatai bus saugomi didelių duomenų failo bendrinime ir pridedami į jo deklaraciją. Jie nebus įtraukti į žemėlapį. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau yra, įrankis neveiks.
+            </p>
+            <p>Kai ra&scaron;ote į   ArcGIS Data Store  (releacinių arba erdvėlaikinių didelių duomenų saugyklą) naudodami i&scaron;&scaron;okantįjį meniu  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

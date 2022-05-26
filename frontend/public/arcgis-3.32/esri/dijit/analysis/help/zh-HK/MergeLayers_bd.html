@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>合併圖層</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="合併圖層"></h2>
+        <hr/>
+    <p>此工具結合兩個圖徵圖層以建立單一輸出圖層。要合併的圖層必須具備相同的幾何類型和時間類型。您可以控制輸入圖層中各欄位的連線和複製方式。例如：
+        <ul>
+            <li>有三個圖層分別對應英格蘭、威爾士和蘇格蘭，而我希望使用一個圖層來代表大不列顛。
+            </li>
+            <li>我有 2 個圖層，每個圖層包含相鄰鎮區的宗地資訊。我希望將它們合併成單個圖層，只保留該 2 個輸入圖層上名稱和類型相同的欄位。
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇圖層</h2></div>
+        <hr/>
+        <div>
+            <p>具有表列、點、線或區域圖徵的圖層，第二個圖徵將合併到其中。結果圖層將包含此圖層的所有欄位。
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>選擇合併圖層</h2></div>
+        <hr/>
+        <div>
+            <p>要與輸入圖層合併的圖徵圖層。要合併的圖層必須具備與輸入圖層相同的幾何類型和時間類型。
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>修改合併欄位</h2></div>
+        <hr/>
+        <div>
+            <p>預設情况下，輸出將包含兩個輸入圖層的所有欄位。您可以使用下列選項，變更如何在輸出中包含要合併的圖層中的欄位：
+                <ul>
+                    <li> <b>重新命名</b> - 欄位將在輸出中重新命名。
+                    </li>
+                    <li> <b>移除</b> - 欄位將從輸出中移除。
+                    </li>
+                    <li> <b>匹配</b> - 欄位名稱變成相等。待合併圖層的欄位值將複製到匹配的輸出欄位。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果兩個圖層都包含一個具有相同名稱和資料類型的欄位，則會將兩個欄位的內容合併至該名稱的一個欄位中。這不適用於在 <b>修改合併欄位</b>參數中使用 <b>符合</b>的欄位。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p> 將建立之圖層的名稱。若是寫入到 ArcGIS Data Store，您的結果將儲存於<b>我的內容</b>並新增至地圖中。若是寫入到大數據檔案分享，您的結果將儲存於大數據檔案分享並新增至其資訊清單中。不會將它新增到地圖。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層已存在，工具將失敗。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式方塊寫入到 ArcGIS Data Store（關聯式或大型的時空資料儲存庫）時，可以在<b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

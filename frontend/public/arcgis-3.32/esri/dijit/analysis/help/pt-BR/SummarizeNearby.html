@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Resumir Mais Próximo</h2><p/>
+        <h2><img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" alt="Resumir Mais Pr&oacute;ximo"></h2>
+        <hr/>
+    <p>Esta ferramenta localiza e resume as fei&ccedil;&otilde;es que est&atilde;o dentro de uma dist&acirc;ncia espec&iacute;fica das fei&ccedil;&otilde;es na primeira camada de entrada. A dist&acirc;ncia pode ser medida como uma dist&acirc;ncia de linha direta ou utilizando um modo de viagem selecionado. As op&ccedil;&otilde;es do modo de viagem s&atilde;o dist&acirc;ncia do percurso, tempo do percurso, dist&acirc;ncia de caminh&atilde;o, tempo de caminh&atilde;o, dist&acirc;ncia da caminhada ou tempo da caminhada. As estat&iacute;sticas s&atilde;o ent&atilde;o calculadas para as fei&ccedil;&otilde;es mais pr&oacute;ximas. Por exemplo
+        <ul>
+            <li>Calcular a popula&ccedil;&atilde;o total dentro de cinco minutos do tempo de percurso de um novo local de loja proposto.
+            </li>
+            <li>Calcular o n&uacute;mero das rampas de acesso da auto-estrada dentro de uma dist&acirc;ncia do percurso de uma milha de um novo local de loja proposto para utilizar como uma medida de acessibilidade da loja.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente as fei&ccedil;&otilde;es na camada de entrada e camada a ser resumida que s&atilde;o vis&iacute;veis dentro da extens&atilde;o de mapa atual ser&atilde;o analisadas.  Se n&atilde;o selecionada, todas as fei&ccedil;&otilde;es em ambas a camada de entrada e a camada a ser resumida ser&atilde;o analisadas, mesmo que estiverem fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumNearbyLayer">
+        <div><h2>Escolha a camada da qual as distâncias serão medidas para as feições na camada a serem resumidas</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de ponto, linha ou &aacute;rea que ser&aacute; utilizada como local inicial para resumir fei&ccedil;&otilde;es pr&oacute;ximas.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> localizado na parte inferior da lista suspensa. Esta op&ccedil;&atilde;o abre uma galeria onde voc&ecirc; pode procurar e selecionar conjunto de dados de v&aacute;rias fontes para utilizar em sua an&aacute;lise. 
+            </p>
+            <p>A ferramenta suporta at&eacute; 1.000 fei&ccedil;&otilde;es nesta camada. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Escolher camada para resumir</h2></div>
+        <hr/>
+        <div>
+            <p>As fei&ccedil;&otilde;es nesta camada que est&atilde;o dentro da dist&acirc;ncia especificada para fei&ccedil;&otilde;es na camada especificada acima ser&atilde;o resumidas. 
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> localizado na parte inferior da lista suspensa. Esta op&ccedil;&atilde;o abre uma galeria onde voc&ecirc; pode procurar e selecionar conjunto de dados de v&aacute;rias fontes para utilizar em sua an&aacute;lise. 
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Resumir as feições mais próximas utilizando um</h2></div>
+        <hr/>
+        <div>
+            <p> Voc&ecirc; pode definir qual tipo de medida de dist&acirc;ncia voc&ecirc; deseja utilizar, uma dist&acirc;ncia de linha direta ou um modo de viagem selecionado. Os modos de viagem s&atilde;o somente habilitados quando a primeira camada de entrada (a camada da qual as dist&acirc;ncias s&atilde;o medidas) tiver pontos.  Os modos de viagem dispon&iacute;veis s&atilde;o determinados pelo administrador da sua organiza&ccedil;&atilde;o. Ao utilizar um dos modos de viagem, as medidas s&atilde;o feitas ao longo das estradas ou trilhas, e honram as regras aplic&aacute;veis, como ruas de m&atilde;o &uacute;nica, convers&otilde;es ilegais, e assim por diante. <b>Tempo do Percurso</b>, <b>Tempo de Percurso em &Aacute;rea Rural</b> e <b>Tempo de Caminh&atilde;o</b> honra sua op&ccedil;&atilde;o de velocidades do percurso, aquelas baseadas no tr&aacute;fego em tempo real ou tr&aacute;fego t&iacute;pico. As velocidades em tempo real s&atilde;o coletadas por leituras do sensor atual, e velocidades t&iacute;picas s&atilde;o calculadas de hist&oacute;ricos da m&eacute;dia.
+            </p>
+            <p>Voc&ecirc; pode inserir m&uacute;ltiplas dist&acirc;ncias. As fei&ccedil;&otilde;es que est&atilde;o dentro (ou iguais) das dist&acirc;ncias que voc&ecirc; inseriu ser&atilde;o resumidas.  
+            </p>
+            <p>A caixa de sele&ccedil;&atilde;o  <b>Retornar &aacute;reas delimitadas</b> se marcada, retornar&aacute; uma camada resultante das &aacute;reas definidas pela medida de dist&acirc;ncia especificada. A camada resultante incluir&aacute; todas as informa&ccedil;&otilde;es de resumo solicitadas. Por exemplo, ao resumir pontos mais pr&oacute;ximos, se utilizar uma <b>Dist&acirc;ncia de linha</b> de 5 milhas, seu resultado conter&aacute; &aacute;reas com um raio de 5 milhas ao redor das fei&ccedil;&otilde;es de entrada e todas as informa&ccedil;&otilde;es de resumo, como contagem de pontos e quaisquer estat&iacute;sticas adicionadas. Se selecionada, a camada resultante retornar&aacute; as mesmas fei&ccedil;&otilde;es da primeira camada de entrada com todos as informa&ccedil;&otilde;es de resumo solicitadas.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Adicionar estatística da camada para resumir</h2></div>
+        <hr/>
+        <div>
+            <p>Voc&ecirc; pode opcionalmente calcular estat&iacute;sticas para quaisquer atributos num&eacute;ricos dos pontos mais pr&oacute;ximos. 
+            </p>
+            <p>A caixa de sele&ccedil;&atilde;o  <b>Contagem de pontos</b> se selecionada, calcular&aacute; o n&uacute;mero total de pontos mais pr&oacute;ximos.  Al&eacute;m disso, voc&ecirc; pode calcular estat&iacute;sticas para campos num&eacute;ricos dos pontos mais pr&oacute;ximos.
+            </p>
+            <ul>
+                <li> <b>Soma</b>&mdash;O valor total do campo especificado
+                </li>
+                <li> <b>M&eacute;dia</b>&mdash;Calcula a m&eacute;dia do campo especificado
+                </li>
+                <li> <b>M&iacute;nimo</b>&mdash;O menor valor no campo especificado
+                </li>
+                <li> <b>M&aacute;ximo</b>&mdash;O maior valor no campo especificado
+                </li>
+                <li> <b>Desvio Padr&atilde;o</b>&mdash;O desvio padr&atilde;o dos valores no campo especificado
+                </li>
+            </ul>
+            
+            <p>Se a camada para resumir n&atilde;o tiver quaisquer campos de n&uacute;mero, a estat&iacute;stica adicional n&atilde;o estar&aacute; dispon&iacute;vel.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Adicionar estatística da camada para resumir</h2></div>
+        <hr/>
+        <div>
+            <p>Voc&ecirc; pode opcionalmente calcular estat&iacute;sticas para quaisquer atributos num&eacute;ricos das linhas mais pr&oacute;ximas. 
+            </p>
+            <p>A caixa de sele&ccedil;&atilde;o  <b>Comprimento total</b> se selecionada, calcular&aacute; o comprimento total das linhas mais pr&oacute;ximas.  Al&eacute;m disso, voc&ecirc; pode calcular estat&iacute;sticas para campos num&eacute;ricos das linhas mais pr&oacute;ximas.
+            </p>
+            <ul>
+                <li> <b>Soma</b>&mdash;O valor total do campo especificado
+                </li>
+                <li> <b>M&eacute;dia</b>&mdash;Calcula a m&eacute;dia do campo especificado
+                </li>
+                <li> <b>M&iacute;nimo</b>&mdash;O menor valor no campo especificado
+                </li>
+                <li> <b>M&aacute;ximo</b>&mdash;O maior valor no campo especificado
+                </li>
+                <li> <b>Desvio Padr&atilde;o</b>&mdash;O desvio padr&atilde;o dos valores no campo especificado
+                </li>
+            </ul>
+            
+            <p>Se a camada para resumir n&atilde;o tiver quaisquer campos de n&uacute;mero, a estat&iacute;stica adicional n&atilde;o estar&aacute; dispon&iacute;vel.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Adicionar estatística da camada para resumir</h2></div>
+        <hr/>
+        <div>
+            <p>Voc&ecirc; pode opcionalmente calcular estat&iacute;sticas para quaisquer atributos num&eacute;ricos das &aacute;reas mais pr&oacute;ximas. 
+            </p>
+            <p>A caixa de sele&ccedil;&atilde;o  <b>&Aacute;rea total</b> se selecionada, calcular&aacute; a &aacute;rea total das fei&ccedil;&otilde;es mais pr&oacute;ximas.  Al&eacute;m disso, voc&ecirc; pode calcular estat&iacute;sticas para campos num&eacute;ricos das fei&ccedil;&otilde;es mais pr&oacute;ximas.
+            </p>
+            <ul>
+                <li> <b>Soma</b>&mdash;O valor total do campo especificado
+                </li>
+                <li> <b>M&eacute;dia</b>&mdash;Calcula a m&eacute;dia do campo especificado
+                </li>
+                <li> <b>M&iacute;nimo</b>&mdash;O menor valor no campo especificado
+                </li>
+                <li> <b>M&aacute;ximo</b>&mdash;O maior valor no campo especificado
+                </li>
+                <li> <b>Desvio Padr&atilde;o</b>&mdash;O desvio padr&atilde;o dos valores no campo especificado
+                </li>
+            </ul>
+            
+            <p>Se a camada para resumir n&atilde;o tiver quaisquer campos de n&uacute;mero, a estat&iacute;stica adicional n&atilde;o estar&aacute; dispon&iacute;vel.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Adicionar estatística da camada para resumir</h2></div>
+        <hr/>
+        <div>
+            <p>Ap&oacute;s voc&ecirc; escolher uma camada para resumir, voc&ecirc; pode opcionalmente calcular estat&iacute;sticas de quaisquer atributos num&eacute;ricos dos pontos pr&oacute;ximos, linhas ou &aacute;reas. 
+            </p>
+            <ul>
+                <li> <b>Soma</b>&mdash;O valor total do campo especificado
+                </li>
+                <li> <b>M&eacute;dia</b>&mdash;Calcula a m&eacute;dia do campo especificado
+                </li>
+                <li> <b>M&iacute;nimo</b>&mdash;O menor valor no campo especificado
+                </li>
+                <li> <b>M&aacute;ximo</b>&mdash;O maior valor no campo especificado
+                </li>
+                <li> <b>Desvio Padr&atilde;o</b>&mdash;O desvio padr&atilde;o dos valores no campo especificado
+                </li>
+            </ul>
+            
+            <p>Dependendo dos tipos de fei&ccedil;&otilde;es que voc&ecirc; ir&aacute; resumir, voc&ecirc; pode calcular a contagem total dos pontos pr&oacute;ximos, comprimento total das linhas pr&oacute;ximas ou &aacute;rea total das fei&ccedil;&otilde;es pr&oacute;ximas.
+            </p>
+            <p>Se a camada para resumir n&atilde;o tiver quaisquer campos de n&uacute;mero, a estat&iacute;stica adicional n&atilde;o estar&aacute; dispon&iacute;vel.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Escolher campo para agrupar por</h2></div>
+        <hr/>
+        <div>
+            <p> Este &eacute; um atributo das fei&ccedil;&otilde;es mais pr&oacute;ximas que voc&ecirc; pode utilizar para calcular estat&iacute;sticas separadamente para cada valor de atributo &uacute;nico. Por exemplo, suponha que a sua primeira camada de entrada (a camada da qual as dist&acirc;ncias s&atilde;o medidas) cont&eacute;m lotes desocupados &agrave; venda e suas fei&ccedil;&otilde;es pr&oacute;ximas s&atilde;o &aacute;reas de cobertura de edif&iacute;cios.  Um dos atributos das &aacute;reas de cobertura do edif&iacute;cio &eacute; <i>UseType</i> que cont&eacute;m valores como RETAIL, RESIDENTIAL, MANUFACTURING, PUBLIC, e assim por diante. Para caracterizar a mistura de usos do edif&iacute;cio mais pr&oacute;ximo de cada lote desocupado, voc&ecirc; poder&aacute; calcular a &aacute;rea total de cada tipo &uacute;nico de uso do edif&iacute;cio dentro de dois quil&ocirc;metros dos lotes desocupados, utilizando <i>UseType</i> como o grupo por atributo. A estat&iacute;stica para cada grupo, como tamb&eacute;m, a contagem de fei&ccedil;&otilde;es mais pr&oacute;ximas, ser&aacute; exibida no pop-up da camada resultante.
+            </p>    
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Adicionar minoria, maioria</h2></div>
+        <hr/>
+        <div>
+            <p>Esta caixa de sele&ccedil;&atilde;o &eacute; habilitada quando voc&ecirc; escolhe um campo para agrupar. Se voc&ecirc; desejar descobrir quais valores de atributo dentro de cada grupo s&atilde;o a minoria (menos dominante) ou a maioria (mais dominante) dentro da dist&acirc;ncia ou tempo que voc&ecirc; especificou, selecione  <b>Adicionar minoria, maioria</b>.   Quando voc&ecirc; seleciona <b>Adicionar minoria, maioria</b>, dois novos campos s&atilde;o adicionados na sua camada resultante.   Se voc&ecirc; tamb&eacute;m selecionar <b>Adicionar porcentagens</b>, dois campos adicionais ser&atilde;o adicionados na camada resultante contendo as porcentagens dos valores de atributo da minoria e maioria dentro de cada grupo.
+            </p>
+            <ul>
+                <li>Se voc&ecirc; estiver resumindo pontos mais pr&oacute;ximos, os valores da minoria e maioria ser&atilde;o calculados baseados na contagem de pontos dentro da dist&acirc;ncia ou tempo que voc&ecirc; especificou.
+                </li>
+                <li>Se voc&ecirc; estiver resumindo linhas mais pr&oacute;ximas, os valores da minoria e maioria ser&atilde;o calculados baseados na contagem de linhas dentro da dist&acirc;ncia ou tempo que voc&ecirc; especificou.  
+                </li>
+                <li>Se voc&ecirc; estiver resumindo &aacute;reas mais pr&oacute;ximas, os valores da minoria e maioria ser&atilde;o calculados baseados nas &aacute;reas dentro da dist&acirc;ncia ou tempo que voc&ecirc; especificou.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Adicionar porcentagens</h2></div>
+        <hr/>
+        <div>
+            <p>Esta caixa de sele&ccedil;&atilde;o &eacute; habilitada quando voc&ecirc; escolhe um campo para agrupar. Selecione  <b>Adicionar porcentagens</b> se desejar localizar a porcentagem de cada valor de atributo dentro de cada grupo.  Um novo campo &eacute; adicionado na tabela resultante contendo as porcentagens de cada valor de atributo dentro de cada grupo. Se <b>Adicionar minoria, maioria</b> tamb&eacute;m for selecionado, dois campos adicionais ser&atilde;o adicionados na camada resultante contendo as porcentagens dos valores de atributo da minoria e maioria dentro de cada grupo.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa.  O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se o nome da camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Salvar resultado em</b>, &eacute; poss&iacute;vel especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

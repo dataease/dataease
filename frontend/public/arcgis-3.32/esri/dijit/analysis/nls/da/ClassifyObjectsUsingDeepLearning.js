@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/da/ClassifyObjectsUsingDeepLearning",{toolDefine:"Klassificer objekter ved hj\u00e6lp af Deep Learning",inputFeaturesLabel:"V\u00e6lg vektorlag til objekter (valgfrit)",outputLayerName:"${layername}_classifiedObjects",modelLabel:"V\u00e6lg den Deep Learning-model, der skal bruges til at klassificere objekter",modelArgsLabel:"Angiv argumenter for Deep Learning-model",classLabelFieldLabel:"Definer klasseetikettens feltnavn (valgfrit)",processingModeLabel:"Behandlingstilstand",
+processAsMosaicLabel:"Behandl som mosaikbillede",processAsItemsLabel:"Behandl alle raster-elementer separat",queryModelArgsMsg:"Foresp\u00f8rger om model-argumenter...",valueLabel:"V\u00e6rdi",nameLabel:"Navn",analysisLayerLabel:"V\u00e6lg det billede, der bruges skal bruges til at klassificere objekter",itemDescription:"Analysebilledtjeneste genereret ud fra klassificering af objekter ved hj\u00e6lp af Deep Learning",itemTags:"Rasteranalyseresultat, klassificering af objekter ved hj\u00e6lp af Deep Learning, ${layername}",
+itemSnippet:"Analysebilledtjeneste genereret ud fra klassificering af objekter ved hj\u00e6lp af Deep Learning"});

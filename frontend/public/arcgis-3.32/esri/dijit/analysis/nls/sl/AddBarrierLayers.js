@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/sl/AddBarrierLayers",{addBarriers:"Izberi sloje ovire",pointBarrier:"To\u010dkovne ovire",lineBarrier:"Linijske ovire",polygonBarrier:"Poligonske ovire",choosePointBarrier:"Izberi sloj to\u010dkovne ovire",chooseLineBarrier:"Izberi sloj linijske ovire",choosePolygonBarrier:"Izberi sloj poligonske ovire",selectPointBarrier:"Izberi to\u010dkovne ovire",selectLineBarrier:"Izberi linijske ovire",selectPolygonBarrier:"Izberi poligonske ovire"});

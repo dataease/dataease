@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Find Argument Statistics</h2><p/>
+        <h2><img src="./images/GUID-2C2320A3-EC6E-4FFC-B59B-9551BB02C545-web.png" alt="Find Argument Statistics"></h2>
+        <hr/>
+    <p>Extracts the dimension value  or band index at which a given statistic is attained for each pixel in a multidimensional or multiband raster.
+    </p>
+    <p>Use this tool to extract the dimension value (for example the date, height, or depth) at which a specific statistic is reached in the stack of rasters in a multidimensional raster dataset. Alternatively find the band number at which the statistic is reached in a multiband raster.
+    </p>
+    <p>For example, you may want to know  the month in which each pixel reached the highest sea surface temperature over 30 years of data collection. Another example is you have an eight-band remote sensing image and you want to know the band in which the minimum reflectance value was reached for each pixel.
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, variables or bands of the layer that are  visible within the current map extent will be analyzed. If unchecked, variables or bands of the full layer will be analyzed, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Choose multidimensional or multi-band imagery layer to analyze</h2></div>
+        <hr/>
+        <div>
+            <p>The input multidimensional or multiband raster to be analyzed.
+            </p>
+        </div>
+    </div>
+    <div id="dimension">
+        <div><h2>Choose dimension from which the statistic will be extracted</h2></div>
+        <hr/>
+        <div>
+            <p>The 
+dimension from which the statistic will be extracted. If the input raster is not a multidimensional raster, this parameter is not required.
+            </p>
+        </div>
+    </div>
+    <div id="variables">
+        <div><h2>Choose variable(s) that will be analyzed</h2></div>
+        <hr/>
+        <div>
+            <p>The variable or variables 
+to be analyzed. If the input raster is not multidimensional, the pixel values of the multiband raster are considered the variable. If the input raster is multidimensional and no variable is specified, all variables with the selected dimension will be analyzed.
+            </p>
+            <p>For example, to find the years in which temperature values were highest, specify temperature as the variable to be analyzed. If you do not specify any variables and you have both temperature and precipitation variables, both variables will be analyzed, and the output multidimensional raster will include both variables.
+            </p>
+        </div>
+    </div>
+    <div id="statisticsType">
+        <div><h2>Choose statistics type</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the statistic to extract from the variable or variables along the given dimension. 
+            </p>
+            <ul>
+                <li> <b>Argument of the minimum</b>&mdash;The dimension value at which the minimum variable value is reached will be extracted. This is the default.
+                </li>
+                <li> <b>Argument of the maximum</b>&mdash;The dimension value at which the maximum variable value is reached will be extracted.
+                </li>
+                <li> <b>Argument of the median</b>&mdash;The dimension value at which the median variable value is reached will be extracted.
+                </li>
+                <li> <b>Argument of duration</b>&mdash;The longest dimension duration for which the variable values fall between the minimum and maximum values.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="multipleOccurrenceValue">
+        <div><h2>Specify multiple occurrence value</h2></div>
+        <hr/>
+        <div>
+            <p>The pixel value to use to indicate that a given argument statistic was reached more than once in the input raster dataset. If not specified, the pixel value will be the value of the dimension the first time the argument statistic is reached.
+            </p>
+        </div>
+    </div>
+    <div id="minValue">
+        <div><h2>Specify minimum value</h2></div>
+        <hr/>
+        <div>
+            <p>The minimum variable value to be used to extract the duration.
+            </p>
+            <p>This parameter is required when  <b>Duration</b> is selected as the statistics type.
+            </p>
+        </div>
+    </div>
+    <div id="maxValue">
+        <div><h2>Specify maximum value</h2></div>
+        <hr/>
+        <div>
+            <p>The maximum variable value to be used to extract the duration.
+            </p>
+            <p>This step is required when  <b>Duration</b> is selected as the statistics type.
+            </p>
+        </div>
+    </div>
+    <div id="dimensionDefinition">
+        <div><h2>Choose dimension definition</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies how the statistic will be extracted from the dimension. 
+                <ul>
+                    <li> <b>All</b>&mdash;The statistic will be extracted across all dimensions. This is the default.
+                    </li>
+                    <li> <b>Interval Keyword</b>&mdash;The statistic will be extracted from the time dimension according to the interval keyword.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="intervalKeyword">
+        <div><h2>Choose keyword interval</h2></div>
+        <hr/>
+        <div>
+            <p>The unit of time for which the statistic will be extracted.
+            </p>
+            <p>For example, you have five years of daily sea surface temperature data and you want to know the year in which the maximum temperature was observed. Set   <b>Argument of the maximum</b> as the statistics type, set <b>Interval Keyword</b> as the dimension definition, and set <b>Yearly</b> as the keyword interval in this step.
+            </p>
+            <p>Alternatively,  if you want to know the month in which the maximum temperature was consistently observed, set    <b>Argument of the maximum</b> as the statistics type, set the <b>Interval Keyword</b> as the dimension definition, and set <b>Recurring Monthly</b> as the keyword interval in this step. This will generate a raster in which each pixel contains  the month in which the statistic was reached across the five-year record (08/18/2018, 08/25/2016, 08/07/2013, for example).
+            </p>
+            <p>This step is required when  <b>StdTime</b> is set as the dimension from which the statistic will be extracted, and <b>Interval Keyword</b> is selected to define how the statistic will be extracted from the time dimension .
+                <ul>
+                    <li> <b>Recurring daily</b>&mdash; The statistic will be extracted across  days.
+                    </li>
+                    <li> <b>Recurring weekly</b>&mdash;The statistic will be extracted across  weeks.
+                    </li>
+                    <li> <b>Recurring monthly</b>&mdash;The statistic will be extracted across  months.
+                    </li>
+                    <li> <b>Recurring quarterly</b>&mdash;The statistic will be extracted across  quarters.
+                    </li>
+                    <li> <b>Hourly</b>&mdash;The statistic will be extracted for the   hour in which the statistic was reached.
+                    </li>
+                    <li> <b>Daily</b>&mdash;The statistic will be extracted for the   day in which the statistic was reached.
+                    </li>
+                    <li> <b>Weekly</b>&mdash;The statistic will be extracted for the   week in which the statistic was reached.
+                    </li>
+                    <li> <b>Monthly</b>&mdash;The statistic will be extracted for the   month in which the statistic was reached.
+                    </li>
+                    <li> <b>Quarterly</b>&mdash;The statistic will be extracted for the   quarter in which the statistic was reached.
+                    </li>
+                    <li> <b>Yearly</b>&mdash;The statistic will be extracted for the   year in which the statistic was reached.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="ignoreNodata">
+        <div><h2>Ignore missing values in calculation</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies whether missing values are ignored in the analysis.
+                <ul>
+                    <li>If the box is checked, the analysis will include all valid pixels along a given dimension and ignore any NoData pixels. This is the default.
+                    </li>
+                    <li>If the box is unchecked, the analysis will result in NoData if there are any NoData values for the pixel along the given dimension.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map. The default name is based on the tool name and the input layer name. If the layer already exists, you will be prompted to provide another name.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

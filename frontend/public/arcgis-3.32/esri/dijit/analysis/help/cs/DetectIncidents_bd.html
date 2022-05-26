@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Detekovat události (Detect Incidents)</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Detekovat ud&aacute;losti"></h2>
+        <hr/>
+    <p> Tento n&aacute;stroj pracuje s&nbsp;časovou vrstvou bodů, lini&iacute;, ploch nebo tabulek, kter&aacute; představuje okamžik v čase. Tento n&aacute;stroj použ&iacute;v&aacute; sekvenčně uspoř&aacute;dan&eacute; prvky, zvan&eacute; stopy, a určuje, kter&eacute; prvky jsou ud&aacute;losti, jež jsou předmětem z&aacute;jmu. Ud&aacute;losti jsou určeny podm&iacute;nkami, kter&eacute; specifikujete.
+    </p>
+    <p>Za prv&eacute;, n&aacute;stroj určuje, kter&eacute; prvky patř&iacute; ke stopě s použit&iacute;m jednoho nebo v&iacute;ce pol&iacute;. Každ&yacute; prvek je spojen&yacute; s časem, stopy jsou uspoř&aacute;d&aacute;ny sekvenčně, a je použita podm&iacute;nka ud&aacute;losti. Prvky, kter&eacute; splňuj&iacute; poč&aacute;tečn&iacute; podm&iacute;nku ud&aacute;losti, jsou označeny jako ud&aacute;lost. Volitelně můžete použ&iacute;t podm&iacute;nku ukončen&iacute; ud&aacute;losti; když je podm&iacute;nka ukončen&iacute; pravdiv&aacute;, prvek již nen&iacute; ud&aacute;lost&iacute;.  V&yacute;sledky budou vr&aacute;ceny s původn&iacute;mi prvky&mdash;s nov&yacute;mi sloupci, jež představuj&iacute; n&aacute;zev ud&aacute;losti&mdash;a indikuj&iacute;, kter&yacute; prvek splňuje podm&iacute;nku ud&aacute;losti Můžete vr&aacute;tit v&scaron;echny původn&iacute; prvky nebo jen prvky, kter&eacute; jsou ud&aacute;lostmi.
+    </p>
+    <p>Předpokl&aacute;dejme např&iacute;klad, že každ&yacute;ch 10 minut m&aacute;te GPS měřen&iacute; hurik&aacute;nů. Každ&eacute; GPS měřen&iacute; zaznamen&aacute;v&aacute; n&aacute;zev a um&iacute;stěn&iacute; hurik&aacute;nu, čas z&aacute;znamu a rychlost větru. S použit&iacute;m těchto pol&iacute; byste mohli vytvořit ud&aacute;lost, kde jak&eacute;koliv měřen&iacute; při rychlosti větru vy&scaron;&scaron;&iacute; než 208 km/h je ud&aacute;lost označen&aacute; jako  <code>Katastrofick&aacute;</code>. Pokud byste nenastavili konečnou podm&iacute;nku, pak by ud&aacute;lost skončila, když by tento prvek již nesplňoval poč&aacute;tečn&iacute; podm&iacute;nku (rychlost větru by poklesla pod 208).
+    </p>
+    <p>V dal&scaron;&iacute;m př&iacute;padě předpokl&aacute;dejme, že monitorujete koncentraci určit&eacute; chemick&eacute; l&aacute;tky v m&iacute;stn&iacute;ch z&aacute;sob&aacute;ch vody za použit&iacute; pole nazvan&eacute;ho  <code>Uroven_znecisteni</code>. V&iacute;te, že doporučen&aacute; &uacute;roveň je m&eacute;ně než 0,01 mg/L a nebezpečn&eacute; &uacute;rovně jsou nad 0,03 mg/L. Pro detekov&aacute;n&iacute; ud&aacute;lost&iacute;, kde hodnota vy&scaron;&scaron;&iacute; než 0,03 mg/L je ud&aacute;lost&iacute;, a zůst&aacute;v&aacute; ud&aacute;lost&iacute;, dokud se &uacute;roveň zneči&scaron;těn&iacute; nevr&aacute;t&iacute; do norm&aacute;lu, vytvoř&iacute;te ud&aacute;lost s použit&iacute;m poč&aacute;tečn&iacute; podm&iacute;nky <code>Uroven_znecisteni &gt; 0,03</code> a konečn&eacute; podm&iacute;nky <code>Uroven_znecisteni &lt; 0,01</code>. T&iacute;m dojde k označen&iacute; jak&eacute;koliv n&aacute;sledn&eacute; ud&aacute;losti, kdy hodnoty překroč&iacute; 0,03 mg/L, dokud se nevr&aacute;t&iacute; zpět na hodnotu men&scaron;&iacute; než 0,01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Zvolte vrstvu, z níž budou detekovány události</h2></div>
+        <hr/>
+        <div>
+            <p>Body, linie, plochy nebo tabulky, kter&eacute; budou použity pro vyhled&aacute;n&iacute; ud&aacute;lost&iacute;. Vstupn&iacute; vrstva mus&iacute; b&yacute;t časov&aacute; vrstva s prvky, kter&eacute; představuj&iacute; okamžik v čase, a maj&iacute; jedno nebo v&iacute;ce pol&iacute;, kter&aacute; lze použ&iacute;t pro identifikaci stop.
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Zvolte jedno nebo více polí k identifikaci stop</h2></div>
+        <hr/>
+        <div>
+            <p>Pole, kter&aacute; představuj&iacute; identifik&aacute;tor stopy. Pro vyj&aacute;dřen&iacute; jedinečn&yacute;ch hodnot stop můžete použ&iacute;t jedno pole nebo v&iacute;ce pol&iacute;.
+            </p>
+            <p>Př&iacute;klad: Pokud byste rekonstruovali stopy hurik&aacute;nů, mohli byste jako pole stop použ&iacute;t n&aacute;zev hurik&aacute;nu.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Vytvořit podmínku výrazu pro vyznačení počátku události</h2></div>
+        <hr/>
+        <div>
+            <p>Přidat podm&iacute;nku s použit&iacute;m n&aacute;stroje pro sestaven&iacute; v&yacute;razů k určen&iacute; toho, co je to ud&aacute;lost. Jestliže je v&aacute;mi specifikovan&aacute; podm&iacute;nka pravdiv&aacute;, je prvek ud&aacute;lost&iacute;. Pokud nespecifikujete konečnou podm&iacute;nku, ud&aacute;lost skonč&iacute;, když poč&aacute;tečn&iacute; podm&iacute;nka už nebude pravdiv&aacute;.
+            </p>
+            <p>Např&iacute;klad, chcete b&yacute;t upozorněni, když součet pol&iacute;  <code>koncentrace_1</code> a <code>koncentrace_2</code> je vy&scaron;&scaron;&iacute; než <code>koncentrace_3</code>.   K tomu použijte podm&iacute;nku <code>($feature[&quot;koncentrace_1&quot;] +  $feature[&quot;koncentrace_2&quot;]) &gt; $feature[&quot;koncentrace_3&quot;])</code>.
+            </p>
+            <p>Pokud by v&aacute;s zaj&iacute;malo, jak se koncentrace měnily v čase, a chtěli b&yacute;t upozorněni, jakmile bude  <code>concentration_1</code> vy&scaron;&scaron;&iacute; než přede&scaron;l&eacute; dvě měřen&iacute; <code>concentration_2</code>, můžete použ&iacute;t v&yacute;raz jako <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Vytvořit podmínku výrazu pro vyznačení počátku události (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p>Volitelně přidejte podm&iacute;nku, s použit&iacute;m n&aacute;stroje pro sestaven&iacute; v&yacute;razů, k určen&iacute; konce ud&aacute;losti. Jestliže je v&aacute;mi specifikovan&aacute; konečn&aacute; podm&iacute;nka pravdiv&aacute;, prvek už nen&iacute; ud&aacute;lost&iacute;. Pokud nespecifikujete konečnou podm&iacute;nku, ud&aacute;lost skonč&iacute;, když poč&aacute;tečn&iacute; podm&iacute;nka už nebude pravdiv&aacute;.    
+            </p>
+            <p>Předpokl&aacute;dejme např&iacute;klad, že chcete b&yacute;t upozorněni, když součet pol&iacute;  <code>koncentrace_1</code> a <code>koncentrace_2</code> je vy&scaron;&scaron;&iacute; než <code>koncentrace_3</code>, a chcete, aby ud&aacute;lost skončila, když <code>koncentrace_4</code> je men&scaron;&iacute; než <code>koncentrace_1</code>. K tomu použijte poč&aacute;tečn&iacute; podm&iacute;nku <code>($feature[&quot;koncentrace_1&quot;] +  $feature[&quot;koncentrace_2&quot;]) &gt; ($join[&quot;prijem&quot;] * .20)</code> a konečnou podm&iacute;nku <code>($feature[&quot;koncentrace_4&quot;] &lt; $feature[&quot;koncentrace_1&quot;])</code>.
+            </p>
+            <p>Pokud byste chtěli, aby incident skončil, když je středn&iacute; hodnota  <code>concentration_1</code> a přede&scaron;l&aacute; čtyři měřen&iacute; vy&scaron;&scaron;&iacute; než prvn&iacute; měřen&iacute;, můžete použ&iacute;t v&yacute;raz jako <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Ukaž mi</h2></div>
+        <hr/>
+        <div>
+            <p>V&scaron;echny metody v&yacute;stupu dopln&iacute; k původn&iacute;m prvkům pole Existuj&iacute; dva způsoby, jak určit, kter&eacute; prvky budou vraceny:
+                <ul>
+                    <li> <b>V&scaron;echny prvky</b>&mdash;Toto je v&yacute;choz&iacute; nastaven&iacute;. V&scaron;echny prvky na vstupu budou vr&aacute;ceny.
+                    </li>
+                    <li> <b>Pouze ud&aacute;losti</b>&mdash;Tato metoda bude vracet pouze prvky, kter&eacute; jsou ud&aacute;lostmi. Jak&eacute;koliv prvky, u nichž se zjist&iacute;, že nejsou ud&aacute;lostmi, budou vr&aacute;ceny.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analyzovat data s časovými intervaly (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p>Zadejte, jestli chcete nal&eacute;zt ud&aacute;losti pomoc&iacute; časov&yacute;ch intervalů, kter&eacute; provedou segmentaci va&scaron;ich vstupn&iacute;ch prvků pro anal&yacute;zu. Pokud použ&iacute;v&aacute;te časov&eacute; intervaly, mus&iacute;te nastavit časov&yacute; interval, kter&yacute; chcete použ&iacute;vat, a volitelně nastavit referenčn&iacute; čas. Pokud nenastav&iacute;te referenčn&iacute; čas, bude použito 1. ledna 1970. 
+            </p>
+            <p>Např&iacute;klad, pokud nastav&iacute;te časovou hranici na 1 den, zač&iacute;t od 9:00 1. ledna, 1990, potom každ&aacute; stopa bude zkr&aacute;cena v 9:00 pro každ&yacute; den a analyzov&aacute;na v tomto segmentu. 
+            </p>
+            <p>Použ&iacute;v&aacute;n&iacute; časov&yacute;ch intervalů představuje rychl&yacute; způsob zv&yacute;&scaron;en&iacute; doby v&yacute;počtu, protože rychle vytv&aacute;ř&iacute; men&scaron;&iacute; stopy k anal&yacute;ze. Pokud rozdělen&iacute; pomoc&iacute; znovu nastal&eacute;ho časov&eacute;ho intervalu m&aacute; smysl pro va&scaron;i anal&yacute;zu, doporučuje se pro zpracov&aacute;n&iacute; velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p> N&aacute;zev vytv&aacute;řen&eacute; vrstvy. Pokud zapisujete ArcGIS Data Store, va&scaron;e v&yacute;sledky budou uloženy v  <b>Můj obsah</b> a přid&aacute;ny na mapu. Pokud zapisujete sd&iacute;len&yacute; soubor velk&yacute;ch dat, va&scaron;e v&yacute;sledky budou uloženy ve sd&iacute;len&eacute;m souboru velk&yacute;ch dat a přid&aacute;ny do jejich manifestu.  Nebudou přid&aacute;ny na mapu. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, n&aacute;stroj selže.
+            </p>
+            <p>Když zapisujete do   ArcGIS Data Store  (datov&eacute; &uacute;loži&scaron;tě relačn&iacute;ch a časoprostorov&yacute;ch velk&yacute;ch dat) pomoc&iacute; rozbalovac&iacute;ho seznamu  <b>Uložit v&yacute;sledek do</b> , můžete zadat n&aacute;zev složky v <b>Můj obsah</b>, kde budou v&yacute;sledky uloženy.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

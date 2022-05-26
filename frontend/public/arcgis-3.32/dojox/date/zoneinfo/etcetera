@@ -1,0 +1,36 @@
+Zone	Etc/GMT		0	-	GMT
+Zone	Etc/UTC		0	-	UTC
+Zone	Etc/UCT		0	-	UCT
+Link	Etc/GMT				GMT
+Link	Etc/UTC				Etc/Universal
+Link	Etc/UTC				Etc/Zulu
+Link	Etc/GMT				Etc/Greenwich
+Link	Etc/GMT				Etc/GMT-0
+Link	Etc/GMT				Etc/GMT+0
+Link	Etc/GMT				Etc/GMT0
+Zone	Etc/GMT-14	14	-	GMT-14	# 14 hours ahead of GMT
+Zone	Etc/GMT-13	13	-	GMT-13
+Zone	Etc/GMT-12	12	-	GMT-12
+Zone	Etc/GMT-11	11	-	GMT-11
+Zone	Etc/GMT-10	10	-	GMT-10
+Zone	Etc/GMT-9	9	-	GMT-9
+Zone	Etc/GMT-8	8	-	GMT-8
+Zone	Etc/GMT-7	7	-	GMT-7
+Zone	Etc/GMT-6	6	-	GMT-6
+Zone	Etc/GMT-5	5	-	GMT-5
+Zone	Etc/GMT-4	4	-	GMT-4
+Zone	Etc/GMT-3	3	-	GMT-3
+Zone	Etc/GMT-2	2	-	GMT-2
+Zone	Etc/GMT-1	1	-	GMT-1
+Zone	Etc/GMT+1	-1	-	GMT+1
+Zone	Etc/GMT+2	-2	-	GMT+2
+Zone	Etc/GMT+3	-3	-	GMT+3
+Zone	Etc/GMT+4	-4	-	GMT+4
+Zone	Etc/GMT+5	-5	-	GMT+5
+Zone	Etc/GMT+6	-6	-	GMT+6
+Zone	Etc/GMT+7	-7	-	GMT+7
+Zone	Etc/GMT+8	-8	-	GMT+8
+Zone	Etc/GMT+9	-9	-	GMT+9
+Zone	Etc/GMT+10	-10	-	GMT+10
+Zone	Etc/GMT+11	-11	-	GMT+11
+Zone	Etc/GMT+12	-12	-	GMT+12

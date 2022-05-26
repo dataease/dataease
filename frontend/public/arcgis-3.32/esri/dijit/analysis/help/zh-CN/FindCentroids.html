@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>查找质心</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="查找质心"></h2>
+        <hr/>
+    <p>该工具使用多点、线或面要素图层来确定每个要素的代表中心。
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则将仅分析当前地图范围内可见的输入多点图层、线图层或面图层中的要素。如果未选中，则将分析输入图层中的所有要素，包括超出当前地图范围的要素。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>选择其要素将用于生成质心的图层</h2></div>
+        <hr/>
+        <div>
+            <p> 将用于查找质心的多点图层、线图层或面图层。
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>显示输出位置</h2></div>
+        <hr/>
+        <div>
+            <p> 如果选中 <b>真正质心位置</b>（默认），则输出将返回每个输入要素的真正质心位置。质心将位于如下位置：
+                <ul>
+                    <li>多点要素 - 输出质心将位于多点要素中所有点的 x 和 y 坐标的平均值处。
+                    </li>
+                    <li>线要素 - 输出质心将位于线要素中所有线段中点的 x 和 y 坐标的加权平均值处。权重基于线段的长度。
+                    </li>
+                    <li>面要素 - 输出质心将位于面的中心。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果选中 <b>包含在输入要素中</b>，则输出点要素将包含在每个输入要素中。生成的点要素将显示如下：
+                <ul>
+                    <li>多点要素 - 输出质心将与多点组中的其中一个点重合。
+                    </li>
+                    <li>线要素 - 输出质心将位于线上。如果线为曲线，则输出将位于线的中点。
+                    </li>
+                    <li>面要素 - 输出点将位于面要素内。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该图层名称已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉菜单，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

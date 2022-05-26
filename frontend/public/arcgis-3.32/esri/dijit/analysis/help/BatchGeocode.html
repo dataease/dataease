@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Geocode Locations from Table</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p> <img src="./images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Aggregate Points"> Geocode Locations from Table takes in a file or table of many addresses and returns back either a Feature Service or a file, with the coordinates of the addresses in the output file.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFileItem">
+        <div><h2>Input Table</h2></div>
+        <hr/>
+        <div>
+            
+            <p>The addresses to convert. This must be a CSV or Microsoft Excel file in the user's  <b>My Content</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inputTable">
+        <div><h2>Input Table</h2></div>
+        <hr/>
+        <div>
+            
+            <p>The table must be a table in the user's  <b>My Content</b>.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Locator</h2></div>
+        <hr/>
+        <div>
+            
+            <p>The locator service must be a service configured for batch geocoding. For more information on configuring locator services for batch geocoding, see:  <a href="GUID-DABFD905-E930-46F6-991A-11C1DC547DB9" target="blank">Configuring batch geocoding</a>.
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Country</h2></div>
+        <hr/>
+        <div>
+            
+            <p>This parameter only appears if the user is using the Esri World Geocoder to perform
+batch geocoding. If all of the addresses in the input table are from the same country, then the user should select a country to ensure the most accurate results.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Locator Inputs/Data Fields</h2></div>
+        <hr/>
+        <div>
+            <p>Map as many fields in the input table to locator fields as possible to ensure the most accurate results. If the input table has all its data in one column, select &quot;Single Field&quot; on the data fields toggle and map &quot;SingleLine&quot; to the only data field in the input. Otherwise, select &quot;Multiple Fields&quot; and map the appropriate locator fields to the multiple field columns.
+            </p> 
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Output Format</h2></div>
+        <hr/>
+        <div>
+            <p>Select an output format type. Options are &quot;Feature Service&quot;, &quot;CSV&quot; or &quot;XLS&quot; file. Results will appear in  <b>My Content</b> when the analysis job is complete.
+            </p> 
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Output result name</h2></div>
+        <hr/>
+        <div>
+            <p>This is the name of the layer that will be created in  <b>My Content</b>  and added to the map.  The default  name is based on the tool name and the input layer name. If the layer already exists, you will be asked to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down box, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

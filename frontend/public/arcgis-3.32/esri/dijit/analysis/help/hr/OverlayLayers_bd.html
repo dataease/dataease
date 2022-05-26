@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Preklopi slojeve</h2><p/>
+        <h2><img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" alt="Preklapanje slojeva"></h2>
+        <hr/>
+    <p>Preklapanje slojeva kombinira dva ili vi&scaron;e slojeva u jedan sloj. Možete razmi&scaron;ljati o preklapanju kao o gledanju kroz snop karata i stvaranje jedne karte koja sadrži sve informacije iz snopa.    Preklapanje je puno vi&scaron;e od spajanja linija. Svi atributi geoobjekata koji sudjeluju u preklapanju prenose se do konačnog proizvoda. Preklapanje se upotrebljava kako bi se odgovorilo na jedno od najosnovnijih pitanja u geografiji: &Scaron;to se nalazi na čemu? U nastavku su primjeri:
+        <ul>
+            <li>Koje se parcele nalaze unutar stogodi&scaron;nje poplavne ravnice? (Unutar je drugačiji način da se kaže na nečemu.)
+                  
+            </li>
+            <li>Kakva se upotreba zemlje odvija na kakvoj vrsti tla?
+                 
+            </li>
+            <li>Koji se bunari nalaze unutar napu&scaron;tene vojne baze?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, preklopit će se samo geoobjekti u ulaznim slojevima i slojevima preklapanja koji su vidljivi unutar trenutačnog obuhvata karte. Ako opcija nije označena, preklopit će se svi geoobjekti u sloju unosa i sloju preklapanja, čak i ako se nalaze izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izaberi sloj unosa</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti, linijski ili poligonalni sloj koji će se preklopiti.
+            </p>
+            <p class="OnlineOnly">Osim odabira sloja iz karte, možete odabrati opciju  <b>Izaberi sloj za analizu Living Atlasa</b> ili <b>Izaberi sloj za analizu</b> s dna popisa padajućeg izbornika. Time se otvara galerija koja sadrži zbirku slojeva korisnu za mnogo analiza. 
+            </p>
+        </div>
+    </div>
+    <div id="overlayLayer">
+        <div><h2>Izaberi sloj preklapanja</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj za preklapanje na sloju unosa.  
+            </p>
+            <p>Osim odabira sloja s va&scaron;e karte, možete odabrati  <b>Izaberi sloj za analizu</b> na dnu padajućeg popisa za pretraživanje va&scaron;ih sadržaja za skup podataka za dijeljenje datoteka velikih podataka ili sloj geoobjekta.
+            </p>
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Izaberi metodu preklapanja</h2></div>
+        <hr/>
+        <div>
+            <p>Metodom preklapanja utvrđuje se kako se kombiniraju sloj unosa i sloj preklapanja.  
+
+                <ul>
+                    <li> <b>Presijeci</b> &mdash; rezultat će sadržavati samo one geoobjekte ili dijelove geoobjekata u sloju preklapanja koji se preklapaju s geoobjektima u sloju unosa. Prilikom presijecanja linijskih ili poligonalnih geoobjekata, imate opciju određivanja vrste geoobjekata koje želite kao izlazne.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Točke s točkama
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Točke i unos točaka">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Točke s točkama s izvozom točaka">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Linije s linijama 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Linije i unos linija">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Linije i linije s izvozom linija ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Povr&scaron;ine s povr&scaron;inama
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Povr&scaron;ine i unos povr&scaron;ina">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="Povr&scaron;ine i povr&scaron;ine s izvozom povr&scaron;ina">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Izbri&scaron;i</b> &mdash; rezultat će sadržavati geoobjekte ili dijelove geoobjekata u sloju preklapanja koji se ne preklapaju s povr&scaron;inama u sloju unosa.  Sloj preklapanja može sadržavati poligonalne, linijske ili točkaste geoobjekte.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će se stvoriti u stavci  <b>Moj sadržaj</b> i dodati karti. Imat će iste vrste geoobjekata (poligonalni, linijski ili točkasti) kao ulazni sloj i sloj preklapanja. Zadani naziv temelji se na metodi preklapanja i nazivu sloja unosa. Ako sloj već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

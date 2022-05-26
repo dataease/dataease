@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>איתור צנטרואידים</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="איתור צנטרואידים"></h2>
+        <hr/>
+    <p>כלי זה עובד עם שכבה של ישויות ריבוי נקודות, קווים, או אזור כדי לקבוע את המרכז המייצג של כל ישות.
+    </p>
+    <p>אם האפשרות  <b>השתמש בתיחום המפה הנוכחי</b> מסומנת, רק הישויות בשכבת האזור או ריבוי-נקודות הקלט שנראות בתוך תיחום המפה הנוכחי ינותחו. אם האפשרות לא מסומנת, כל הישויות בשכבת הקלט ינותחו, גם אם הן מחוץ לתיחום המפה הנוכחי.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>בחר שכבה שהישויות שלה ישמשו ליצירת צנטרואידים</h2></div>
+        <hr/>
+        <div>
+            <p> שכבת ריבוי-הנקודות, הקווים או האזור שתשמש לאיתור צנטרואידים.
+            </p>
+            <p>בנוסף לבחירת שכבה מהמפה שלך, באפשרותך לבחור באפשרות  <b>בחר שכבת ניתוח</b> בתחתית הרשימה הנפתחת. אפשרות זו פותחת גלריה שבה באפשרותך לעיין ולבחור ערכות נתונים ממקורות שונים לצורך שימוש בניתוח. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>הצג מיקומי פלט</h2></div>
+        <hr/>
+        <div>
+            <p> כאשר האפשרות <b>בצנטרואיד האמיתי</b> מסומנת (ברירת המחדל), הפלט יחזיר את המיקום האמיתי של הצנטרואיד עבור כל ישות קלט. הצנטרואידים ימוקמו כדלהלן:
+                <ul>
+                    <li>ישויות ריבוי-נקודות - צנטרואיד הפלט ימוקם בקואורדינטות x ו-y הממוצעות של כל הנקודות בישות ריבוי-הנקודות.
+                    </li>
+                    <li>ישויות קו - צנטרואיד הפלט ימוקם בקואורדינטות x ו-y שמהוות ממוצע משוקלל של כל ריבויי-הנקודות בישות הקו. השקלול מבוסס על אורך המקטע.
+                    </li>
+                    <li>ישויות אזור - צנטרואיד הפלט ימוקם במרכז האזור.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>כאשר האפשרות  <b>נכלל בישויות קלט</b> מסומנת, ישויות הנקודה של הפלט ייכללו בכל ישות נקודה או בתוכה. ישויות הנקודות שיתקבלו כתוצאה יופיעו כדלהלן:
+                <ul>
+                    <li>ישויות ריבוי-נקודות - צנטרואיד הפלט יהיה חופף לאחת מהנקודות בקבוצת ריבוי-הנקודות.
+                    </li>
+                    <li>ישויות קו - צנטרואיד הפלט יהיה על הקו.  אם הקו מעוקל, הפלט יהיה בנקודת האמצע של הקו. 
+                    </li>
+                    <li>ישויות אזור - נקודת הפלט תהיה בתוך ישויות האזור.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>שם שכבת התוצאה</h2></div>
+        <hr/>
+        <div>
+            <p>זהו השם של השכבה שתיווצר ב <b>התוכן שלי</b> ותתווסף למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם שם השכבה כבר קיים, תתבקש לספק שם אחר.
+            </p>
+            <p>בעזרת התפריט הנפתח  <b>שמור תוצאה ב</b>, באפשרותך לציין את שם התיקייה ב <b>תוכן שלי</b> שבה התוצאה תישמר.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

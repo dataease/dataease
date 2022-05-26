@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpoluj punkty</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Interpoluj punkty"></h2>
+        <hr/>
+    <p>   Narzędzie Interpoluj punkty umożliwia przewidywanie wartości w&nbsp;nowych lokalizacjach na podstawie pomiar&oacute;w wykonanych na zbiorze punkt&oacute;w. Narzędzie korzysta z danych punktowych, z kt&oacute;rych każdy ma określoną wartość, i wyświetla obszary sklasyfikowane według przewidywanych wartości. Na przykład
+        <ul>
+            <li>Na obszarze objętym systemem zarządzania jakością powietrza znajdują się czujniki wykonujące pomiary poziomu zanieczyszczenia. Narzędzia Interpoluj punkty można użyć do prognozowania wartości poziomu zanieczyszczeń w&nbsp;miejscach, gdzie nie ma czujnik&oacute;w, na przykład w&nbsp;lokalizacjach, w&nbsp;kt&oacute;rych znajduje się populacja szczeg&oacute;lnie narażona, takich jak na przykład szkoły czy szpitale.
+            </li>
+            <li>Przewidywanie zawartości metali ciężkich w zbożach na podstawie pobranych pr&oacute;bek określonych roślin uprawnych.
+            </li>
+            <li>Przewidywanie poziom&oacute;w substancji odżywczych w glebie (azot, fosfor, potas itp.) oraz innych właściwości (na przykład przewodność elektryczna gleby) w celu oceny ich wpływu na zbiory oraz ustalenia precyzyjnej ilości nawozu, jaką należy zastosować dla każdej lokalizacji pola.
+
+            </li>
+            <li>Aplikacje meteorologiczne oferują możliwość przewidywania wartości temperatur, opad&oacute;w oraz innych powiązanych zmiennych (na przykład opad&oacute;w kwaśnych deszczy). 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę punktową zawierającą lokalizacje ze znanymi wartościami</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa punktowa używana jako podstawa interpolacji.  
+
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Wybierz pole do interpolacji</h2></div>
+        <hr/>
+        <div>
+            <p>Wyb&oacute;r pola zawierającego wartości, kt&oacute;re mają być zinterpolowane.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Optymalizuj dla</h2></div>
+        <hr/>
+        <div>
+            <p>Należy wybrać prędkość lub precyzję, zależnie od preferencji. Wykonanie bardziej precyzyjnych pomiar&oacute;w zajmuje więcej czasu.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Błędy przewidywania danych wynikowych</h2></div>
+        <hr/>
+        <div>
+            <p> Po zaznaczeniu utworzona zostanie warstwa ze standardowymi błędami dla przewidywań interpolacji. Nazwa wynikowej warstwy składa się z&nbsp;nazwy warstwy wynikowej z&nbsp;dołączonym na końcu słowem &bdquo;Errors&rdquo; (&bdquo;Błędy&rdquo;).
+            </p>
+            <p>Wyszukanie błęd&oacute;w standardowych jest przydatne, ponieważ dostarcza informacji na temat wiarygodności przewidywanych wartości. Zgodnie z&nbsp;prostą zasadą og&oacute;lną prawidłowa wartość będzie mieścić się w&nbsp;zakresie dw&oacute;ch błęd&oacute;w standardowych o&nbsp;przewidywanej wartości w&nbsp;95% przypadk&oacute;w. Przyjmijmy na przykład, że przewidywana wartość dla nowej lokalizacji to 50, a&nbsp;błąd standardowy wynosi&nbsp;5. Oznacza to, że zgodnie z&nbsp;szacunkami opracowanymi przez narzędzie prawidłowa wartość dla tej lokalizacji to&nbsp;50, jednak r&oacute;wnie prawdopodobnie może wynosić minimalnie&nbsp;40, a&nbsp;maksymalnie&nbsp;60. Aby obliczyć zakres prawdopodobnych wartości, należy pomnożyć wartość błędu standardowego przez&nbsp;2, a&nbsp;następnie dodać tę wartość do przewidywanej wartości, aby uzyskać g&oacute;rną granicę zakresu, i&nbsp;odjąć tę wartość od przewidywanej wartości w&nbsp;celu otrzymania dolnej granicy zakresu.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Klasyfikuj według</h2></div>
+        <hr/>
+        <div>
+            <p>Opcja umożliwiająca określenie sposobu podziału przewidywanych wartości na obszary.
+                <ul>
+                    <li>Interwał geometryczny &mdash; obszary są tworzone na podstawie przedział&oacute;w klas będących szeregiem geometrycznym. Ta metoda zapewnia dla każdego zakresu taką samą liczbę wartości oraz stałą r&oacute;żnicę między interwałami.
+                    </li>
+                    <li>R&oacute;wne przedziały &mdash; jednakowy zakres przewidywanych wartości dla każdego utworzonego obszaru.
+                    </li>
+                    <li>R&oacute;wna powierzchnia &mdash; obszary są tworzone w&nbsp;taki spos&oacute;b, że liczba wartości danych w&nbsp;każdym obszarze jest jednakowa. Na przykład, jeżeli dane zawierają więcej wysokich niż niskich wartości, utworzonych zostanie więcej obszar&oacute;w dla wartości wysokich.
+                    </li>
+                    <li>Ręcznie &mdash; opcja ta umożliwia zdefiniowanie własnego zakresu wartości dla obszar&oacute;w. Wartości te należy wprowadzić w&nbsp;polach parametru  <b>Wartości granic klas</b> opisanego poniżej.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Liczba klas</h2></div>
+        <hr/>
+        <div>
+            <p>Opcja pozwalająca na określenie liczby klas (zakresu przewidywanych wartości) w&nbsp;warstwie wynikowej. Każda klasa definiuje granice obszar&oacute;w. Wartości tych klas definiuje opisany powyżej parametr  <b>Klasyfikuj według</b>.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Wartości progów klas</h2></div>
+        <hr/>
+        <div>
+            <p>W&nbsp;polach tej opcji należy wprowadzić wybrane wartości granic klas rozdzielone spacjami. Jeśli na przykład wartości graniczne klas mają wynosić&nbsp;1,5, 3 oraz 7, wpisz  <code>1,5 3 7</code>. Wartości te definiują g&oacute;rną granicę dla każdej z&nbsp;klas, co oznacza, że liczba klas będzie r&oacute;wna liczbie wprowadzonych wartości. Obszary nie zostaną utworzone dla lokalizacji, kt&oacute;rych przewidywane wartości są wyższe niż wprowadzona wartość graniczna. Należy wprowadzić przynajmniej dwie wartości, jednak nie więcej niż 32.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Ogranicz dane wynikowe do</h2></div>
+        <hr/>
+        <div>
+            <p>Opcja umożliwiająca wyświetlenie lub podanie warstwy określającej&nbsp;obszar, na kt&oacute;rym mają być naniesione wyniki. Na przykład, jeżeli interpolujesz wartości pomiar&oacute;w poziomu zanieczyszczenia jeziora, jako wartość opisywanego parametru można określić obszar jeziora, dzięki czemu utworzona warstwa wynikowa będzie ograniczona tylko do obszaru jeziora.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Prognozuj dla tych lokalizacji</h2></div>
+        <hr/>
+        <div>
+            <p>Opcja umożliwiająca wyświetlenie obszaru lub podanie warstwy z&nbsp;lokalizacją punkt&oacute;w, dla kt&oacute;rych mają być obliczone przewidywane wartości. Dzięki temu przewidywane wartości można wyznaczać tylko dla obszar&oacute;w interesujących użytkownika. Jeśli na przykład warstwa wejściowa przedstawia wyniki pomiar&oacute;w poziom&oacute;w zanieczyszczeń, można skorzystać z&nbsp;tego parametru, aby wyznaczyć przewidywane wartości poziomu zanieczyszczeń dla lokalizacji zajmowanych przez dużą, szczeg&oacute;lnie narażoną populację &mdash; mogą to być na przykład szkoły lub szpitale. Następnie możesz wykorzystać tę informację do opracowania zaleceń dla inspektor&oacute;w sanitarnych w&nbsp;tych lokalizacjach.
+            </p>
+            <p>Narzędzie to, o&nbsp;ile jest dostępne, będzie zwracać warstwę punkt&oacute;w z&nbsp;przewidywanymi wartościami w&nbsp;wybranych lokalizacjach. Nazwa wynikowej warstwy składa się z&nbsp;nazwy warstwy wynikowej z&nbsp;dołączonym na końcu słowem &bdquo;Points&rdquo; (&bdquo;Punkty&rdquo;).  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli ta nazwa warstwy już istnieje, wyświetlona zostanie prośba o podanie innej nazwy.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

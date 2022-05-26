@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Estrai Dati</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Estrai Dati"></h2>
+        <hr/>
+    <p>Questo strumento consente di selezionare e scaricare dati per un'area di interesse specifica. I layer selezionati vengono aggiunti a un file ZIP, CSV o KMZ.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Layer da estrarre</h2></div>
+        <hr/>
+        <div>
+            <p>Si tratta dei layer del sommario da cui &egrave; possibile estrarre feature. I layer selezionati vengono estratti e inclusi in un file ZIP o CSV risultante.
+            </p>
+            <p>Per includere un layer nell'elenco dei layer da estrarre, &egrave; necessario essere proprietario dei dati; in alternativa, il proprietario dei dati deve abilitare l'esportazione dei dati. Per abilitare l'esportazione dei dati di cui si &egrave; proprietari: 
+                <ul>
+                    <li>Aprire la descrizione dell'elemento dei dati.
+                    </li>
+                    <li>Fare clic sulla scheda  <b>Impostazioni</b>.
+                    </li>
+                    <li>Scorrere verso il basso nella sezione  <b>Esporta dati</b>.
+                    </li>
+                    <li>Selezionare  <b>Consenti ad altri utenti di esportare in formati diversi</b>.  Al termine, fare clic su <b>Salva</b>.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Se il layer di analisi contiene degli allegati, &egrave; importante sapere che gli allegati saranno estratti solo se il formato di output dei dati &egrave; un file geodatabase e l'opzione  <b>Feature di taglio</b> non &egrave; selezionata.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Area di studio</h2></div>
+        <hr/>
+        <div>
+            <p>Area che definisce le feature che verranno incluse nel file ZIP o CSV. &Egrave; possibile scegliere una delle seguente opzioni:
+                <ul>
+                    <li>L'estensione visibile corrente della mappa ( <b>Come visualizzato</b>).
+                    </li>
+                    <li>Uno dei layer del sommario che contiene feature area. Se il layer selezionato &egrave; con feature puntuali o lineari, si user&agrave; l'estensione del layer come area di studio.
+                    </li>
+                    <li>Tracciare una o pi&ugrave; aree da utilizzare.
+                    </li>
+                </ul>
+                 Verranno estratte completamente tutte le feature presenti all'interno dell'estensione della mappa. Per le feature che incrociano o intersecano i confini dell'estensione della mappa ma non sono completamente incluse nell'estensione, sono disponibili due opzioni:
+                <ul>
+                    <li> <b>Seleziona feature</b>: verranno estratte le feature che incrociano completamente i confini dell'area di studio.
+                    </li>
+                    <li> <b>Feature di taglio</b>: verranno estratte solo le parti di feature incluse nell'area di studio.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Formato dati di output</h2></div>
+        <hr/>
+        <div>
+            <p>Formato dei dati che verranno estratti. Quando si esportano feature linea o area in file CSV, vengono estratti solo gli attributi non spaziali. Quando si esportano feature puntuali, vengono estratti sia gli attributi spaziali che quelli non spaziali.  
+            </p>
+            <p>I dati estratti utilizzeranno una proiezione di Web Mercator 1984.  Per i file CSV, i campi  <i>Lat</i> e <i>Long</i> verranno aggiunti ai dati con le coordinate su Web Mercator 1984.
+            </p> 
+            <p>Sono supportati i seguenti formati di output:
+                <ul>
+                    <li>Comma separated value (CSV):  <code>.csv</code> o <code>.zip</code>
+                    </li>
+                    <li>File geodatabase:  <code>.zip</code>
+                    </li>
+                    <li>Keyhole Markup Language (KML):  <code>.kmz</code> o <code>.zip</code>
+                    </li>
+                    <li>Shapefile:  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nome file di output</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome dell&rsquo;elemento che verr&agrave; aggiunto in  <b>I miei contenuti</b>.  Il nome dell'elemento &egrave; basato sul <b>Formato dati di output</b> selezionato.     Se l'elemento esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare la casella a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella di <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

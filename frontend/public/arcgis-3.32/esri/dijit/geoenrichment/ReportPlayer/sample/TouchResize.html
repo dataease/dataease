@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    <title>Touch Resize</title>
+
+    <script>
+        var dojoConfig = { async: true, locale: typeof dojoConfig !== 'undefined' && dojoConfig.locale || null, packages: [{ name: 'dojo', location: './dojo' }, { name: 'dijit', location: './dijit' }, { name: 'dojox', location: './dojox' }, { name: 'dgrid', location: './dgrid' }, { name: 'dstore', location: './dstore' }, { name: 'put-selector', location: './put-selector' }, { name: 'xstyle', location: './xstyle' }, { name: 'esri', location: './esri' }, { name: 'moment', location: './moment', main: 'moment/moment' }] };
+    </script>
+    <script data-dojo-config="baseUrl: '../../../../..', isDebug: 1, waitSeconds: 60" src='../../../../../dojo/dojo.js'></script>
+
+    <style>
+        html, body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            overflow: hidden;
+            font-size: 13px;
+            font-family: "Avenir Next";
+        }
+    </style>
+
+    <script>
+        require([
+            "esri/dijit/geoenrichment/utils/mobile/GesturesUtil",
+            "dojo/domReady!"
+        ],
+       function (
+           GesturesUtil
+           ) {
+
+           window.onload = function () {
+               GesturesUtil.enableGesturesOnNode(targetDiv, {
+                   canZoom: function(){
+                       return true;
+                   },
+                   onZoomIn: function () {
+                       targetDiv.style.width = targetDiv.clientWidth * 1.2 + "px";
+                       targetDiv.style.height = targetDiv.clientHeight * 1.2 + "px";
+                   },
+                   onZoomOut: function () {
+                       targetDiv.style.width = targetDiv.clientWidth / 1.2 + "px";
+                       targetDiv.style.height = targetDiv.clientHeight / 1.2 + "px";
+                   },
+                   logDiv: logDiv
+               });
+           };
+       });
+    </script>
+</head>
+<body class="claro">
+    <div style="margin:10px">Pinch in/out to zoom</div>
+    <div id="targetDiv" style="background-color:red;width:200px;height:200px;"></div>
+    <div id="logDiv"></div>
+</body>
+</html>

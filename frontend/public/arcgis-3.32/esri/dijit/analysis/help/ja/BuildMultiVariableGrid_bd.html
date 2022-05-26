@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>多変数グリッドの構築</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="[データのアペンド] のワークフロー図"></h2>
+        <hr/>
+    <p>[多変数グリッドの構築] ツールは、ポイント フィーチャ、ライン フィーチャ、またはポリゴン フィーチャの 1 つ以上のレイヤーを操作します。このツールは、四角形または六角形のビンのグリッドを生成し、各入力レイヤーの近接性に基づいてビンごとに値を計算します。これらの値は、以下の変数を含むことができます。
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>[最近接フィーチャまでの距離]</b> - 各ビンから最近接フィーチャまでの距離
+            </li>
+            <li> <b>[最近接フィーチャの属性]</b> - 各ビンに最も近いフィーチャのフィールド値
+            </li>
+            <li> <b>[近傍フィーチャのサマリー]</b> - 各ビンから一定の距離内にあるすべてのフィーチャの指定された統計情報
+            </li>
+            <li> <b>[交差のサマリー]</b> - 各ビンと交差するすべてのフィーチャの指定された統計情報
+            </li>
+        </ul>
+        
+    </p>
+    <p>指定した変数のみが結果レイヤーに含まれます。これらの変数は、データの近接性および分布を理解するのに役立ちます。 これらの結果は、次のような質問への回答を開始するのに役立ちます。
+        <ul>
+            <li>公共輸送インフラストラクチャの複数のレイヤーを前提とした場合、公共輸送を最も利用しづらいのは都市のどの部分ですか？
+            </li>
+            <li>湖や河川などの水路のレイヤーを前提とした場合、米国内の各場所に最も近い水域の名前は何ですか？
+            </li>
+            <li>世帯収入のレイヤーを前提とした場合、米国内のどの場所で、周囲 50 マイル以内での収入の変化が最も大きいですか？
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>多変数グリッドの構築に使用するビンのタイプを選択</h2></div>
+        <hr/>
+        <div>
+             
+            <p>多変数グリッドの作成に使用するビンのタイプおよびサイズ。 <b>[四角形]</b> オプションの場合、指定された数値と単位によって、四角形の高さと長さが決まります。 <b>[六角形]</b> オプションの場合は、指定された数値と単位によって、平行する 2 辺間の距離が決まります。
+            </p>
+            <p>この解析はビンを使用し、投影座標系が必要です。 <b>[分析環境]</b> で <b>[処理に使用する座標系]</b> を設定できます。処理に使用する座標系が投影座標系に設定されていない場合、 <b>[分析の実行]</b> を行うときに設定するようにプロンプトが表示されます。 
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>グリッドに含める入力レイヤーおよび変数を選択</h2></div>
+        <hr/>
+        <div>
+            <p>追加ボタン ( <b>+</b>) をクリックして <b>[変数の追加]</b> ウィンドウを開き、レイヤーを解析に追加します。 <b>[変数の追加]</b> ウィンドウで入力レイヤーを選択し、その入力レイヤーに対して計算する変数を構成します。
+            </p>
+            <p>計算する変数を選択して構成すると、そのレイヤーが、他の選択されたレイヤーとともにツールのウィンドウにリスト表示されます。いずれかのレイヤーの編集ボタンをクリックすると、 <b>[変数の追加]</b> ウィンドウが開き、そのレイヤーに対して構成されたすべての変数が表示されます。いずれかのレイヤーの削除ボタンをクリックすると、そのレイヤーおよび関連するすべての変数が解析から削除されます。
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>変数の追加</h2></div>
+        <hr/>
+        <div>
+            <p>このウィンドウでは、入力レイヤーを選択し、その入力レイヤーに対して計算する変数を構成することができます。開始するには、 <b>[入力レイヤーの選択]</b> ドロップダウン メニューを使用して、解析に追加するポイント レイヤー、ポリゴン レイヤー、またはライン レイヤーを選択します。
+            </p>
+            <p>マップからレイヤーを選択できるだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択し、ビッグ データ ファイル共有データセットまたはフィーチャ レイヤーのコンテンツを参照して選択することもできます。
+            </p>
+            <p>入力レイヤーを選択したら、 <b>[変数の追加]</b> ボタンをクリックして、新しい変数を編集するために開きます。変数ごとに一意の名前を指定する必要があります。この名前は、結果レイヤーの属性テーブルに作成されるフィールドの名前になります。
+            </p>
+            <p>ドロップダウン メニューを使用して、追加する変数のタイプを選択します。各変数タイプは一意のパラメーターのセットを使用して構成される必要があり、すべてのパラメーターが必須です。
+            </p>
+            <p>選択したレイヤーのすべての目的の変数を追加したら、 <b>[追加]</b> ボタンをクリックして変数を保存します。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p> 作成されるレイヤーの名前。 ArcGIS Data Store に書き込んでいる場合、結果は  <b>[マイ コンテンツ]</b> に保存され、マップに追加されます。ビッグ データ ファイル共有に書き込んでいる場合、結果はビッグ データ ファイル共有に格納され、そのマニフェストに追加されます。この場合、結果はマップに追加されません。 デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合、このツールは正常に実行されません。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して ArcGIS Data Store (リレーショナル データ ストアまたはビッグ データ ストア) に書き込むときは、結果が保存される  <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

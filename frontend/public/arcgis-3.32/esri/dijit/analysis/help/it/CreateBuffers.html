@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Crea Buffer</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Crea Buffer"></h2>
+        <hr/>
+    <p>Un buffer &egrave; un'area che copre una data distanza da una feature puntuale, lineare o areale. 
+    </p>
+    <p>I buffer vengono in genere utilizzati per creare aree da analizzare successivamente con uno strumento come Sovrapponi Layer. Ad esempio, se la domanda &egrave; &quot;Quali edifici si trovano nel raggio di un chilometro dalla scuola?&quot;, &egrave; possibile trovare la risposta creando un buffer di un chilometro intorno alla scuola e utilizzando lo strumento Sovrapponi Layer per sovrapporre tale buffer al layer che contiene le aree occupate dagli edifici. Il risultato finale &egrave; un layer di tali edifici nel raggio di un chilometro dalla scuola.  
+    </p>
+    <p>Se si seleziona  <b>Usa estensione mappa corrente</b>, verranno incluse nel buffer solo le feature visibili nell'estensione mappa corrente.  Se questa opzione &egrave; deselezionata, verranno incluse nel buffer tutte le feature del layer di input, anche se esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegli il layer contenente le feature da includere nel buffer</h2></div>
+        <hr/>
+        <div>
+            <p>La feature puntuale, lineare o areale da includere nel buffer. 
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Immetti dimensione buffer</h2></div>
+        <hr/>
+        <div>
+            <p>&Egrave; possibile immettere uno o pi&ugrave; valori per la distanza, separati da un spazio. &Egrave; anche possibile fare clic su  <b>Campo</b> per specificare nel layer di input un attributo che contiene il valore della distanza.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>Opzioni</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere in che modo si desidera gestire i buffer sovrapposti. Per ogni buffer sovrapposto a un altro buffer &egrave; possibile mantenere le aree in comune (Sovrapponi) o combinarle (Dissolvi). Quando si utilizza  <b>Dissolvi</b>, tutti i buffer si dissolvono in un&rsquo;unica feature multiparte, eliminando ogni sovrapposizione.
+            </p>  
+            <p> Quando si utilizzano pi&ugrave; distanze, &egrave; possibile scegliere la modalit&agrave; di rappresentazione della distanza dall'ultima distanza del buffer. Ad esempio, se le distanze sono 10 e 14:
+                <ul>
+                    <li>Scegliendo  <b>Anelli</b> si otterranno i buffer compresi tra 0 e 10 e tra 10 e 14.
+                    </li>
+                    <li>Scegliendo  <b>Dischi</b> si otterranno i buffer compresi tra 0 e 10 e tra 0 e 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>Opzioni</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere come si desidera gestire i buffer sovrapposti. Per ogni buffer sovrapposto a un altro buffer &egrave; possibile mantenere le aree in comune (Sovrapponi) o combinarle (Dissolvi). Quando si utilizza  <b>Dissolvi</b>, tutti i buffer si dissolvono in un&rsquo;unica feature multiparte, eliminando ogni sovrapposizione.
+            </p>
+            <p>Quando si crea un unico buffer intorno a feature areali (una sola distanza immessa), &egrave; possibile scegliere se includere o escludere nel buffer risultante la feature di buffer.
+            </p>
+            <p>Quando si utilizzano pi&ugrave; distanze, &egrave; possibile scegliere la modalit&agrave; di rappresentazione della distanza dall'ultima distanza del buffer. Ad esempio, se le distanze sono 10 e 14:
+                <ul>
+                    <li>Scegliendo  <b>Anelli</b> si otterranno i buffer compresi tra 0 e 10 e tra 10 e 14.
+                    </li>
+                    <li>Scegliendo  <b>Dischi</b> si otterranno i buffer compresi tra 0 e 10 e tra 0 e 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>Opzioni</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere in che modo si desidera gestire i buffer sovrapposti. Per ogni buffer sovrapposto a un altro buffer &egrave; possibile mantenere le aree in comune (Sovrapponi) o combinarle (Dissolvi). Quando si utilizza  <b>Dissolvi</b>, tutti i buffer si dissolvono in un&rsquo;unica feature multiparte, eliminando ogni sovrapposizione.
+            </p>
+            <p>Quando si crea un unico buffer intorno a linee (una sola distanza immessa), &egrave; possibile scegliere quale lato della linea includere nel buffer. In genere si scelgono entrambi i lati. La destra e la sinistra vengono determinate come se si stesse camminando a partire dalla prima coordinata x,y della riga (coordinata iniziale) fino a raggiungere l'ultima coordinata x,y della linea (coordinata finale). La scelta tra destra e sinistra indica in genere che &egrave; gi&agrave; nota la direzione in cui verranno create e memorizzate le feature lineari, ad esempio a monte o a valle in una rete fluviale. Alle estremit&agrave; delle linee il buffer pu&ograve; essere arrotondato (Arrotondato) o dritto (Piatto).
+            </p>
+            <p>Quando si creano pi&ugrave; buffer (pi&ugrave; di una distanza), &egrave; possibile scegliere la modalit&agrave; di rappresentazione della distanza dall'ultima distanza del buffer. Ad esempio, se le distanze sono 10 e 14:
+                <ul>
+                    <li>Scegliendo  <b>Anelli</b> si otterranno i buffer compresi tra 0 e 10 e tra 10 e 14.
+                    </li>
+                    <li>Scegliendo  <b>Dischi</b> si otterranno i buffer compresi tra 0 e 10 e tra 0 e 14.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>Opzioni</h2></div>
+        <hr/>
+        <div>
+            <p>Dopo aver selezionato un layer di cui eseguire il buffer, &egrave; possibile scegliere come gestire i buffer che si sovrappongono. Per ogni buffer sovrapposto a un altro buffer &egrave; possibile mantenere le aree in comune (Sovrapponi) o combinarle (Dissolvi). Quando si utilizza  <b>Dissolvi</b>, tutti i buffer si dissolvono in un&rsquo;unica feature multiparte, eliminando ogni sovrapposizione. Inoltre, &egrave; possibile specificare come devono essere rappresentate pi&ugrave; distanze.   Per i layer contenenti feature lineari, &egrave; possibile scegliere quale lato della linea includere nel buffer.  Per i layer contenenti feature areali, &egrave; possibile scegliere se includere o escludere la feature su cui &egrave; stato applicato il buffer, nel buffer risultante.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Mappa om värden</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="Verktyget Mappa om v&auml;rden f&ouml;r Portal"></h2>
+        <hr/>
+    <p>Med det h&auml;r verktyget kan du &auml;ndra eller klassificera om pixelv&auml;rdena f&ouml;r rasterdata. Pixelv&auml;rden mappas om genom att ange ett intervall med pixelv&auml;rden som ska mappas till ett utdatapixelv&auml;rde. Utdatapixelv&auml;rdet kan vara ett giltigt v&auml;rde eller ett NoData-v&auml;rde, som &auml;r pixlar som inte har n&aring;got v&auml;rde associerat med sig.
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> &auml;r markerat mappas endast de celler om som &auml;r synliga i den aktuella kartutbredningen. Om alternativet inte markeras bearbetas alla celler i rastret, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Indata</h2></div>
+        <hr/>
+        <div>
+            <p>De indata som ska f&aring; sina v&auml;rden ommappade.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Mappa om pixelvärden till nya värden</h2></div>
+        <hr/>
+        <div>
+            <p>Du anger ett intervall av v&auml;rden genom att ange ett minimi- och ett maximiv&auml;rde och sedan tilldela ett utdatav&auml;rde eller ett NoData-v&auml;rde till det angivna intervallet.
+            </p>
+            <p>Om du vill mappa om ett nytt v&auml;rdeintervall klickar du p&aring;  <b>L&auml;gg till</b>, s&aring; l&auml;ggs en rad till. Klicka p&aring; varje v&auml;rde f&ouml;r att redigera tabellen till de intervall och det ommappade v&auml;rde du beh&ouml;ver. N&auml;r du anger v&auml;rdeintervallen till&auml;mpas tv&aring; viktiga regler:
+                <ul>
+                    <li>Minimiv&auml;rdet i intervallet &auml;r inklusivt och maximiv&auml;rdet &auml;r exklusivt.
+                    </li>
+                    <li>Raderna i tabellen bearbetas uppifr&aring;n och ned.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Tabellen nedan visar att minimiv&auml;rdet inkluderas i utdata, men maximiv&auml;rdet inkluderas inte.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1-9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10-19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Ordningen p&aring; intervallen som specificeras i tabellen &auml;r ocks&aring; viktig. Den &ouml;versta raden i tabellen behandlas f&ouml;rst och sedan raden nedan. De b&aring;da tabellerna nedan visar hur samma v&auml;rdeintervall ger olika resultat p&aring; grund av radernas ordning i tabellen.
+            </p> 
+            <p>Tabellen nedan visar utdatav&auml;rdet n&auml;r den f&ouml;rsta kolumnen sorteras numeriskt:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1-14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Tabellen nedan visar hur en annan ordning bland raderna kommer att producera olika utdatav&auml;rden:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1-9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>B&aring;da reglerna anv&auml;nds f&ouml;r att ordna om v&auml;rdena. Eftersom varje rad bearbetas uppifr&aring;n och ned f&aring;r de h&auml;r v&auml;rdena f&ouml;retr&auml;de n&auml;r utdata avg&ouml;rs, &auml;ven n&auml;r samma intervall anv&auml;nds.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Du kan ange namnet p&aring; en mapp i  <b>Mitt inneh&aring;ll</b> d&auml;r resultatet sparas med listrutan <b>Spara resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

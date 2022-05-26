@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Souhrn hodnot rastru v rozmezí (Summarize Raster Within)</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="N&aacute;stroj Souhrn hodnot rastru v rozmez&iacute;"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj sumarizuje rastr na z&aacute;kladě oblast&iacute; (z&oacute;n) definovan&yacute;ch prvn&iacute; vstupn&iacute; vrstvou.
+    </p>
+    <p>Mezi někter&eacute; př&iacute;klady použit&iacute; patř&iacute;:
+    </p>
+    <p>
+        <ul>
+            <li>Pomoc&iacute; vrstvy oblast&iacute; povod&iacute; a vrstvy oblast&iacute; využit&iacute; půdy podle typu využit&iacute; půdy spoč&iacute;tej celkovou rozlohu využ&iacute;van&eacute;ho typu půdy v&nbsp;každ&eacute;m povod&iacute;.
+                
+
+            </li>
+            <li>Pomoc&iacute; vrstvy parcel v&nbsp;kraji a vrstvy hranic měst spoč&iacute;tej průměrnou cenu voln&yacute;ch parcel v&nbsp;rozsahu hranic každ&eacute;ho města.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t rozsah aktu&aacute;ln&iacute; mapy</b>, budou analyzov&aacute;ny pouze prvky ve vstupn&iacute; vrstvě a v&nbsp;sumarizovan&eacute; vrstvě, kter&eacute; jsou viditeln&eacute; v&nbsp;rozsahu aktu&aacute;ln&iacute; mapy.  Pokud toto pole za&scaron;krtnuto nen&iacute;, budou analyzov&aacute;ny v&scaron;echny prvky ve vstupn&iacute; a sumarizovan&eacute; vrstvě, včetně těch, kter&eacute; se nach&aacute;z&iacute; mimo aktu&aacute;ln&iacute; rozsah mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Zvolit vrstvu plochy k sumarizaci rastrové vrstvy uvnitř definovaných hranic</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva definuj&iacute;c&iacute; hranice oblast&iacute;, nebo z&oacute;n, kter&eacute; budou sumarizov&aacute;ny.
+            </p>
+            <p>Tato vrstva může b&yacute;t rastr nebo obsahovat data. Z&nbsp;hlediska rastrů jsou z&oacute;ny definov&aacute;ny v&scaron;emi um&iacute;stěn&iacute;mi ve vstupu, kter&aacute; maj&iacute; stejnou hodnotu buňky. Oblasti k&nbsp;sobě nemus&iacute; přil&eacute;hat.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Zvolit pole pro definování hranic</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je atribut vrstvy, kter&yacute; bude použit k&nbsp;definov&aacute;n&iacute; hranic oblast&iacute;.
+            </p>
+            <p>Předpokl&aacute;dejme např&iacute;klad, že prvn&iacute; vstupn&iacute; vrstva definuje hranice jednotek spr&aacute;vy, s&nbsp;atributy definuj&iacute;c&iacute;mi region, m&iacute;stn&iacute; oblast a ID parcely každ&eacute; jednotky. Tak&eacute; m&aacute;te rastrovou vrstvu definuj&iacute;c&iacute; index biodiverzity pro každ&eacute; um&iacute;stěn&iacute;. U vybran&eacute;ho pole se můžete rozhodnout vypoč&iacute;tat průměrnou biodiverzitu na m&iacute;stn&iacute;, oblastn&iacute; nebo region&aacute;ln&iacute; &uacute;rovni.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Zvolit rastrovou vrstvu k sumarizaci</h2></div>
+        <hr/>
+        <div>
+            <p>Rastrov&eacute; buňky v t&eacute;to vrstvě budou sumarizov&aacute;ny podle oblast&iacute; (z&oacute;n), do kter&yacute;ch spadaj&iacute;.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Zvolit statistiku pro výpočet</h2></div>
+        <hr/>
+        <div>
+            <p>Po v&yacute;běru vrstvy pro sumarizaci můžete volitelně vypoč&iacute;tat statistiku libovoln&yacute;ch č&iacute;seln&yacute;ch atributů bodů, lini&iacute; či oblast&iacute; spadaj&iacute;c&iacute;ch do vstupn&iacute; vrstvy oblast&iacute;.
+            </p>
+            <p>Když je vybran&eacute; pole celoč&iacute;seln&eacute;, dostupn&eacute; typy statistiky jsou Průměr, Vět&scaron;ina, Maximum, Medi&aacute;n, Minimum, Men&scaron;ina, Rozpět&iacute;, Směrodatn&aacute; odchylka, Souhrn a V&yacute;běr.
+            </p>
+            <p>Když m&aacute; vybran&eacute; pole typ desetinn&eacute;ho č&iacute;sla, možnosti jsou Průměr, Maximum, Minimum, Rozpět&iacute;, Směrodatn&aacute; odchylka a Souhrn.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Ignorovat při výpočtu chybějící hodnoty</h2></div>
+        <hr/>
+        <div>
+            <p>Pokud se rozhodnete ignorovat chyběj&iacute;c&iacute; hodnoty, použij&iacute; se při určov&aacute;n&iacute; v&yacute;stupn&iacute; hodnoty pro danou oblast pouze buňky s&nbsp;hodnotou ve vrstvě pro sumarizaci. V opačn&eacute;m př&iacute;padě, pokud se kdekoli v oblasti nach&aacute;zej&iacute; chyběj&iacute;c&iacute; hodnoty, bude rozhodnuto, že neexistuje dostatek informac&iacute; k&nbsp;proveden&iacute; statistick&yacute;ch v&yacute;počtů pro v&scaron;echny buňky v dan&eacute; z&oacute;ně a tato oblast ve v&yacute;stupu obdrž&iacute; nulovou (NoData) hodnotu.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>N&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; se do mapy. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>Můžete zadat n&aacute;zev složky v  <b>Můj obsah</b>, kde bude v&yacute;sledek uložen pomoc&iacute; rozbalovac&iacute;ho seznamu <b>Uložit v&yacute;sledek do</b> .
+            </p>
+        </div>
+    </div>
+</div>
+</html>

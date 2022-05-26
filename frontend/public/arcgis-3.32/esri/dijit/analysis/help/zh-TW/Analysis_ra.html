@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="raToolbox">
+        <p>點陣分析可讓您使用  ArcGIS Image Server 來執行大點陣資料集分析。這能讓您運用伺服器的功能以更快地分析更多資料。目前可透過  Portal for ArcGIS Web 使用者體驗所使用的工具集為<b>摘要資料</b>、 <b>分析模式</b>、 <b>使用鄰域</b>、 <b>分析圖片</b>、 <b>分析地形</b>、 <b>管理資料</b>和 <b>深度學習</b>。
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="smallsize">
+        <h2>摘要資料</h2>
+        <hr/>
+        <p>此工具集包含一個工具，可用於計算您定義的區域邊界內的點陣圖層的部分統計資料。
+            <ul>
+                <li> <b>摘要點陣範圍</b>可計算定義的區域邊界內之點陣儲存格的統計資料。
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="SummarizeRasterWithinTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>摘要點陣範圍</h2></td>
+                    <td>
+                    <img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" class="titleImage" alt="摘要點陣範圍工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>計算定義的區域內之點陣儲存格的部分摘要統計資料。
+            </p>
+            <p>以下是部分應用程式範例： 
+
+                <ul>
+                    <li>假設有一個流域區域圖層和一個高程點陣圖層，計算每一個流域內的高程範圍以判定何者具有最高的能源流量。
+                        
+
+                    </li>
+                    <li>假設有一個系統管理單元的圖層和一個陸地使用類別的點陣圖層，計算每個管理區域內的各種陸地使用值來識別何者需要執行大量工作，以決定管理計劃。
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="smallsize">
+        <h2>分析模式</h2>
+        <hr/>
+        <p>這些工具可幫助您辨識、量化並可視化數據的空間模式。
+
+            <ul>
+                <li> <b>計算密度</b>取某一現象的已知數量，並將這些量散佈到整個地圖以建立密度地圖。
+                    
+
+                </li>
+                <li> <b>插值點</b>工具可根據一組點的測量結果預測新位置上的值。
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>計算密度</h2></td>
+                    <td>
+                    <img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" class="titleImage" alt="計算密度工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>密度分析取某一現象的已知數量，並將這些量散佈到整個地圖以建立密度地圖。例如，您可以使用此工具顯示發生雷擊或龍捲風的機率、醫療設施的利用率以及人口密度。
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsEBKTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>插值點</h2></td>
+                    <td>
+                    <img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" class="titleImage" alt="插值點工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>該工具用於根據一組點的測量結果預測新位置上的值。該工具對具有數值的點資料進行處理，並傳回按預測值分類的區域。例如，借助該工具，您可以根據各個雨量計的測量結果預測某一分水嶺內的降雨量級別。
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="smallsize">
+        <h2>使用鄰域分析</h2>
+        <hr/>
+        <p>這些工具可以協助您回答在空間分析中，最常提出的一個問題：「什麼在什麼附近？」
+
+            <ul>
+                <li> <b>計算距離</b>可從單一或一組來源計算歐幾里德距離、方向和分配。
+                    
+
+                </li>
+                <li> <b>決定最佳的行進成本網路</b>可計算一組輸入地區的最佳成本網路。
+                    
+
+                </li>
+                <li> <b>判定行進成本路徑為折線</b>可計算來源與已知目的地之間的最低成本折線路徑。
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDistanceTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>計算距離</h2></td>
+                    <td>
+                    <img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" class="titleImage" alt="計算距離">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>從單一或一組來源計算歐幾里德距離、方向和分配。您可以使用此工具來判定位置與道路、建築物或公園的距離。您也可以決定必須從位置的哪個方向行進，以便從最直線的路徑返回原點。您可以在研究區域中查看每個最近來源位置。
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineOptimumTravelCostNetworkTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>決定最佳的行進成本網路</h2></td>
+                    <td>
+                    <img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" class="titleImage" alt="決定最佳的行進成本網路工具圖例">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>計算一組輸入地區的最佳成本網路。
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineTravelCostPathAsPolylineTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>判定行進成本路徑為折線</h2></td>
+                    <td>
+                    <img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" class="titleImage" alt="判定行進成本路徑為折線工具圖例">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>計算來源與已知目的地之間的最低成本折線路徑。
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeImageCategory" class="smallsize">
+        <h2>分析圖片</h2>
+        <hr/>
+        <p>下列工具可協助您分析圖片。
+            <ul>
+                <li> <b>套用點陣函數樣板</b>會使用點陣函數樣板指定的函數或函數鏈結來處理您的影像。
+                </li>
+                <li> <b>監控植被</b>可根據頻段上的算術運算來偵測圖片內的植被。
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ApplyRFxTemplateTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>套用點陣函數樣板</h2></td>
+                    <td>
+                    <img src="../images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" class="titleImage" alt="套用點陣函數樣板">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>使用點陣函數樣板指定的函數鏈結來處理您的影像。
+            </p>
+            <br/>
+        </div>
+        <div id="MonitorVegetationTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>監控植被</h2></td>
+                    <td>
+                    <img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" class="titleImage" alt="入口網站的監控植被工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>在多頻段點陣圖層的頻段上執行算術運算，以透露研究區域的植被涵蓋範圍資訊。
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeTerrainCategory" class="smallsize">
+        <h2>分析地形</h2>
+        <hr/>
+        <p>這些工具可協助您分析點陣表面。
+            <ul>
+                <li> <b>計算坡度</b>可計算地形的陡度。
+                    
+
+                </li>
+                <li> <b>衍生部分</b>可計算每個位置最陡峭的坡度方向。
+                    
+
+                </li>
+                <li> <b>建立視域</b>可識別從景觀上的任何點可看到的景物。
+                    
+
+                </li>
+                <li> <b>流域</b>可計算表面上的識別位置上方的貢獻區域。
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateSlopeTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>計算坡度</h2></td>
+                    <td>
+                    <img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" class="titleImage" alt="入口網站的計算波度工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>識別表面，其顯示輸入高程資料的坡度。坡度表示每一個數值高程模型 (DEM) 儲存格的高程變更比率。
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveAspectTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>衍生部份</h2></td>
+                    <td>
+                    <img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" class="titleImage" alt="入口網站的衍生部份工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>識別每個儲存格至其鄰里值的最大變動比率的下波方向。可將「部份」想像成波度方向。
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>建立視域</h2></td>
+                    <td>
+                    <img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" class="titleImage" alt="建立視域工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>決定一組觀察者可看見的點陣表面上位置。
+            </p>
+            <br/>
+        </div>
+        <div id="WatershedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>分水嶺</h2></td>
+                    <td>
+                    <img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" class="titleImage" alt="流域任務">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>可決定一個點陣中一組儲存格上方的貢獻區域。
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="smallsize">
+        <h2>管理數據</h2>
+        <hr/>
+        <p>這些工具用於地理資料的日常管理，以及在分析之前合併資料。
+            <ul>
+                <li> <b>擷取點陣</b>可裁掉點陣資料集的部分以進一步分析。
+                    
+
+                </li>
+                <li> <b>重新製圖值</b>可將不同值指派給點陣儲存格。
+                    
+
+                </li>
+                <li> <b>將圖徵轉換為點陣</b>可點陣化向量資料。
+                    
+
+                </li>
+                <li> <b>將點陣轉換為圖徵</b>可向量化點陣資料。
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ExtractRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>擷取點陣</h2></td>
+                    <td>
+                    <img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" class="titleImage" alt="入口網站的擷取點陣工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>根據值、形狀，或不同資料集的範圍來擷取儲存格。
+            </p>
+            <br/>
+        </div>
+        <div id="RemapValuesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>重新製圖值</h2></td>
+                    <td>
+                    <img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" class="titleImage" alt="入口網站的重新製圖值工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>將個別儲存格值或儲存格值範圍儲存為新值。
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertFeatureToRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>將圖徵轉換為點陣</h2></td>
+                    <td>
+                    <img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" class="titleImage" alt="將圖徵轉換為點陣工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>從現有的圖徵資料集建立新的點陣資料集。
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertRasterToFeatureTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>將點陣轉換為圖徵</h2></td>
+                    <td>
+                    <img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" class="titleImage" alt="將點陣轉換為圖徵工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>從現有的點陣資料集建立新的圖徵資料集。
+            </p>
+            <br/>
+        </div>
+    <div id="DeepLearningCategory" class="smallsize">
+        <h2>工具集深度學習</h2>
+        <hr/>
+        <p>這些工具是用來偵測圖片中的特定圖徵，或用來分類點陣資料集內的像素。深度學習是一種人工智慧機器學習方法，可在類神經網路中使用多個圖層來偵測影像的圖徵，其中的每個圖層可擷取圖片中一或多個唯一圖徵。這些工具利用經過培訓的模型，可用來偵測第三方深度學習架構（例如 TensorFlow、CNTK 和 Keras）中的特定圖徵，並輸出圖徵或類別地圖。
+            <ul>
+                <li> <b>使用深度學習以分類像素</b>可使用培訓的深度學習模型來產生分類的點陣。
+                </li>
+                <li> <b>使用深度學習以偵測物件</b>可使用培訓的深度學習模型來產生圖徵類別，包含它在輸入點陣中找到的物件。
+                </li>
+            </ul>
+             
+        </p>
+    </div>
+        <div id="ClassifyPixelsUsingDeepLearningTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>使用深度學習以分類像素</h2></td>
+                    <td>
+                    <img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" class="titleImage" alt="使用深度學習以分類像素">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Runs a trained deep learning model on an input raster to produce a classified raster, with each valid pixel having a class label assigned.
+            </p>
+            <br/>
+        </div>
+        <div id="DetectObjectsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>使用深度學習以偵測物件</h2></td>
+                    <td>
+                    <img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="使用深度學習以偵測物件">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Runs a trained deep learning model on an input raster to produce a feature class containing the objects it finds. The features can be bounding boxes or polygons around the objects found, or points at the centers of the objects.
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

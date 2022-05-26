@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Resumir Raster Em</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Ferramenta Resumir Raster Em"></h2>
+        <hr/>
+    <p>Esta ferramenta resume um raster com base em &aacute;reas (zonas) definidas pela primeira camada de entrada.
+    </p>
+    <p>Alguns exemplos de aplica&ccedil;&otilde;es incluem as seguintes:
+    </p>
+    <p>
+        <ul>
+            <li>Dada uma camada com os limites das bacias hidrogr&aacute;ficas e uma camada de uso do solo com os limites por tipo de uso, calcular &aacute;rea total do tipo de uso do solo para cada bacia hidrogr&aacute;fica.
+                
+
+            </li>
+            <li>Dada uma camada de parcelas num munic&iacute;pio e uma camada com o limite das freguesias pertencentes a esse munic&iacute;pio , resumir o valor m&eacute;dio das parcelas vagas dentro de cada freguesia.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se  <b>Usar extens&atilde;o de mapa actual</b> &eacute; validado, apenas esses elementos na camada de entrada e da camada a ser resumida que s&atilde;o vis&iacute;veis dentro do mapa de extens&atilde;o actual ser&atilde;o analisados.  Se n&atilde;o validado, todos os elementos tanto na camada de entrada e na camada a serem resumidos v&atilde;o ser analisados, mesmo que se encontrem fora da extens&atilde;o do mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Selecionar área para resumir uma camada de raster no interior dos limites definidos</h2></div>
+        <hr/>
+        <div>
+            <p>A camada que define os limites das &aacute;reas, ou zonas, que ser&atilde;o resumidas.
+            </p>
+            <p>A camada pode ser de dados raster ou de elementos. Para rasters, as zonas s&atilde;o definidas com base em todas as localiza&ccedil;&otilde;es na entrada que possuem o mesmo valor de c&eacute;lula. As &aacute;reas n&atilde;o t&ecirc;m de ser cont&iacute;guas.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Escolher campo para definir os limites</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o atributo da camada que ser&aacute; utilizado para definir os limites das &aacute;reas.
+            </p>
+            <p>Por exemplo, suponha que a primeira camada de entrada define os limites de unidades de gest&atilde;o, com atributos que definem a regi&atilde;o, o distrito e a ID de parcela de cada unidade. Tem ainda uma camada raster que define um &iacute;ndice de biodiversidade para cada local. Com o campo que selecionar, pode decidir calcular a biodiversidade m&eacute;dia a n&iacute;vel local, distrital ou regional.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Escolher camada de raster para resumir</h2></div>
+        <hr/>
+        <div>
+            <p>As c&eacute;lulas raster nesta camada ser&atilde;o resumidas pelas &aacute;reas (zonas) em que se incluem.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Escolher estatística para calcular</h2></div>
+        <hr/>
+        <div>
+            <p>Ap&oacute;s selecionar uma camada para resumir, pode opcionalmente calcular estat&iacute;sticas de qualquer atributo num&eacute;rico dos pontos, linhas ou &aacute;reas inclu&iacute;dos na camada de &aacute;rea de entrada.
+            </p>
+            <p>Os tipos de estat&iacute;sticas dispon&iacute;veis quando o campo selecionado &eacute; inteiro s&atilde;o M&eacute;dia, Maioria, M&aacute;ximo, Mediana, M&iacute;nimo, Minoria, Intervalo, Desvio padr&atilde;o, Soma e Variedade.
+            </p>
+            <p>Caso o campo seja um ponto flutuante, as op&ccedil;&otilde;es s&atilde;o, M&eacute;dia, M&aacute;ximo, M&iacute;nimo, Intervalo, Desvio padr&atilde;o e Soma.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Ignorar valores em falta no cálculo</h2></div>
+        <hr/>
+        <div>
+            <p>Caso opte por ignorar valores em falta, apenas as c&eacute;lulas que t&ecirc;m um valor na camada a ser resumido ser&atilde;o utilizadas para determinar o valor de sa&iacute;da para a respetiva &aacute;rea. Caso contr&aacute;rio, caso existam valores em falta em qualquer parte da &aacute;rea, considera-se que a informa&ccedil;&atilde;o existente &eacute; insuficiente para efetuar c&aacute;lculos estat&iacute;sticos para todas as c&eacute;lulas nessa zona, e essa &aacute;rea receber&aacute; um valor nulo (NoData) na sa&iacute;da.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se a camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>&Eacute; poss&iacute;vel especificar o nome de uma pasta em  <b>O Meu Conte&uacute;do</b>, onde o resultado ser&aacute; guardado utilizando a op&ccedil;&atilde;o <b>Guardar Resultado em</b> da caixa suspensa.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

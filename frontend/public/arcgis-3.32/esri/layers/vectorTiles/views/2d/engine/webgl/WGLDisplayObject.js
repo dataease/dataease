@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/layers/vectorTiles/views/2d/engine/webgl/WGLDisplayObject","require exports ../../../../core/libs/gl-matrix/vec2 ./WGLDisplayRecord ./collisions/Metric ./util/serializationUtils".split(" "),function(l,m,h,k,g,f){return function(){function e(a){this.yOverflow=this.xOverflow=this.yBucket=this.xBucket=-1;this.id=a;this.displayRecords=[];this.metrics=[];this.anchor=null}e.prototype.addMetric=function(a,b,d,c){this.metrics.push(new g.default(a,{from:b,count:d},c))};e.prototype.serialize=function(a){a.writeInt32(this.id);
+f.serializeList(a,this.metrics);f.serializeList(a,this.displayRecords);this.anchor?(a.writeF32(this.anchor[0]),a.writeF32(this.anchor[1]),a.writeInt32(this.xBucket),a.writeInt32(this.yBucket),a.writeInt32(this.xOverflow),a.writeInt32(this.yOverflow)):(a.writeF32(0),a.writeF32(0));return a};e.deserialize=function(a,b){var d=b.store,c=a.readInt32();b=new e(c);d={id:c,store:d};c=f.deserializeList(a,g.default);c.length&&(b.metrics=c);b.displayRecords=f.deserializeList(a,k,d);d=a.readF32();c=a.readF32();
+if(d||c)b.anchor=h.fromValues(d,c),b.xBucket=a.readInt32(),b.yBucket=a.readInt32(),b.xOverflow=a.readInt32(),b.yOverflow=a.readInt32();return b};return e}()});

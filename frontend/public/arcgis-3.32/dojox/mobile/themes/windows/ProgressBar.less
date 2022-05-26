@@ -1,0 +1,27 @@
+@import "variables.less";
+@import "../common/ProgressBar.less";
+
+.mblProgressBar {
+	&:before {
+		content: '';
+		position: absolute;
+		height: @mbl-progressBar-height;
+		width: 100%;
+		background-color: @win-accent-color;
+		opacity: 0.2;
+	}
+}
+
+.mblProgressBar[disabled] {
+	&:before{
+		background-color: @win-disabled-color;
+	}
+
+	.mblProgressBarProgress {
+		background-color: @win-disabled-color;
+	}
+
+	.mblProgressBarMsg {
+		color: @win-disabled-color;
+	}
+}

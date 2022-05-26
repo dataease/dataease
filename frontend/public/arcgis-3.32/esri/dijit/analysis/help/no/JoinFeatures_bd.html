@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Koble geoobjekter</h2><p/>
+        <h2><img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" alt="Koble geoobjekter"></h2>
+        <hr/>
+    <p>Verkt&oslash;yet Koble geoobjekter fungerer med to lag. Koble geoobjekter f&oslash;yer sammen attributter fra ett geoobjekt til et annet p&aring; bakgrunn av romlige, tidsmessige, og attributtmessige forhold eller en kombinasjon av de tre. Verkt&oslash;yet fastsetter alle inndatageoobjekter som oppfyller de angitte betingelsene og kobler det andre geoobjektslaget til det f&oslash;rste. Du kan eventuelt koble sammen alle geoobjektene til de samsvarende geoobjektene eller oppsummere de samsvarende geoobjektene.
+    </p>
+    <p>Koble geoobjekter kan brukes p&aring; punkter, linjer, omr&aring;der og tabeller. En tidsmessig sammenf&oslash;yning krever at inndataene er tidsaktivert, og en romlig sammenf&oslash;yning krever at dataene har en geometri. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Velg mållag</h2></div>
+        <hr/>
+        <div>
+            <p>Laget som vil ha attributter fra koblingslaget lagt til i tabellen.
+            </p>
+            <p>Analyser med den romlige relasjonen  <b>N&aelig;r</b> krever et projisert koordinatsystem. Du kan angi <b>Behandlende koordinatsystem</b> i <b>Analysemilj&oslash;er</b>. Hvis koordinatsystemet for behandling ikke er angitt som et projisert koordinatsystem, blir du bedt om &aring; angi det n&aring;r du bruker funksjonen <b>Kj&oslash;r analyse</b> .
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Velg laget som skal knyttes til mållaget</h2></div>
+        <hr/>
+        <div>
+            <p>Koblingslaget med attributtene som skal legges til i m&aring;llaget.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Velg koblingsoperasjon</h2></div>
+        <hr/>
+        <div>
+            <p>Avgj&oslash;r hvordan koblinger mellom m&aring;l- og koblingslagene skal h&aring;ndteres i utdata om flere geoobjekt for kobling viser seg &aring; ha samme relasjon med laget som skal kobles. Det er to koblingsoperasjoner &aring; velge mellom:
+                <ul>
+                    <li> <b>Koble en til en</b> &ndash; Dette alternativet oppsummerer alle samsvarende geoobjekter til hvert geoobjekt som skal kobles.
+                    </li>
+                    <li> <b>Koble en til mange</b> &ndash; Dette alternativet kobler alle samsvarende geoobjekter til koblingslaget.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Tenk deg for eksempel at du &oslash;nsker &aring; finne supermarkeder innenfor en avstand p&aring; 2 kilometer fra Bondens marked. I dette tilfellet har m&aring;llaget ett enkelt geoobjekt som representerer Bondens marked, og koblingslaget representerer de lokale dagligvarebutikkene med attributter som samlet &aring;rlig omsetning. Ved hjelp av verkt&oslash;yet Koble geoobjekter finner du ut at fem dagligvarebutikker oppfyller kriteriet. Hvis du anga en koblingsoperasjon som  <b>Koble en til mange</b>, ville du ende opp med fem geoobjekter i resultatet, der hver rad representerte Bondens marked og et supermarked. Hvis vi anga et <b>Koble en til en</b>-forhold, ville vi endt opp med et geoobjekt som representerte Bondens marked og den sammenlagte informasjonen fra dagligvarebutikkene, f.eks. antallet (2), og annen statistikk som summen av &aring;rlig omsetning.
+            </p>
+        </div>
+    </div>
+    <div id="joinOptions">
+        <div><h2>Velg en eller flere koblinger</h2></div>
+        <hr/>
+        <div>
+            <p>Angir hvilket koblingsalternativ som er brukt. Du kan bruke &eacute;n, to eller tre av de f&oslash;lgende koblingstypene: 
+                <ul>
+                    <li> <b>Romlig</b> &ndash; Bruker et bestemt romlig forhold til &aring; koble geoobjekter. Dette krever at begge lag har en geometri.
+                    </li>
+                    <li> <b>Tidsbestemt</b> &ndash; Bruker et tidsmessig forhold til &aring; koble geoobjekter. Dette krever at tid er aktivert i begge lag.
+                    </li>
+                    <li> <b>Attributt</b> &ndash; Kobler geoobjekter p&aring; bakgrunn av p&aring; like felt.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Velg en romlig relasjon</h2></div>
+        <hr/>
+        <div>
+            <p>Det romlige forholdet som avgj&oslash;r om geoobjektene skal kobles med hverandre. De f&oslash;lgende tilgjengelige forholdene avhenger av typen geometri (punkt, polylinje eller polygoner) som brukes som inndatageoobjekter:
+                <ul>
+                    <li> <b>Krysser</b> &ndash; Geoobjektene matches hvis de krysser hverandre.
+                    </li>
+                    <li> <b>Like</b> &ndash; Geoobjektene matches hvis de har samme geometri.
+                    </li>
+                    <li> <b>N&aelig;r</b> &ndash; Geoobjektene matches hvis de er innenfor en viss avstand fra hverandre. M&aring;llaget m&aring; v&aelig;re i et projisert koordinatsystem, eller den geografiske referansen for behandling m&aring; v&aelig;re satt til et projisert koordinatsystem i <b>Analysemilj&oslash;er</b> dersom det brukes en geografisk <b>N&aelig;r</b>-relasjon.
+                    </li>
+                    <li> <b>Inneholder</b>&nbsp;&ndash; Geoobjektene matches hvis m&aring;llaget omfattes av geoobjektene som skal kobles sammen.
+                    </li>
+                    <li> <b>Innenfor</b>&nbsp;&ndash; Geoobjektene matches hvis m&aring;llaget er innenfor geoobjektene som skal kobles sammen.
+                    </li>
+                    <li> <b>Ber&oslash;rer</b>&nbsp;&ndash; Geoobjektene matches hvis de har en grense som ber&oslash;rer m&aring;lgeoobjektet.
+                    </li>
+                    <li> <b>Krysser</b> &ndash; Geoobjektene matches hvis de har et kryssende omriss.
+                    </li>
+                    <li> <b>Overlapper</b> &ndash; Geoobjektene kobles hvis de overlapper.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearSpatial">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            <p> Angir radiusen som brukes i et geografisk n&aelig;r-forhold.
+            </p>
+            <p>Hvis du for eksempel hadde et datasett som representerte et kjernekraftverk, og et datasett som representerte bolighus, kunne du angi en n&aelig;r geografisk avstand p&aring; 1 kilometer for &aring; finne hus innenfor en radius p&aring; 1 kilometer fra kjernekraftverket.
+            </p> 
+        </div>
+    </div>
+    <div id="temporalRelationship">
+        <div><h2>Velg en tidsbasert relasjon</h2></div>
+        <hr/>
+        <div>
+            <p>Det tidsbestemte forholdet som vil avgj&oslash;re om geoobjektene skal kobles med hverandre. Dette alternativet er tilgjengelig bare hvis tid er aktivert p&aring; begge lag, og de tilgjengelige forholdene avhenger av typen tid (umiddelbar eller intervall) som brukes p&aring; inndatageoobjektene. De tilgjengelige tidsbestemte relasjonene er som f&oslash;lger:
+                <ul>
+                    <li> <b>M&oslash;ter</b>&nbsp;&ndash; Geoobjektene matches hvis det f&oslash;rste geoobjektet m&oslash;ter det andre.
+                    </li>
+                    <li> <b>M&oslash;tes av</b>&nbsp;&ndash; Geoobjektene matches hvis det f&oslash;rste geoobjektet m&oslash;tes av det andre.
+                    </li>
+                    <li> <b>Overlapper</b>&nbsp;&ndash; Geoobjektene matches hvis det f&oslash;rste geoobjektet overlapper det andre.
+                    </li>
+                    <li> <b>Overlappet av</b>&nbsp;&ndash; Geoobjektene matches hvis det f&oslash;rste geoobjektet overlappes av det andre.
+                    </li>
+                    <li> <b>I l&oslash;pet av</b>&nbsp;&ndash; Geoobjektene matches hvis det f&oslash;rste geoobjektet er i l&oslash;pet av det andre.
+                    </li>
+                    <li> <b>Inneholder</b>&nbsp;&ndash; Geoobjektene matches hvis det f&oslash;rste geoobjektet inneholder det andre.
+                    </li>
+                    <li> <b>Like</b>&nbsp;&ndash; Geoobjektene matches hvis det f&oslash;rste geoobjektet er lik det andre.
+                    </li>
+                    <li> <b>Fullf&oslash;rer</b>&nbsp;&ndash; Geoobjektene matches hvis det f&oslash;rste geoobjektet fullf&oslash;rer det andre.
+                    </li>
+                    <li> <b>Fullf&oslash;res av</b>&nbsp;&ndash; Geoobjektene matches hvis det f&oslash;rste geoobjektet fullf&oslash;res av det andre.
+                    </li>
+                    <li> <b>Starter</b>&nbsp;&ndash; Geoobjektene matches hvis det f&oslash;rste geoobjektet starter det andre.
+                    </li>
+                    <li> <b>Startes av</b>&nbsp;&ndash; Geoobjektene matches hvis det f&oslash;rste geoobjektet startes av det andre.
+                    </li>
+                    <li> <b>Krysser</b>&nbsp;&ndash; Geoobjektene matches hvis tidene krysser hverandre i det hele tatt.
+                    </li>
+                    <li> <b>N&aelig;r</b> &ndash; Geoobjektene matches hvis de er innenfor en viss avstand fra hverandre.
+                    </li>
+                    <li> <b>N&aelig;r f&oslash;r</b>&nbsp;&ndash; Geoobjektene kobles sammen hvis det f&oslash;rste geoobjektet er foran det andre og innenfor det angitte tidsrommet.
+                    </li>
+                    <li> <b>N&aelig;r etter</b>&nbsp;&ndash; Geoobjektene kobles sammen hvis det f&oslash;rste geoobjektet er etter det andre og innenfor det angitte tidsrommet.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearTemporal">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            
+            <p>Angir den tidsmessige radiusen som p&aring;f&oslash;res et tidsmessig n&aelig;r-forhold. Et tidsmessig n&aelig;r-forhold inkluderer  <b>N&aelig;r</b>, <b>N&aelig;r f&oslash;r</b> og <b>N&aelig;r etter</b>.
+            </p>
+            <p>Hvis du for eksempel har et lag med b&aring;tulykker og et lag med GPS-sporing av en orkan, kan du se etter b&aring;tulykker innenfor en gitt avstand fra orkansporene i b&aring;de rom (1 kilometer) og tid (5&nbsp;timer). Dette vil resultere i at b&aring;tulykkene kobles til orkaner som oppstod like ved hverandre i tid og rom.
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Velg felt som skal samsvare</h2></div>
+        <hr/>
+        <div>
+            <p>Matcher verdiene i et felt fra ett lag med verdiene i et felt i et annet lag. 
+            </p>
+            <p>Hvis du for eksempel har et landsdekkende geografisk lag med boligadresser (inkludert et felt med  <i>ZIP</i>) og et tabellarisk datasett med helsedemografi i henhold til postnummeret (et felt med navnet <i>HEALTHZIP</i>), kunne du koble helsedatasettet til boligdataene ved &aring; matche feltet <i>ZIP</i> med feltet <i>HEALTHZIP</i>. Dette ville resultere i et lag med boliger med tilh&oslash;rende helsedata.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Legg til statistikk (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Beregner statistikk p&aring; de koblede geoobjektene hvis koblingsoperasjonen er  <b>Koble en til en</b>. All statistikk beregnes som standard.
+            </p>
+            <p>Du kan beregne statistikk p&aring; geoobjekter som er summert. P&aring; numeriske felt kan du beregne f&oslash;lgende: 
+                <ul>
+                    <li>Antall&nbsp;&ndash; Beregner antall verdier som ikke er null. Det kan brukes p&aring; numeriske felt eller strenger. Antallet for [null, 0, 2] er 2.
+                    </li>
+                    <li>Sum &ndash; Summen av numeriske verdier i et felt. Summen av [null, null, 3] er 3.
+                    </li>
+                    <li>Gjennomsnitt &ndash; Gjennomsnittet for numeriske verdier. Gjennomsnittet av [0, 2, null] er 1.
+                    </li>
+                    <li>Min &ndash; Minimumsverdien for et numerisk felt. Minimum av [0, 2, null] er 0. 
+                    </li>
+                    <li>Maks &ndash; Maksimumsverdien for et numerisk felt. Maksimumsverdien for [0, 2, null] er 2.
+                    </li>
+                    <li>Omr&aring;de &ndash; Omr&aring;det for et numerisk felt. Beregnes som den maksimale verdien minus minimumsverdien. Omr&aring;det av [0, null, 1] er 1. Omr&aring;det av [null, 4] er 0.
+                    </li>
+                    <li>Varians &ndash; Variansen for et numerisk felt i et spor. Variansen for [1] er null. Variansen for [null, 1,0,1,1] er 0,25.
+                    </li>
+                    <li>Standardavvik &ndash; Standardavviket for et numerisk felt. Standardavviket for [1] er null. Standardavviket for [null, 1,0,1,1] er 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>P&aring; strengfelter kan du beregne f&oslash;lgende:
+                <ul>
+                    <li>Antall &ndash; Antallet strenger som ikke er null.
+                    </li>
+                    <li>Noen &ndash; Denne statistikken er en tilfeldig pr&oslash;ve av en strengverdi i det spesifiserte feltet.
+                    </li>
+                </ul>
+                All statistikk beregnes p&aring; ikke-nullverdier. Resultatlaget inneholder et nytt felt for hver beregnet statistikk. Du kan legge til flere statistikker ved &aring; velge et attributt og statistikk.
+            </p>
+            <p>All statistikk beregnes p&aring; ikke-nullverdier. Resultatlaget inneholder et nytt felt for hver beregnet statistikk. Du kan legge til flere statistikker ved &aring; velge et attributt og en forekomst.
+            </p>
+        </div>
+    </div>
+    <div id="joinCondition">
+        <div><h2>Bygg et uttrykk for å føye sammen geoobjekter med (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Bruker en betingelse p&aring; spesifiserte felter. Bare geoobjekter med felter som oppfyller disse betingelsene, sl&aring;s sammen.
+            </p>
+            <p>Hvis du for eksempel &oslash;nsker &aring; bruke sammensl&aring;ing med et datasett bare for geoobjektene der  <i>health_spending</i> er st&oslash;rre enn 20 prosent av <i>income</i>, kan du bruke sammensl&aring;ingsbetingelsen <code>$target[&quot;health_spending&quot;] &gt; ($join[&quot;income&quot;] * .20)</code> med feltet <i>health_spending</i> fra det f&oslash;rste datasettet (datasettgeoobjektene sl&aring;s sammen) og <i>income</i>-feltet fra det andre datasettet (datasettet som blir sl&aring;tt sammen).
+            </p>
+            <p>Sammensl&aring;ingsbetingelser kan brukes ved hjelp av uttrykkskalkulatoren.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Velg datalager</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-resultater lagre s p&aring; et datalager og vises som et geoobjektlag i  Portal for ArcGIS. Resultatene b&oslash;r i de fleste tilfeller lagres i et geotemporalt datalager, og dette er standarden. I enkelte tilfeller, er det en god l&oslash;sning &aring; lagre resultatene i relasjonsdatalageret. Du kan velge &aring; lagre resultatene i relasjonsdatalageret av f&oslash;lgende grunner: 
+                <ul>
+                    <li>Du kan bruke resultater i portal-til-portal-samarbeid.
+                    </li>
+                    <li>Du kan aktivere synkroniseringsfunksjoner for resultatene dine.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du b&oslash;r ikke bruke relasjonsdatalageret hvis du forventer at GeoAnalytics-resultatene skal &oslash;ke, og du &oslash;nsker &aring; dra fordeler av det geotemporale stordatalagerets funksjoner til &aring; h&aring;ndtere store mengder data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; laget som opprettes. Hvis du skriver til en ArcGIS Data Store, blir resultatene dine lagret i  <b>Mitt innhold</b> og lagt til kartet. Hvis du skriver til et fildelingsomr&aring;de for stordata, blir resultatene lagret i fildelingsomr&aring;det for stordata og lagt til dets innholdsoversikt. De blir ikke lagt til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget allerede eksisterer, vil verkt&oslash;yet mislykkes.
+            </p>
+            <p>N&aring;r du skriver til  ArcGIS Data Store (fildelingsomr&aring;de for relasjons- eller geotemporale stordata) via rullegardinlisten  <b>Lagre resultat i</b>, kan du angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatet skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

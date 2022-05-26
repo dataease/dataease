@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/infographics/simpleInfographic/dataDrilling/panels/US/Education",["../../ChartBuilder"],function(b){var a={};a.educationalAttainment={states:"n,p",defaultState:"p",stateSettings:{n:{yAxisTitle:"Number of adults 25+"},p:{yAxisTitle:"Percent of adults 25+"}},fieldInfo:{isChart:!0,chartJson:b.createChart({title:"Educational Attainment",points:[{label:"\x3c 9th Grade",fullName:"educationalattainment.NOHS_CY"},{label:"High School/No Diploma",fullName:"educationalattainment.SOMEHS_CY"},
+{label:"High School Diploma",fullName:"educationalattainment.HSGRAD_CY"},{label:"GED",fullName:"educationalattainment.GED_CY"},{label:"Some College/No Degree",fullName:"educationalattainment.SMCOLL_CY"},{label:"Associate's Degree",fullName:"educationalattainment.ASSCDEG_CY"},{label:"Bachelor's Degree",fullName:"educationalattainment.BACHDEG_CY"},{label:"Grad/Professional Degree",fullName:"educationalattainment.GRADDEG_CY"}],visualProps:{sorting:"Descending"}})}};return a});

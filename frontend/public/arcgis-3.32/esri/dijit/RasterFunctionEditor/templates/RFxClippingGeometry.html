@@ -1,0 +1,33 @@
+<div>
+  <table style="width: 100%;">
+    <tr class="esriRFxArgsEditor__tr--arg-name">
+      <td colspan="2" data-dojo-attach-point="clippingGeometryLabel">
+        ${_i18n.rfxClippingGeometry.clippingGeometry}
+      </td>
+    </tr>
+    <tr class="esriRFxArgsEditor__tr--arg-widget">
+      <td>
+        <div data-dojo-type="dijit/form/Select" data-dojo-attach-point="geometryTypeSelect" data-dojo-attach-event="onChange: onGeometryTypeChange">
+          <span value="${clippingTypes.clippingRaster}">${_i18n.rfxClippingGeometry.clippingRaster}</span>
+          <span value="${clippingTypes.clippingGeometry}">${_i18n.rfxClippingGeometry.studyArea}</span>
+          <span value="${clippingTypes.currentExtent}">${_i18n.rfxClippingGeometry.currentExtent}</span>
+        </div>
+        </td>
+        <td data-dojo-attach-point="polyDrawBtnTd">
+        <div data-dojo-type="dijit/form/ToggleButton" data-dojo-attach-point="polyDrawBtn" class="esriFloatLeading esriActionButton"
+        data-dojo-props="showLabel:false,iconClass:'toolbarIcon polygonIcon',label:'${_i18n.rfxClippingGeometry.drawLabel}'" data-dojo-attach-event="onChange:_handlePolyBtnChange"></div>
+      </td>
+    </tr>
+    <tr class="esriRFxArgsEditor__tr--arg-name" data-dojo-attach-point="clippingRasterLabelRow">
+      <td colspan="2" data-dojo-attach-point="clippingRasterLabel">
+        ${_i18n.rfxClippingGeometry.clippingRaster}
+      </td>
+    </tr>
+    <tr class="esriRFxArgsEditor__tr--arg-widget" data-dojo-attach-point="clippingRasterWidgetRow">
+      <td colspan="2">
+        <div data-dojo-type="esri/dijit/RasterFunctionEditor/RFxRasterInput" data-dojo-attach-point="clippingRasterSelect" data-dojo-attach-event="onChange: _setClippingRasterArgValue">
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>

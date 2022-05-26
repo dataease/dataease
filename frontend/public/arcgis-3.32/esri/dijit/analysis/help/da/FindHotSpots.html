@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Find Hot Spots</h2><p/>
+        <h2><img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" alt="Find hotspots"></h2>
+        <hr/>
+    <p> V&aelig;rkt&oslash;jet Find Hot Spots kan bestemme, hvorvidt der er statistisk signifikante klyngedannelser i det rumlige m&oslash;nster for dine data.
+        <ul>
+            <li>Indg&aring;r dine punkter (forbrydelser, tr&aelig;er, trafikulykker) virkelig i en klyngedannelse? Hvordan kan du v&aelig;re sikker p&aring; det?
+            </li>
+            <li>Har du rent faktisk opdaget et statistisk signifikant hotspot (for forbrug, barned&oslash;delighed, konsekvent h&oslash;je testresultater) eller ville dit kort fort&aelig;lle noget andet, hvis du &aelig;ndrede symboliseringen?
+            </li>
+        </ul>
+        V&aelig;rkt&oslash;jet Find hotspots kan hj&aelig;lpe dig med en trov&aelig;rdig besvarelse af disse sp&oslash;rgsm&aring;l.
+    </p>
+    <p>Selv tilf&aelig;ldige rumlige m&oslash;nstre udviser en vis grad af klyngedannelse. Desuden pr&oslash;ver dine &oslash;jne og din hjerne helt naturligt at finde m&oslash;nstre, selv om disse ikke findes. Derfor kan det v&aelig;re sv&aelig;rt at vide, om m&oslash;nstrene i dine data er resultatet af en reel igangv&aelig;rende rumlig proces eller bare resultatet af tilf&aelig;ldigheder. Det er &aring;rsagen til, at forskere og analytikere bruger statistiske metoder som Find hotspots (Getis-Ord Gi*) til at kvantificere rumlige m&oslash;nstre. N&aring;r du finder en statistisk signifikant klyngedannelse i dine data, har du v&aelig;rdifulde oplysninger. Det at vide, hvor og hvorn&aring;r klyngedannelser opst&aring;r, kan give vigtige oplysninger om de processer, der skaber de m&oslash;nstre, du ser. At vide at f.eks. antallet af indbrud i boliger konsekvent er h&oslash;jere i et s&aelig;rligt omr&aring;de er afg&oslash;rende oplysninger, hvis du skal udarbejde effektive forebyggelsesstrategier, fordele begr&aelig;nsede politiressourcer, iv&aelig;rks&aelig;tte nabohj&aelig;lpsprogrammer, godkende grundig kriminel efterforskning eller identificere potentielle mist&aelig;nkte.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Vælg det lag, som der skal beregnes hotspots for</h2></div>
+        <hr/>
+        <div>
+            <p>Det punkt- eller omr&aring;delag, hvorfra der skal findes hotspots og coldspots. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Find klynger med høje og lave værdier</h2></div>
+        <hr/>
+        <div>
+            <p>Denne analyse besvarer sp&oslash;rgsm&aring;let: hvor er der spatiale klyngedannelser af h&oslash;je og lave v&aelig;rdier?
+            </p>
+            <p>Hvis dine data best&aring;r af punkter, og du v&aelig;lger  <b>Punktopt&aelig;llinger</b>, vil dette v&aelig;rkt&oslash;j evaluere det spatiale arrangement af punktobjekter for at besvare sp&oslash;rgsm&aring;let: Hvor danner punkterne uventede klynger eller bliver spredt ud?
+            </p>
+            <p>Hvis du v&aelig;lger et felt, vil dette v&aelig;rkt&oslash;j evaluere det spatiale arrangement af v&aelig;rdier, der er knyttet til hvert objekt, for at besvare sp&oslash;rgsm&aring;let: hvor er der klyngedannelser af h&oslash;je og lave v&aelig;rdier?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Tæl punkter inden for</h2></div>
+        <hr/>
+        <div>
+            <p>Standarden er at t&aelig;lle punkter inden for et maskenet, der oprettes af v&aelig;rkt&oslash;jet p&aring; grundlag af dine punktdata. Du kan ogs&aring; v&aelig;lge at t&aelig;lle punkter inden for et sekskantet gitter eller oprette et omr&aring;delag (disse afspejler normalt administrative rapporteringsdistrikter s&aring;som opt&aelig;llingsomr&aring;der, kommunegr&aelig;nser eller regioner) for at besvare f&oslash;lgende sp&oslash;rgsm&aring;l: I betragtning af antallet af punkter inden for hvert omr&aring;deobjekt findes der s&aring; steder med statistisk signifikante, spatiale klyngedannelser med h&oslash;je eller lave punktt&aelig;llinger?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Definér, hvor punkter er mulige</h2></div>
+        <hr/>
+        <div>
+            <p>Du skal enten tegne eller oprette et lag, der definerer hvor h&aelig;ndelser er mulige, for at besvare sp&oslash;rgsm&aring;let: Er der inden for omr&aring;derne steder med us&aelig;dvanligt h&oslash;je eller lave punktkoncentrationer?   
+            </p>
+            <p>De omr&aring;deobjekter, som du tegner, eller de objekter i omr&aring;delaget, som du angiver, b&oslash;r definere, hvor punkter muligvis kan opst&aring;. For at tegne disse omr&aring;der skal du klikke p&aring; knappen  <b>Tegn</b> og derefter klikke p&aring; et sted p&aring; kortet for at oprette en omr&aring;deform. For at tegne flere omr&aring;der skal du klikke p&aring; tegn-knappen igen og derefter klikke p&aring; et sted p&aring; kortet og forts&aelig;tte.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Dividér med:</h2></div>
+        <hr/>
+        <div>
+            <p>Af og til vil du m&aring;ske gerne analysere m&oslash;nstre, der tager h&oslash;jde for underliggende distributioner. Hvis dine punkter f.eks. repr&aelig;senterer kriminalitet, vil division med det samlede befolkningstal resultere i en analyse af kriminaliteten pr. indbygger og ikke generelle kriminalitetstal. At v&aelig;lge en attribut til division betegnes ofte som normalisering.
+            </p>
+            <p>Valg af  <i>Esri Population</i> vil udf&oslash;re enrichment p&aring; hvert omr&aring;deobjekt med populationsv&aelig;rdier, der derefter vil blive brugt som divisionsattribut. Denne indstilling forbruger credits.
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Tilsidesæt indstillinger</h2></div>
+        <hr/>
+        <div>
+            <p> V&aelig;rkt&oslash;jet vil finde optimale indstillinger for standardv&aelig;rdierne for <b>Cellest&oslash;rrelse</b> og <b>Afstandsb&aring;nd</b> baseret p&aring; dine datas karakteristika. Men hvis du har en bestemt <b>Cellest&oslash;rrelse</b> eller et bestemt <b>Afstandsb&aring;nd</b>, som giver mening i forbindelse med din analyse, kan <b>Tilsides&aelig;t indstillinger</b> benyttes til at indstille disse v&aelig;rdier.
+            </p>
+            <p> <b>Tilsides&aelig;t indstillinger</b> er ogs&aring; en nyttig funktion, n&aring;r du k&oslash;rer analyse p&aring; forskellige datas&aelig;t, hvilket g&oslash;r det muligt at bevare ensartede v&aelig;rdier for <b>Afstandsb&aring;nd</b> og <b>Cellest&oslash;rrelse</b> p&aring; tv&aelig;rs af flere datas&aelig;t.  Du kan derefter fortage en korrekt sammenligning af resultaterne, f.eks. kan du sammenligne v&aelig;rdierne for fedme og sukkersyge &ndash; eller endda kriminalitet &ndash; for to forskellige &aring;r.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Cellestørrelse</h2></div>
+        <hr/>
+        <div>
+            <p>St&oslash;rrelsen p&aring; de gitterceller, der benyttes til at t&aelig;lle punkter inden for.  
+            </p>
+            <p>N&aring;r du bruger et sekskantet gitter til opt&aelig;lling af punkter, anvendes denne afstand som h&oslash;jde p&aring; sekskanterne.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Afstandsbånd</h2></div>
+        <hr/>
+        <div>
+            <p>Ethvert objekt analyseres i sammenh&aelig;ng med de tilst&oslash;dende objekter, der findes inden for den angivne afstand.  V&aelig;rkt&oslash;jet vil beregne en standardafstand for dig, eller du kan benytte denne indstilling til at angive en bestemt afstand, som giver mening i forbindelse med din analyse. 
+            </p>
+            <p>Hvis du f.eks. er ved at unders&oslash;ge m&oslash;nstre for pendling, og du ved, at den gennemsnitlige transportafstand til arbejde er 15 miles, kan du benytte et afstandsb&aring;nd p&aring; 15 miles til din analyse.
+            </p>
+        </div>
+    </div>
+    <div id="hotSpotsResultLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv et navn p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Dette resultatlag viser dig statistisk signifikante klynger med h&oslash;je og lave v&aelig;rdier eller punktt&aelig;llinger. Hvis navnet p&aring; resultatlaget allerede eksisterer, vil du blive bedt om at &aelig;ndre det.
+            </p>
+            <p>Ved hj&aelig;lp af rullelisten  <b>Gem resultat i</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

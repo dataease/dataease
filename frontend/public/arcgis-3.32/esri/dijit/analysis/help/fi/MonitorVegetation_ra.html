@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Tarkkaile kasvillisuutta</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Portaalin Tarkkaile kasvillisuutta -ty&ouml;kalu"></h2>
+        <hr/>
+    <p>T&auml;m&auml;n ty&ouml;kalun avulla voidaan hankkia tietoja tutkimusalueen kasvillisuuspeitteest&auml; suorittamalla laskutoimituksia monikaistaisen rasterikarttatason kaistoissa.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse lähtöaineisto</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse monikaistainen rasterikarttataso. Varmista, ett&auml; tarvittavat kaistat ovat k&auml;ytett&auml;viss&auml; l&auml;ht&ouml;aineiston rasterissa.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Valitse karttatason tarkkailumenetelmä</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse kasvillisuusindeksin karttatason luomiseen k&auml;ytetty menetelm&auml;. Eri kasvillisuusindeksien avulla voit korostaa tiettyj&auml; kohteita tai v&auml;hent&auml;&auml; erilaista melua.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI on ei-lineaarinen kasvillisuusindeksi globaaliin ymp&auml;rist&ouml;n tarkkailuun satelliittikuvista. Se vastaa NDVI-indeksi&auml;, mutta ei ole niin herkk&auml; ilmastovaikutteille. Paljas maaper&auml; vaikuttaa menetelm&auml;&auml;n, joten sen k&auml;ytt&ouml;&auml; ei suositella alueilla, joilla on kasvillisuutta on harvassa tai kohtuullisen tihe&auml;ss&auml;.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+GVI kehitettiin alun perin Landsat MSS -kuvista, mutta sit&auml; on muokattu Landsat TM -kuvien kanssa k&auml;ytt&ouml;&auml; varten. Se tunnetaan my&ouml;s vihre&auml;n kasvillisuuden Landsat TM Tasseled Cap -indeksin&auml;. T&auml;t&auml; tarkkailuindeksi&auml; voi k&auml;ytt&auml;&auml; my&ouml;s sellaisten kuvien kanssa, joiden kaistat jakavat samat spektriominaisuudet.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 on kasvillisuusindeksi, joka yritt&auml;&auml; minimoida paljaan maaper&auml;n vaikutukset SAVI-menetelm&auml;&auml;n.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+Standardoidun NDVI-indeksin avulla voit luoda vihreytt&auml; (suhteellista biomassaa) esitt&auml;v&auml;n kuvan. T&auml;m&auml; indeksi hy&ouml;dynt&auml;&auml; monispektrisen rasteriaineistoryhm&auml;n kahden kaistan ominaisuuksien eroavaisuuksia: lehtivihre&auml;n pigmentin absorptiota punaisessa kaistassa ja kasvimateriaalin korkeaa heijastumista l&auml;hi-infrapunakaistassa.
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI vastaa kasvillisuuserojen indeksi&auml;, mutta se on herkk&auml; ilmakeh&auml;n muutoksille. Kun t&auml;ll&auml; menetelm&auml;ll&auml; verrataan eri kuvia, sit&auml; tulee k&auml;ytt&auml;&auml; vain ilmakeh&auml;llisesti korjattuihin kuviin. Tietojentoimittaja voi toimittaa n&auml;m&auml; tiedot.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI yritt&auml;&auml; minimoida maaper&auml;n heijastuksen vaikutukset maaper&auml;n heijastuksen korjauskertoimen avulla. T&auml;t&auml; k&auml;ytet&auml;&auml;n usein kuivilla alueilla, joilla kasvillisuuspeite on alhainen.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Sultanin kaava ottaa kuusikaistaisen 8-bittisen kuvan ja tuottaa kolmikaistaisen 8-bittisen kuvan m&auml;&auml;r&auml;tyn algoritmin avulla. Tuloksena oleva kuva tuo esiin rannikkojen kivimuodostumia, joita kutsutaan ofioliiteiksi. T&auml;m&auml; kaava kehitettiin Landsat 5- tai 7-kuvien TM- ja ETM-kaistojen perusteella.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+TSAVI yritt&auml;&auml; minimoida maaper&auml;n heijastuksen vaikutukset olettamalla, ett&auml; maanpinnan viivalla on ennalta arvaamaton kaltevuus ja leikkauspiste.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Määritä lähi-infrapunavalon ja punaisen valon kaistojen indeksit</h2></div>
+        <hr/>
+        <div>
+            <p>Anna l&auml;hi-infrapunavalon ja punaisen valon kaistojen kaistaindeksit.
+            </p>
+            <p>Jokainen satelliittianturi ja ilmakamera tallentaa tiedot, jotka on jaettu kaistaindekseihin. Jokainen kaistaindeksi sis&auml;lt&auml;&auml; tiedot s&auml;hk&ouml;magneettisen spektrin tietylle osalle. T&auml;m&auml; kasvillisuuden tarkkailumenetelm&auml; edellytt&auml;&auml; sen kaistaindeksin m&auml;&auml;ritt&auml;mist&auml;, joka on tallentanut l&auml;hi-infrapunavalon ja punaisen valon aallonpituudet.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Maanpinnan viivan kaltevuus</h2></div>
+        <hr/>
+        <div>
+            <p>Maanpinnan viivan kaltevuus. Kaltevuus on summittainen lineaarinen suhde l&auml;hi-infrapunavalon ja punaisen valon kaistojen v&auml;lill&auml; hajontakuviossa.
+            </p>
+            <p>T&auml;m&auml; parametri on kelvollinen vain TSAVI-menetelm&auml;ss&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Leikkauspiste</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml; on l&auml;hi-infrapunavalon arvo, kun punaisen kaistan heijastusarvo on 0 tietyille maanpinnan viivoille.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , kun punainen on 0.
+            </p> 
+            <p>T&auml;m&auml; parametri on kelvollinen vain TSAVI-menetelm&auml;ss&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Vihreän kasvillisuuspeitteen määrä</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml; m&auml;&auml;ritt&auml;&auml; vihre&auml;n kasvillisuuspeitteen m&auml;&auml;r&auml;n, jota SAVI-menetelm&auml; edellytt&auml;&auml;.
+            </p>
+            <p>Seuraavat ovat kelvollisia arvoja: 
+
+                <ul>
+                    <li>1 = alueet, joilla ei ole vihre&auml;&auml; kasvillisuuspeitett&auml;
+                        
+ 
+                    </li>
+                    <li>0,5 = alueet, joilla on kohtuullinen vihre&auml; kasvillisuuspeite
+                        
+ 
+                    </li>
+                    <li>0 = alueet, joilla on paljon vihre&auml;&auml; kasvillisuuspeitett&auml;
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Korjauskerroin</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml; m&auml;&auml;ritt&auml;&auml; korjauskertoimen, jolla pienent&auml;&auml; m&auml;&auml;per&auml;n vaikutusta. Muunnettu maaper&auml;korjattu kasvillisuusindeksi edellytt&auml;&auml; t&auml;t&auml;. Oletusarvo on 0,08.
+            </p>
+            <p>Alhainen arvo tarkoittaa, ett&auml; maaper&auml;n vaikutusta ei oteta huomioon. Korkea arvo tarkoittaa, ett&auml; maaper&auml; vaikuttaa tulokseen.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen karttatason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -kohtaan ja lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos taso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; kansion nimen  <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan avattavan <b>Tallenna tulos kohteeseen</b> -valikon avulla.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

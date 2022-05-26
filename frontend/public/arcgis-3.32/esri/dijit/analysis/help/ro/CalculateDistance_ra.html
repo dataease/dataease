@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Calculare distanţă</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Calculare distanţă"></h2>
+        <hr/>
+    <p>Acest instrument calculează distanţa euclidiană, direcția, și alocarea dintr-o singură sursă sau dintr-un set de surse.
+    </p>
+    <p>Aplicațiile exemplu includ răspunsurile la &icirc;ntrebări cum ar fi următoarele:
+
+        <ul>
+            <li>Ce distanță este față de cel mai apropiat oraș?
+                
+
+            </li>
+            <li>Ce distanță este față de cel mai apropiat drum?
+                
+
+            </li>
+            <li>Ce distanță este față de cea mai apropiată sursă de apă?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă hartă</b>, vor fi analizate numai acele obiecte spaţiale din stratul tematic de intrare care sunt vizibile din extinderea curentă a hărţii. Dacă nu se bifează, toate obiectele spaţiale din stratul tematic introdus vor fi analizate, chiar dacă se află &icirc;n afara afişare extinderii curente a hărţii.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Alegeți rasterul sau stratul tematic al amplasării obiectului spațial față de care să se calculeze distanța</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic care definește sursele față de care va fi calculată distanța. Stratul tematic poate fi un serviciu de imagine sau un serviciu de obiecte spaţiale.
+            </p>
+            <p>Pentru un servicii de imagini, tipul de intrare poate fi un număr &icirc;ntreg sau o virgulă mobilă.
+            </p>
+            <p>Pentru un serviciu de obiecte spaţiale, intrarea poate fi un punct, o liniei sau un poligon.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Distanța maximă de calculat</h2></div>
+        <hr/>
+        <div>
+            <p>Distanța maximă de calculat. De exemplu, dacă introduceți o valoare de 10.000 metri, distanța euclidiană va fi calculată de la locurile sursă către acea valoare (distanță).
+            </p>
+            <p>Dacă nu este prevăzută nicio valoare, distanța va fi calculată p&acirc;nă la extinderea definită.
+            </p>
+            <p>Unitățile disponibile sunt kilometrii, metrii, milele și picioarele.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Dimensiune celulă ieşire</h2></div>
+        <hr/>
+        <div>
+            <p>Dimensiunea celulei şi unitatea de măsură pentru rasterele de ieşire.
+            </p>
+            <p>Unitatea de măsură poate fi kilometri, metri, mile sau picioare.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Nume strat tematic distanță rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic ce va fi creat &icirc;n  <b>Resursele mele</b> şi va fi adăugat pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic rezultat există deja, vi se va solicita să furnizaţi un alt nume.
+            </p>
+            <p>Puteți specifica numele folderului &icirc;n  <b>Resursele mele</b> unde se va salva rezultatul folosind caseta drop-down <b>Salvați rezultatele &icirc;n</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Nume strat tematic direcție rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic cu grupuri care va fi creat &icirc;n  <b>Resursele Mele</b>. Trebuie să specificați un nume care nu există &icirc;n prezent &icirc;n <b>Resursele Mele</b>.
+            </p>
+            <p>Puteți specifica numele folderului &icirc;n  <b>Resursele mele</b> unde se va salva rezultatul folosind caseta drop-down <b>Salvați rezultatele &icirc;n</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Nume strat tematic alocare rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic cu grupuri care va fi creat &icirc;n  <b>Resursele Mele</b>. Trebuie să specificați un nume care nu există &icirc;n prezent &icirc;n <b>Resursele Mele</b>.
+            </p>
+            <p>Puteți specifica numele folderului &icirc;n  <b>Resursele mele</b> unde se va salva rezultatul folosind caseta drop-down <b>Salvați rezultatele &icirc;n</b>.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Alegeți câmp de alocare</h2></div>
+        <hr/>
+        <div>
+            <p>Un c&acirc;mp de pe stratul tematic sursă de intrare care deține valorile care definesc fiecare sursă. Poate fi un număr &icirc;ntreg sau un c&acirc;mp șir al setului de date sursă.
+            </p>
+            <p>Valoarea implicită este  <i>Value</i>. Dacă se folosește un serviciu de obiecte spaţiale și nu este disponibil niciun c&acirc;mp <i>Value</i>, atunci va fi folosit primul număr &icirc;ntreg sau c&acirc;mp șir. Dacă nu există c&acirc;mpuri valabile, va fi folosit c&acirc;mpul ObjectID field (de exemplu, OID sau FID, &icirc;n funcție de tipul de intrare a obiectului spațial).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

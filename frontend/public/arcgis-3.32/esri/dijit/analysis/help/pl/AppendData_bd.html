@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Dołącz dane</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Diagram procedury wykonywania zadań narzędzia Dołącz dane"></h2>
+        <hr/>
+    <p>To narzędzie dołącza dane do istniejącej hostowanej warstwy obiektowej. Narzędzie Dołącz dane modyfikuje oryginalną warstwę wejściową i nie generuje nowej warstwy wynikowej. Umożliwia przyporządkowanie p&oacute;l w oparciu o nazwę pola i typ pola, pozwala też stosować bardziej zaawansowane metody przyporządkowania.
+    </p>
+    <p>Przykłady: 
+        <ul>
+            <li>Jesteś pracownikiem dużej firmy ubezpieczeniowej, kt&oacute;ra generuje miesięczne rekordy sprzedaży. Dla uzyskania raportu rocznego należy skompilować dane miesięczne pod kątem analizy. Aby rozpocząć analizę sprzedaży, można wykorzystać narzędzie Dołącz dane do zaktualizowania warstwy RaportRoczny_2018, gdy tylko dostępne będą dane dotyczące określonego miesiąca. Wiedząc, że Twoja instytucja stosuje każdego miesiąca ten sam schemat, możesz użyć domyślnej metody przyporządkowania p&oacute;l celem efektywnego dołączenia obiekt&oacute;w w oparciu o nazwę i typ pola.
+            </li>
+            <li>Każda z dziesięciu grup środowiskowych zbiera setki tysięcy pomiar&oacute;w dotyczących klimatu w ramach swoich jurysdykcji. Te instytucje zamierzają kompilować swoje dane w celu lepszego zrozumienia regionalnych i globalnych trend&oacute;w. Każda instytucja określa schemat dla swojego zestawu danych. Poszczeg&oacute;lne instytucje określiły r&oacute;żne nazwy p&oacute;l dla danych dotyczących temperatury i prędkości wiatru. Przy r&oacute;żnych nazwach p&oacute;l dla poszczeg&oacute;lnych zestaw&oacute;w danych przyporządkowanie p&oacute;l może być wykorzystanie do określenia sposobu, w jakim wyniki pomiar&oacute;w temperatury i prędkości wiatru będą dodawane do odpowiednich p&oacute;l.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę, do której należy dołączyć</h2></div>
+        <hr/>
+        <div>
+            <p>Obiekty tabeli, punktowe, liniowe lub poligonowe, do kt&oacute;rych będą dodawane dane.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Warstwa, do kt&oacute;rej mają być dodawane obiekty, zostanie zmodyfikowana podczas korzystania z narzędzia. Przed wykonaniem tej operacji należy się zastanowić, czy warstwa ma być modyfikowana.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w hostowanej warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Wybierz warstwę do dołączenia</h2></div>
+        <hr/>
+        <div>
+            <p>Obiekty tabeli, punktowe, liniowe lub poligonowe, kt&oacute;re będą dołączone do warstwy wejściowej.
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Dołącz wszystkie obiekty lub zdefiniuj podzbiór (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p>Określa obiekty, kt&oacute;re mają być dołączone. Ten parametr jest opcjonalny.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Wybierz sposób dołączania pól (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p>Określa spos&oacute;b dołączania p&oacute;l dołączanej warstwy do warstwy wejściowej. Domyślnie wszystkie odpowiadające sobie dane wejściowe i pola dołączania zostaną dołączone. Pola odpowiadają sobie, jeśli mają tę samą nazwę pola i ten sam typ pola. Opcjonalnie można wybrać spos&oacute;b przyporządkowania p&oacute;l lub obliczanie wartości wyrażeń w języku Arcade w celu wypełnienia p&oacute;l danymi.
+            </p>
+            <p>Na przykład masz warstwę wejściową o polach  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i> i warstwę dołączaną o polach <i>field_string</i>, <i>field_number</i> i <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>Domyślnie narzędzie przyporządkuje pole  <i>field_number</i> w warstwie wejściowej do pola <i>field_number</i> w warstwie dołączanej, a pole <i>field_string</i> w warstwie wejściowej do pola <i>field_string</i> w warstwie dołączanej.
+                    </li>
+                    <li>Domyślnie pola  <i>date_field</i> i <i>unused_field</i> warstwy wejściowej będą wypełniane wartościami <i>null</i>, ponieważ nie mają one odpowiadających p&oacute;l w warstwie dołączanej.
+                    </li>
+                    <li>Opcjonalnie można dołączać wartości do tych p&oacute;l, kt&oacute;re domyślnie nie zostały przyporządkowane w spos&oacute;b automatyczny. Na przykład pole  <i>date_field</i> w warstwie wejściowej może być przyporządkowane do pola dołączanego <i>MY_DATE_FIELD</i>. W tym celu należy użyć menu rozwijanego obok pola <i>date_field</i> w pierwszej kolumnie i wybrać pole <i>MY_DATE_FIELD</i> z menu rozwijanego w drugiej kolumnie.
+                    </li>
+                </ul>
+                 W kolejnym przykładzie warstwa wejściowa ma pola liczbowe <i>value_1</i>, <i>value_2</i>, <i>value_3</i> i <i>my_Average</i>, a warstwa dołączana ma pola liczbowe <i>value_1</i>, <i>value_2</i> i <i>value_3</i>.
+                <ul>
+                    <li>Domyślnie pola  <i>value_1</i>, <i>value_2</i> i <i>value_3</i> są sobie przyporządkowane i zostaną dołączone.
+                    </li>
+                    <li>W rozszerzeniu do zachowania domyślnego mogą zostać wyliczone wartości dla pola  <i>my_Average</i>. Można to wykonać za pomocą działań matematycznych na wielu polach poprzez wybranie rozwijanej opcji <b>Wyrażenie</b> w kolumnie obok pola <i>my_Average</i> i utworzenie niestandardowego wyrażenia języka Arcade, jak np. <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

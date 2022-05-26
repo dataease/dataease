@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Spojení počátků s cíli (Connect Origins to Destinations)</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="Spojen&iacute; poč&aacute;tků s c&iacute;li (Connect Origins to Destinations)"></h2>
+        <hr/>
+    <p>N&aacute;stroj Spojen&iacute; poč&aacute;tků s c&iacute;li měř&iacute; čas cesty nebo vzd&aacute;lenost mezi dvojic&iacute; bodů. Tento n&aacute;stroj dok&aacute;že vypoč&iacute;tat vzd&aacute;lenosti vzdu&scaron;nou čarou, vzd&aacute;lenosti podle způsobu přepravy (např. chůze nebo j&iacute;zda autem) nebo dobu trv&aacute;n&iacute; cesty podle způsobu přepravy. Pomoc&iacute; tohoto n&aacute;stroje můžete prov&aacute;dět n&aacute;sleduj&iacute;c&iacute; &uacute;kony:
+    </p>
+    <p>
+        <ul>
+            <li>Vypoč&iacute;tat celkovou vzd&aacute;lenost, kterou lid&eacute; ujedou při cestov&aacute;n&iacute; z&nbsp;domova do pr&aacute;ce, a dobu t&eacute;to j&iacute;zdy.
+            </li>
+            <li>Změřit, jak daleko z&aacute;kazn&iacute;ci cestuj&iacute;, aby nakoupili ve va&scaron;ich obchodech. Tuto informaci můžete použ&iacute;t k určen&iacute; va&scaron;eho obchodn&iacute;ho dosahu, zvl&aacute;&scaron;ť při c&iacute;len&iacute; reklamn&iacute;ch kampan&iacute; nebo v&yacute;běru lokalit pro nov&eacute; obchody.
+            </li>
+            <li>Spoč&iacute;tat předpokl&aacute;danou ujetou vzd&aacute;lenost pro svůj vozov&yacute; park. Pot&eacute; můžete pomoc&iacute; n&aacute;stroje Souhrn hodnot v&nbsp;rozmez&iacute; z&iacute;skat ujetou vzd&aacute;lenost podle st&aacute;tu nebo jin&eacute;ho regionu.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Zad&aacute;te poč&aacute;tečn&iacute; a koncov&eacute; body a n&aacute;stroj vytvoř&iacute; vrstvu obsahuj&iacute;c&iacute; trasy, včetně měřen&iacute;, mezi sp&aacute;rovan&yacute;mi poč&aacute;tky tras a c&iacute;li. 
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t aktu&aacute;ln&iacute; rozsah mapy</b>, budou do anal&yacute;zy zahrnuty pouze prvky viditeln&eacute; v&nbsp;aktu&aacute;ln&iacute;m rozsahu mapy.  Pokud pole za&scaron;krtnuto nen&iacute;, budou použity v&scaron;echny prvky ve vstupn&iacute; vrstvě, včetně těch, kter&eacute; se nach&aacute;z&iacute; mimo aktu&aacute;ln&iacute; rozsah mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Zvolte vrstvu bodů, která představuje umístění počátků.</h2></div>
+        <hr/>
+        <div>
+            <p>Zvolte vrstvu bodů, kter&aacute; představuje poč&aacute;tek či poč&aacute;tky.  N&aacute;stroj podporuje až  5 000 poč&aacute;tků a  5 000 c&iacute;lů. </p>
+            <p>Pokud zvol&iacute;te vrstvu, kter&aacute; m&aacute; přesně jeden poč&aacute;tek, tento poč&aacute;tek se spoj&iacute; se v&scaron;emi c&iacute;li.
+            </p>
+            <p>Vrstvu můžete vybrat ze sv&eacute; mapy nebo můžete zvolit možnost  <b>Vybrat vrstvu anal&yacute;zy</b>, kter&aacute; se nach&aacute;z&iacute; na konci rozbalovac&iacute;ho seznamu. Pomoc&iacute; t&eacute;to možnosti se otevře galerie, kde můžete proch&aacute;zet a&nbsp;vyb&iacute;rat datov&eacute; sady z&nbsp;různ&yacute;ch vrstev, kter&eacute; můžete použ&iacute;t ve sv&eacute; anal&yacute;ze. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Zvolte vrstvu cílů</h2></div>
+        <hr/>
+        <div>
+            <p>Zvolte vrstvu, kter&aacute; představuje c&iacute;l nebo c&iacute;le, se kter&yacute;mi se maj&iacute; spojit poč&aacute;tky. N&aacute;stroj podporuje až  5 000 poč&aacute;tků a  5 000 c&iacute;lů. </p>
+            <p>Pokud zvol&iacute;te vrstvu, kter&aacute; m&aacute; přesně jeden c&iacute;l, v&scaron;echny poč&aacute;tky se spoj&iacute; s t&iacute;mto c&iacute;lem. 
+            </p>
+            <p>Pokud existuje jeden poč&aacute;tek a mnoho c&iacute;lů, n&aacute;stroj spoj&iacute; tento poč&aacute;tek s&nbsp;každ&yacute;m c&iacute;lem.
+            </p>
+            <p>Vrstvu můžete vybrat ze sv&eacute; mapy nebo můžete zvolit možnost  <b>Vybrat vrstvu anal&yacute;zy</b>, kter&aacute; se nach&aacute;z&iacute; na konci rozbalovac&iacute;ho seznamu. Pomoc&iacute; t&eacute;to možnosti se otevře galerie, kde můžete proch&aacute;zet a&nbsp;vyb&iacute;rat datov&eacute; sady z&nbsp;různ&yacute;ch vrstev, kter&eacute; můžete použ&iacute;t ve sv&eacute; anal&yacute;ze. 
+            </p>
+            <p> V př&iacute;padě mnoha poč&aacute;tků a mnoha c&iacute;lů mus&iacute;te m&iacute;t dvě pole, kter&aacute; popisuj&iacute; p&aacute;ry poč&aacute;tek&ndash;c&iacute;l: <b>ID pole v poč&aacute;tc&iacute;ch</b> a <b>shoduj&iacute;c&iacute; se ID pole u c&iacute;lov&yacute;ch bodů</b>. N&aacute;stroj během anal&yacute;zy spoj&iacute; p&aacute;ry poč&aacute;tek&ndash;c&iacute;l. Př&iacute;klad: M&aacute;te dva poč&aacute;tečn&iacute; body s hodnotami ID pole <code>Jana</code> a <code>Petr</code> a dva c&iacute;lov&eacute; body se stejn&yacute;mi hodnotami ID. Poč&aacute;tečn&iacute; bod <code>Jana</code> se spoj&iacute; s c&iacute;lov&yacute;m bodem <code>Jana</code> a <code>Petr</code> se spoj&iacute; s <code>Petrem</code>. K ž&aacute;dn&yacute;m jin&yacute;m spojen&iacute;m nebo měřen&iacute;m nedojde.
+            </p>
+            <p>Pokud je počet poč&aacute;tečn&iacute;ch a c&iacute;lov&yacute;ch bodů stejn&yacute;, mus&iacute; b&yacute;t hodnoty ID v každ&eacute; vrstvě jedinečn&eacute;; vrstva c&iacute;lov&yacute;ch bodů např&iacute;klad nemůže m&iacute;t dvě hodnoty  <code>Jana</code>. Hodnoty ve vrstv&aacute;ch poč&aacute;tečn&iacute;ch bodů a c&iacute;lov&yacute;ch bodů se mus&iacute; přesně shodovat, aby byly sp&aacute;rov&aacute;ny; <code>Petr</code> se nespoj&iacute; s hodnotou, ve kter&eacute; je překlep, <code>Pter</code>. 
+            </p>
+            <p>N&aacute;stroj tak&eacute; umožňuje spojit každ&yacute; poč&aacute;tečn&iacute; bod s v&iacute;ce než jedn&iacute;m c&iacute;lov&yacute;m bodem nebo každ&yacute; c&iacute;l s v&iacute;ce než jedn&iacute;m poč&aacute;tkem. V takov&yacute;ch př&iacute;padech poř&aacute;d potřebujete dvě pole, kter&aacute; pop&iacute;&scaron;ou p&aacute;r poč&aacute;tek-c&iacute;l. Pouze jedna z vrstev (buď poč&aacute;tečn&iacute; nebo c&iacute;lov&aacute; vrstva) ale mus&iacute; m&iacute;t jedinečn&eacute; hodnoty ID.
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Měření</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Zvolte, zda chcete poč&aacute;tky tras spojit s&nbsp;c&iacute;li tras pomoc&iacute; vzdu&scaron;n&eacute; č&aacute;ry nebo podle způsobu přepravy. V&yacute;sledn&eacute; trasy povedou po silnic&iacute;ch nebo chodn&iacute;c&iacute;ch a budou respektovat př&iacute;slu&scaron;n&aacute; pravidla, jako jsou jednosměrn&eacute; ulice a nepovolen&eacute; man&eacute;vry při j&iacute;zdě autem nebo n&aacute;kladn&iacute;m vozem.  Dostupn&eacute; způsoby přepravy jsou určeny administr&aacute;torem organizace.  
+            </p>
+            <p>Pokud zvol&iacute;te  <b>Dobu j&iacute;zdy</b>, <b>Dobu j&iacute;zdy ve venkovsk&yacute;ch oblastech</b> nebo <b>Dobu j&iacute;zdy n&aacute;kladn&iacute;m vozidlem</b>, m&aacute;te k dispozici několik možnost&iacute;, jak dobu j&iacute;zdy měřit.
+                <ul>
+                    <li>
+                        <p>Chcete-li vyhledat nejrychlej&scaron;&iacute; trasy na z&aacute;kladě pevně dan&yacute;ch rychlost&iacute;, zru&scaron;te za&scaron;krtnut&iacute; pole  <b>Použ&iacute;t provoz</b>.
+                        </p>
+                        <p>Neza&scaron;krtnut&iacute; t&eacute;to možnosti je vhodn&eacute; v př&iacute;padě, že chcete zjistit obecn&eacute; měřen&iacute; doby j&iacute;zdy, kter&eacute; nez&aacute;vis&iacute; na měn&iacute;c&iacute;ch se dopravn&iacute;ch podm&iacute;nk&aacute;ch a určit&eacute;m času odjezdu.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Chcete-li vyhledat nejrychlej&scaron;&iacute; trasy na z&aacute;kladě dan&eacute;ho poč&aacute;tečn&iacute;ho času a měn&iacute;c&iacute;ch se dopravn&iacute;ch podm&iacute;nek, za&scaron;krtněte možnost  <b>Použ&iacute;t provoz</b>. Pokud tak&eacute; zvol&iacute;te možnost <b>Živ&yacute; provoz</b>, bude čas odjezdu z&nbsp;poč&aacute;tků tras nastaven na aktu&aacute;ln&iacute; čas a při vytv&aacute;řen&iacute; tras budou použ&iacute;v&aacute;ny aktu&aacute;ln&iacute; a předpov&iacute;dan&eacute; rychlosti provozu z&iacute;skan&eacute; z&nbsp;dopravn&iacute;ch čidel a dal&scaron;&iacute;ch zdrojů. Předpov&iacute;dan&eacute; rychlosti dopravy jsou vypočteny na z&aacute;kladě aktu&aacute;ln&iacute;ch rychlost&iacute; provozu, historick&yacute;ch rychlost&iacute; a aktu&aacute;ln&iacute;ch ud&aacute;lost&iacute;, např&iacute;klad podle stavu počas&iacute;. Rychlosti dopravy jsou předpov&iacute;d&aacute;ny na 12 hodin dopředu, takže můžete pomoc&iacute; posuvn&iacute;ku nastavit čas odjezdu až o  12 hodin vpřed. </p>
+                        <p>Tato nastaven&iacute; aktu&aacute;ln&iacute; dopravy jsou vhodn&aacute;, chcete-li zjistit, jak dlouho bude j&iacute;zda trvat, když vyjedete okamžitě, za jednu hodinu atd.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Pokud za&scaron;krtnete pole  <b>Použ&iacute;t provoz</b> a vyberete možnost <b>Provoz založen&yacute; na typick&yacute;ch podm&iacute;nk&aacute;ch pro</b> den a čas, n&aacute;stroj vyhled&aacute; nejrychlej&scaron;&iacute; trasy na z&aacute;kladě průměru historick&yacute;ch &uacute;dajů rychlosti v&nbsp;pětiminutov&yacute;ch intervalech v&nbsp;průběhu běžn&eacute;ho t&yacute;dne. V&yacute;sledky přihl&iacute;žej&iacute; k hustotě dopravy, neberou v&scaron;ak v&nbsp;potaz vliv aktu&aacute;ln&iacute;ch dopravn&iacute;ch podm&iacute;nek a ud&aacute;lost&iacute;, kter&eacute; se mohou v&yacute;razně li&scaron;it od norm&aacute;lu.
+                        </p>
+                        <p>Pomoc&iacute; těchto historick&yacute;ch dopravn&iacute;ch nastaven&iacute; se např&iacute;klad můžete zeptat na ot&aacute;zku, &bdquo;Jak dlouho mi bude zhruba trvat cesta na tato m&iacute;sta, pokud vyjedu ve středu v 11:30?&ldquo;
+                        </p>
+                        <p>Nastaven&yacute; čas se ř&iacute;d&iacute; časov&yacute;m p&aacute;smem, ve kter&eacute;m se nach&aacute;z&iacute; poč&aacute;tky tras. Pokud tedy nastav&iacute;te čas na 8:00 a m&aacute;te dva poč&aacute;tky tras, jeden v&nbsp;New York City a druh&yacute; v&nbsp;Los Angeles, budou trasy vygenerov&aacute;ny pro čas odjezdu 8:00 v&yacute;chodn&iacute;ho času a 8:00 tichomořsk&eacute;ho času.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Mějte na paměti, že s&nbsp;t&iacute;m, jak se vozidlo vzdaluje od poč&aacute;tku trasy, plyne i čas a měn&iacute; se hustota dopravy. N&aacute;stroj Spojen&iacute; poč&aacute;tků s&nbsp;c&iacute;li k tomu přihl&iacute;ž&iacute;, za&scaron;krtnete-li pole  <b>Použ&iacute;t provoz</b>. Ne v&scaron;echny regiony v&scaron;ak data o provozu podporuj&iacute;. Chcete-li zjistit, zda jsou tato data dostupn&aacute; ve va&scaron;&iacute; z&aacute;jmov&eacute; oblasti, klikněte v&nbsp;n&aacute;stroji na odkaz <b>Zobrazit dostupnost</b>.
+            </p>
+            <p> <b>Doba j&iacute;zdy n&aacute;kladn&iacute;m vozidlem</b> může použ&iacute;vat dynamick&eacute; rychlosti cestov&aacute;n&iacute; vych&aacute;zej&iacute;c&iacute; z hustoty dopravy s omezen&iacute;m do maxim&aacute;ln&iacute; povolen&eacute; rychlosti pro n&aacute;kladn&iacute; vozidla. Pokud je např&iacute;klad dynamick&aacute; rychlost ulice na z&aacute;kladě živ&eacute;ho provozu 65 mil za hodinu, ale maxim&aacute;ln&iacute; povolen&aacute; rychlost pro n&aacute;kladn&iacute; vozidla pro tuto ulici je 55 mil za hodinu, použije v&yacute;počet pro tuto ulici 55 mil za hodinu.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Vybrat vrstvy překážek</h2></div>
+        <hr/>
+        <div>
+            <p> Jeden nebo v&iacute;ce prvků budou sloužit jako dočasn&aacute; omezen&iacute; (přek&aacute;žky) pohybu po př&iacute;slu&scaron;n&yacute;ch pozemn&iacute;ch komunikac&iacute;ch. Přek&aacute;žky můžete zadat pomoc&iacute; bodov&yacute;ch, liniov&yacute;ch nebo polygonov&yacute;ch prvků.
+            </p>
+            <p>Bodovou přek&aacute;žku lze použ&iacute;t k modelov&aacute;n&iacute; spadl&eacute;ho stromu, nehody, spadl&eacute;ho elektrick&eacute;ho veden&iacute; nebo jak&eacute;koli př&iacute;činy zastaven&iacute; dopravy v konkr&eacute;tn&iacute;m m&iacute;stě komunikace. Pohyb je povolen po komunikaci, zat&iacute;mco pohyb skrz přek&aacute;žku nen&iacute; možn&yacute;. Můžete určit až 250 prvků, kter&eacute; budou sloužit jako bodov&eacute; přek&aacute;žky.
+            </p>
+            <p>Liniov&aacute; přek&aacute;žka br&aacute;n&iacute; pohybu v&scaron;ude tam, kde prot&iacute;n&aacute; komunikace. Např&iacute;klad, průvod nebo protest, kter&yacute; zablokuje dopravu např&iacute;č několika ulicemi, může b&yacute;t modelov&aacute;n pomoc&iacute; liniov&eacute; přek&aacute;žky. Pokud v&scaron;echny liniov&eacute; přek&aacute;žky prot&iacute;naj&iacute; dohromady v&iacute;ce než 500 prvků pozemn&iacute; komunikace, n&aacute;stroj vr&aacute;t&iacute; chybu.
+            </p>
+            <p>Polygonov&aacute; přek&aacute;žka br&aacute;n&iacute; pohybu v&scaron;ude tam, kde polygon prot&iacute;n&aacute; komunikace. Př&iacute;kladem použit&iacute; tohoto typu přek&aacute;žky je modelov&aacute;n&iacute; z&aacute;plav, jež postihuj&iacute; č&aacute;sti komunikačn&iacute; s&iacute;tě takov&yacute;m způsobem, že pohyb v těchto &uacute;sec&iacute;ch je znemožněn. Pokud v&scaron;echny polygonov&eacute; přek&aacute;žky prot&iacute;naj&iacute; dohromady v&iacute;ce než 2 000 prvků pozemn&iacute; komunikace, n&aacute;stroj vr&aacute;t&iacute; chybu.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Tvar trasy</h2></div>
+        <hr/>
+        <div>
+            <p>Vyberte tvar trasy, kter&aacute; propoj&iacute; každ&yacute; poč&aacute;tek s jej&iacute;m c&iacute;lem, při použit&iacute; způsobu přepravy:
+            </p>
+            <ul>
+                <li> <b>N&aacute;sledovat ulice</b> &ndash; tvar vych&aacute;z&iacute; z uličn&iacute; s&iacute;tě. Tato možnost je nejvhodněj&scaron;&iacute;, pokud chcete generovat trasy mezi poč&aacute;tky a c&iacute;li.
+                </li>
+                <li> <b>Rovn&aacute; č&aacute;ra</b> &ndash; tvarem bude rovn&aacute; č&aacute;ra spojuj&iacute;c&iacute; poč&aacute;tek a c&iacute;l. Tato možnost je nejvhodněj&scaron;&iacute;, pokud chcete vytvořit paprskov&eacute; diagramy (&quot;pavouky&quot;) nebo nejkrat&scaron;&iacute; trasy (např&iacute;klad aby se uk&aacute;zalo, do kter&eacute; prodejny z&aacute;kazn&iacute;ci jezd&iacute;).
+                </li>
+            </ul>
+            
+            <p>Nejlep&scaron;&iacute; trasa mezi poč&aacute;tkem a odpov&iacute;daj&iacute;c&iacute;m c&iacute;lem se vždy poč&iacute;t&aacute; na z&aacute;kladě způsobu přepravy bez ohledu na zvolen&yacute; tvar trasy.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>N&aacute;zev vrstvy prvků, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy. Pokud vrstva prvků již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu. Vrstva prvků bude obsahovat vrstvu pro každou z&nbsp;n&aacute;sleduj&iacute;c&iacute;ch skupin: trasy, nepřiřazen&eacute; poč&aacute;tky a nepřiřazen&eacute; c&iacute;le, když někter&eacute; poč&aacute;tky nelze propojit s&nbsp;jejich c&iacute;li.
+            </p>
+            <p>Pokud vyberete  <b>Zahrnout vrstvy tras</b>, každ&aacute; trasa z&nbsp;v&yacute;sledku bude tak&eacute; uložena jako vrstva trasy. Vrstva trasy obsahuje v&scaron;echny informace konkr&eacute;tn&iacute; trasy, např. zast&aacute;vky přiřazen&eacute; k trase a směrov&eacute; pokyny. Vytv&aacute;řen&iacute; vrstev tras je užitečn&eacute;, pokud chcete sd&iacute;let jednotliv&eacute; trasy s&nbsp;ostatn&iacute;mi členy ve va&scaron;&iacute; organizaci nebo chcete trasy d&aacute;le upravovat pomoc&iacute; tlač&iacute;tka <b>Navigace</b> v&nbsp;prohl&iacute;žeči map. Vrstvy tras použ&iacute;vaj&iacute; n&aacute;zev vrstvy prvků jako předponu, ke kter&eacute; je přid&aacute;n n&aacute;zev trasy vygenerovan&yacute; v&nbsp;r&aacute;mci anal&yacute;zy. Každ&aacute; vrstva trasy tak m&aacute; jedinečn&yacute; n&aacute;zev.
+            </p>
+            <p>Maxim&aacute;ln&iacute; počet vrstev tras, kter&eacute; lze vytvořit, je  1 000. Pokud v&yacute;sledek obsahuje v&iacute;ce než  1 000 tras a je za&scaron;krtnuto  <b>Zahrnout vrstvy tras</b>, n&aacute;stroj vytvoř&iacute; jen v&yacute;stupn&iacute; feature službu.
+            </p>
+            <p>V&nbsp;rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se maj&iacute; uložit vrstva prvků a vrstvy tras, budou-li vytvořeny.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

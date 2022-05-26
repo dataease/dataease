@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rotaları Planla</h2><p/>
+        <h2><img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="Rotaları Planla"></h2>
+        <hr/>
+    <p>Rotaları Planla, mobil işg&uuml;c&uuml; arasında g&ouml;revlerin nasıl verimli olarak dağıtılacağını belirler.
+    </p>
+    <p>Araca, durak grubu ve duraklara uğrayacak ara&ccedil;ların sayısını girersiniz. Ara&ccedil; durakları ara&ccedil;lara atar ve her aracın kendisine atanan duraklara en kısa s&uuml;rede nasıl ulaşabileceğini g&ouml;steren rotalar d&ouml;nd&uuml;r&uuml;r.
+    </p>
+    <p>Rotaları Planla ile mobil iş g&uuml;&ccedil;leri daha &ccedil;ok sayıda iş noktasına daha kısa s&uuml;rede ulaşır, bu da &uuml;retkenliği artırır ve m&uuml;şteri hizmetlerini iyileştirir.
+        <ul>
+            <li>Evleri, lokantaları ve inşaat sahalarını inceleme
+                
+
+            </li>
+            <li>Onarım ya da tesisat hizmetleri veya teknik hizmetler sunma
+            </li>
+            <li>Mal ve k&uuml;&ccedil;&uuml;k paketler dağıtma
+            </li>
+            <li>Satış ziyaretleri yapma
+            </li>
+            <li>İnsanları evlerinden bir etkinliğe taşıma
+            </li>
+        </ul>
+        
+    </p>
+    <p>Rotaları Planla aracından alınan &ccedil;ıktıda atandıkları yollar tarafından kodlanan bir durak katmanı, atanan duraklara giden en kısa yolları g&ouml;steren bir rota katmanı ve herhangi bir nedenle erişilemeyen duraklara bağlı olarak atanmamış duraklar katmanı bulunur. 
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> işaretliyse, yalnızca ge&ccedil;erli harita yayılımında g&ouml;r&uuml;n&uuml;r olan analiz katmanındaki detaylar analiz edilir.  İşaretli değilse, giriş katmanındaki t&uuml;m detaylar, ge&ccedil;erli harita kapsamının dışında olsa bile ele alınacaktır.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Gidilecek durakları temsil eden nokta katmanını seç</h2></div>
+        <hr/>
+        <div>
+            <p>Yolların (veya ara&ccedil;ların) ge&ccedil;mesi gereken noktaların katmanını se&ccedil;in.  Bu noktalar &ccedil;ıktıda atanmış veya atanmamış durak halini alır. 
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+            <p>Ara&ccedil; en fazla 2.000 girdi detayını destekler. 
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Rotalar için seyahat modu</h2></div>
+        <hr/>
+        <div>
+            <p>Seyahat modunuzu se&ccedil;in. &Ccedil;ıktı rotaları, yol veya kaldırım boyunca ilerler ve ara&ccedil; veya kamyonlar i&ccedil;in tek y&ouml;nl&uuml; trafik ile d&ouml;n&uuml;ş yasağı gibi ge&ccedil;erli kuralları dikkate alır. Kullanılabilir seyahat modları, kuruluşunuzun y&ouml;neticisi tarafından belirlenir.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Rotalar duraklarda başlar</h2></div>
+        <hr/>
+        <div>
+            <p>Ara&ccedil;ların rotalara nerede ve ne zaman başladığını belirtin.
+            </p>
+            <p>Rota Planla ile ara&ccedil;larınız i&ccedil;in bir veya bir&ccedil;ok başlangı&ccedil; konumu belirtebilirsiniz.
+            </p>
+            <p>Bir nokta konumu belirtildiğinde, mevcut ara&ccedil; sayısından bağımsız olarak t&uuml;m ara&ccedil;lar o noktadan &ccedil;ıkış yapar. Tek noktası olan bir nokta katmanı se&ccedil;ebilir veya  <b>Haritaya nokta ekle</b>'yi se&ccedil;ip, bitişik nokta d&uuml;zenleme d&uuml;ğmesine tıkladıktan sonra &uuml;zerine tıklayarak haritaya bir nokta ekleyebilirsiniz. 
+            </p>
+            <p>Birden &ccedil;ok konum belirtildiğinde, her aracın kendi noktasıyla ilişkilendirilmesi gerekir. Ara&ccedil; sayısı katmandaki nokta sayısıyla eşleşmelidir. Birden &ccedil;ok noktası olan bir katman se&ccedil;in ve  <b>Rota kimliği alanı</b> aşağı a&ccedil;ılır listesinde ayrı ayrı rotaları, ara&ccedil;ları veya s&uuml;r&uuml;c&uuml;leri tek olarak tanımlayan bir alan se&ccedil;in.
+            </p>
+            <p>Başlangı&ccedil; saati t&uuml;m rotalar i&ccedil;in aynıdır. Başlangı&ccedil; saatinin saat dilimi, başlangı&ccedil; noktasının veya noktalarının bulunduğu yerdeki saat dilimiyle aynıdır, bu y&uuml;zden girdiğiniz saatin yerel saat olduğundan emin olun. &Ouml;rneğin, Pasifik Standart Saati'nde (UTC-8:00) olduğunuzu ve y&ouml;nlendirdiğiniz ara&ccedil;ların Sıradağlar Standart Saati (UTC-7:00) olduğunu varsayalım. Şu anda saat 9:30 PST (10:30 MST) ise ve ara&ccedil;larınızın 30 dakika i&ccedil;inde rotalarında yola koyulması gerekiyorsa, başlangı&ccedil; saatini 11:00 olarak ayarlarsınız. 
+            </p>
+            <p>Ara&ccedil;larınız farklı saat dilimlerinden başlıyorsa, başlangı&ccedil; saati aynı olamaz; kaydırılır. &Ouml;rneğin, bir rota PST'deki bir noktadan başka bir rota ise MST'den başlıyorsa ve başlangı&ccedil; saatini 11:00 olarak girerseniz, PST'deki rota 11:00 de başlayacaktır. PST'de, MST'deki rota 11:00 MST'de; yani bir saatlik bir farkla başlar.
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Rotalar duraklarda biter</h2></div>
+        <hr/>
+        <div>
+            <p>Ara&ccedil;ların rotalarının nerede ve ne zaman bitireceğini belirtin.
+            </p>
+            <p>Rotaları &uuml;&ccedil; konumdan birinde bitecek şekilde yapılandırabilirsiniz: 
+                <ul>
+                    <li>Tek bir noktadan veya &ccedil;ok sayıda noktadan başlayıp başlamadıklarına bakılmaksızın rotaların başladığı konum
+                    </li>
+                    <li>Tek bir konum
+                    </li>
+                    <li>&Ccedil;ok sayıda konum; yani her rota i&ccedil;in ayrı bir bitiş noktası
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ara&ccedil;lar rotalarını aynı konumlarda başlayıp bitiriyorsa  <b>Başlangıca d&ouml;n</b>'&uuml; işaretleyin.
+            </p>
+            <p>T&uuml;m ara&ccedil;ları başlangı&ccedil; noktasından başka bir ortak bitiş noktasına y&ouml;nlendirmek i&ccedil;in  <b>Başlangıca d&ouml;n</b>'&uuml;n işaretini kaldırın ve haritaya bir nokta ekleyin veya tek bir nokta i&ccedil;eren bir katman se&ccedil;in.
+            </p>
+            <p>Rotaları kendi tek konumlarında bitirmek i&ccedil;in,  <b>Başlangıca d&ouml;n</b>'&uuml;n işaretini kaldırın ve birden fazla nokta i&ccedil;eren bir katman se&ccedil;in. Ara&ccedil; sayısı se&ccedil;ilen katmandaki nokta sayısına eşit olmalıdır. <b>Rota kimliği alanı</b> aşağı a&ccedil;ılan listesinde ayrı ayrı rotaları, ara&ccedil;ları veya s&uuml;r&uuml;c&uuml;leri tek olarak tanımlayan bir alan se&ccedil;in. Ara&ccedil;lar rotalarını birden &ccedil;ok konumdan başlayıp birden &ccedil;ok konumda bitiriyorsa, başlangı&ccedil; ve bitiş katmanları i&ccedil;in se&ccedil;ilen rota kimlikleri aynı olmalıdır.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Engel katmanlarını seç</h2></div>
+        <hr/>
+        <div>
+            <p> Aşağıdaki sokaklarda seyahat ederken ge&ccedil;ici kısıtlamalar (engeller) işlevi g&ouml;recek bir ya da daha fazla &ouml;zellik. Nokta, &ccedil;izgi ve poligon &ouml;zelliklerini kullanarak engel belirleyebilirsiniz.
+            </p>
+            <p>Nokta engel devrilmiş bir ağacı, kazayı, kopmuş bir elektrik hattını veya sokağın belirli bir noktasında trafiği tamamen engelleyen herhangi bir şeyi ifade edebilir. Sokakta harekete izin verilir ancak engel ge&ccedil;ilemez. Nokta engel olarak işlev g&ouml;recek 250'ye kadar &ouml;zellik belirleyebilirsiniz.
+            </p>
+            <p>Hat engel, sokakları kestiği her yerde hareketi engeller. &Ouml;rneğin, birka&ccedil; sokak boyunca trafiği engelleyen bir ge&ccedil;it t&ouml;reni ya da protesto bir &ccedil;izgi bariyeri ile modellenebilir. T&uuml;m hat engeller tarafından kesilen sokak &ouml;zelliği sayısı 500'&uuml; ge&ccedil;tiğinde ara&ccedil; hata verir.
+            </p>
+            <p>&Ccedil;okgen engel, sokakları kestiği her yerde hareketi engeller. Bu engel tipinin kullanımlarından biri sokak ağının alanlarını kaplayan taşkınları modellemektir ve sokakta hareket imkansız hale gelir. T&uuml;m hat engeller tarafından kesilen sokak &ouml;zelliği sayısı 2000'&uuml; ge&ccedil;tiğinde ara&ccedil; hata verir.
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Yönlendirilecek en fazla araç sayısı</h2></div>
+        <hr/>
+        <div>
+            <p>Duraklara uğramak i&ccedil;in kullanılabilecek ara&ccedil; sayısını belirtin. Ara&ccedil;  100 adede kadar aracı destekler. 
+            </p>
+            <p>Ara&ccedil;; toplam durak sayısına, ara&ccedil; başına ka&ccedil; durağa izin verildiğine, durakların birbirlerinden ne kadar mesafede olduğuna ve ara&ccedil; başına koyduğunuz toplam rota s&uuml;resine bağlı olarak, burada belirttiğiniz sayıdan daha az sayıda ara&ccedil; kullanan bir &ccedil;&ouml;z&uuml;m bulabilir.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Araç başına en fazla durak sayısı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu, genel iş y&uuml;k&uuml;n&uuml; rotalar arasında dengeleyen iki parametreden biridir. 1 ve  200 arasında bir değer belirtebilirsiniz. 
+            </p>
+            <p>Her araca atanabilecek en fazla durak sayısı d&uuml;ş&uuml;r&uuml;lerek ara&ccedil;lara atanan durak sayısının eşit olmasını sağlamak daha olasıdır. Bu, s&uuml;r&uuml;c&uuml;ler arasında iş y&uuml;k&uuml;n&uuml; dengelemeye yardımcı olur. Ancak bunun bir sakıncası, daha az verimli bir sonu&ccedil; ortaya &ccedil;ıkarma ihtimalinin olmasıdır.
+            </p>
+            <p>Ara&ccedil; başına durak sayısı artırılarak, aracın daha verimli &ccedil;&ouml;z&uuml;mler bulmada daha sınırsız olması sağlanır, ancak iş y&uuml;k&uuml; s&uuml;r&uuml;c&uuml;ler ve taşıtlar arasında daha dengesiz olarak dağılabilir.  <b>Ara&ccedil; başına toplam yol s&uuml;resini sınırla</b> parametresi i&ccedil;in bir değer belirterek iş y&uuml;klerini durak sayısının yanı sıra s&uuml;reye g&ouml;re de dengeleyebileceğinizi unutmayın.
+            </p>
+            <p>Aşağıdaki &ouml;rnekler ara&ccedil; başına en fazla durak sayısına karşılık ara&ccedil; başına toplam s&uuml;reyi sınırlamanın etkilerini g&ouml;stermektedir. T&uuml;m &ouml;rneklerde altı durak ve aynı konumda başlayan iki rota vardır.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="../images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="Dengeli duraklar ve seyahat s&uuml;releri">
+                </td>
+                <td>
+                    <p>Dengeli seyahat s&uuml;releri ve rota başına durak sayısı:
+                    </p>
+                    <p>Duraklar birbirlerinden aşağı yukarı aynı mesafededir, bu y&uuml;zden iş y&uuml;k&uuml;n&uuml; dengeli olarak dağıtmak i&ccedil;in ara&ccedil; başına en fazla durak sayısını ayarlamak kabaca aynı s&uuml;rede rotalar ortaya &ccedil;ıkarmaktadır.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Dengesiz rota s&uuml;releri">
+                </td>
+                <td>
+                    <p>Rota başına dengeli durak sayısı, ancak dengesiz seyahat s&uuml;releri:
+                    </p>
+                    <p>Altı duraktan beşi başlangı&ccedil; noktası yakınındadır, ancak bir durak daha uzaktadır ve durağa ulaşmak i&ccedil;in &ccedil;ok daha uzun bir s&uuml;re gerekmektedir. Durakları iki rota arasında eşit olarak dağıtmak dengesiz seyahat s&uuml;releri ortaya &ccedil;ıkarmaktadır.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="Dengeli s&uuml;r&uuml;ş s&uuml;releri">
+                </td>
+                <td>
+                    <p>Rota başına dengesiz durak sayısı, ancak dengeli seyahat s&uuml;releri:
+                    </p>
+                    <p>Duraklar &ouml;nceki grafikle aynı konumdadır, ancak rota başına en fazla durak sayısı artırılarak ve ara&ccedil; başına toplam s&uuml;r&uuml;ş s&uuml;resi sınırlanarak s&uuml;r&uuml;ş s&uuml;releri dengelenmiştir.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Her durakta harcanan zaman</h2></div>
+        <hr/>
+        <div>
+            <p>Her durakta harcanması beklenen ortalama hizmet s&uuml;resini ayarlayın. &Ouml;rneğin, denet&ccedil;iler i&ccedil;in bir işg&uuml;n&uuml; &ccedil;izelgesi planlıyorsanız ve ortalama denetleme s&uuml;resi 45 dakikaysa,  <code>45</code> girin.
+            </p>
+            <p>T&uuml;m duraklardaki hizmet s&uuml;resinin aynı olduğu varsayılır.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Araç başına toplam rota süresini sınırlama</h2></div>
+        <hr/>
+        <div>
+            <p>Bir rotanın başlangı&ccedil;tan bitişe alacağı en fazla s&uuml;reyi belirtin. Buna beklenen seyahat s&uuml;resi ve rota boyunca duraklarda harcanan hizmet s&uuml;releri dahildir. S&uuml;r&uuml;c&uuml;lerin g&uuml;n i&ccedil;inde belirli bir s&uuml;reden; &ouml;rneğin sekiz saatten daha fazla &ccedil;alışmaması gerekiyorsa, bu sınırı burada belirtebilirsiniz.
+            </p>
+            <p>İş y&uuml;klerini dengelerken hesaba katılacak şeyler i&ccedil;in  <b>Ara&ccedil; başına en fazla durak sayısı konusunun</b> yardımına bakın.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek detay katmanının adıdır. Detay katmanı zaten varsa, başka bir ad girmeniz istenir. Detay katmanında aşağıdakilerden her biri i&ccedil;in bir katman bulunur: rotalar, atanmış duraklar ve atanmamış duraklar (bazı girdi duraklarının herhangi bir rotaya atanamadığı durumlarda).
+            </p>
+            <p> <b>Rota katmanlarını ekle</b> &ouml;gesini se&ccedil;tiğinizde, sonu&ccedil;taki her rota ayrıca bir rota katmanı olarak da kaydedilir. Bir rota katmanı, seyahat yol tarifinin yanı sıra rotaya atanan duraklar gibi belirli bir rotaya ait bilgilerin t&uuml;m&uuml;n&uuml; i&ccedil;erir. Rota katmanı oluşturma, kuruluşunuzdaki diğer &uuml;yelerle bağımsız rotaları paylaşmak veya rotaları harita g&ouml;r&uuml;nt&uuml;leyici i&ccedil;indeki <b>Yol Tarifleri</b> d&uuml;ğmesini kullanarak daha fazla değiştirmek istediğinizde yararlıdır. Rota katmanları, &ouml;n ek olarak detay katmanı i&ccedil;in girilen adı kullanır, analiz kapsamında oluşturulan rota adı her rota katmanı i&ccedil;in benzersiz bir ad oluşturmak &uuml;zere eklenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır listesini kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

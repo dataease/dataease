@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/arcade/featureset/support/Guid",["require","exports"],function(e,f){function c(a){for(var b="",c=0;c<a;c++)b+=(65536*(1+Math.random())|0).toString(16).substring(1);return b}var d=/^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$/i;return function(){function a(b){this.value="";if(!b)throw new TypeError("Invalid argument; `value` has no value.");this.value=a.EMPTY;b&&b instanceof a?this.value=b.toString():b&&"[object String]"===Object.prototype.toString.call(b)&&a.isGuid(b)&&
+(this.value=b)}a.prototype.equals=function(b){return a.isGuid(b)&&this.value===b};a.prototype.isEmpty=function(){return this.value===a.EMPTY};a.prototype.toString=function(){return this.value};a.prototype.toJSON=function(){return this.value};a.isGuid=function(b){return b&&(b instanceof a||d.test(b.toString()))};a.create=function(){return new a([c(2),c(1),c(1),c(1),c(3)].join("-"))};a.raw=function(){return[c(2),c(1),c(1),c(1),c(3)].join("-")};a.EMPTY="00000000-0000-0000-0000-000000000000";return a}()});

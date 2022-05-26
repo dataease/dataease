@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Posplošena linearna regresija</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Diagram delovnega procesa posplo&scaron;ene linearne regresije"></h2>
+        <hr/>
+    <p>Izvaja posplo&scaron;eno linearno regresijo (GLR) za ustvarjanje napovedi ali modeliranje odvisne spremenljivke v smislu njene relacije s sklopom pojasnjevalnih spremenljivk. To orodje se lahko uporablja za prilagajanje stalnih (Gaussovih), binarnih (logističnih) in &scaron;tevnih (Poissonovih) modelov.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Tip analize</h2></div>
+        <hr/>
+        <div>
+            <p>Določa način delovanja orodja. Orodje je mogoče uporabiti za učenje modela, da ocenjuje samo uspe&scaron;nost, ali za učenje modela in napovedovanje geoobjektov. Tipi napovedi so naslednji:
+                <ul>
+                    <li> <b>Prilagajanje modela za ocenjevanje uspe&scaron;nosti modela</b> &ndash; model bo prilagojen in uporabljen za vhodne podatke. To možnost uporabite za ocenjevanje natančnosti svojega modela pred ustvarjanjem napovedi za nov sklop podatkov ali izbolj&scaron;anje razumevanja relacij in gonilnikov svoje napovedane spremenljivke. Rezultati te možnosti bodo geoobjektna storitev va&scaron;ih prilagojenih podatkov in diagnostike modela.
+                    </li>
+                    <li> <b>Prilagajanje modela in napovedovanje vrednosti</b> &ndash; napovedi ali klasifikacije bodo ustvarjene za vhodne geoobjekte in napovedovalne geoobjekte. Pojasnjevalne spremenljivke je treba zagotoviti tako za napovedovalne geoobjekte kot za geoobjekte, ki jih je treba napovedati. Rezultati te možnosti bodo geoobjektna storitev va&scaron;ega modela, prilagojenega va&scaron;im vhodnim podatkom, geoobjektna storitev napovedanih vrednosti in diagnostike modela.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Prilagajanje modela za ocenjevanje uspešnosti modela</h2></div>
+        <hr/>
+        <div>
+            <p>Ta način uporabite, če želite prilagoditi model in preveriti prilagoditev.
+            </p>
+            <p>Model bo s to izbiro in uporabo vhodnega sloja naučen. To možnost uporabite za ocenjevanje natančnosti svojega modela pred ustvarjanjem napovedi za nov sklop podatkov. Ta možnost bo kot rezultat dala diagnostike modela in uporabila model na va&scaron;ih učnih podatkih.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Prilagajanje modela in napovedovanje vrednosti</h2></div>
+        <hr/>
+        <div>
+            <p>Ta način uporabite, če želite prilagoditi model in ga za ustvarjanje napovedi uporabiti na sklopu podatkov.
+            </p>
+            <p>Za geoobjekte bodo ustvarjene napovedi ali klasifikacije. Rezultati te možnosti bodo geoobjektna storitev, diagnostike modela in poljubna tabela možnosti spremenljivega pomena.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Izberite sloj, iz katerega bo ustvarjen model</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj, ki vsebuje točkovne, linijske, poligonske ali tablične geoobjekte, ki vsebujejo odvisne in pojasnjevalne spremenljivke.
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Izberi polje za modeliranje</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;tevilsko polje, ki vsebuje opazovane vrednosti, ki jih je treba modelirati, in tip vrednosti, ki ga modelirate. Obstajajo trije tipi vrednosti, ki jih lahko modelirate
+                <ul>
+                    <li>Stalni &ndash; predstavljajo stalne vrednosti. Uporabljen je Gaussov model, orodje pa izvaja običajno regresijo po metodi z najmanj&scaron;imi kvadrati.
+                    </li>
+                    <li>Binarni &ndash; predstavlja vrednosti prisotnosti ali odsotnosti. Te morajo zna&scaron;ati 1 s ali 0 s. Uporablja se model logistične regresije.
+                    </li>
+                    <li>&Scaron;tevni &ndash; predstavlja diskretne vrednosti in dogodke, kot so &scaron;tevilo kaznivih dejanj, pojavnost bolezni ali prometne nesreče. Uporablja se model Poissonove regresije. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Izberi sloj za napovedovanje vrednosti za</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj z geoobjekti, ki predstavljajo lokacije, kjer je treba izračunati ocene. Vsak geoobjekt v tem sklopu podatkov mora vsebovati vrednosti za vse navedene pojasnjevalne spremenljivke. Odvisna spremenljivka bo za te geoobjekte ocenjena z modelom, ki je kalibriran za vhodni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Izberi pojasnjevalna polja</h2></div>
+        <hr/>
+        <div>
+            <p>Eno ali več polj, ki predstavljajo pojasnjevalne spremenljivke (polja), ki pomagajo pri napovedovanju vrednosti. Vidna bodo samo &scaron;tevilska polja.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Izberite način ujemanja pojasnjevalnih polj</h2></div>
+        <hr/>
+        <div>
+            <p>Kako se bodo ustrezne spremenljivke na vhodnem sloju ujemale s spremenljivkami na napovedovalnem sloju. V tabelo bodo vključene samo spremenljivke, uporabljene pri ustvarjanju modela. Lahko se uporabijo samo &scaron;tevilske vrednosti. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen. Če zapisujete v ArcGIS Data Store, bodo va&scaron;i rezultati shranjeni v  <b>Moji vsebini</b> in dodani na karto. Če zapisujete v delitev datotek velikih podatkov, bodo va&scaron;i rezultati shranjeni v delitev datotek velikih podatkov in dodani v njen manifest. Ne bodo dodani v skupino. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, orodje ne bo uspe&scaron;no.
+            </p>
+            <p>Vrnjeni rezultati bodo odvisni od vrste analize. Če prilagajanje izvajate za ocenjevanje prilagoditve modela, bodo rezultati vsebovali sloj z vhodnimi podatki, ki so prilagojeni modelu, in informacije rezultata o ocenjevanju prilagoditve modela. Če izvajate prilagajanje in napovedovanje, bodo rezultati vsebovali sloj z vhodnimi podatki, ki so prilagojeni modelu, sloj z napovedanimi rezultati in informacije rezultata o ocenjevanju prilagoditve modela.
+            </p>
+            <p>Ko zapisujete v  ArcGIS Data Store (relacijsko ali prostorsko-časovno shrambo velikih podatkov) s pomočjo spustnega menija  <b>Shrani rezultat v</b>, lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

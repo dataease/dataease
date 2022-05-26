@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tạo Vùng đệm</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Tạo V&ugrave;ng đệm"></h2>
+        <hr/>
+    <p>V&ugrave;ng đệm l&agrave; khu vực bao phủ một khoảng c&aacute;ch nhất định từ một đối tượng điểm, đường hoặc v&ugrave;ng. 
+    </p>
+    <p>C&aacute;c v&ugrave;ng đệm thường được sử dụng để tạo ra c&aacute;c khu vực c&oacute; thể được tiếp tục ph&acirc;n t&iacute;ch bằng c&aacute;ch sử dụng một c&ocirc;ng cụ kh&aacute;c như Chồng Lớp. V&iacute; dụ: nếu c&acirc;u hỏi l&agrave; &quot;C&oacute; bao nhi&ecirc;u t&ograve;a nh&agrave; nằm trong phạm vi trường học một dặm?&quot;, c&oacute; thể t&igrave;m thấy c&acirc;u trả lời bằng c&aacute;ch tạo ra v&ugrave;ng đệm một dặm quanh trường học v&agrave; sử dụng c&ocirc;ng cụ Chồng Lớp để chồng l&ecirc;n v&ugrave;ng đệm bằng lớp dữ liệu c&oacute; chứa th&ocirc;ng tin t&ograve;a nh&agrave;. Kết quả cuối c&ugrave;ng l&agrave; một lớp c&aacute;c t&ograve;a nh&agrave; trong phạm vi trường học một dặm.  
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c đối tượng được nh&igrave;n thấy trong phạm vi bản đồ hiện tại mới được tạo v&ugrave;ng đệm. Nếu bỏ chọn, tất cả đối tượng trong lớp đầu v&agrave;o sẽ được tạo v&ugrave;ng đệm, ngay cả khi ch&uacute;ng nằm ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Chọn lớp có chứa đối tượng để tạo vùng đệm</h2></div>
+        <hr/>
+        <div>
+            <p>Đối tượng điểm, đường, hoặc v&ugrave;ng được tạo v&ugrave;ng đệm. 
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Nhập kích cỡ vùng đệm</h2></div>
+        <hr/>
+        <div>
+            <p>Bạn c&oacute; thể nhập một hoặc nhiều gi&aacute; trị khoảng c&aacute;ch, ph&acirc;n t&aacute;ch từng gi&aacute; trị bằng dấu c&aacute;ch. Bạn cũng c&oacute; thể chỉ định một thuộc t&iacute;nh tr&ecirc;n lớp ph&acirc;n t&iacute;ch c&oacute; chứa gi&aacute; trị khoảng c&aacute;ch bằng c&aacute;ch bấm v&agrave;o  <b>Trường</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>Tùy chọn</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn c&aacute;ch bạn muốn xử l&yacute; việc chồng lớp cho c&aacute;c v&ugrave;ng đệm. Đối với bất kỳ v&ugrave;ng đệm n&agrave;o tr&ecirc;n đỉnh của một v&ugrave;ng đệm kh&aacute;c, c&aacute;c khu vực chung c&oacute; thể được giữ (Chồng ch&eacute;o) hoặc kết hợp (X&oacute;a bỏ). Khi sử dụng t&ugrave;y chọn  <b>Ph&acirc;n r&atilde;</b>, tất cả c&aacute;c v&ugrave;ng đệm sẽ được ph&acirc;n r&atilde; v&agrave; h&ograve;a với nhau th&agrave;nh một đối tượng nhiều phần, loại bỏ mọi v&ugrave;ng chồng lấp.
+            </p>  
+            <p> Khi sử dụng nhiều khoảng c&aacute;ch kh&aacute;c nhau, bạn c&oacute; thể chọn c&aacute;ch thể hiện khoảng c&aacute;ch từ khoảng c&aacute;ch v&ugrave;ng đệm cuối c&ugrave;ng; v&iacute; dụ: nếu khoảng c&aacute;ch l&agrave; 10 v&agrave; 14:
+                <ul>
+                    <li>Chọn  <b>V&ograve;ng tr&ograve;n</b> sẽ tạo v&ugrave;ng đệm đi từ 0 đến 10 v&agrave; 10 đến 14.
+                    </li>
+                    <li>Chọn  <b>H&igrave;nh đĩa</b> sẽ tạo v&ugrave;ng đệm đi từ 0 đến 10 v&agrave; 0 đến 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>Tùy chọn</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn c&aacute;ch bạn muốn xử l&yacute; việc chồng lớp cho c&aacute;c v&ugrave;ng đệm. Đối với bất kỳ v&ugrave;ng đệm n&agrave;o tr&ecirc;n đỉnh của một v&ugrave;ng đệm kh&aacute;c, c&aacute;c khu vực chung c&oacute; thể được giữ (Chồng ch&eacute;o) hoặc kết hợp (X&oacute;a bỏ). Khi sử dụng t&ugrave;y chọn  <b>Ph&acirc;n r&atilde;</b>, tất cả c&aacute;c v&ugrave;ng đệm sẽ được ph&acirc;n r&atilde; v&agrave; h&ograve;a với nhau th&agrave;nh một đối tượng nhiều phần, loại bỏ mọi v&ugrave;ng chồng lấp.
+            </p>
+            <p>Khi tạo một v&ugrave;ng đệm duy nhất xung quanh c&aacute;c đối tượng v&ugrave;ng (một khoảng c&aacute;ch đ&atilde; nhập), bạn c&oacute; thể chọn bao tr&ugrave;m hoặc kh&ocirc;ng bao tr&ugrave;m c&aacute;c đối tượng được l&agrave;m v&ugrave;ng đệm trong v&ugrave;ng đệm kết quả.
+            </p>
+            <p>Khi sử dụng nhiều khoảng c&aacute;ch kh&aacute;c nhau, bạn c&oacute; thể chọn c&aacute;ch thể hiện 
+khoảng c&aacute;ch từ khoảng c&aacute;ch v&ugrave;ng đệm cuối c&ugrave;ng; v&iacute; dụ: nếu khoảng c&aacute;ch l&agrave; 10 v&agrave; 14:
+                <ul>
+                    <li>Chọn  <b>V&ograve;ng tr&ograve;n</b> sẽ tạo v&ugrave;ng đệm đi từ 0 đến 10 v&agrave; 10 đến 14.
+                    </li>
+                    <li>Chọn  <b>H&igrave;nh đĩa</b> sẽ tạo v&ugrave;ng đệm đi từ 0 đến 10 v&agrave; 0 đến 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>Tùy chọn</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn c&aacute;ch bạn muốn xử l&yacute; việc chồng lớp cho c&aacute;c v&ugrave;ng đệm. Đối với bất kỳ v&ugrave;ng đệm n&agrave;o tr&ecirc;n đỉnh của một v&ugrave;ng đệm kh&aacute;c, c&aacute;c khu vực chung c&oacute; thể được giữ (Chồng ch&eacute;o) hoặc kết hợp (X&oacute;a bỏ). Khi sử dụng t&ugrave;y chọn  <b>Ph&acirc;n r&atilde;</b>, tất cả c&aacute;c v&ugrave;ng đệm sẽ được ph&acirc;n r&atilde; v&agrave; h&ograve;a với nhau th&agrave;nh một đối tượng nhiều phần, loại bỏ mọi v&ugrave;ng chồng lấp.
+            </p>
+            <p>Khi tạo ra một v&ugrave;ng đệm đơn xung quanh c&aacute;c đường (một khoảng c&aacute;ch được nhập), bạn c&oacute; thể chọn cạnh n&agrave;o của đường sẽ được l&agrave;m v&ugrave;ng đệm. Th&ocirc;ng thường, bạn chọn cả hai cạnh. Tr&aacute;i v&agrave; phải được x&aacute;c định như khi bạn đang đi bộ từ tọa độ x, y đầu ti&ecirc;n của đường (tọa độ đầu) đến tọa độ x, y cuối c&ugrave;ng của đường (tọa độ cuối). Lựa chọn tr&aacute;i hoặc phải thường nghĩa l&agrave; bạn biết rằng c&aacute;c đối tượng đường được tạo v&agrave; lưu trữ theo một hướng cụ thể (v&iacute; dụ: thượng nguồn hay hạ lưu trong một mạng lưới s&ocirc;ng). Tại c&aacute;c đầu cuối của đường, v&ugrave;ng đệm c&oacute; thể được l&agrave;m tr&ograve;n (Tr&ograve;n) hoặc thẳng qua (Phẳng).
+            </p>
+            <p>Khi sử dụng nhiều v&ugrave;ng đệm (nhiều hơn một khoảng c&aacute;ch), bạn c&oacute; thể chọn c&aacute;ch thể hiện khoảng c&aacute;ch từ khoảng c&aacute;ch v&ugrave;ng đệm cuối c&ugrave;ng; v&iacute; dụ: nếu khoảng c&aacute;ch l&agrave; 10 v&agrave; 14:
+                <ul>
+                    <li>Chọn  <b>V&ograve;ng tr&ograve;n</b> sẽ tạo v&ugrave;ng đệm đi từ 0 đến 10 v&agrave; 10 đến 14.
+                    </li>
+                    <li>Chọn  <b>H&igrave;nh đĩa</b> sẽ tạo v&ugrave;ng đệm đi từ 0 đến 10 v&agrave; 0 đến 14.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>Tùy chọn</h2></div>
+        <hr/>
+        <div>
+            <p>Sau khi bạn chọn một lớp để tạo v&ugrave;ng đệm, bạn c&oacute; thể chọn c&aacute;ch bạn muốn xử l&yacute; việc chồng lớp v&ugrave;ng đệm. Đối với bất kỳ v&ugrave;ng đệm n&agrave;o tr&ecirc;n đỉnh của một v&ugrave;ng đệm kh&aacute;c, c&aacute;c khu vực chung c&oacute; thể được giữ (Chồng ch&eacute;o) hoặc kết hợp (X&oacute;a bỏ). Khi sử dụng t&ugrave;y chọn  <b>Ph&acirc;n r&atilde;</b>, tất cả c&aacute;c v&ugrave;ng đệm sẽ được ph&acirc;n r&atilde; v&agrave; h&ograve;a với nhau th&agrave;nh một đối tượng nhiều phần, loại bỏ mọi v&ugrave;ng chồng lấp. Ngo&agrave;i ra, bạn c&oacute; thể chỉ định c&aacute;ch thể hiện nhiều khoảng c&aacute;ch.   Với c&aacute;c lớp c&oacute; chứa c&aacute;c đối tượng đường, bạn c&oacute; thể chọn cạnh n&agrave;o của đường sẽ được l&agrave;m v&ugrave;ng đệm.  Với c&aacute;c lớp c&oacute; chứa c&aacute;c đối tượng dạng v&ugrave;ng, bạn c&oacute; thể chọn bao tr&ugrave;m hoặc kh&ocirc;ng bao tr&ugrave;m c&aacute;c đối tượng được l&agrave;m v&ugrave;ng đệm trong v&ugrave;ng đệm kết quả.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu t&ecirc;n lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> menu thả xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/nb/GenerateTessellations",{chooseShape:"Velg form",defineExtent:"Definere utstrekning",defineBin:"Definer beholderst\u00f8rrelse ved \u00e5 angi",area:"Areal",distance:"Avstand",resultLayerName:"Navn p\u00e5 resultatlag",hexagon:"Heksagon",transverseHexagon:"Tverrstilt heksagon",square:"Kvadrat",triangle:"Trekant",diamond:"Rombe",sameAsDisplay:"Samme som visning",emptyBinSize:"Beholderst\u00f8rrelse kan ikke v\u00e6re tom",currentExtent:"gjeldende utstrekning",intersectExtent:"Behold kun kryssende tesselleringer",
+outputLayerName:"Generer tesselleringer p\u00e5 ${extentLayerName}",itemDescription:"Utstrekning fra ${extentLayerName} ble brukt.",itemTags:"Analyseresultat, Generer tesselleringer, ${extentLayerName}",itemSnippet:"Geoobjektlag generert fra Generer tesselleringer."});

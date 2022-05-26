@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tạo Lưới Đa biến</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Sơ đồ luồng c&ocirc;ng việc Th&ecirc;m Dữ liệu"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ Tạo Lưới Đa biến hoạt động với một hoặc nhiều lớp đối tượng điểm, đường hoặc đa gi&aacute;c. C&ocirc;ng cụ n&agrave;y tạo ra một lưới gồm c&aacute;c bin h&igrave;nh vu&ocirc;ng hoặc h&igrave;nh lục gi&aacute;c v&agrave; t&iacute;nh to&aacute;n gi&aacute; trị cho từng bin dựa tr&ecirc;n v&ugrave;ng l&acirc;n cận của từng lớp đầu v&agrave;o. C&aacute;c gi&aacute; trị n&agrave;y c&oacute; thể bao gồm c&aacute;c biến sau: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Khoảng c&aacute;ch đến Đối tượng Gần nhất</b>&mdash;Khoảng c&aacute;ch từ mỗi bin đến đối tượng gần nhất
+            </li>
+            <li> <b>Thuộc t&iacute;nh của Đối tượng Gần nhất</b>&mdash;Một gi&aacute; trị trường của đối tượng gần mỗi bin nhất
+            </li>
+            <li> <b>T&oacute;m tắt Vị tr&iacute; L&acirc;n cận</b>&mdash;Một thống k&ecirc; cụ thể của tất cả c&aacute;c đối tượng trong một khoảng c&aacute;ch t&iacute;nh từ mỗi bin
+            </li>
+            <li> <b>T&oacute;m tắt Giao cắt</b>&mdash;Một thống k&ecirc; cụ thể của tất cả c&aacute;c đối tượng giao cắt với mỗi bin
+            </li>
+        </ul>
+        
+    </p>
+    <p>Chỉ c&aacute;c biến bạn x&aacute;c định mới được bao h&agrave;m trong lớp kết quả. C&aacute;c biến n&agrave;y c&oacute; thể gi&uacute;p bạn hiểu v&ugrave;ng l&acirc;n cận v&agrave; ph&acirc;n bố dữ liệu của bạn. Kết quả c&oacute; thể gi&uacute;p bạn bắt đầu trả lời những c&acirc;u hỏi như sau:
+        <ul>
+            <li>Với nhiều lớp hạ tầng giao th&ocirc;ng c&ocirc;ng cộng, c&aacute;c phương tiện giao th&ocirc;ng c&ocirc;ng cộng &iacute;t c&oacute; khả năng tiếp cận nhất với phần n&agrave;o của th&agrave;nh phố?
+            </li>
+            <li>Với nhiều lớp đường s&ocirc;ng chẳng hạn như ao hồ, s&ocirc;ng ng&ograve;i, t&ecirc;n của v&ugrave;ng nước gần mỗi vị tr&iacute; nhất tại Hoa Kỳ l&agrave; g&igrave;?
+            </li>
+            <li>Với một lớp thu nhập của hộ gia đ&igrave;nh, ở đ&acirc;u tại Hoa Kỳ c&oacute; phương sai thu nhập trong v&ograve;ng 50 dặm lớn nhất?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Chọn loại bin sẽ được sử dụng để tạo lưới đa biến</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Loại v&agrave; k&iacute;ch thước của bin sẽ được sử dụng để tạo lưới đa biến. Đối với t&ugrave;y chọn  <b>H&igrave;nh vu&ocirc;ng</b>, số lượng v&agrave; đơn vị cụ thể sẽ x&aacute;c định chiều cao v&agrave; chiều d&agrave;i của h&igrave;nh vu&ocirc;ng. Đối với t&ugrave;y chọn <b>H&igrave;nh lục gi&aacute;c</b>, số lượng v&agrave; đơn vị cụ thể sẽ x&aacute;c định khoảng c&aacute;ch giữa c&aacute;c mặt song song.
+            </p>
+            <p>Ph&acirc;n t&iacute;ch n&agrave;y sử dụng c&aacute;c bin v&agrave; phải c&oacute; hệ tọa độ tham chiếu. Bạn c&oacute; thể thiết lập  <b>Hệ tọa độ xử l&yacute;</b> trong <b>M&ocirc;i trường Ph&acirc;n t&iacute;ch</b>. Nếu hệ tọa độ xử l&yacute; của bạn kh&ocirc;ng thiết lập hệ tọa độ tham chiếu, bạn sẽ được y&ecirc;u cầu thiết lập khi bạn <b>Chạy Ph&acirc;n t&iacute;ch</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Chọn các lớp đầu vào và biến mà bạn muốn bao gồm trong lưới</h2></div>
+        <hr/>
+        <div>
+            <p>Nhấp v&agrave;o n&uacute;t th&ecirc;m ( <b>+</b>) để mở cửa sổ <b>Th&ecirc;m Biến</b> v&agrave; th&ecirc;m một lớp v&agrave;o ph&acirc;n t&iacute;ch của bạn. Trong cửa sổ <b>Th&ecirc;m Biến</b>, chọn một lớp đầu v&agrave;o v&agrave; cấu h&igrave;nh c&aacute;c biến bạn muốn t&iacute;nh to&aacute;n cho lớp đầu v&agrave;o đ&oacute;.
+            </p>
+            <p>Sau khi bạn đ&atilde; chọn v&agrave; cấu h&igrave;nh c&aacute;c biến m&agrave; bạn muốn t&iacute;nh to&aacute;n, lớp sẽ được liệt k&ecirc; trong cửa sổ c&ocirc;ng cụ c&ugrave;ng với bất kỳ lớp được chọn n&agrave;o kh&aacute;c. Nhấp v&agrave;o n&uacute;t chỉnh sửa với bất kỳ lớp n&agrave;o để mở cửa sổ  <b>Th&ecirc;m Biến</b> v&agrave; xem tất cả biến được cấu h&igrave;nh cho lớp đ&oacute;. Nhấp v&agrave;o n&uacute;t x&oacute;a với bất kỳ lớp n&agrave;o để x&oacute;a lớp đ&oacute; v&agrave; tất cả c&aacute;c biến li&ecirc;n quan khỏi ph&acirc;n t&iacute;ch.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Thêm Biến</h2></div>
+        <hr/>
+        <div>
+            <p>Cửa sổ n&agrave;y cho ph&eacute;p bạn chọn một lớp đầu v&agrave;o v&agrave; cấu h&igrave;nh c&aacute;c biến bạn muốn t&iacute;nh to&aacute;n cho lớp đầu v&agrave;o đ&oacute;. Để bắt đầu, sử dụng menu thả xuống  <b>Chọn lớp đầu v&agrave;o</b> để chọn lớp điểm, đa gi&aacute;c hoặc đường m&agrave; bạn muốn th&ecirc;m v&agrave;o ph&acirc;n t&iacute;ch của m&igrave;nh.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp dữ liệu từ bản đồ, bạn c&oacute; thể chọn mục  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới danh s&aacute;ch thả xuống để t&igrave;m đến nội dung của m&igrave;nh cho bộ dữ liệu chia sẻ tệp dữ liệu lớn hoặc lớp đối tượng.
+            </p>
+            <p>Sau khi bạn đ&atilde; chọn được một lớp đầu v&agrave;o, nhấp v&agrave;o n&uacute;t  <b>Th&ecirc;m biến</b> để mở một biến mới cho chỉnh sửa. Bạn phải cung cấp t&ecirc;n duy nhất cho mỗi biến. Đ&acirc;y sẽ l&agrave; t&ecirc;n trường được tạo trong bảng thuộc t&iacute;nh của lớp kết quả.
+            </p>
+            <p>Sử dụng menu thả xuống để chọn loại biến muốn th&ecirc;m. Mỗi loại biến phải được cấu h&igrave;nh với một bộ tham số duy nhất, v&agrave; tất cả c&aacute;c tham số đều l&agrave; bắt buộc.
+            </p>
+            <p>Sau khi bạn đ&atilde; th&ecirc;m tất cả c&aacute;c biến mong muốn cho lớp đ&atilde; chọn, h&atilde;y nhấp v&agrave;o n&uacute;t  <b>Th&ecirc;m</b> để lưu c&aacute;c biến.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p> T&ecirc;n lớp sẽ được tạo. Nếu bạn đang ghi v&agrave;o ArcGIS Data Store, kết quả của bạn sẽ được lưu v&agrave;o phần  <b>Nội dung của t&ocirc;i</b> v&agrave; được th&ecirc;m v&agrave;o bản đồ. Nếu bạn đang ghi v&agrave;o một phần chia sẻ tệp dữ liệu lớn, kết quả của bạn sẽ được lưu v&agrave;o phần chia sẻ tệp dữ liệu lớn v&agrave; được th&ecirc;m v&agrave;o bản k&ecirc; của n&oacute;. N&oacute; sẽ kh&ocirc;ng được th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, c&ocirc;ng cụ sẽ thất bại.
+            </p>
+            <p>Khi ghi v&agrave;o  ArcGIS Data Store (kho dữ liệu lớn li&ecirc;n quan hoặc kho dữ liệu lớn kh&ocirc;ng gian thời gian) sử dụng hộp xổ xuống  <b>Lưu kết quả v&agrave;o</b>, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong mục <b>Nội dung của t&ocirc;i</b> để lưu trữ kết quả v&agrave;o.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

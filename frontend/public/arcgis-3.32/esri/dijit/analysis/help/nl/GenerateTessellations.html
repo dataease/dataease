@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Betegeling genereren</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Betegeling genereren"></h2>
+        <hr/>
+    <p>Deze tool genereert betegelingen over een studiegebied op basis van de opgegeven vorm en grootte.
+    </p>
+    <p>Het selectievakje  <b>Huidige kaartextent gebruiken</b> is uitgeschakeld voor deze tool, omdat de extent die wordt gebruikt voor het genereren van de betegelingsbewerkingen bepaald wordt door de parameter <b>Extent defini&euml;ren</b>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Vorm kiezen</h2></div>
+        <hr/>
+        <div>
+            <p>De vorm of geometrie van de betegeling die u wilt maken. De beschikbare vormen zijn  <code>Vierkant</code>, <code>Zeshoek</code>, <code>Dwarse zeshoek</code>, <code>Driehoek</code> of <code>Diamant</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Studiegebied definiëren</h2></div>
+        <hr/>
+        <div>
+            <p>De extent of het gebied dat de betegelingen zullen bedekken. De extent kan worden bepaald met behulp van de huidige kaartextent, de extent van een bestaande laag, of door interactief een gebied te tekenen dat moet worden gebruikt als de extent.
+            </p>
+            <p>Als een objectlaag is geselecteerd om de extent te bepalen, wordt de optie om enkel de kruisende betegelingslijnen te behouden ingeschakeld. Indien aangevinkt, worden alleen de betegelingen die lagen bedekken of elementen kruisen in de opgegeven extentlaag gegenereerd in de resulterende moza&iuml;ekpatroonlaag. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Niet aangevinkt
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Volledige extentdekking">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Aangevinkt
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Objectdekking">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Definieer de bingrootte door deze te specificeren</h2></div>
+        <hr/>
+        <div>
+            <p>De grootte van elke cel. De celgrootte kan worden bepaald door vierkante eenheden op te geven of door een afstand op te geven die wordt berekend met behulp van de volgende metingen, waarbij d = Afstand: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Vierkant
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Vierkante betegeling">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Zeskant
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Zeshoekige betegeling">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Dwarse zeshoek
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Dwarse zeshoekige betegeling">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Driehoek
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Driehoekige betegeling">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Diamant
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Diamantvormige betegeling">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>Met behulp van het vervolgkeuzemenu  <b>Resultaat opslaan in</b> kunt u de naam van een map opgeven in <b>Mijn Content</b> waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

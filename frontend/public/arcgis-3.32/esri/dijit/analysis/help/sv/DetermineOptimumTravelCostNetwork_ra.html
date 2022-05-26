@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Avgör optimalt nätverk för resekostnad</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="Illustration av verktyget Avg&ouml;r optimalt n&auml;tverk f&ouml;r resekostnad"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget ber&auml;knar den optimala kostnadens n&auml;tverk av en upps&auml;ttning indataregioner.
+    </p>
+    <p>Ett exempel p&aring; till&auml;mpning av detta verktyg &auml;r att hitta det b&auml;sta n&auml;tverket f&ouml;r utryckningsfordon.
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> markeras, analyseras bara de platser i indatalagret som visas i den aktuella kartutbredningen. Om alternativet inte markeras analyseras alla platser i indatalagret, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Välj raster eller geoobjektplatslager för att fastställa färdvägar mellan</h2></div>
+        <hr/>
+        <div>
+            <p>De indataregioner som ska anslutas till det n&auml;tverk som ger l&auml;gst kostnad.
+            </p>
+            <p>Regioner kan definieras antingen av en bildtj&auml;nst eller en geoobjekttj&auml;nst.
+            </p>
+            <p>F&ouml;r bildtj&auml;nsten definieras regionerna av grupper av intilliggande (angr&auml;nsande) celler med samma v&auml;rde. Varje region m&aring;ste numreras unikt. De celler som inte ing&aring;r i en region m&aring;ste vara NoData. Rastertypen m&aring;ste vara heltal och v&auml;rdena kan vara antingen positiva eller negativa.
+            </p>
+            <p>F&ouml;r geoobjekttj&auml;nsten kan indata vara punkt, linje eller polygon.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Välj resekostnadsrasterlager</h2></div>
+        <hr/>
+        <div>
+            <p>Ett raster som definierar impedansen eller kostnaden f&ouml;r att flytta planimetriskt genom varje cell.
+            </p>
+            <p>V&auml;rdet i varje cellposition motsvarar kostnad-per-enhetsavst&aring;ndet f&ouml;r att flytta genom cellen. Varje cellpositions v&auml;rde multipliceras med celluppl&ouml;sningen samtidigt som man ocks&aring; kompenserar f&ouml;r diagonala r&ouml;relse f&ouml;r att f&aring; fram den totala kostnaden f&ouml;r att passera genom cellen.
+            </p>
+            <p>V&auml;rdena i kostnadsrastret kan vara heltal eller flyttal, men de kan inte vara negativa eller noll (du kan inte ha en negativ kostnad eller nollkostnad).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Resultat för optimala vägar i polylinjelagernamn</h2></div>
+        <hr/>
+        <div>
+            <p>Namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Du kan ange namnet p&aring; en mapp i  <b>Mitt inneh&aring;ll</b> d&auml;r resultatet sparas med listrutan <b>Spara resultat i</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Resultat för grannvägar i polylinjelagernamn</h2></div>
+        <hr/>
+        <div>
+            <p>Namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Du kan ange namnet p&aring; en mapp i  <b>Mitt inneh&aring;ll</b> d&auml;r resultatet sparas med listrutan <b>Spara resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

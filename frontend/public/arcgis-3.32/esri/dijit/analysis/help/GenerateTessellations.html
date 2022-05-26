@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Generate Tessellations</h2><p/>
+        <h2><img src="./images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Generate Tessellations"></h2>
+        <hr/>
+    <p>This tool generates tessellations over a study area based on specified shape and size.
+    </p>
+    <p>The   <b>Use current map extent</b> checkbox is disabled for  this tool because the extent used to generate the tessellations is controlled by the <b>Define extent</b> parameter.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Choose shape</h2></div>
+        <hr/>
+        <div>
+            <p>The  shape or geometry  of tessellation that you would like to create.  The available shapes are  <code>Square</code>, <code>Hexagon</code>, <code>Transverse Hexagon</code>, <code>Triangle</code>, or <code>Diamond</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Define study area</h2></div>
+        <hr/>
+        <div>
+            <p>The extent or area that the tessellations will cover.  The extent can be determined using the current map extent, the extent of an existing layer, or by interactively drawing an area to be used as the extent.
+            </p>
+            <p>If a feature layer has been selected to determine the extent, the option to only keep intersecting tessellations will be enabled.  If checked, only those tessellations that cover or intersect with features in the specified extent layer will be generated in the resulting tessellation layer. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Unchecked
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="./images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Full Extent Coverage">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Checked
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="./images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Feature Coverage">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Define bin size by specifying</h2></div>
+        <hr/>
+        <div>
+            <p>The size of each cell.  Cell size can be determined by specifying square units or by specifying a distance that is calculated using the following measurements, where d = Distance: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Square
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="./images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Square Tessellation">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Hexagon
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="./images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Hexagon Tessellation">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Transverse Hexagon
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="./images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Transverse Hexagon Tessellation">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Triangle
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="./images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Triangle Tessellation">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Diamond
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="./images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Diamond Tessellation">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Result layer
+name</h2></div>
+        <hr/>
+        <div>
+            <p>This is the name of the layer that will be created in  <b>My Content</b>  and added to the map.  If the layer already exists, you will be asked to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down menu, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

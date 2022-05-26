@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Souhrn hodnot v rozmezí (Summarize Within)</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Souhrn hodnot v&nbsp;rozmez&iacute;"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj vyhled&aacute;v&aacute; prvky (a č&aacute;sti prvků), kter&eacute; se nach&aacute;zej&iacute; v&nbsp;hranic&iacute;ch oblast&iacute; v&nbsp;prvn&iacute; vstupn&iacute; vrstvě.  Např&iacute;klad:
+        <ul>
+            <li>Pomoc&iacute; vrstvy oblast&iacute; povod&iacute; a vrstvy oblast&iacute; využit&iacute; půdy podle typu využit&iacute; půdy spoč&iacute;tej celkovou rozlohu využ&iacute;van&eacute;ho typu půdy v&nbsp;každ&eacute;m povod&iacute;. 
+            </li>
+            <li>Pomoc&iacute; vrstvy parcel v&nbsp;kraji a vrstvy hranic měst spoč&iacute;tej průměrnou cenu voln&yacute;ch parcel v&nbsp;rozsahu hranic každ&eacute;ho města.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t rozsah aktu&aacute;ln&iacute; mapy</b>, budou analyzov&aacute;ny pouze prvky ve vstupn&iacute; vrstvě a v&nbsp;sumarizovan&eacute; vrstvě, kter&eacute; jsou viditeln&eacute; v&nbsp;rozsahu aktu&aacute;ln&iacute; mapy.  Pokud toto pole za&scaron;krtnuto nen&iacute;, budou analyzov&aacute;ny v&scaron;echny prvky ve vstupn&iacute; a sumarizovan&eacute; vrstvě, včetně těch, kter&eacute; se nach&aacute;z&iacute; mimo aktu&aacute;ln&iacute; rozsah mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Zvolte vrstvu oblastí pro souhrn ostatních prvků v rámci jejich hranic</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva oblast&iacute;, kter&aacute; se použije pro souhrn prvků spadaj&iacute;c&iacute;ch do jej&iacute;ch hranic. 
+            </p>
+            <p>Můžete si vybrat mezi vrstvou plochy, kterou zad&aacute;te, nebo přihr&aacute;dkami, kter&eacute; se vygeneruj&iacute; při spu&scaron;těn&iacute; n&aacute;stroje.   Při generov&aacute;n&iacute; přihr&aacute;dek počet a jednotky uveden&eacute; u položky  <b>Čtverec</b> určuj&iacute; v&yacute;&scaron;ku a d&eacute;lku čtverce. Pro <b>&Scaron;esti&uacute;heln&iacute;k</b> zadan&yacute; počet a jednotky určuj&iacute; vzd&aacute;lenost mezi rovnoběžn&yacute;mi stranami.
+            </p>
+            <p>Vrstvu můžete vybrat ze sv&eacute; mapy nebo můžete zvolit možnost  <b>Vybrat vrstvu anal&yacute;zy</b>, kter&aacute; se nach&aacute;z&iacute; na konci rozbalovac&iacute;ho seznamu. Pomoc&iacute; t&eacute;to možnosti se otevře galerie, kde můžete proch&aacute;zet a&nbsp;vyb&iacute;rat datov&eacute; sady z&nbsp;různ&yacute;ch vrstev, kter&eacute; můžete použ&iacute;t ve sv&eacute; anal&yacute;ze. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Vybrat vrstvu pro souhrn</h2></div>
+        <hr/>
+        <div>
+            <p>Shrnuty budou prvky v&nbsp;t&eacute;to vrstvě spadaj&iacute;c&iacute; do hranic prvků ve vstupn&iacute; vrstvě určen&eacute; v&yacute;&scaron;e. 
+            </p>
+            <p>Vrstvu můžete vybrat ze sv&eacute; mapy nebo můžete zvolit možnost  <b>Vybrat vrstvu anal&yacute;zy</b>, kter&aacute; se nach&aacute;z&iacute; na konci rozbalovac&iacute;ho seznamu. Pomoc&iacute; t&eacute;to možnosti se otevře galerie, kde můžete proch&aacute;zet a&nbsp;vyb&iacute;rat datov&eacute; sady z&nbsp;různ&yacute;ch vrstev, kter&eacute; můžete použ&iacute;t ve sv&eacute; anal&yacute;ze. 
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Přidat statistiky z vrstvy k sumarizaci</h2></div>
+        <hr/>
+        <div>
+            <p>Volitelně můžete vypoč&iacute;tat statistiky č&iacute;seln&yacute;ch atributů bodů spadaj&iacute;c&iacute;ch do hranic prvků. 
+            </p>
+            <p>Pokud za&scaron;krtnete pole  <b>Počet bodů</b>, bude vypoč&iacute;t&aacute;n celkov&yacute; počet bodů spadaj&iacute;c&iacute;ch do jednotliv&yacute;ch oblast&iacute;.  Kromě toho můžete tak&eacute; vypoč&iacute;tat statistiky č&iacute;seln&yacute;ch atributů bodů spadaj&iacute;c&iacute;ch do jednotliv&yacute;ch oblast&iacute;.
+            </p>
+            <ul>
+                <li> <b>Suma</b> &ndash; Celkov&aacute; hodnota určen&eacute;ho pole.
+                </li>
+                <li> <b>Průměr</b> &ndash; Průměrn&aacute; hodnota určen&eacute;ho pole.
+                </li>
+                <li> <b>Minimum</b> &ndash; Nejniž&scaron;&iacute; hodnota v&nbsp;určen&eacute;m poli.
+                </li>
+                <li> <b>Maximum</b> &ndash; Nejvy&scaron;&scaron;&iacute; hodnota v&nbsp;určen&eacute;m poli.
+                </li>
+                <li> <b>Směrodatn&aacute; odchylka</b> &ndash; Směrodatn&aacute; odchylka hodnot v&nbsp;určen&eacute;m poli.
+                </li>
+            </ul>
+            
+            <p>Pokud vrstva, kter&aacute; m&aacute; b&yacute;t sumarizov&aacute;na, nem&aacute; ž&aacute;dn&aacute; č&iacute;seln&aacute; pole, nebudou dal&scaron;&iacute; statistiky k dispozici.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Přidat statistiky z</h2></div>
+        <hr/>
+        <div>
+            <p>Volitelně můžete vypoč&iacute;tat statistiky č&iacute;seln&yacute;ch atributů sumarizovan&yacute;ch lini&iacute;. 
+            </p>
+            <p>Pokud za&scaron;krtnete pole  <b>Celkov&aacute; d&eacute;lka lini&iacute; v</b>, bude vypoč&iacute;t&aacute;na celkov&aacute; d&eacute;lka lini&iacute; spadaj&iacute;c&iacute;ch do jednotliv&yacute;ch oblast&iacute;.  Kromě toho můžete tak&eacute; vypoč&iacute;tat statistiky č&iacute;seln&yacute;ch atributů lini&iacute; spadaj&iacute;c&iacute;ch do jednotliv&yacute;ch oblast&iacute;.
+            </p>
+            <ul>
+                <li> <b>Suma</b> &ndash; Celkov&aacute; hodnota určen&eacute;ho pole.
+                </li>
+                <li> <b>Průměr</b> &ndash; Průměrn&aacute; hodnota určen&eacute;ho pole.
+                </li>
+                <li> <b>Minimum</b> &ndash; Nejniž&scaron;&iacute; hodnota v&nbsp;určen&eacute;m poli.
+                </li>
+                <li> <b>Maximum</b> &ndash; Nejvy&scaron;&scaron;&iacute; hodnota v&nbsp;určen&eacute;m poli.
+                </li>
+                <li> <b>Směrodatn&aacute; odchylka</b> &ndash; Směrodatn&aacute; odchylka hodnot v&nbsp;určen&eacute;m poli.
+                </li>
+            </ul>
+            
+            <p>Pokud vrstva, kter&aacute; m&aacute; b&yacute;t sumarizov&aacute;na, nem&aacute; ž&aacute;dn&aacute; č&iacute;seln&aacute; pole, nebudou dal&scaron;&iacute; statistiky k dispozici.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Přidat statistiky z</h2></div>
+        <hr/>
+        <div>
+            <p>Volitelně můžete vypoč&iacute;tat statistiky č&iacute;seln&yacute;ch atributů sumarizovan&yacute;ch oblast&iacute;. 
+            </p>
+            <p>Pokud za&scaron;krtnete pole  <b>Sumarizovan&eacute; plochy pomoc&iacute;</b>, bude vypoč&iacute;t&aacute;na celkov&aacute; plocha prvků spadaj&iacute;c&iacute;ch do jednotliv&yacute;ch hranic oblast&iacute; v&nbsp;prvn&iacute; vstupn&iacute; vrstvě.  Kromě toho můžete tak&eacute; vypoč&iacute;tat statistiky č&iacute;seln&yacute;ch atributů prvků spadaj&iacute;c&iacute;ch do jednotliv&yacute;ch oblast&iacute;.
+            </p>
+            <ul>
+                <li> <b>Suma</b> &ndash; Celkov&aacute; hodnota určen&eacute;ho pole.
+                </li>
+                <li> <b>Průměr</b> &ndash; Průměrn&aacute; hodnota určen&eacute;ho pole.
+                </li>
+                <li> <b>Minimum</b> &ndash; Nejniž&scaron;&iacute; hodnota v&nbsp;určen&eacute;m poli.
+                </li>
+                <li> <b>Maximum</b> &ndash; Nejvy&scaron;&scaron;&iacute; hodnota v&nbsp;určen&eacute;m poli.
+                </li>
+                <li> <b>Směrodatn&aacute; odchylka</b> &ndash; Směrodatn&aacute; odchylka hodnot v&nbsp;určen&eacute;m poli.
+                </li>
+            </ul>
+            
+            <p>Pokud vrstva, kter&aacute; m&aacute; b&yacute;t sumarizov&aacute;na, nem&aacute; ž&aacute;dn&aacute; č&iacute;seln&aacute; pole, nebudou dal&scaron;&iacute; statistiky k dispozici.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Přidat statistiky z</h2></div>
+        <hr/>
+        <div>
+            <p>Po v&yacute;běru vrstvy pro souhrn můžete volitelně vypoč&iacute;tat statistiky libovoln&yacute;ch č&iacute;seln&yacute;ch atributů bodů, lini&iacute; či oblast&iacute; spadaj&iacute;c&iacute;ch do vstupn&iacute; vrstvy oblast&iacute;. 
+            </p>
+            <ul>
+                <li> <b>Suma</b> &ndash; Celkov&aacute; hodnota určen&eacute;ho pole.
+                </li>
+                <li> <b>Průměr</b> &ndash; Průměrn&aacute; hodnota určen&eacute;ho pole.
+                </li>
+                <li> <b>Minimum</b> &ndash; Nejniž&scaron;&iacute; hodnota v&nbsp;určen&eacute;m poli.
+                </li>
+                <li> <b>Maximum</b> &ndash; Nejvy&scaron;&scaron;&iacute; hodnota v&nbsp;určen&eacute;m poli.
+                </li>
+                <li> <b>Směrodatn&aacute; odchylka</b> &ndash; Směrodatn&aacute; odchylka hodnot v&nbsp;určen&eacute;m poli.
+                </li>
+            </ul>
+            
+            <p>Podle toho, jak&eacute; typy prvků sumarizujete, je možno vypoč&iacute;tat celkov&yacute; počet bodů, celkovou d&eacute;lku lini&iacute; nebo celkovou rozlohu oblasti.
+            </p>
+            <p>Pokud vrstva, kter&aacute; m&aacute; b&yacute;t sumarizov&aacute;na, nem&aacute; ž&aacute;dn&aacute; č&iacute;seln&aacute; pole, nebudou dal&scaron;&iacute; statistiky k dispozici.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Vybrat pole k seskupení</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je atribut prvků analyzovan&yacute;ch pomoc&iacute;  <b>Souhrnu</b>, kter&yacute; lze použ&iacute;t k v&yacute;počtu statistik - odděleně pro každou jedinečnou hodnotu atributu. Předpokl&aacute;dejme např&iacute;klad, že prvn&iacute; vstupn&iacute; vrstva obsahuje hranice měst a prvky shrnut&iacute; tvoř&iacute; parcely.  Jeden z atributů parcel je <i>Status</i>, kter&yacute; obsahuje dvě hodnoty: VOLN&Eacute; a OBSAZEN&Eacute;. Chcete-li spoč&iacute;tat celkovou oblast voln&yacute;ch a obsazen&yacute;ch parcel v hranic&iacute;ch měst, použijte atribut <i>Status</i> jako atribut k seskupen&iacute;. Statistiky pro každou skupinu se spolu s&nbsp;počtem prvků pro každou oblast zobraz&iacute; ve vyskakovac&iacute;m okně v&yacute;sledn&eacute; vrstvy.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Přidat menšinu, většinu</h2></div>
+        <hr/>
+        <div>
+            <p>Toto za&scaron;krt&aacute;vac&iacute; pol&iacute;čko se aktivuje, pokud zvol&iacute;te pole k seskupen&iacute;. Pokud chcete zjistit, kter&eacute; hodnoty atributů v&nbsp;každ&eacute; skupině uvnitř každ&eacute; ohraničen&eacute; oblasti v&nbsp;prvn&iacute; vstupn&iacute; vrstvě jsou men&scaron;inou (nejm&eacute;ně dominantn&iacute;), resp. vět&scaron;inou (nejv&iacute;ce dominantn&iacute;), vyberte  <b>Přidat men&scaron;inu, vět&scaron;inu</b>.   Když vyberete možnost <b>Přidat men&scaron;inu, vět&scaron;inu</b>, do v&yacute;sledn&eacute; vrstvy budou přid&aacute;na dvě nov&aacute; pole.   Pokud vyberete i možnost <b>Přidat procenta</b>, budou do v&yacute;sledn&eacute; vrstvy přid&aacute;na dvě dodatečn&aacute; pole obsahuj&iacute;c&iacute; procentu&aacute;ln&iacute; pod&iacute;l men&scaron;inov&yacute;ch a vět&scaron;inov&yacute;ch hodnot atributů v&nbsp;r&aacute;mci každ&eacute; skupiny.
+            </p>
+            <ul>
+                <li>Pokud sumarizujete body, hodnoty men&scaron;iny a vět&scaron;iny jsou vypoč&iacute;t&aacute;ny na z&aacute;kladě počtu bodů v&nbsp;každ&eacute; ohraničen&eacute; oblasti ve vstupn&iacute; vrstvě oblast&iacute;.  
+                </li>
+                <li>Pokud sumarizujete linie, hodnoty men&scaron;iny a vět&scaron;iny jsou vypoč&iacute;t&aacute;ny na z&aacute;kladě d&eacute;lky lini&iacute; v&nbsp;každ&eacute; ohraničen&eacute; oblasti ve vstupn&iacute; vrstvě oblast&iacute;.  
+                </li>
+                <li>Pokud sumarizujete plochy, hodnoty men&scaron;iny a vět&scaron;iny jsou vypoč&iacute;t&aacute;ny na z&aacute;kladě ploch v&nbsp;každ&eacute; ohraničen&eacute; oblasti ve vstupn&iacute; vrstvě oblast&iacute;.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Přidat procenta</h2></div>
+        <hr/>
+        <div>
+            <p>Toto za&scaron;krt&aacute;vac&iacute; pol&iacute;čko se aktivuje, když zvol&iacute;te pole k seskupen&iacute;. Zvolte  <b>Přidat procenta</b>, pokud chcete zjistit procentu&aacute;ln&iacute; pod&iacute;l každ&eacute; hodnoty atributu pro každou skupinu. Do v&yacute;sledn&eacute; tabulky bude přid&aacute;no nov&eacute; pole obsahuj&iacute;c&iacute; procentu&aacute;ln&iacute; pod&iacute;l každ&eacute; hodnoty atributu pro každou skupinu. Pokud je za&scaron;krtnuto i pol&iacute;čko <b>Přidat men&scaron;inu, vět&scaron;inu</b>, budou do v&yacute;sledn&eacute; vrstvy přid&aacute;na dvě dodatečn&aacute; pole obsahuj&iacute;c&iacute; procentu&aacute;ln&iacute; pod&iacute;l men&scaron;inov&yacute;ch a vět&scaron;inov&yacute;ch hodnot atributů v r&aacute;mci každ&eacute; skupiny.
+            </p>
+        </div>
+    </div>
+    <div id="ResultLayerName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy.  V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud n&aacute;zev vrstvy již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Lös upp gränser</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="L&ouml;s upp gr&auml;nser"></h2>
+        <hr/>
+    <p>Omr&aring;den som &ouml;verlappar eller delar en gemensam gr&auml;ns sammanfogas till ett enda omr&aring;de.    
+    </p>
+    <p>Du kan styra vilka gr&auml;nser som sammanfogas genom att ange ett f&auml;lt. Om du till exempel har ett lager med l&auml;n och varje l&auml;n har attributet  <i>State_Name</i>, kan du l&ouml;sa upp gr&auml;nserna med hj&auml;lp av attributet <i>State_Name</i>.  Omr&aring;den som ligger bredvid varandra sammanfogas om de har samma v&auml;rde f&ouml;r <i>State_Name</i>.  Slutresultatet blir ett lager med delstatsgr&auml;nser.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj det områdeslager vars gränser ska lösas upp</h2></div>
+        <hr/>
+        <div>
+            <p>Lagret som inneh&aring;ller omr&aring;desgeoobjekt som ska l&ouml;sas upp. 
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. Det alternativet &ouml;ppnar ett galleri d&auml;r du kan bl&auml;ddra till och v&auml;lja dataupps&auml;ttningar fr&aring;n diverse k&auml;llor som du kan anv&auml;nda i din analys. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Välj metod för att lösa upp</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan v&auml;lja en av tv&aring; metoder f&ouml;r att sammanfoga omr&aring;desgeoobjekt:
+                <ul>
+                    <li> <b>Omr&aring;den som &ouml;verlappar eller ligger bredvid varandra</b> &ndash;  Tv&aring; eller flera omr&aring;den vars gr&auml;nser &ouml;verlappar sammanfogas till ett omr&aring;de. Dessutom sammanfogas omr&aring;den som ligger bredvid varandra (som delar en gemensam gr&auml;ns) till ett omr&aring;de.
+                    </li>
+                    <li> <b>Omr&aring;den med samma f&auml;ltv&auml;rden</b> &ndash; Omr&aring;den som &ouml;verlappar eller delar en gemensam gr&auml;ns sammanfogas till ett omr&aring;de om de har samma f&auml;ltv&auml;rde.
+                        <p>Om du till exempel har ett lager med l&auml;n och varje l&auml;n har f&auml;ltet  <i>State_Name</i> kan du l&ouml;sa upp gr&auml;nserna med hj&auml;lp av f&auml;ltet <i>State_Name</i>.  Omr&aring;den som ligger bredvid varandra sammanfogas om de har samma v&auml;rde f&ouml;r <i>State_Name</i>.  Slutresultatet blir ett lager med delstatsgr&auml;nser.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> markeras, uppl&ouml;ses bara de geoobjekt i indatalagret som visas i den aktuella kartutbredningen. Om alternativet inte markeras, l&ouml;ses alla geoobjekt i indatalagret upp, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Skapa flerdelat geoobjekt</h2></div>
+        <hr/>
+        <div>
+            <p>I ArcGIS &auml;r detta en digital representation av en plats eller ett objekt som har fler &auml;n en del men som definieras som ett geoobjekt eftersom det refererar till en upps&auml;ttning attribut. I ett lager med stater kan staten Hawaii betraktas som ett flerdelat geoobjekt eftersom dess separata geometiska delar klassificeras som en enda stat. Denna booleska parameter erbjuder tv&aring; alternativ:
+                <ul>
+                    <li>True (markerat): utdatatj&auml;nsten kan inneh&aring;lla flerdelade geoobjekt.
+                    </li>
+                    <li>False (avmarkerat): utdatatj&auml;nsten inneh&aring;ller bara endelade geoobjekt och enskilda geoobjekt skapas f&ouml;r varje del.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Lägg till statistik</h2></div>
+        <hr/>
+        <div>
+            <p>N&auml;r omr&aring;den sammanfogas kan du summera deras attribut. Om du till exempel uppl&ouml;ser gr&auml;nsen mellan l&auml;n baserat p&aring;  <i>State_Name</i> och varje l&auml;n har f&auml;ltet <i>Population</i>, kan du ber&auml;kna summan av <i>Population</i> f&ouml;r delstaten.
+            </p>
+            <p>F&ouml;ljande statistiktyper kan anv&auml;ndas:
+            </p>
+            <ul>
+                <li> <b>Summa</b> &ndash; L&auml;gger samman totalv&auml;rdet f&ouml;r det angivna f&auml;ltet.
+                    
+
+                </li>
+                <li> <b>Genomsnitt</b> &ndash; Ber&auml;knar genomsnittet f&ouml;r det angivna f&auml;ltet.
+                    
+
+                </li>
+                <li> <b>Minimum</b> &ndash; Hittar det l&auml;gsta v&auml;rdet f&ouml;r alla poster med det angivna f&auml;ltet.
+                    
+
+                </li>
+                <li> <b>Maximum</b> &ndash; Hittar det h&ouml;gsta v&auml;rdet f&ouml;r alla poster med det angivna f&auml;ltet.
+                    
+
+                </li>
+                <li> <b>Std. Stdavvikelse</b> &ndash; Hittar standardavvikelsen f&ouml;r v&auml;rden i det angivna f&auml;ltet
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagernamnet redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

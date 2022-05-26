@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>데이터 저장소로 복사(Copy to Data Store)</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="데이터 저장소로 복사"></h2>
+        <hr/>
+    <p>이 도구는 입력 레이어를 받아 데이터 저장소에 복사합니다.  ArcGIS Data Store(관계형 또는 시공간 빅데이터 저장소)에 결과를 복사할 수 있으며 포털에서 레이어를 만들거나 결과를 빅데이터 파일에 복사할 수 있습니다. 
+    </p>
+    <p>예를 들어  <code>빅 데이터 파일 공유</code>에 저장되어 있는 피처를 <code>관계형 데이터 저장소</code>에 복사하되 현재 맵 범위 내의 피처만 복사되도록 지정할 수 있습니다. 이 경우 지정된 맵 범위 내에 있는 피처만 포함된 호스팅 피처 서비스가 생성됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>복사할 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>복사될 레이어나 테이블입니다. 
+            </p>
+            <p>맵에서 레이어를 선택하는 것 이외에, 드롭다운 목록의 하단에 있는  <b>Analysis Layer 선택</b>을 선택하여 빅데이터 파일 공유 데이터셋 또는 피처 레이어의 콘텐츠를 찾아볼 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>모든 피처를 사용하거나 원하는 피처를 선택할 수 있습니다(선택).</h2></div>
+        <hr/>
+        <div>
+            <p>필요에 따라 선택 버튼을 사용하여 복사될 위치를 식별할 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>복사할 데이터 저장소 선택</h2></div>
+        <hr/>
+        <div>
+            <p>레이어가 복사될 데이터 저장소입니다. 이 매개변수는  <b>분석 환경</b>의 선택 항목을 재정의합니다. 옵션은 다음과 같습니다.
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>시공간형</b> - 이 옵션이 기본 설정입니다.
+                            </li>
+                            <li> <b>관계형</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>빅데이터 파일 공유 결과 템플릿</b>
+                        <ul>
+                            <li>사용 가능한 빅데이터 파일 공유 템플릿  <b>bigDataFileShareName-templateName</b> 형식입니다. 빅데이터 파일 공유 템플릿은 도구를 실행하기 전에 구성해야 합니다.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> 생성될 레이어의 이름입니다. ArcGIS Data Store에 작성하는 경우  결과는  <b>내 콘텐츠</b>에 저장되고 맵에 추가됩니다. 빅데이터 파일 공유에 작성하는 경우  결과는 빅데이터 파일 공유에 저장되고 해당 매니페스트에 추가됩니다. 이러한 결과는 맵에 추가되지 않습니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있으면 도구를 사용할 수 없습니다.
+            </p>
+            <p> ArcGIS Data Store(관계형 또는 시공간 빅데이터 저장소)에 작성하는 경우  <b>결과 저장:</b> 드롭다운 상자를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

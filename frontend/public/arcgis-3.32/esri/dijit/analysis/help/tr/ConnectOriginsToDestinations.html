@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Başlangıç Noktalarını Varış Noktalarına Bağla</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="&Ccedil;ıkışları Hedeflere Bağla"></h2>
+        <hr/>
+    <p>&Ccedil;ıkışları Hedeflere Bağla, nokta &ccedil;iftleri arasındaki seyahat s&uuml;resini ve mesafeyi &ouml;l&ccedil;er. Ara&ccedil; d&uuml;z &ccedil;izgi mesafelerini; y&uuml;r&uuml;y&uuml;ş veya s&uuml;r&uuml;ş gibi bir seyahat moduna dayanan mesafeleri veya seyahat moduna dayanan seyahat s&uuml;relerini raporlayabilir. Bu aracı kullanarak aşağıdakileri yapabilirsiniz:
+    </p>
+    <p>
+        <ul>
+            <li>Evden işe gidenlerin katettikleri toplam mesafeyi veya yolda ge&ccedil;irdikleri toplam s&uuml;reyi hesaplayın.
+            </li>
+            <li>M&uuml;şterilerin mağazalarınızda alışveriş yapmak i&ccedil;in ne kadar mesafe gittiklerini &ouml;l&ccedil;&uuml;n. Bu bilgileri kullanarak, &ouml;zellikle reklam kampanyalarını y&ouml;nlendirirken veya yeni mağaza konumları se&ccedil;erken pazar eriminizi tanımlamak.
+            </li>
+            <li>Ara&ccedil; filonuzun katetmesi beklenen kilometreyi hesaplamak. Daha sonra, eyalete veya diğer b&ouml;lgelere g&ouml;re kilometreyi raporlamak &uuml;zere İ&ccedil;inde &Ouml;zetle aracını &ccedil;alıştırın.
+            </li>
+        </ul>
+        
+    </p>
+    <p>&Ccedil;ıkış ve hedef noktaları girerseniz, ara&ccedil;, &ouml;l&ccedil;&uuml;mleriyle birlikte &ccedil;ıkış ve hedef &ccedil;iftleri arasındaki rota &ccedil;izgilerini i&ccedil;eren bir katman d&ouml;nd&uuml;r&uuml;r. 
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> işaretliyse, yalnızca ge&ccedil;erli harita yayılımında g&ouml;r&uuml;n&uuml;r olan analiz katmanındaki detaylar analiz edilir.  İşaretli değilse, girdi katmanındaki t&uuml;m detaylar, ge&ccedil;erli harita kapsamının dışında olsa bile ele alınacaktır.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Başlangıç konumlarını temsil eden nokta katmanını seç</h2></div>
+        <hr/>
+        <div>
+            <p>Başlangı&ccedil; konumu veya konumlarını temsil eden nokta katmanını se&ccedil;in.  Ara&ccedil; en &ccedil;ok  5,000 başlangı&ccedil; noktasını ve  5,000 hedefi destekler. </p>
+            <p>Yalnızca bir başlangı&ccedil; noktası olan bir katman se&ccedil;erseniz, t&uuml;m hedef noktalarına bağlanılır.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Hedefler katmanını seçin</h2></div>
+        <hr/>
+        <div>
+            <p>&Ccedil;ıkışların bağlanacağı hedefi veya hedefleri temsil eden katmanı se&ccedil;in. Ara&ccedil; en &ccedil;ok  5,000 başlangı&ccedil; noktasını ve  5,000 hedefi destekler. </p>
+            <p>Yalnızca bir hedefi olan bir katman se&ccedil;erseniz, t&uuml;m &ccedil;ıkış noktaları bu hedefe bağlanır. 
+            </p>
+            <p>Bir &ccedil;ıkış noktası ve bir&ccedil;ok hedef varsa, ara&ccedil; &ccedil;ıkış noktasını hedeflerin her birine bağlar.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+            <p> Bir&ccedil;ok &ccedil;ıkış ve hedef noktası varsa, &ccedil;ıkış-hedef &ccedil;iftlerini tanımlayan iki alanınız olması gerekir: <b>&Ccedil;ıkış noktalarındaki kimlik alanı</b> ve <b>Hedeflerde eşleşen kimlik alanı</b>. Ara&ccedil;, analiz sırasında varış-başlangı&ccedil; &ccedil;iftlerini birbirine bağlar. &Ouml;rneğin, kimlik alanı değerleri <code>G&uuml;l</code> ve <code>Kemal</code> olan iki &ccedil;ıkış noktası ve aynı kimlik değerine sahip iki hedef d&uuml;ş&uuml;n&uuml;n. <code>G&uuml;l</code> &ccedil;ıkış noktası <code>G&uuml;l</code> hedefine, <code>Kemal</code> ise <code>Kemal</code>'e bağlanır. Başka hi&ccedil;bir bağlantı veya &ouml;l&ccedil;&uuml;m yapılmaz.
+            </p>
+            <p>Eşit sayıda başlangı&ccedil; ​​noktası ve hedef varsa, kimlik bilgisi değerlerinin her katmanda benzersiz olması gerekir; &ouml;rneğin, hedefler katmanı iki  <code>Rosie</code> değerine sahip olamaz. &Ccedil;ıkış ve hedef katmanlarındaki değerlerin &ccedil;ift oluşturabilmek i&ccedil;in tam olarak eşleşmesi gerekir; <code>Kemal</code> yanlış yazılmış olan <code>Kemla</code> hedefine bağlanmaz. 
+            </p>
+            <p>Ayrıca ara&ccedil;, her bir başlangı&ccedil; noktasını birden fazla hedefe veya her bir hedefe birden fazla başlangı&ccedil; noktasına bağlamayı destekler. Bu gibi durumlarda, başlangı&ccedil; ​​noktası hedef &ccedil;iftini tanımlayan iki alana sahip olmanız gerekir. Bununla birlikte, katmanlardan sadece birinin (başlangı&ccedil; noktası veya hedef katmanı) benzersiz kimlik bilgisi değerlerine sahip olması gerekir.
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Ölçü</h2></div>
+        <hr/>
+        <div>
+            
+            <p>D&uuml;z hat mesafesi ya da se&ccedil;ilen bir seyahat modu kullanarak başlangı&ccedil; noktalarının hedef noktalara bağlanıp bağlanmayacağını belirleyin. &Ccedil;ıktı rotaları, yol veya kaldırım boyunca ilerler ve ara&ccedil; veya kamyonlar i&ccedil;in tek y&ouml;nl&uuml; trafik ile d&ouml;n&uuml;ş yasağı gibi ge&ccedil;erli kuralları dikkate alır. Kullanılabilir seyahat modları, kuruluşunuzun y&ouml;neticisi tarafından belirlenir.  
+            </p>
+            <p> <b>S&uuml;r&uuml;ş S&uuml;resi</b>, <b>Arazide S&uuml;r&uuml;ş S&uuml;resi</b> ya da <b>Kamyonla Taşıma S&uuml;resi</b>'ni se&ccedil;tiğinizde, s&uuml;r&uuml;ş s&uuml;resinin &ouml;l&ccedil;&uuml;lmesine ilişkin se&ccedil;enekleriniz olur.
+                <ul>
+                    <li>
+                        <p>Sabit hızlara g&ouml;re en kısa rotaları bulmak i&ccedil;in  <b>Trafiği Kullan</b>'ın işaretini kaldırın.
+                        </p>
+                        <p>Belirli bir &ccedil;ıkış saati i&ccedil;in değişen trafik koşullarını kullanarak hesaplanmamış genel bir s&uuml;r&uuml;ş s&uuml;resi &ouml;l&ccedil;&uuml;m&uuml; istiyorsanız bu se&ccedil;eneği tercih edin.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Belirli bir &ccedil;ıkış saati ve değişen trafik koşullarına g&ouml;re en kısa rotaları bulmak i&ccedil;in  <b>Trafiği Kullan</b>'ı işaretleyin. Ayrıca <b>Canlı trafik</b> se&ccedil;eneği de belirlenirse, &ccedil;ıkış noktalarından &ccedil;ıkış saati ge&ccedil;erli saate ayarlanır ve rotaları oluşturmak i&ccedil;in ge&ccedil;erli ve tahmin edilen trafik hızları sens&ouml;rlerden ve yayınlardan alınır. Tahmini trafik hızları, canlı trafik hızları, ge&ccedil;miş hızlar ve hava durumu gibi ge&ccedil;erli olaylar referans alınarak hesaplanır. Trafik hızları 12 saat sonrasına kadar tahmin edilir, dolayısıyla &ccedil;ıkış saatini  12 saate kadar &ouml;nceden ayarlamak i&ccedil;in kaydırıcıyı hareket ettirebilirsiniz. </p>
+                        <p>Şu anda, bir saat sonra vb. &ccedil;ıkış yapıldığında ne kadar s&uuml;r&uuml;ş s&uuml;resi s&ouml;z konusu olacağını &ouml;ğrenmek i&ccedil;in bu canlı trafik ayarlarını kullanın.
+                        </p>
+                    </li>
+                    <li>
+                        <p> <b>Trafiği Kullan</b> işaretlendiğinde ve belirli bir g&uuml;n ve saatin <b>Tipik koşullarına bağlı trafik</b> se&ccedil;ildiğinde, ara&ccedil; en kısa rotaları olağan bir hafta boyunca beş dakikalık aralıklarla kaydedilen ge&ccedil;miş hız ortalamalarına g&ouml;re bulur. Sonu&ccedil;lar trafiği i&ccedil;erir ancak ge&ccedil;erli trafik koşullarının ve olaylarının etkisini &ccedil;ıkarır, bunlar normdan b&uuml;y&uuml;k oranda sapma g&ouml;sterebilir.
+                        </p>
+                        <p>Bu ge&ccedil;miş trafik ayarlarını, &ouml;rneğin &quot;&Ccedil;arşamba saat 11:30'da &ccedil;ıkış yapıldığında bu hedeflere ulaşmak genel olarak ne kadar s&uuml;rer?&quot; gibi bir soruyu sormak i&ccedil;in kullanabilirsiniz.
+                        </p>
+                        <p>Belirlediğiniz saat, &ccedil;ıkış noktalarınızın yer aldığı saat dilimini referans alır. Dolayısıyla saati 08:00'a ayarlarsanız ve biri New York City'de ve diğeri Los Angeles'ta iki &ccedil;ıkış noktanız varsa, rotalar saat 08:00'da &ccedil;ıkış yapma i&ccedil;in oluşturulur. Doğu Saati ve 08:00. Pasifik Saati, sırasıyla.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Bir ara&ccedil; bir &ccedil;ıkış noktadan uzaklaştık&ccedil;a zaman ge&ccedil;eceğine ve trafik koşullarının değişeceğine dikkat edin. &Ccedil;ıkışları Hedeflere Bağla aracı,  <b>Trafiği kullan</b>'ı işaretlediğinizde bu değişkenlikleri hesaba katar; ancak her b&ouml;lge trafiği desteklemez. &Ccedil;alışma alanınızda sunulup sunulmadığını &ouml;ğrenmek i&ccedil;in <b>Kullanılabilirliği g&ouml;r</b> bağlantısına tıklayın.
+            </p>
+            <p> <b>Kamyonla Taşıma S&uuml;resi</b>'nde-dinamik seyahat hızları trafiğe dayalı olarak, ancak yalnızca yasal kamyon hız sınırına kadar kullanılabilir. &Ouml;rneğin, canlı trafiğe dayalı olarak bir cadde i&ccedil;in dinamik hız saatte 65 mil, ancak o cadde i&ccedil;in kamyon hız limiti saatte 55 mil ise, hesaplamada o cadde i&ccedil;in saatte 55 mil kullanılır.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Engel katmanlarını seç</h2></div>
+        <hr/>
+        <div>
+            <p> Aşağıdaki sokaklarda seyahat ederken ge&ccedil;ici kısıtlamalar (engeller) işlevi g&ouml;recek bir ya da daha fazla &ouml;zellik. Nokta, &ccedil;izgi ve poligon &ouml;zelliklerini kullanarak engel belirleyebilirsiniz.
+            </p>
+            <p>Nokta engel devrilmiş bir ağacı, kazayı, kopmuş bir elektrik hattını veya sokağın belirli bir noktasında trafiği tamamen engelleyen herhangi bir şeyi ifade edebilir. Sokakta harekete izin verilir ancak engel ge&ccedil;ilemez. Nokta engel olarak işlev g&ouml;recek 250'ye kadar &ouml;zellik belirleyebilirsiniz.
+            </p>
+            <p>Hat engel, sokakları kestiği her yerde hareketi engeller. &Ouml;rneğin, birka&ccedil; sokak boyunca trafiği engelleyen bir ge&ccedil;it t&ouml;reni ya da protesto bir &ccedil;izgi bariyeri ile modellenebilir. T&uuml;m hat engeller tarafından kesilen sokak &ouml;zelliği sayısı 500'&uuml; ge&ccedil;tiğinde ara&ccedil; hata verir.
+            </p>
+            <p>&Ccedil;okgen engel, sokakları kestiği her yerde hareketi engeller. Bu engel tipinin kullanımlarından biri sokak ağının alanlarını kaplayan taşkınları modellemektir ve sokakta hareket imkansız hale gelir. T&uuml;m hat engeller tarafından kesilen sokak &ouml;zelliği sayısı 2000'&uuml; ge&ccedil;tiğinde ara&ccedil; hata verir.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Rota şekli</h2></div>
+        <hr/>
+        <div>
+            <p>Bir seyahat modu kullanırken her bir başlangı&ccedil; noktasını hedefine bağlayan rotanın şeklini se&ccedil;in:
+            </p>
+            <ul>
+                <li> <b>Sokakları takip et</b> - Şekil, temelini oluşturan sokak ağına dayanır. Başlangı&ccedil; noktaları ve hedefler arasında rota oluşturmak istediğinizde bu se&ccedil;enek en iyisidir.
+                </li>
+                <li> <b>D&uuml;z &ccedil;izgi</b> - Şekil, başlangı&ccedil; ​​noktası hedef &ccedil;iftini bağlayan d&uuml;z bir &ccedil;izgidir. Bu se&ccedil;enek, &ouml;r&uuml;mcek diyagramları veya istek &ccedil;izgileri oluşturmak istediğinizde (&ouml;rneğin, hangi m&uuml;şterilerin ziyaret ettiklerini g&ouml;stermek i&ccedil;in) en iyisidir.
+                </li>
+            </ul>
+            
+            <p>Bir başlangı&ccedil; ​​noktası ve bu nokta ile eşleşen hedef arasındaki en iyi rota, hangi rota şeklinin se&ccedil;ildiğinden bağımsız olarak daima seyahat moduna g&ouml;re hesaplanır.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek detay katmanının adıdır. Detay katmanı zaten varsa, başka bir ad girmeniz istenir. Detay katmanında aşağıdakilerden her biri i&ccedil;in bir katman bulunur: rotalar, atanmamış başlangı&ccedil; noktaları ve atanmamış varış noktaları (bazı başlangı&ccedil; noktalarının kendi varış noktalarına bağlanamadığı durumlarda).
+            </p>
+            <p> <b>Rota katmanlarını ekle</b> &ouml;gesini se&ccedil;tiğinizde, sonu&ccedil;taki her rota ayrıca bir rota katmanı olarak da kaydedilir. Bir rota katmanı, seyahat yol tarifinin yanı sıra rotaya atanan duraklar gibi belirli bir rotaya ait bilgilerin t&uuml;m&uuml;n&uuml; i&ccedil;erir. Rota katmanı oluşturma, kuruluşunuzdaki diğer &uuml;yelerle bağımsız rotaları paylaşmak veya rotaları harita g&ouml;r&uuml;nt&uuml;leyici i&ccedil;indeki <b>Yol Tarifleri</b> d&uuml;ğmesini kullanarak daha fazla değiştirmek istediğinizde yararlıdır. Rota katmanları, &ouml;n ek olarak detay katmanı i&ccedil;in girilen adı kullanır, analiz kapsamında oluşturulan rota adı her rota katmanı i&ccedil;in benzersiz bir ad oluşturmak &uuml;zere eklenir.
+            </p>
+            <p>Oluşturulabilecek rota katmanı sayısı &uuml;st sınırı  1.000&rsquo;dir. Sonu&ccedil;  1.000&rsquo;den fazla rota i&ccedil;eriyorsa ve  <b>Rota katmanlarını ekle</b> se&ccedil;eneği işaretliyse, ara&ccedil; yalnızca &ccedil;ıktı detay servisini oluşturur.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır listesini kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

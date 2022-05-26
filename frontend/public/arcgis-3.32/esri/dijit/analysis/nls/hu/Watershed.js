@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/hu/Watershed",{inputLayerLabel:"\u00c1raml\u00e1si ir\u00e1ny r\u00e9teg kiv\u00e1laszt\u00e1sa",pourPointLayerLabel:"Kifoly\u00e1si pont raszter vagy vektoros elem r\u00e9teg kiv\u00e1laszt\u00e1sa",pourPointField:"Kifoly\u00e1si pont mez\u0151 kiv\u00e1laszt\u00e1sa",resultLayerName:"Eredm\u00e9ny r\u00e9teg neve",outputLayerName:"${layername} v\u00edzgy\u0171jt\u0151 ter\u00fclete",itemDescription:"A K\u00f6z\u00e9ppont \u00e9s sz\u00f3r\u00f3d\u00e1s \u00f6sszefoglal\u00e1sa ${layerName} r\u00e9tegen t\u00f6rt\u00e9n\u0151 futtat\u00e1s\u00e1b\u00f3l l\u00e9trehozott vektoros r\u00e9teg. ",
+itemTags:"Elemz\u00e9s v\u00e9geredm\u00e9nye, V\u00edzgy\u0171jt\u0151 ter\u00fclet, ${layername}, ${fieldname}",itemSnippet:"A v\u00edzgy\u0171jt\u0151 ter\u00fclet alapj\u00e1n l\u00e9trehozott vektoros r\u00e9teg."});

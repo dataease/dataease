@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Ühenda kihid</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="&Uuml;henda kihid"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;vahend kopeerib kahe kihi objektid uude tulemkihti. &Uuml;hendatavad objektid peavad omama sama geomeetriat&uuml;&uuml;pi (punktid, jooned v&otilde;i pinnad). Teil kui kasutajal on v&otilde;imalik m&auml;&auml;rata, kuidas erinevad kihid omavahel &uuml;hendatakse. N&auml;ited.
+        <ul>
+            <li>Teil on kasutada kolm kihti Saaremaa, Hiiumaa ja L&auml;&auml;nemaa maakondade kohta ning Te soovite nende alusel luua &uuml;hte terviklikku kihti L&auml;&auml;ne-Eesti maakondadest. 
+            </li>
+            <li>Teil on 12 kihti ning iga kiht sisaldab infot omavahel k&uuml;lgnevate elamurajoonide katastri&uuml;ksuste kohta. Te soovite k&otilde;iki neid &uuml;hendada &uuml;heks tervikuks, j&auml;ttes tulemusse alles vaid selle osa, kus kihi v&auml;ljas olev nimi ja t&uuml;&uuml;p langevad kokku.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Kui ruut  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, &uuml;hendatakse ainult objektid, mis on kaardil praegu n&auml;htavad.  Kui vastav tingimus on v&auml;lja l&uuml;litatud, kasutatakse puhvri loomisel k&otilde;iki kihis olevaid objekte s&otilde;ltumata asjaolust, kas need on anal&uuml;&uuml;si k&auml;ivitamise hetkel ekraanil n&auml;htavad v&otilde;i mitte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vali kiht</h2></div>
+        <hr/>
+        <div>
+            <p>Punkt-, joon- v&otilde;i pindobjektid, mis allpool m&auml;&auml;ratud kihiga &uuml;hendatakse. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Vali ühendatav kiht</h2></div>
+        <hr/>
+        <div>
+            <p>Valige kiht, mis esimese kihiga &uuml;hendatakse.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Muuda ühendatavaid välju</h2></div>
+        <hr/>
+        <div>
+            <p>Vaikimisi kantakse k&otilde;ik sisendkihtides olevad v&auml;ljad v&auml;ljundisse &uuml;le. Te saate muuta v&auml;ljade &uuml;leviimist j&auml;rgmiste meetodite alusel:
+                <ul>
+                    <li> <b>Nimeta &uuml;mber</b> &ndash; v&auml;lja nimi muudetakse v&auml;ljundi jaoks &uuml;mber.
+                    </li>
+                    <li> <b>Eemalda</b> &ndash; v&auml;lja nimi eemaldatakse v&auml;ljundist.
+                    </li>
+                    <li> <b>Sobita</b> &ndash; v&auml;lja nimed muudetakse samav&auml;&auml;rseks.  Kihi v&auml;lja v&auml;&auml;rtused kopeeritakse &uuml;hendamise eesm&auml;rgil vastavasse tulemi v&auml;lja sisusse.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Kui m&otilde;lemad kihid sisaldavad identse nime ja andmet&uuml;&uuml;biga v&auml;lja, &uuml;hendatakse m&otilde;lema v&auml;lja sisu &uuml;heks samanimeliseks v&auml;ljaks. See ei kehti selliste v&auml;ljade korral, kus parameetris  <b>Muuda &uuml;hendatavaid v&auml;lju</b> on kasutusel v&auml;&auml;rtus <b>Sobita</b>.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Vaikenimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui samanimeline kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemused</b> kaudu saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemus salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/pl/EnrichFromMultiVariableGrid",{choosePointLyrLabel:"Wybierz obiekty punktowe do wzbogacenia",chooseMVgridLyrLabel:"Wybierz siatk\u0119 wielu zmiennych, kt\u00f3ra zostanie u\u017cyta do wzbogacania",chooseVariables:"Wybierz zmienne do dodania",outputLayerName:"Wzbogacono obiekty wej\u015bciowe ${inputFeatures} na podstawie warstwy siatki ${gridLayer}",itemDescription:"Warstwa obiektowa wygenerowana w wyniku u\u017cycia narz\u0119dzia Wzboga\u0107 na podstawie siatki wielu warto\u015bci dla obiekt\u00f3w wej\u015bciowych ${inputFeatures}.",
+itemTags:"Wynik analizy, Wzboga\u0107 na podstawie siatki wielu zmiennych, ${inputFeatures}, ${gridLayer}",itemSnippet:"Warstwa obiektowa wygenerowana na podstawie narz\u0119dzia Buduj siatk\u0119 wielu warto\u015bci."});

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="raToolbox">
+        <p>栅格分析允许使用  ArcGIS Image Server 执行大型栅格数据集分析。该工具允许通过整合服务器能力以更快地分析更多数据。当前可通过  Portal for ArcGIS web 用户体验获取的工具集包括：<b>汇总数据</b>、 <b>分析模式</b>、 <b>邻近分析</b>、 <b>分析影像</b>、 <b>分析 Terrain</b>、 <b>管理数据</b>和 <b>深度学习</b>。
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="smallsize">
+        <h2>汇总数据</h2>
+        <hr/>
+        <p>此工具集包含用于计算所定义区域边界内栅格图层的某些统计数据的工具。
+            <ul>
+                <li> <b>汇总范围内的栅格</b>会计算位于所定义区域边界内的栅格像元的统计数据。
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="SummarizeRasterWithinTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>汇总范围内的栅格</h2></td>
+                    <td>
+                    <img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" class="titleImage" alt="汇总范围内的栅格工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>计算所定义区域内栅格像元的某些汇总统计数据。
+            </p>
+            <p>其中的一些应用示例如下： 
+
+                <ul>
+                    <li>已知流域面积图层和高程栅格图层，计算每条流域范围内高程的范围，以确定哪个流域的溪流能量最高。
+                        
+
+                    </li>
+                    <li>已知行政管理单位图层和土地利用类别的栅格图层，计算每个管理区域内不同的土地利用价值，以标识哪块土地在确定管理计划时需要的投入最多。
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="smallsize">
+        <h2>分析模式</h2>
+        <hr/>
+        <p>这些工具可帮助您确定、量化并显示数据的空间模式。
+
+            <ul>
+                <li> <b>计算密度</b>会对某一现象的已知量进行处理，并将这些量散布到整个地图上，以创建密度地图。
+                    
+
+                </li>
+                <li> <b>插值点</b>会根据一组点的测量结果来预测新位置上的值。
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>计算密度</h2></td>
+                    <td>
+                    <img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" class="titleImage" alt="计算密度工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>密度分析会对某一现象的已知量进行处理，并将这些量散布到整个地图上，以创建密度地图。例如，您可以使用此工具来显示发生雷击或龙卷风的概率、医疗设施的利用率以及人口密度。
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsEBKTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>插值点</h2></td>
+                    <td>
+                    <img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" class="titleImage" alt="插值点工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>该工具用于根据一组点的测量结果来预测新位置上的值。该工具对具有数值的点数据进行处理，并返回按预测值分类的区域。例如，借助该工具，您可以根据各个雨量计的测量结果来预测某一分水岭内的降雨量级别。
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="smallsize">
+        <h2>邻近分析</h2>
+        <hr/>
+        <p>这些工具可帮助您回答在空间分析中提出的一个最普遍问题：&ldquo;什么在什么附近？&rdquo;
+
+            <ul>
+                <li> <b>计算距离</b>用于计算距离单个源或一组源的欧氏距离、方向和分配。
+                    
+
+                </li>
+                <li> <b>确定最佳行程成本网络</b>用于计算一组输入区域的最佳成本网络。
+                    
+
+                </li>
+                <li> <b>确定行程成本路径折线</b>用于计算源和已知目的地之间的最低成本折线路径。
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDistanceTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>计算距离</h2></td>
+                    <td>
+                    <img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" class="titleImage" alt="计算距离">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>计算距离单个源或一组源的欧氏距离、方向和分配。可使用此工具确定某个位置距离道路、建筑物或公园的距离。还可以确定必须从某个位置的哪个方向行驶才能以最直接的方式返回源。可在研究区域中查看每个位置的最接近源。
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineOptimumTravelCostNetworkTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>确定最佳行程成本网络</h2></td>
+                    <td>
+                    <img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" class="titleImage" alt="&ldquo;确定最佳行程成本网络&rdquo;工具图示">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>计算一组输入区域的最佳成本网络。
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineTravelCostPathAsPolylineTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>确定行程成本路径折线</h2></td>
+                    <td>
+                    <img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" class="titleImage" alt="&ldquo;确定行程成本路径折线&rdquo;工具图示">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>计算源和已知目的地之间的最低成本折线路径。
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeImageCategory" class="smallsize">
+        <h2>分析影像</h2>
+        <hr/>
+        <p>以下工具可帮助您分析影像。
+            <ul>
+                <li> <b>应用栅格函数模板</b>通过栅格函数模板指定的函数链来处理影像。
+                </li>
+                <li> <b>监测植被</b>会根据对波段执行的算术运算监测影像内的植被。
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ApplyRFxTemplateTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>应用栅格函数模板</h2></td>
+                    <td>
+                    <img src="../images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" class="titleImage" alt="应用栅格函数模板">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>通过栅格函数模板指定的函数链来处理影像。
+            </p>
+            <br/>
+        </div>
+        <div id="MonitorVegetationTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>监测植被</h2></td>
+                    <td>
+                    <img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" class="titleImage" alt="适用于门户的监测植被工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>对多波段栅格图层的波段执行算术运算，以显示研究区域的植被覆盖度信息。
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeTerrainCategory" class="smallsize">
+        <h2>分析 Terrain</h2>
+        <hr/>
+        <p>这些工具会帮助您分析栅格表面。
+            <ul>
+                <li> <b>计算坡度</b>用于计算地形的陡度。
+                    
+
+                </li>
+                <li> <b>派生坡向</b>用于计算每个位置坡度最陡的方向。
+                    
+
+                </li>
+                <li> <b>创建视域</b>用于确定从景观上任何一点所能看到的内容。
+                    
+
+                </li>
+                <li> <b>集水区</b>用于计算地表上标识位置上方的汇流区域。
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateSlopeTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>计算坡度</h2></td>
+                    <td>
+                    <img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" class="titleImage" alt="适用于门户的计算坡度工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>确定显示输入高程数据的坡度的表面。坡度表示各数字高程模型 (DEM) 像元的高程变化率。
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveAspectTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>派生坡向</h2></td>
+                    <td>
+                    <img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" class="titleImage" alt="适用于门户的派生坡向工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>标识从每个像元到其相邻像元方向上值的变化率最大的下坡方向。坡向可以被视为坡度方向。
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>创建视域</h2></td>
+                    <td>
+                    <img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" class="titleImage" alt="创建视域工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>确定栅格表面上对一组观察点可见的位置。
+            </p>
+            <br/>
+        </div>
+        <div id="WatershedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>集水区</h2></td>
+                    <td>
+                    <img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" class="titleImage" alt="集水区任务">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>确定栅格中一组像元之上的汇流区域。
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="smallsize">
+        <h2>管理数据</h2>
+        <hr/>
+        <p>这些工具用于地理数据的日常管理以及在分析之前合并数据。
+            <ul>
+                <li> <b>提取栅格</b>会裁剪掉栅格数据集的某些部分，以便进一步分析。
+                    
+
+                </li>
+                <li> <b>重映射值</b>会将不同的值分配给栅格像元。
+                    
+
+                </li>
+                <li> <b>要素转栅格</b>会栅格化矢量数据。
+                    
+
+                </li>
+                <li> <b>栅格转要素</b>会矢量化栅格数据。
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ExtractRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>提取栅格</h2></td>
+                    <td>
+                    <img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" class="titleImage" alt="适用于门户的提取栅格工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>根据不同数据集的值、形状或范围从栅格中提取像元。
+            </p>
+            <br/>
+        </div>
+        <div id="RemapValuesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>重映射值</h2></td>
+                    <td>
+                    <img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" class="titleImage" alt="适用于门户的重映射值工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>将单个像元值或像元值范围更改为新值。
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertFeatureToRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>要素转栅格</h2></td>
+                    <td>
+                    <img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" class="titleImage" alt="要素转栅格工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>根据现有要素数据集创建新栅格数据集。
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertRasterToFeatureTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>栅格转要素</h2></td>
+                    <td>
+                    <img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" class="titleImage" alt="栅格转要素工具">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>根据现有栅格数据集创建新要素数据集。
+            </p>
+            <br/>
+        </div>
+    <div id="DeepLearningCategory" class="smallsize">
+        <h2>工具集深度学习</h2>
+        <hr/>
+        <p>这些工具可用于检测影像中的特定要素或对栅格数据集中的像素进行分类。深度学习是一种人工智能机器学习方法，可以使用神经网络中的多个图层检测影像中的要素，其中每个图层都能提取影像中的一个或多个唯一要素。这些工具使用经过训练的模型检测第三方深度学习框架（例如 TensorFlow、CNTK 和 Keras）中的特定要素和输出要素或类地图。
+            <ul>
+                <li> <b>使用深度学习对像素进行分类</b>可以使用经过训练的深度学习模型生成分类栅格。
+                </li>
+                <li> <b>使用深度学习检测对象</b>可以使用经过训练的深度学习模型生成要素类，该要素类包含输入栅格中的对象。
+                </li>
+            </ul>
+             
+        </p>
+    </div>
+        <div id="ClassifyPixelsUsingDeepLearningTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>使用深度学习对像素进行分类</h2></td>
+                    <td>
+                    <img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" class="titleImage" alt="使用深度学习对像素进行分类">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>用于运行输入栅格上的训练深度学习模型，以生成分类栅格，其中每个有效像素都被分配了一个类标注。
+            </p>
+            <br/>
+        </div>
+        <div id="DetectObjectsUsingDeepLearningTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>使用深度学习检测对象</h2></td>
+                    <td>
+                    <img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="使用深度学习检测对象">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>用于运行输入栅格上的训练深度学习模型，以生成包含其找到对象的要素类。这些要素可以是所找到对象周围的边界框或面，也可以是对象中心的点。
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

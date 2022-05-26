@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Consolida punts</h2><p/>
+        <h2><img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" alt="Consolida punts"></h2>
+        <hr/>
+    <p>Aquesta eina funciona amb una capa d'entitats de punts i una capa d'entitats d'&agrave;rees.  Les entitats d'&agrave;rees d'entrada poden ser d'una capa de pol&iacute;gons o poden ser bins quadrats o hexagonals que es calculen quan s'executa l'eina. L'eina determina en primer lloc quins punts es troben dins de cadascuna de les &agrave;rees especificades. Despr&eacute;s de determinar aquesta relaci&oacute; espacial de punt en una &agrave;rea, les estad&iacute;stiques sobre tots els punts de l'&agrave;rea es calculen i s'assignen a l'&agrave;rea. L'estad&iacute;stica m&eacute;s b&agrave;sica &eacute;s el recompte del nombre de punts dins de l'&agrave;rea, per&ograve; tamb&eacute; podeu obtenir altres estad&iacute;stiques. 
+
+    </p>
+    <p>Per exemple, suposeu que teniu entitats de punts d'ubicacions de cafeteries i entitats d'&agrave;rees de comtats, i que voleu resumir les vendes de caf&egrave; per comtat.  Si suposem que les cafeteries tenen un atribut  <i>TOTAL_SALES</i>, podeu obtenir, de cada comtat, la suma de tots els atributs <i>TOTAL_SALES</i> i els valors m&iacute;nim o m&agrave;xim de <i>TOTAL_SALES</i>
+, o b&eacute; altres estad&iacute;stiques, com ara el recompte, l'interval, la desviaci&oacute; est&agrave;ndard i la vari&agrave;ncia.
+    </p>
+    <p>Aquesta eina tamb&eacute; pot funcionar amb dades amb la funci&oacute; de temps habilitada. Si el temps est&agrave; habilitat als punts d'entrada, les opcions d'interval de temps estan disponibles. L'interval de temps permet calcular la relaci&oacute; de punt en &agrave;rea mentre s'observa un interval de temps espec&iacute;fic. Per exemple, podeu consultar intervals d'hores, de manera que es generin sortides per a cada hora. 
+    </p>
+    <p>Com a exemple de temps, suposem que teniu entitats de punts de cada transacci&oacute; que heu fet en diferents ubicacions de cafeteries i cap capa d'&agrave;rees. Les dades s'han registrat durant un any i cada transacci&oacute; t&eacute; una ubicaci&oacute; i una marca de temps. Si suposem que cada transacci&oacute; t&eacute; un atribut  <i>TOTAL_SALES</i>, podeu obtenir la suma de totes les <i>TOTAL_SALES</i> dins l'espai i el temps del vostre inter&egrave;s. Si aquestes transaccions s&oacute;n d'una &uacute;nica ciutat, podem generar &agrave;rees que siguin quadr&iacute;cules d'un quil&ograve;metre i observar intervals de temps setmanals per resumir les transaccions en el temps i l'espai.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Trieu una capa que contingui punts que s'hagin d'afegir a les àrees</h2></div>
+        <hr/>
+        <div>
+            <p>Capa de punts que s'afegir&agrave; a les &agrave;rees.  Les capes de punts que s'han agregat a bins de  <b>Quadrat</b> o <b>Hex&agrave;gon</b> han de tenir la refer&egrave;ncia espacial de processament definida en un sistema de coordenades projectades mitjan&ccedil;ant els <b>entorns d'an&agrave;lisi</b>.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="inputAggregation">
+        <div><h2>Trieu una capa d'àrees que vulgueu agregar</h2></div>
+        <hr/>
+        <div>
+            <p>&Agrave;rees a les quals s'afegir&agrave; la capa de punts. Podeu triar entre una capa d'&agrave;rees que proporcioneu o els bins que es generen quan s'executa l'eina. Quan es generen bins, en el cas del  <b>Quadrat</b>, el nombre i les unitats que s'especifiquen determinen l'altura i la longitud del quadrat. En el cas de l' <b>Hex&agrave;gon</b>, el nombre i les unitats que s'especifiquen determinen la dist&agrave;ncia entre els costats paral&middot;lels.
+            </p>
+            <p>Per a l'an&agrave;lisi amb bins de tipus  <b>Quadrat</b> o <b>Hex&agrave;gon</b> es necessita un sistema de coordenades projectades. Podeu definir l'opci&oacute; de <b>Sistema de coordenades de processament</b> a <b>Entorns d'an&agrave;lisi</b>. Si el sistema de coordenades de processament no est&agrave; definit en un sistema de coordenades projectades, se us demanar&agrave; que el definiu quan utilitzeu <b>Executa l'an&agrave;lisi</b> .
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Trieu la capa d'àrees on es farà l'addició</h2></div>
+        <hr/>
+        <div>
+            <p>Capa d'&agrave;rees en qu&egrave; es consolidaran els punts. Qualsevol punt que estigui dins dels l&iacute;mits de les &agrave;rees d'aquesta capa es comptar&agrave; i es podr&agrave; resumir mitjan&ccedil;ant l'opci&oacute; d'estad&iacute;stiques que h&agrave;giu triat. 
+            </p>
+            <p>Cal definir  <b>Mida del bin</b> per als bins, o b&eacute; <b>Capa d'&agrave;rea</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Trieu una distància per generar bins i agregar-los</h2></div>
+        <hr/>
+        <div>
+            <p>Dist&agrave;ncia utilitzada per generar bins als quals agregar els punts d'entrada. Per a un bin quadrat, la mida representa l'altura del quadrat. Per a l'hex&agrave;gon, la mida representa l'altura de l'hex&agrave;gon (dels costats paral&middot;lels).  
+            </p>
+            <p>Cal definir  <b>Mida del bin</b> per als bins, o b&eacute; <b>Capa d'&agrave;rea</b>.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Agrega amb períodes de temps (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Si el temps est&agrave; habilitat a la capa de punts d'entrada i &eacute;s de tipus instant, podeu fer l'an&agrave;lisi amb per&iacute;odes de temps.  Hi ha tres par&agrave;metres que podeu establir quan utilitzeu el temps:
+                <ul>
+                    <li> <b>Interval de per&iacute;ode de temps</b>
+                    </li>
+                    <li> <b>Freq&uuml;&egrave;ncia de repetici&oacute; de l'interval de temps</b>
+                    </li>
+                    <li> <b>Temps amb el qual s'alinearan els per&iacute;odes de temps</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Per exemple, si teniu dades que representen un any i voleu analitzar-les amb per&iacute;odes setmanals, definiu  <b>Interval de per&iacute;ode de temps</b> en <code>1 setmana</code>. 
+            </p>
+            <p>Per exemple, si teniu dades que representen un any i voleu analitzar-les amb la primera setmana del mes, definiu  <b>Interval de per&iacute;ode de temps</b> en <code>1 setmana</code>, <b>Freq&uuml;&egrave;ncia de repetici&oacute; de l'interval de temps</b> en <code>1 mes</code> i <b>Temps amb el qual s'alinearan els per&iacute;odes de temps</b> en <code>1 de gener, a les 12:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Interval de període de temps</h2></div>
+        <hr/>
+        <div>
+            <p>Interval de temps utilitzat per generar per&iacute;odes de temps.  <b>Interval de per&iacute;ode de temps</b> es pot utilitzar sol o amb el par&agrave;metre <b>Freq&uuml;&egrave;ncia de repetici&oacute; de l'interval de temps</b> o <b>Temps amb el qual s'alinearan els per&iacute;odes de temps</b>.
+            </p>
+            <p>Per exemple, si voleu crear per&iacute;odes de temps que tinguin lloc cada dilluns de 9:00 a 10:00, definiu  <b>Interval de per&iacute;ode de temps</b> en <code>1 hora</code>, <b>Freq&uuml;&egrave;ncia de repetici&oacute; del per&iacute;ode de temps</b> en <code>1 setmana</code> i <b>Temps amb el qual s'alinearan els per&iacute;odes de temps</b> en <code>9:00:00 els dilluns</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Freqüència de repetició del període de temps</h2></div>
+        <hr/>
+        <div>
+            <p> Per&iacute;ode utilitzat per calcular un per&iacute;ode de temps. <b>Freq&uuml;&egrave;ncia de repetici&oacute; de l'interval de temps</b> es pot utilitzar sol o  amb el par&agrave;metre <b>Interval de per&iacute;ode de temps</b>, o amb <b>Temps de refer&egrave;ncia</b> o b&eacute; amb la combinaci&oacute; d' <b>Interval de per&iacute;ode de temps</b> i <b>Temps amb el qual s'alinearan els per&iacute;odes de temps</b>.
+            </p>
+            <p> Per exemple, si voleu crear per&iacute;odes de temps quetinguin lloc cada dilluns de 9:00 a 10:00, definiu <b>Interval de per&iacute;ode de temps</b> es <code>1 hora</code>, <b>Freq&uuml;&egrave;ncia de repetici&oacute; del per&iacute;ode de temps</b> en <code>1 setmana</code>, i <b>Temps amb el qual s'alinearan els per&iacute;odes de temps</b> en <code>9:00:00 els dilluns</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Temps per alinear períodes de temps amb</h2></div>
+        <hr/>
+        <div>
+            <p>Data i hora utilitzades per alinear l'interval de temps. Els per&iacute;odes de temps comen&ccedil;aran a partir d'aqu&iacute; i continuaran enrere en el temps. Si no se selecciona cap temps de refer&egrave;ncia, els per&iacute;odes de temps s'alinearan amb l'1 de gener de 1970. 
+            </p>
+            <p> Per exemple, si voleu crear per&iacute;odes de temps que tinguin lloc cada dilluns de 9:00 a 10:00, definiu <b>Interval de per&iacute;ode de temps</b> en <code>1 hora</code>, <b>Freq&uuml;&egrave;ncia de repetici&oacute; del per&iacute;ode de temps</b> en <code>1 setmana</code> i <b>Temps amb el qual s'alinearan els per&iacute;odes de temps</b> en <code>9:00:00 els dilluns</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Afegeix estadístiques (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p> Podeu calcular les estad&iacute;stiques sobre les entitats que s'han resumit. Als camps num&egrave;rics, podeu calcular el seg&uuml;ent:
+                <ul>
+                    <li>Recompte: calcula el nombre de valors no nuls. Es pot utilitzar a les cadenes o als camps num&egrave;rics. El recompte de [nul, 0, 2] &eacute;s 2.
+                    </li>
+                    <li>Suma: suma dels valors num&egrave;rics d'un camp. La suma de [nul, nul, 3] &eacute;s 3.
+                    </li>
+                    <li>Mitjana: mitjana dels valors num&egrave;rics. La mitjana de [0, 2, nul] &eacute;s 1.
+                    </li>
+                    <li>M&iacute;nim: valor m&iacute;nim d'un camp num&egrave;ric. El m&iacute;nim de [0, 2, nul] &eacute;s 0. 
+                    </li>
+                    <li>M&agrave;xim: valor m&agrave;xim d'un camp num&egrave;ric. El valor m&agrave;xim de [0, 2, nul] &eacute;s 2.
+                    </li>
+                    <li>Interval: interval d'un camp num&egrave;ric. Es calcula com els valors m&iacute;nims restats del m&agrave;xim. L'interval de [0, nul, 1] &eacute;s 1. L'interval de [nul, 4] &eacute;s 0.
+                    </li>
+                    <li>Vari&agrave;ncia: vari&agrave;ncia d'un camp num&egrave;ric en un recorregut. La vari&agrave;ncia de [1] &eacute;s nul. La vari&agrave;ncia de [nul, 1,0,1,1] &eacute;s 0,25.
+                    </li>
+                    <li>Desviaci&oacute; est&agrave;ndard: desviaci&oacute; est&agrave;ndard d'un camp num&egrave;ric. La desviaci&oacute; est&agrave;ndard de [1] &eacute;s nul. La desviaci&oacute; est&agrave;ndard de [nul, 1,0,1,1] &eacute;s 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Als camps num&egrave;rics, podeu calcular el seg&uuml;ent:
+                <ul>
+                    <li>Recompte: nombre de cadenes no nul&middot;les.
+                    </li>
+                    <li>Qualsevol: aquesta estad&iacute;stica &eacute;s una mostra aleat&ograve;ria del valor d'una cadena al camp especificat.
+                    </li>
+                </ul>
+                Totes les estad&iacute;stiques es calcularan sobre valors no nuls. La capa resultant contindr&agrave; un camp nou per a cada estad&iacute;stica calculada. Per afegir qualsevol nombre d'estad&iacute;stiques, podeu triar un atribut i una estad&iacute;stica. 
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>&Eacute;s un par&agrave;metre temporal de versi&oacute; preliminar per definir la refer&egrave;ncia espacial de processament. Moltes eines de dades massives necessiten que s'utilitzi un sistema de coordenades projectades com a refer&egrave;ncia espacial per al processament. Per defecte, l'eina utilitzar&agrave; el sistema de coordenades d'entrada, per&ograve; no funcionar&agrave; correctament si es tracta d'un sistema de coordenades geogr&agrave;fiques. Per definir un sistema de coordenades projectades, introdu&iuml;u el WKID. Per exemple,  <b>Web Mercator</b> s'introduiria com a <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Trieu un ArcGIS Data Store on desar els resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Els resultats del GeoAnalytics s'emmagatzemen en un magatzem de dades i s'exposen com una capa d'entitats al  Portal for ArcGIS. En la majoria dels casos, conv&eacute; emmagatzemar els resultats en un magatzem de dades espaciotemporal, que &eacute;s l'opci&oacute; per defecte. En alguns casos, desar els resultats al magatzem de dades relacional &eacute;s una bona opci&oacute;. A continuaci&oacute; teniu alguns motius pels quals &eacute;s bona idea desar els resultats al magatzem de dades relacional: 
+                <ul>
+                    <li>Podeu utilitzar els resultats en la col&middot;laboraci&oacute; de portal a portal.
+                    </li>
+                    <li>Podeu habilitar les funcions de sincronitzaci&oacute; amb els vostres resultats.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>No &eacute;s recomanable fer servir un magatzem de dades relacionals si espereu que els resultats del GeoAnalytics augmentin i necessiteu utilitzar les funcions del magatzem de dades massives espaciotemporals per gestionar grans quantitats de dades.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la capa que es crear&agrave;.  Si esteu escrivint en un ArcGIS Data Store, els resultats es desaran a  <b>El meu contingut</b> i s'afegiran al mapa. Si esteu escrivint en un recurs compartit de fitxers de dades massives, els resultats s'emmagatzemaran en aquest recurs i s'afegiran al seu manifest. No s'afegiran al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, l'eina no funcionar&agrave;.
+            </p>
+            <p>Si escriviu a l' ArcGIS Data Store (magatzem de dades massives relacional o espaciotemporal) mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta a <b>El meu contingut</b>, on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

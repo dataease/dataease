@@ -1,0 +1,9 @@
+$input-bg:                       $Calcite_Gray_050 !default;
+$input-bg-disabled:              $Calcite_Gray_100 !default;
+$input-color:                    $Calcite_Gray_650 !default;
+$input-border:                   $Calcite_Gray_300 !default;
+$input-caret-padding-vertical:   ($line-height-computed + $padding-base-vertical * 2 - $icon-size-base) * .5 !default;
+$input-border-focus:             $Calcite_Blue_a250 !default;
+$input-color-placeholder:        $Calcite_Gray_450 !default;
+$input-height-base:              ($line-height-computed + ($padding-base-vertical * 2) + 2px) !default;
+$cursor-disabled:                not-allowed !default;

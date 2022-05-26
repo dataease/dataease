@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/sl/EnrichFromMultiVariableGrid",{choosePointLyrLabel:"Izberite to\u010dkovne geoobjekte, ki jih \u017eelite obogatiti",chooseMVgridLyrLabel:"Izberite mre\u017eo z ve\u010d spremenljivkami za obogatitev",chooseVariables:"Izberite spremenljivke za dodajanje",outputLayerName:"Obogateni ${inputFeatures} iz ${gridLayer}",itemDescription:"Geoobjektni sloj, ustvarjen iz izvajanja re\u0161itve Obogatitev iz mre\u017ee ve\u010d spremenljivk za ${inputFeatures}.",itemTags:"Rezultati analize, Obogatitev iz mre\u017ee ve\u010d spremenljivk ${inputFeatures}, ${gridLayer}",
+itemSnippet:"Geoobjektni sloj, ustvarjen iz Obogatitev iz mre\u017ee ve\u010d spremenljivk"});

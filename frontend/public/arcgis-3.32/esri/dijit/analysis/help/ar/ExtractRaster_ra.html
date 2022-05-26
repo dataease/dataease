@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>استخراج البيانات النقطية</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="أداة استخراج البيانات النقطية للبوابة الإلكترونية"></h2>
+        <hr/>
+    <p>يمكن لهذه الأداة قص البيانات النقطية إلى حدود، إما لمنطقة المستطيل أو لشكل أنت تُحدده بشكل تفاعلي على الشاشة. يمكنك قص نطاق المنطقة التي قمت بعرضها حاليًا على الخريطة أو حسب منطقة الدراسة التي يتم تعريفها بواسطة مضلع.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>اختر البيانات المدخلة لاستخراجها</h2></div>
+        <hr/>
+        <div>
+            <p>طبقة الإدخال المراد قصها.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>حدد قص الشكل الهندسي</h2></div>
+        <hr/>
+        <div>
+            <p>اختر نوع النطاق المراد استخدامه عند قص الشكل الهندسي للطبقة:
+
+                <ul>
+                    <li>استخدام النطاق الحالي&mdash;سيتم استخدام نطاق الخريطة الحالي لقص الطبقة الناتجة. هذا هو الوضع الافتراضي.
+                        
+
+                    </li>
+                    <li>اختر منطقة دراسة&mdash;تتيح لك اختيار النتيجة التي تعرض المنطقة ضمن نطاق الشكل الهندسي أو المنطقة التي تقع خارج نطاق الشكل الهندسي. إذا اخترت خيار  <b>البيانات داخل الشكل الهندسي</b> ، سيتم إزالة الصور التي تقع خارج النطاقات. إذا اخترت خيار <b>البيانات خارج الشكل الهندسي</b> ، يتم إزالة الصور ضمن النطاقات. يمكنك أيضًا تعريف قص الشكل الهندسي باستخدام أداة الرسم.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم إنشاء اسم الطبقة في  <b>المحتوى</b> وسيتم إضافته إلى الخريطة. يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجدت الطبقة بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>يمكنك تحديد اسم مجلد في  <b>محتواي</b> حيث سيتم حفظ النتيجة باستخدام المربع المنسدل <b>حفظ النتيجة في</b>
+            </p>
+        </div>
+    </div>
+</div>
+</html>

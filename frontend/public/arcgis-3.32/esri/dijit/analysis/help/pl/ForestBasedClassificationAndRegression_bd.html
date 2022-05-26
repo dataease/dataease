@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Klasyfikacja i regresja oparta na zespołach drzew decyzyjnych</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Diagram procedury wykonywania zadań związanej z klasyfikacją i regresją opartą na zespołach drzew decyzyjnych"></h2>
+        <hr/>
+    <p>Tworzy modele i generuje prognozy z użyciem dostosowanego algorytmu losowych zespoł&oacute;w drzew decyzyjnych (las&oacute;w) &mdash; opracowanego przez Leo Breimana &mdash; będącego przykładem metody nadzorowanego samouczenia się maszyn. Prognozowanie może dotyczyć zar&oacute;wno zmiennych jakościowych (klasyfikacja), jak i ciągłych (regresja). Zmienne objaśniające to pola w tabeli atrybut&oacute;w obiekt&oacute;w treningowych. Narzędzie można uruchomić w celu wygenerowania modelu służącego do oceny wydajności lub w celu wygenerowania modelu i prognozowania wynik&oacute;w w innych zestawach danych.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Rodzaj analizy</h2></div>
+        <hr/>
+        <div>
+            <p>Określa tryb działania narzędzia. Narzędzie można uruchomić wyłącznie w celu wytrenowania modelu służącego do oceny wydajności lub w celu wytrenowania modelu i prognozowania obiekt&oacute;w. Istnieją następujące typy prognozowania:
+                <ul>
+                    <li> <b>Trenowanie modelu do oceny wydajności modelu</b> &mdash; trenowanie modelu i dopasowywanie go do danych wejściowych. Ta opcja służy do oceny dokładności modelu przed wygenerowaniem prognoz dotyczących nowego zestawu danych. Danymi wynikowymi w przypadku tej opcji są usługa obiektowa z dopasowanymi danymi treningowymi, diagnostyka modelu oraz opcjonalna tabela istotności zmiennych.
+                    </li>
+                    <li> <b>Trenowanie modelu i prognozowanie wartości</b> &mdash; generowanie prognoz lub klasyfikacji dla obiekt&oacute;w. Zmienne objaśniające należy podać zar&oacute;wno dla obiekt&oacute;w treningowych, jak i obiekt&oacute;w do prognozowania. Danymi wynikowymi w przypadku tej opcji są usługa obiektowa z wartościami prognozowanymi, diagnostyka modelu oraz opcjonalna tabela istotności zmiennych.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Trenowanie modelu do oceny wydajności modelu</h2></div>
+        <hr/>
+        <div>
+            <p>Ten tryb służy do dopasowywania modelu i badania jego dopasowania.
+            </p>
+            <p>W przypadku tej opcji model jest trenowany z użyciem warstwy wejściowej. Ta opcja służy do oceny dokładności modelu przed wygenerowaniem prognoz dotyczących nowego zestawu danych. Opcja powoduje wygenerowanie diagnostyki modelu w oknie komunikat&oacute;w i zastosowanie modelu do danych treningowych.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Trenowanie modelu i prognozowanie wartości</h2></div>
+        <hr/>
+        <div>
+            <p>Ten tryb umożliwia dopasowanie modelu oraz jego zastosowanie do zestawu danych w celu wygenerowania prognoz.
+            </p>
+            <p>Prognozy i klasyfikacje generowane są dla obiekt&oacute;w. Danymi wynikowymi w przypadku tej opcji są usługa obiektowa, diagnostyka modelu oraz opcjonalna tabela istotności zmiennych.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Wybierz warstwę treningową</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa obiektowa zawierająca zmienną do prognozowania oraz pola, kt&oacute;re będą używane do generowania prognoz.
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Wybierz warstwę, dla której mają być generowane prognozy</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa obiektowa reprezentująca lokalizacje, dla kt&oacute;rych będą opracowywane prognozy. Ta warstwa obiektowa musi r&oacute;wnież zawierać wszystkie zmienne objaśniające podane jako pola odpowiadające polom używanym w przypadku obiekt&oacute;w treningowych.
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Wybierz pole do prognozowania</h2></div>
+        <hr/>
+        <div>
+            <p>Pole z obiekt&oacute;w treningowych zawierające wartości używane do trenowania modelu. To pole zawiera znane wartości (treningowe) zmiennej, kt&oacute;re będą używane do prognozowania w nieznanych lokalizacjach. Jeśli wartości są danymi jakościowymi (np. Klon, Sosna, Dąb), należy zaznaczyć pole wyboru  <b>Kategorialne</b>.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Wybierz jedną lub większą liczbę zmiennych objaśniających</h2></div>
+        <hr/>
+        <div>
+            <p>Jedno lub większa liczba p&oacute;l reprezentujących zmienne objaśniające (pola), kt&oacute;re ułatwiają prognozowanie wartości lub kategorii zmiennej do prognozowania. Pola wyboru oznaczającego wartości jakościowe (kategorialne) należy używać w przypadku wszystkich zmiennych, kt&oacute;re reprezentują klasy lub kategorie (takich jak pokrycie terenu albo obecność lub nieobecność). Należy podać wartość true (prawda) w przypadku wszystkich zmiennych reprezentujących klasy lub kategorie, takich jak pokrycie terenu albo obecność lub nieobecność, a wartość false (fałsz) w przypadku zmiennych ciągłych.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Liczba drzew</h2></div>
+        <hr/>
+        <div>
+            <p>Liczba drzew do utworzenia w modelu. Większa liczba drzew skutkuje zazwyczaj modelem pozwalającym na dokładniejsze prognozowanie, ale obliczenie modelu zajmuje więcej czasu. Domyślna liczba drzew wynosi 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Minimalny rozmiar liścia</h2></div>
+        <hr/>
+        <div>
+            <p>Minimalna liczba obserwacji wymagana do utrzymania liścia (końcowego węzła w drzewie, kt&oacute;ry nie podlega dalszemu podziałowi). Domyślna wartość minimalna dla regresji to 5, a dla klasyfikacji to 1. W przypadku bardzo dużych ilości danych zwiększenie tych liczb powoduje skr&oacute;cenie czasu działania narzędzia.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Maksymalna głębokość drzewa</h2></div>
+        <hr/>
+        <div>
+            <p>Maksymalna liczba podział&oacute;w występujących w drzewie. Użycie dużej maksymalnej głębokości prowadzi do utworzenia większej liczby podział&oacute;w i może zwiększyć prawdopodobieństwo nadmiernego dopasowania modelu. Wartość domyślna wynika z danych i jest zależna od liczby utworzonych drzew oraz liczby uwzględnionych zmiennych.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Dane dostępne na drzewo (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Określa procent obiekt&oacute;w w warstwie treningowej używanych na potrzeby każdego drzewa decyzyjnego. Wartością domyślną jest 100 procent danych. Pr&oacute;bki dla każdego drzewa są pobierane losowo z dw&oacute;ch trzecich podanych danych.
+            </p>
+            <p>Każde drzewo decyzyjne w lesie jest tworzone przy użyciu losowej pr&oacute;bki lub podzbioru (około jednej trzeciej) dostępnych danych treningowych. Użycie mniejszego odsetka danych wejściowych dla każdego drzewa decyzyjnego zwiększa szybkość narzędzia w przypadku bardzo dużych zestaw&oacute;w danych.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Liczba losowo próbkowanych zmiennych</h2></div>
+        <hr/>
+        <div>
+            <p>Określa liczbę zmiennych objaśniających używanych do utworzenia każdego drzewa decyzyjnego.
+            </p>
+            <p>Każde drzewo decyzyjne w lesie jest tworzone przy użyciu podanego losowego podzbioru zmiennych objaśniających. Zwiększenie liczby zmiennych używanych w poszczeg&oacute;lnych drzewach decyzyjnych zwiększa prawdopodobieństwo nadmiernego dopasowania modelu szczeg&oacute;lnie w sytuacji, gdy istnieje jedna lub kilka zmiennych dominujących. Częstą praktyką jest użycie pierwiastka kwadratowego z łącznej liczby zmiennych objaśniających, gdy zmienna do prognozowania jest liczbowa, lub podzielenie łącznej liczby zmiennych objaśniających przez 3, gdy zmienna do prognozowania zawiera dane jakościowe.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Wybierz sposób dopasowywania pól objaśniających</h2></div>
+        <hr/>
+        <div>
+            <p>Spos&oacute;b, w jaki odpowiednie zmienne w warstwie treningowej są dopasowywane do zmiennych w warstwie prognozowania. W tabeli będą uwzględnione tylko zmienne używane w trakcie treningu.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Liczba wykonań weryfikacji</h2></div>
+        <hr/>
+        <div>
+            <p>Określa procent (od 0 do 50) obiekt&oacute;w w warstwie treningowej, kt&oacute;re zostaną zarezerwowane jako testowy zestaw danych używanych do weryfikacji. Model zostanie wytrenowany bez tego losowego podzbioru danych, a wartości zaobserwowane w przypadku tych obiekt&oacute;w będą por&oacute;wnywane z wartością prognozowaną. Wartością domyślną jest 10 procent.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, wyświetlony zostanie komunikat z&nbsp;prośbą o&nbsp;podanie innej nazwy.
+            </p>
+            <p>Zwracane wyniki zależą od typu analizy. W przypadku treningu w celu oceny dopasowania modelu wyniki będą zawierać warstwę danych treningowych dopasowaną do modelu i informacje o wynikach oceny dopasowania modelu. W przypadku treningu i prognozowania wyniki będą zawierać warstwę danych treningowych dopasowanych do modelu, warstwę prognozowanych wynik&oacute;w oraz informacje o wynikach oceny dopasowania modelu.
+            </p>
+            <p>Używając listy rozwijanej  <b>Zapisz wynik w</b>, można określić nazwę folderu w zakładce <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

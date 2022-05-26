@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Highlight generation and rendering shaders.
+
+  These shader sources are loaded by hlShaderSnippets.ts which in turn
+  is used by HighlightRenderer to instantiate the programs needed for
+  generating and rendering the highlights.
+
+  These shaders are intended to be used with full screen quads.
+-->
+<snippets>
+  <!--
+    Vertex shader: texturedVS
+
+    Identity vertex shader that outputs an untransformed 2-D vertex
+    and passes its texture coordinates unchanged to the interpolator.
+  -->
+  <snippet name="texturedVS">
+    <![CDATA[
+    // Vertex position.
+    attribute mediump vec2 a_position;
+
+    // Texture coordinates.
+    attribute mediump vec2 a_texcoord;
+
+    // Texture coordinates to be interpolated.
+    varying mediump vec2 v_texcoord;
+
+    void main(void) {
+      // Pass the position unchanged.
+      gl_Position = vec4(a_position, 0.0, 1.0);
+
+      // Pass the texture coordinates unchanged.
+      v_texcoord = a_texcoord;
+    }
+    ]]>
+  </snippet>
+
+  <!--
+    Fragment shader: blurFS
+
+    A gaussian blur shader. It blurs the alpha channel of its input
+    according to 4 different sigma and stores the results into the
+    four channel of the target framebuffer.
+
+    It is intended to be called twice; the first time to perform an
+    horizontal blur, and a second time to perform a vertical blur.
+
+    This shader is used to turn the highlight mask into a highlight
+    map. The highlight map is an approximation of the signed distance
+    field of the mask.
+  -->
+  <snippet name="blurFS">
+    <![CDATA[
+    // Interpolated texture coordinates.
+    varying mediump vec2 v_texcoord;
+
+    // Blur direction information. There are two possible
+    // configurations that the host code can use.
+    //  - [1, 0, 1/WIDTH, 0] Used when blurring horizontally. In this
+    //    case u_direction[0] = 1 is expressed in pixel and is fed to
+    //    the gauss function to produce the value of the gaussian weight
+    //    for that pixel, while u_direction[2] = 1/WIDTH is in texel units
+    //    and is used to sample the right texel from the texture map.
+    //  - [0, 1, 0, 1/HEIGHT] Used when blurring vertically. In this
+    //    case u_direction[1] = 1 is expressed in pixel and is fed to
+    //    the gauss function to produce the value of the gaussian weight
+    //    for that pixel, while u_direction[3] = 1/HEIGHT is in texel units
+    //    and is used to sample the right texel from the texture map.
+    uniform mediump vec4 u_direction;
+
+    // Source to destination channel selection matrix.
+    uniform mediump mat4 u_channelSelector;
+
+    // The highlight map is obtained by blurring the alpha channel of the highlight
+    // mask accroding to these 4 values of the gaussian's sigma parameter.
+    uniform mediump vec4 u_sigmas;
+
+    // This is the highlight mask if we have not blurred horizontally yet, otherwise
+    // it is the horizontally blurred highlight map and blurring it one more time
+    // vertically will complete the process.
+    uniform sampler2D u_texture;
+
+    // The gaussian kernel. Note that it lacks the normalization constant, because
+    // we want to store it unnormalized in the highlight map (i.e. having a peak
+    // value of 1). Note also that we are using the SIMD (single instruction, multiple
+    // data) capabilities of the GPU to compute four different gaussian kernels, one
+    // for each sigma.
+    mediump vec4 gauss(mediump vec2 dir) {
+      return exp(-dot(dir, dir) / (2.0 * u_sigmas * u_sigmas));
+    }
+
+    mediump vec4 selectChannel(mediump vec4 sample) {
+      return u_channelSelector * sample;
+    }
+
+    // Sample the input texture and accumulated its gaussian weighted value and the
+    // total weight.
+    void accumGauss(mediump float i, inout mediump vec4 tot, inout mediump vec4 weight) {
+      // Computes the gaussian weights, one for each sigma.
+      // Note that u_direction.xy is [1, 0] when blurring horizontally and [0, 1] when blurring vertically.
+      mediump vec4 w = gauss(i * u_direction.xy);
+
+      // Accumumates the values.
+      // Note that u_direction.xy is [1/WIDTH, 0] when blurring horizontally and [0, 1/HEIGHT] when blurring vertically.
+      tot += selectChannel(texture2D(u_texture, v_texcoord + i * u_direction.zw)) * w;
+
+      // Accumulates the weights.
+      weight += w;
+    }
+
+    void main(void) {
+      // Initialize accumulated values and weights to zero.
+      mediump vec4 tot = vec4(0.0, 0.0, 0.0, 0.0);
+      mediump vec4 weight = vec4(0.0, 0.0, 0.0, 0.0);
+
+      // Accumulates enough samples. These will be taken
+      // horizontally or vertically depending on the value
+      // of u_direction.
+      accumGauss(-5.0, tot, weight);
+      accumGauss(-4.0, tot, weight);
+      accumGauss(-3.0, tot, weight);
+      accumGauss(-2.0, tot, weight);
+      accumGauss(-1.0, tot, weight);
+      accumGauss(0.0, tot, weight);
+      accumGauss(1.0, tot, weight);
+      accumGauss(2.0, tot, weight);
+      accumGauss(3.0, tot, weight);
+      accumGauss(4.0, tot, weight);
+      accumGauss(5.0, tot, weight);
+
+      // Compute blurred values.
+      mediump vec4 rgba = tot / weight;
+
+      // Return the values. Note that each channel will contain
+      // the result of a different blur operation, one for each
+      // of the four chosen sigma.
+      gl_FragColor = vec4(rgba);
+    }
+    ]]>
+  </snippet>
+
+  <!--
+    Fragment shader: highlightFS
+
+    Takes as input the highlight map, estimated the signed distance field,
+    and shades the fragments according to their estimated distance from the
+    edge of the highlighted feature.
+
+    A shade texture is used to turn distance values into colors; the shade
+    texture is basically a color gradient and is recomputed on the host
+    every time that the user alters the highlight options.
+  -->
+  <snippet name="highlightFS">
+    <![CDATA[
+    // Interpolated texture coordinates.
+    varying mediump vec2 v_texcoord;
+
+    // The highlight map. Each channel is a blurred
+    // version of the alpha channel of the highlight mask.
+    //  - Channel 0 (red) corresponds to a gaussian blur with sigma = u_sigmas[0];
+    //  - Channel 1 (green) corresponds to a gaussian blur with sigma = u_sigmas[1];
+    //  - Channel 2 (blue) corresponds to a gaussian blur with sigma = u_sigmas[2];
+    //  - Channel 3 (alpha) corresponds to a gaussian blur with sigma = u_sigmas[3];
+    // As of today, only channel 3 is used for distance estimation.
+    // But the availability of different amounts of blur leaves the
+    // door open to multi-scale approaches.
+    uniform sampler2D u_texture;
+
+    // The highlight map was obtained by blurring the alpha channel of the highlight
+    // mask accroding to these 4 values of the gaussian's sigma parameter.
+    uniform mediump vec4 u_sigmas;
+
+    // A 1-D texture used to shade the highlight.
+    uniform sampler2D u_shade;
+
+    // The 1-D shade texture is spreaded between u_minMaxDistance[0] and u_minMaxDistance[1].
+    uniform mediump vec2 u_minMaxDistance;
+
+    // Signed distance estimation.
+    mediump float estimateDistance() {
+      // Use the largest sigma and the corresponding distance value stored in the
+      // last channel of the highlight map.
+      mediump float sigma = u_sigmas[3];
+      mediump float y = texture2D(u_texture, v_texcoord)[3];
+
+      // Estimates the distance by linearization and local inversion around
+      // the inflection point. The inflection point is in x = 0.
+      const mediump float y0 = 0.5;                           // Value of the convolution at the inflection point.
+      mediump float m0 = 1.0 / (sqrt(2.0 * 3.1415) * sigma);  // Slope of the convolution at the inflection point.
+      mediump float d = (y - y0) / m0;                        // Inversion of a local linearization.
+
+      // Return the estimated distance.
+      return d;
+    }
+
+    // Shading based on estimated distance.
+    mediump vec4 shade(mediump float d) {
+      // Maps the sampled distance from the [A, D] range (see HighlightRenderer::setHighlightOptions) to [0, 1].
+      mediump float mappedDistance = (d - u_minMaxDistance.x) / (u_minMaxDistance.y - u_minMaxDistance.x);
+
+      // Force to [0, 1]; it should not be necessary because the shade texture uses the CLAMP address mode, so
+      // this should happen anyway internally to the sampler, but in practice it is needed to avoid weird
+      // banding artifacts.
+      // We don't really know if we need this or not.
+      mappedDistance = clamp(mappedDistance, 0.0, 1.0);
+
+      // Sample the 1-D shade texture on its center line (i.e. on t=0.5).
+      return texture2D(u_shade, vec2(mappedDistance, 0.5));
+    }
+
+    void main(void) {
+      // Estimate the distance.
+      mediump float d = estimateDistance();
+
+      // Shade the distance.
+      gl_FragColor = shade(d);
+    }
+    ]]>
+  </snippet>
+</snippets>

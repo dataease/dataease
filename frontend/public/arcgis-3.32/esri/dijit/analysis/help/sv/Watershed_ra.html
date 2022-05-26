@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Avrinningsområde</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Avrinningsomr&aring;de &ndash; aktivitet"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget avg&ouml;r ackumuleringsomr&aring;det ovanf&ouml;r en upps&auml;ttning celler i ett raster.
+    </p>
+    <p>Ett avrinningsomr&aring;de &auml;r ett omr&aring;de som sluttar upp&aring;t och bidrar med ett fl&ouml;de &ndash; normalt sett med vatten &ndash; till en gemensamt utlopp som samlad dr&auml;nering. Det kan ing&aring; i ett st&ouml;rre avrinningsomr&aring;de och det kan &auml;ven inneh&aring;lla mindre avrinningsomr&aring;den, s&aring; kallade delavrinningsomr&aring;den.
+    </p>
+    <p>V&auml;rdet f&ouml;r varje avrinningsomr&aring;de h&auml;mtas v&auml;rdet i k&auml;llan i indatarastret eller geoobjekth&auml;llpunktslagret. N&auml;r h&auml;llpunkten &auml;r ett rasterdataset anv&auml;nds cellv&auml;rdena som standard. N&auml;r h&auml;llpunkten &auml;r ett punktgeoobjektdataset kommer v&auml;rdena fr&aring;n det angivna f&auml;ltet.
+    </p>
+    <p>Verktyget Avrinningsomr&aring;de st&ouml;der endast ett D8-indatafl&ouml;desriktningsrasterlager.
+    </p>
+    <p>N&auml;r du anger indatah&auml;llpunktsplatser som geoobjektdata blir standardf&auml;ltet det f&ouml;rsta tillg&auml;ngliga giltiga f&auml;ltet. Om det inte finns n&aring;gra giltiga f&auml;lt anv&auml;nds f&auml;ltet ObjectID (t.ex. OID eller FID) som standard.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Välj flödesriktningslager</h2></div>
+        <hr/>
+        <div>
+            <p>Det indataraster som visar riktningen f&ouml;r fl&ouml;det ut ur varje cell.
+            </p>
+            <p>Fl&ouml;desriktningsrastret kan skapas med verktyget Fl&ouml;desriktning eller aktiviteten FlowDirection i tj&auml;nsten RasterAnalysisTools. K&ouml;r med standardfl&ouml;desriktningstypen  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Ange indatahällpunktsplatser</h2></div>
+        <hr/>
+        <div>
+            <p>Indatah&auml;llpunktsplatserna.
+            </p>
+            <p>F&ouml;r ett raster motsvarar detta celler ovanf&ouml;r vilka avrinningsomr&aring;det, eller flodomr&aring;det, kommer att fastst&auml;llas. Alla celler som inte &auml;r NoData anv&auml;nds som k&auml;llceller. F&ouml;r punktindata motsvarar detta platser ovanf&ouml;r vilka avrinningsomr&aring;det, eller flodomr&aring;det, kommer att fastst&auml;llas.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Välj hällpunktsfält</h2></div>
+        <hr/>
+        <div>
+            <p>F&auml;ltet anv&auml;nds f&ouml;r att tilldela v&auml;rden till h&auml;llpunktsplatser.
+            </p>
+            <p>Om indatah&auml;llpunktslagret &auml;r ett raster anv&auml;nds V&auml;rde. Om det &auml;r geoobjekt anv&auml;nds ett numeriskt f&auml;lt. Om f&auml;ltet inneh&aring;ller flyttalsv&auml;rden kommer de att kortas av till heltal.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Du kan ange namnet p&aring; en mapp i  <b>Mitt inneh&aring;ll</b> d&auml;r resultatet sparas med listrutan <b>Spara resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

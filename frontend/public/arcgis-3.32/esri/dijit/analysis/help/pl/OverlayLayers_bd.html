@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Nałóż warstwy</h2><p/>
+        <h2><img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" alt="Nał&oacute;ż warstwy"></h2>
+        <hr/>
+    <p>Nał&oacute;ż warstwy służy do łączenia co najmniej dw&oacute;ch warstw w jedną. Nakładanie można postrzegać jako tworzenie z&nbsp;zestawu nakładających się map pojedynczej mapy zawierającej wszystkie informacje w&nbsp;nich zawarte. Nakładanie to znacznie więcej niż połączenie ze sobą rysunk&oacute;w. Wszystkie atrybuty obiekt&oacute;w biorące udział w operacji nakładania są przenoszone do wynikowego produktu. Nakładanie służy do uzyskania odpowiedzi na jedno z najbardziej podstawowych pytań z dziedziny geografii: &bdquo;Jakie elementy leżą na obszarze czegoś?&rdquo; Przykłady:
+        <ul>
+            <li>Kt&oacute;re działki znajdują się na obszarze zalewania przez powodzie 100-letnie? (Gdy coś znajduje się &bdquo;w obrębie&rdquo; czegoś, to znaczy r&oacute;wnież, że leży na obszarze czegoś).
+                  
+            </li>
+            <li>Na jakiego rodzaju glebach prowadzi się określone rodzaje upraw?
+                 
+            </li>
+            <li>Kt&oacute;re studnie znajdują się w obrębie opuszczonych jednostek wojskowych?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jeśli zaznaczono opcję  <b>Użyj bieżącego zasięgu mapy</b>, nałożone zostaną jedynie obiekty w warstwie wejściowej i warstwie nakładanej widoczne w bieżącym zasięgu mapy. Jeśli ta opcja nie jest zaznaczona, nałożone zostaną wszystkie obiekty &mdash; zar&oacute;wno w&nbsp;warstwie wejściowej, jak i&nbsp;warstwie nakładanej &mdash; nawet jeśli znajdują się poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę wejściową</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwy punktowe, liniowe lub obiekt&oacute;w, kt&oacute;re zostaną nałożone.
+            </p>
+            <p class="OnlineOnly">Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy Living Atlas</b> lub <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Zostanie wtedy otwarta galeria zawierająca kolekcje warstw przydatnych podczas wielu analiz. 
+            </p>
+        </div>
+    </div>
+    <div id="overlayLayer">
+        <div><h2>Wybierz nakładaną warstwę</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa do nałożenia na warstwę wejściową.  
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Wybierz metodę nakładania</h2></div>
+        <hr/>
+        <div>
+            <p>Metoda nakładania określa spos&oacute;b połączenia warstwy wejściowej z warstwą nakładaną.  
+
+                <ul>
+                    <li> <b>Przetnij</b> &mdash; Uzyskana mapa będzie zawierać tylko te obiekty z&nbsp;warstwy nakładanej lub ich części pokrywające się z&nbsp;obiektami w&nbsp;warstwie wejściowej. Przy przecinaniu obiekt&oacute;w liniowych lub poligonowych możesz określić typ obiekt&oacute;w wynikowych.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Punkty z punktami
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Punkty z punktami jako dane wejściowe">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Punkty z punktami z wynikiem danych punktowych">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Linie z liniami 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Linie i linie jako dane wejściowe">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Linie i linie z wynikiem danych liniowych">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Obszary z obszarami
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Obszary i obszary jako dane wejściowe">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="Obszary i&nbsp;obszary z&nbsp;wynikiem danych poligonowych">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Usuń</b> &mdash; Uzyskana mapa będzie zawierać obiekty z&nbsp;warstwy nakładanej lub ich części niepokrywające się z&nbsp;obszarami w&nbsp;warstwie wejściowej. W&nbsp;warstwie nakładanej mogą znajdować się obiekty poligonowe, liniowe i&nbsp;punktowe.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Nazwa warstwy, kt&oacute;ra zostanie utworzona w obszarze  <b>Moje zasoby</b> i dodana do mapy. Będzie zawierać te same typy obiekt&oacute;w (obszary, linie lub punkty), kt&oacute;re znajdowały się w warstwie wejściowej i warstwie nakładanej. Nazwa domyślna jest tworzona w oparciu o metodę nakładania i&nbsp;nazwy warstwy wejściowej. Jeśli warstwa już istnieje, wyświetlony zostanie komunikat z monitem o podanie innej nazwy.
+            </p>
+            <p>Używając listy rozwijanej  <b>Zapisz wynik w</b>, można określić nazwę folderu w zakładce <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Zusammenfassen (in der Nähe)</h2><p/>
+        <h2><img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" alt="Zusammenfassen (in der N&auml;he)"></h2>
+        <hr/>
+    <p>Dieses Werkzeug sucht Features, die sich innerhalb einer angegebenen Entfernung von Features im ersten Eingabe-Layer befinden, und fasst sie zusammen. Die Entfernung kann als geradlinige Entfernung oder unter Verwendung eines ausgew&auml;hlten Reisemodus gemessen werden. Die verf&uuml;gbaren Optionen f&uuml;r den Reisemodus sind Fahrstrecke, Fahrzeit, Lkw-Strecke, Lkw-Fahrzeit, Gehstrecke oder Gehzeit. Anschlie&szlig;end werden Statistiken f&uuml;r die nahe gelegenen Features berechnet. Beispiel:
+        <ul>
+            <li>Ermitteln Sie die Gesamtbev&ouml;lkerungszahl innerhalb der Fahrtzeit von f&uuml;nf Minuten von einem vorgeschlagenen neuen Ladenstandort.
+            </li>
+            <li>Ermitteln Sie die Anzahl der Autobahnzufahrten innerhalb einer Fahrtstrecke von einem Kilometer von einem vorgeschlagenen neuen Ladenstandort, um diese als Ma&szlig; f&uuml;r die Erreichbarkeit des neuen Standorts zu verwenden.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features im Eingabe-Layer und dem zusammenfassenden Layer analysiert, die in der aktuellen Kartenausdehnung sichtbar sind.  Wenn diese Option deaktiviert ist, werden alle Features im Eingabe- und im zusammenfassenden Layer analysiert, auch wenn sie sich au&szlig;erhalb der aktuellen Ausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumNearbyLayer">
+        <div><h2>Wählen Sie den Layer aus, von dem aus Entfernungen zu Features in dem Layer gemessen werden, der zusammengefasst werden soll</h2></div>
+        <hr/>
+        <div>
+            <p>Der Punkt-, Linien- oder Fl&auml;chen-Layer, der f&uuml;r die Angabe der Startpositionen f&uuml;r die Zusammenfassung nahe gelegener Features verwendet wird.
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+            <p>Das Werkzeug unterst&uuml;tzt bis zu 1.000&nbsp;Features in diesem Layer. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Einen Layer für die Zusammenfassung auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Features in diesem Layer, die sich innerhalb der angegebenen Entfernung zu Features im oben genannten Layer befinden, werden zusammengefasst. 
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Nächstgelegene Features zusammenfassen mithilfe von</h2></div>
+        <hr/>
+        <div>
+            <p> Sie k&ouml;nnen definieren, welche Art von Entfernungsmessung verwendet werden soll: eine geradlinige Entfernung oder ein ausgew&auml;hlter Reisemodus. Reisemodi werden nur dann aktiviert, wenn der erste Eingabe-Layer (der Layer, von dem aus Entfernungen gemessen werden) Punkte enth&auml;lt.  Die verf&uuml;gbaren Reisemodi werden vom Administrator Ihrer Organisation bestimmt. Wenn Sie einen der Reisemodi verwenden, werden die Messungen entlang Stra&szlig;en und Gehwegen vorgenommen, wobei alle geltenden Verkehrsregeln wie Einbahnstra&szlig;en, unzul&auml;ssige Wendepunkte usw. ber&uuml;cksichtigt werden. Bei der <b>Fahrzeit</b>, der <b>Fahrzeit auf Landstra&szlig;en</b> und der <b>Lkw-Fahrzeit</b> wird die gew&auml;hlte Reisegeschwindigkeit ber&uuml;cksichtigt. Dabei k&ouml;nnen wahlweise Live- oder typischen Verkehrsdaten zugrunde gelegt werden. Live-Geschwindigkeiten werden durch aktuelle Sensormessungen gesammelt und typische Geschwindigkeiten werden anhand von historischen Durchschnittswerten berechnet.
+            </p>
+            <p>Sie k&ouml;nnen mehrere Entfernungen eingeben. Features, die innerhalb der eingegebenen Entfernungen liegen (oder ihnen entsprechen), werden zusammengefasst.  
+            </p>
+            <p>Wenn das Kontrollk&auml;stchen  <b>Angrenzende Fl&auml;chen zur&uuml;ckgeben</b> aktiviert ist, wird als Ergebnis ein Layer mit Fl&auml;chen ausgegeben, die durch den angegebenen Entfernungsmesswert definiert sind. Der resultierende Layer enth&auml;lt alle angeforderten, zusammengefassten Informationen. Wenn Sie beispielsweise bei der Zusammenfassung nahe gelegener Punkte eine <b>Linienentfernung</b> von acht Kilometern verwenden, umfasst Ihr Ergebnis Fl&auml;chen mit einem Radius von acht Kilometern um die Eingabe-Features herum sowie alle zusammengefassten Informationen wie etwa die Anzahl der Punkte und hinzugef&uuml;gte Statistiken. Ist das Kontrollk&auml;stchen nicht aktiviert, gibt der resultierende Layer dieselben Features des ersten Eingabe-Layers inklusive einer Zusammenfassung aller angeforderten Informationen aus.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Statistiken aus dem Layer hinzufügen, der zusammengefasst werden soll</h2></div>
+        <hr/>
+        <div>
+            <p>Sie k&ouml;nnen optional Statistiken aller numerischen Attribute der nahe gelegenen Punkte berechnen. 
+            </p>
+            <p>Wenn das Kontrollk&auml;stchen  <b>Anzahl der Punkte</b> aktiviert ist, wird die Gesamtzahl der nahe gelegenen Punkte berechnet.
+  Au&szlig;erdem k&ouml;nnen Sie Statistiken f&uuml;r numerische Felder der nahe gelegenen Punkte berechnen.
+            </p>
+            <ul>
+                <li> <b>Summe</b>: Der Gesamtwert f&uuml;r das angegebene Feld.
+                </li>
+                <li> <b>Durchschnitt</b>: Der Durchschnitt bzw. Mittelwert f&uuml;r das angegebene Feld.
+                </li>
+                <li> <b>Minimum</b>: Der kleinste Wert im angegebenen Feld.
+                </li>
+                <li> <b>Maximum</b>: Der gr&ouml;&szlig;te Wert im angegebenen Feld.
+                </li>
+                <li> <b>Standard- abweichung</b>: Die Standardabweichung der Werte im angegebenen Feld.
+                </li>
+            </ul>
+            
+            <p>Wenn der entsprechende Layer keine Zahlenfelder aufweist, sind keine zus&auml;tzlichen Statistiken verf&uuml;gbar.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Statistiken aus dem Layer hinzufügen, der zusammengefasst werden soll</h2></div>
+        <hr/>
+        <div>
+            <p>Sie k&ouml;nnen optional Statistiken aller numerischen Attribute der nahe gelegenen Linien berechnen. 
+            </p>
+            <p>Wenn das Kontrollk&auml;stchen  <b>Gesamtl&auml;nge</b> aktiviert ist, wird die Gesamtl&auml;nge der nahe gelegenen Linien berechnet.  Au&szlig;erdem k&ouml;nnen Sie Statistiken f&uuml;r numerische Felder der nahe gelegenen Linien berechnen.
+            </p>
+            <ul>
+                <li> <b>Summe</b>: Der Gesamtwert f&uuml;r das angegebene Feld.
+                </li>
+                <li> <b>Durchschnitt</b>: Der Durchschnitt bzw. Mittelwert f&uuml;r das angegebene Feld.
+                </li>
+                <li> <b>Minimum</b>: Der kleinste Wert im angegebenen Feld.
+                </li>
+                <li> <b>Maximum</b>: Der gr&ouml;&szlig;te Wert im angegebenen Feld.
+                </li>
+                <li> <b>Standard- abweichung</b>: Die Standardabweichung der Werte im angegebenen Feld.
+                </li>
+            </ul>
+            
+            <p>Wenn der entsprechende Layer keine Zahlenfelder aufweist, sind keine zus&auml;tzlichen Statistiken verf&uuml;gbar.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Statistiken aus dem Layer hinzufügen, der zusammengefasst werden soll</h2></div>
+        <hr/>
+        <div>
+            <p>Sie k&ouml;nnen optional Statistiken aller numerischen Attribute der nahe gelegenen Fl&auml;chen berechnen. 
+            </p>
+            <p>Wenn das Kontrollk&auml;stchen  <b>Gesamtfl&auml;che</b> aktiviert ist, wird die Gesamtfl&auml;che der nahe gelegenen Features berechnet.  Au&szlig;erdem k&ouml;nnen Sie Statistiken f&uuml;r numerische Felder der nahe gelegenen Features berechnen.
+            </p>
+            <ul>
+                <li> <b>Summe</b>: Der Gesamtwert f&uuml;r das angegebene Feld.
+                </li>
+                <li> <b>Durchschnitt</b>: Der Durchschnitt bzw. Mittelwert f&uuml;r das angegebene Feld.
+                </li>
+                <li> <b>Minimum</b>: Der kleinste Wert im angegebenen Feld.
+                </li>
+                <li> <b>Maximum</b>: Der gr&ouml;&szlig;te Wert im angegebenen Feld.
+                </li>
+                <li> <b>Standard- abweichung</b>: Die Standardabweichung der Werte im angegebenen Feld.
+                </li>
+            </ul>
+            
+            <p>Wenn der entsprechende Layer keine Zahlenfelder aufweist, sind keine zus&auml;tzlichen Statistiken verf&uuml;gbar.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Statistiken aus dem Layer hinzufügen, der zusammengefasst werden soll</h2></div>
+        <hr/>
+        <div>
+            <p>Nachdem Sie einen Layer ausgew&auml;hlt haben, der zusammengefasst werden soll, k&ouml;nnen Sie optional Statistiken aller numerischen Attribute der nahe gelegenen Punkte, Linien oder Fl&auml;chen berechnen. 
+            </p>
+            <ul>
+                <li> <b>Summe</b>: Der Gesamtwert f&uuml;r das angegebene Feld.
+                </li>
+                <li> <b>Durchschnitt</b>: Der Durchschnitt bzw. Mittelwert f&uuml;r das angegebene Feld.
+                </li>
+                <li> <b>Minimum</b>: Der kleinste Wert im angegebenen Feld.
+                </li>
+                <li> <b>Maximum</b>: Der gr&ouml;&szlig;te Wert im angegebenen Feld.
+                </li>
+                <li> <b>Standard- abweichung</b>: Die Standardabweichung der Werte im angegebenen Feld.
+                </li>
+            </ul>
+            
+            <p>Je nach Feature-Typen, die Sie zusammenfassen, k&ouml;nnen Sie die Gesamtzahl nahe gelegener Punkte, die Gesamtl&auml;nge nahe gelegener Linien oder die Gesamtfl&auml;che nahe gelegener Fl&auml;chen-Features berechnen.
+            </p>
+            <p>Wenn der entsprechende Layer keine Zahlenfelder aufweist, sind keine zus&auml;tzlichen Statistiken verf&uuml;gbar.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Feld für die Gruppierung auswählen</h2></div>
+        <hr/>
+        <div>
+            <p> Dies ist ein Attribut der nahe gelegenen Features, mit denen Statistiken f&uuml;r jeden eindeutigen Attributwert getrennt berechnet werden k&ouml;nnen. Angenommen, der erste Eingabe-Layer (der Layer, von dem aus Entfernungen gemessen werden) enth&auml;lt freie Flurst&uuml;cke, die zum Verkauf stehen, und Ihre nahe gelegenen Features sind Geb&auml;udegrundrisse.  Eines der Attribute der Geb&auml;ude-Footprints ist <i>UseType</i>, das Werte wie &quot;RETAIL&quot;, &quot;RESIDENTIAL&quot;, &quot;MANUFACTURING&quot;, &quot;PUBLIC&quot; usw. enth&auml;lt. Um die unterschiedlichen Arten von Geb&auml;udenutzung in der N&auml;he der einzelnen unbebauten Flurst&uuml;cke zu charakterisieren, k&ouml;nnen Sie die Gesamtfl&auml;che jedes eindeutigen Typs von Geb&auml;udenutzung im Umkreis von zwei Kilometern um die unbebauten Flurst&uuml;cke berechnen. W&auml;hlen Sie dazu <i>UseType</i> als Attribut aus, nach dem gruppiert werden soll. Die Statistiken f&uuml;r jede Gruppe und die Anzahl der nahe gelegenen Features werden im Pop-up des Ergebnis-Layers angezeigt.
+            </p>    
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Minderheit, Mehrheit hinzufügen</h2></div>
+        <hr/>
+        <div>
+            <p>Dieses Kontrollk&auml;stchen ist aktiviert, wenn Sie ein Feld ausw&auml;hlen, nach dem gruppiert werden soll. Wenn Sie ermitteln m&ouml;chten, welche Attributwerte in jeder Gruppe die Minderheit (geringste Dominanz) oder die Mehrheit (h&ouml;chste Dominanz) innerhalb der Entfernung oder der angegebenen Zeit ausmachen, w&auml;hlen Sie  <b>Minderheit, Mehrheit hinzuf&uuml;gen</b> aus.   Wenn Sie die Option <b>Minderheit, Mehrheit hinzuf&uuml;gen</b> ausw&auml;hlen, werden dem Ergebnis-Layer zwei neue Felder hinzugef&uuml;gt.   Wenn Sie <b>Prozents&auml;tze hinzuf&uuml;gen</b> ausw&auml;hlen, werden dem Ergebnis-Layer zwei weitere Felder hinzugef&uuml;gt, die die Prozents&auml;tze der Minderheits- und Mehrheitsattributwerte in jeder Gruppe enthalten.
+            </p>
+            <ul>
+                <li>Wenn Sie nahe gelegene Punkte zusammenfassen, werden Minderheits- und Mehrheitswerte basierend auf der Anzahl der Punkte innerhalb der Entfernung oder der angegebenen Zeit berechnet.
+                </li>
+                <li>Wenn Sie nahe gelegene Linien zusammenfassen, werden Minderheits- und Mehrheitswerte basierend auf den L&auml;ngen der Linien innerhalb der Entfernung oder der angegebenen Zeit berechnet.  
+                </li>
+                <li>Wenn Sie nahe gelegene Gebiete zusammenfassen, werden Minderheits- und Mehrheitswerte basierend auf den Gebieten innerhalb der Entfernung oder der angegebenen Zeit berechnet.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Prozentsätze hinzufügen</h2></div>
+        <hr/>
+        <div>
+            <p>Dieses Kontrollk&auml;stchen ist aktiviert, wenn Sie ein Feld ausw&auml;hlen, nach dem gruppiert werden soll. W&auml;hlen Sie  <b>Prozents&auml;tze hinzuf&uuml;gen</b> aus, wenn Sie den Prozentsatz jedes Attributwertes innerhalb einer Gruppe ermitteln m&ouml;chten.  Der Ergebnistabelle wird ein neues Feld hinzugef&uuml;gt, das die Prozents&auml;tze jedes Attributwertes innerhalb jeder Gruppe enth&auml;lt. Wenn die Option <b>Minderheit, Mehrheit hinzuf&uuml;gen</b> ebenfalls aktiviert ist, werden dem Ergebnis-Layer zwei weitere Felder hinzugef&uuml;gt, die die Prozents&auml;tze der Minderheits- und Mehrheitsattributwerte in jeder Gruppe enthalten.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

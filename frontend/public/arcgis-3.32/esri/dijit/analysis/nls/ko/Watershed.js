@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/ko/Watershed",{inputLayerLabel:"\ud750\ub984 \ubc29\ud5a5 \ub808\uc774\uc5b4 \uc120\ud0dd",pourPointLayerLabel:"\uc720\ucd9c \ud3ec\uc778\ud2b8 \ub798\uc2a4\ud130 \ub610\ub294 \ud53c\ucc98 \ub808\uc774\uc5b4 \uc120\ud0dd",pourPointField:"\uc720\ucd9c \ud3ec\uc778\ud2b8 \ud544\ub4dc \uc120\ud0dd",resultLayerName:"\uacb0\uacfc \ub808\uc774\uc5b4 \uc774\ub984",outputLayerName:"${layername}\uc758 \uc720\uc5ed",itemDescription:"${layerName}\uc5d0 \ub300\ud574 \uc911\uc2ec \ubc0f \ubd84\uc0b0 \uc694\uc57d\uc744 \uc2e4\ud589\ud558\uc5ec \uc0dd\uc131\ub41c \ud53c\ucc98 \ub808\uc774\uc5b4\uc785\ub2c8\ub2e4. ",
+itemTags:"\ubd84\uc11d \uacb0\uacfc, \uc720\uc5ed, ${layername} ${fieldname}",itemSnippet:"\uc720\uc5ed\uc744 \ud1b5\ud574 \uc0dd\uc131\ub41c \ud53c\ucc98 \ub808\uc774\uc5b4\uc785\ub2c8\ub2e4."});

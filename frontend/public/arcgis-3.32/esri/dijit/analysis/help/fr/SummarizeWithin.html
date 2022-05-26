@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Synthétiser - A l’intérieur</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Synth&eacute;tiser - A l&rsquo;int&eacute;rieur"></h2>
+        <hr/>
+    <p>Cet outil recherche les entit&eacute;s (et parties d'entit&eacute;s) qui se trouvent au sein des limites des surfaces dans la premi&egrave;re couche en entr&eacute;e.  Par exemple&nbsp;:
+        <ul>
+            <li>En prenant une couche de limites de bassin versant et une couche de limites d'utilisation du sol par type d'utilisation du sol, calculez la superficie totale du type d'utilisation du sol pour chaque bassin versant. 
+            </li>
+            <li>En prenant une couche de parcelles dans un comt&eacute; et une couche de limites de ville, synth&eacute;tisez la valeur moyenne des parcelles vacantes au sein de chaque limite de ville.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si l'option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s de la couche en entr&eacute;e et de la couche &agrave; synth&eacute;tiser qui sont visibles au sein de l'&eacute;tendue courante de la carte seront analys&eacute;es.  Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent &agrave; la fois dans la couche en entr&eacute;e et dans la couche &agrave; synth&eacute;tiser seront analys&eacute;es, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Choisissez une couche surfacique pour synthétiser d'autres entités au sein de ses limites</h2></div>
+        <hr/>
+        <div>
+            <p>La couche surfacique qui sera utilis&eacute;e pour synth&eacute;tiser des entit&eacute;s comprises au sein de ses limites. 
+            </p>
+            <p>Vous avez le choix entre une couche surfacique que vous fournissez ou des groupes qui sont g&eacute;n&eacute;r&eacute;s lors de l&rsquo;ex&eacute;cution de l&rsquo;outil. Lors de la g&eacute;n&eacute;ration des groupes, pour  <b>Carr&eacute;</b>, le nombre et les unit&eacute;s sp&eacute;cifi&eacute;s d&eacute;terminent la hauteur et la longueur du carr&eacute;. Pour <b>Hexagon (Hexagone)</b>, le nombre et les unit&eacute;s sp&eacute;cifi&eacute;s d&eacute;terminent la distance entre les c&ocirc;t&eacute;s parall&egrave;les.
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Choisir la couche à synthétiser</h2></div>
+        <hr/>
+        <div>
+            <p>Les entit&eacute;s de cette couche qui se trouvent au sein des limites des entit&eacute;s dans la couche en entr&eacute;e ci-dessus seront synth&eacute;tis&eacute;es. 
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Ajouter des statistiques depuis la couche à synthétiser</h2></div>
+        <hr/>
+        <div>
+            <p>Vous pouvez &eacute;galement calculer des statistiques pour les attributs num&eacute;riques des points qui se trouvent au sein des limites des entit&eacute;s. 
+            </p>
+            <p>Si elle est coch&eacute;e, la case  <b>Nombre de points</b> permet de calculer le nombre total de points au sein de la limite de chaque surface.  En outre, vous pouvez calculer des statistiques pour les attributs num&eacute;riques des points qui se trouvent au sein de la limite de chaque surface.
+            </p>
+            <ul>
+                <li> <b>Somme</b>&nbsp;: la valeur totale du champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Moyenne</b>&nbsp;: la moyenne du champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Minimum</b>&nbsp;: la valeur la plus faible dans le champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Maximum</b>&nbsp;: la valeur la plus &eacute;lev&eacute;e dans le champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Ecart type</b>&nbsp;: l'&eacute;cart type des valeurs dans le champ sp&eacute;cifi&eacute;.
+                </li>
+            </ul>
+            
+            <p>Si la couche &agrave; synth&eacute;tiser ne contient aucun champ num&eacute;rique, les statistiques suppl&eacute;mentaires ne seront pas disponibles.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Ajouter des statistiques depuis</h2></div>
+        <hr/>
+        <div>
+            <p>Vous pouvez &eacute;galement calculer des statistiques pour les attributs num&eacute;riques des lignes &agrave; synth&eacute;tiser. 
+            </p>
+            <p>Si elle est coch&eacute;e, la case  <b>Longueur totale des lignes en</b> permet de calculer la longueur totale des lignes au sein de la limite de chaque surface.  En outre, vous pouvez calculer des statistiques pour les attributs num&eacute;riques des lignes qui se trouvent au sein de la limite de chaque surface.
+            </p>
+            <ul>
+                <li> <b>Somme</b>&nbsp;: la valeur totale du champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Moyenne</b>&nbsp;: la moyenne du champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Minimum</b>&nbsp;: la valeur la plus faible dans le champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Maximum</b>&nbsp;: la valeur la plus &eacute;lev&eacute;e dans le champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Ecart type</b>&nbsp;: l'&eacute;cart type des valeurs dans le champ sp&eacute;cifi&eacute;.
+                </li>
+            </ul>
+            
+            <p>Si la couche &agrave; synth&eacute;tiser ne contient aucun champ num&eacute;rique, les statistiques suppl&eacute;mentaires ne seront pas disponibles.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Ajouter des statistiques depuis</h2></div>
+        <hr/>
+        <div>
+            <p>Vous pouvez &eacute;galement calculer des statistiques pour les attributs num&eacute;riques des surfaces &agrave; synth&eacute;tiser. 
+            </p>
+            <p>Si elle est coch&eacute;e, la case  <b>Surface totale avec</b> permet de calculer la surface totale des entit&eacute;s qui se trouvent au sein de la limite de chaque surface de la premi&egrave;re couche en entr&eacute;e.  En outre, vous pouvez calculer des statistiques pour les attributs num&eacute;riques des entit&eacute;s qui se trouvent au sein de la limite de chaque surface.
+            </p>
+            <ul>
+                <li> <b>Somme</b>&nbsp;: la valeur totale du champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Moyenne</b>&nbsp;: la moyenne du champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Minimum</b>&nbsp;: la valeur la plus faible dans le champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Maximum</b>&nbsp;: la valeur la plus &eacute;lev&eacute;e dans le champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Ecart type</b>&nbsp;: l'&eacute;cart type des valeurs dans le champ sp&eacute;cifi&eacute;.
+                </li>
+            </ul>
+            
+            <p>Si la couche &agrave; synth&eacute;tiser ne contient aucun champ num&eacute;rique, les statistiques suppl&eacute;mentaires ne seront pas disponibles.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Ajouter des statistiques depuis</h2></div>
+        <hr/>
+        <div>
+            <p>Une fois la couche &agrave; synth&eacute;tiser choisie, vous pouvez &eacute;galement calculer des statistiques pour les attributs num&eacute;riques des points, lignes ou zones au sein de la couche surfacique en entr&eacute;e. 
+            </p>
+            <ul>
+                <li> <b>Somme</b> : la valeur totale du champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Moyenne</b> : la moyenne du champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Minimum</b> : la valeur la plus faible dans le champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Maximum</b> : la valeur la plus &eacute;lev&eacute;e dans le champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Ecart type</b>&nbsp;: l'&eacute;cart type des valeurs dans le champ sp&eacute;cifi&eacute;.
+                </li>
+            </ul>
+            
+            <p>Selon les types d'entit&eacute;s que vous synth&eacute;tisez, vous pouvez calculer le nombre total de points, la longueur totale des lignes ou la surface totale.
+            </p>
+            <p>Si la couche &agrave; synth&eacute;tiser ne contient aucun champ num&eacute;rique, les statistiques suppl&eacute;mentaires ne seront pas disponibles.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Choisir le champ de regroupement</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit d'un attribut des entit&eacute;s &agrave;  <b>synth&eacute;tiser</b> qui permet de calculer les statistiques s&eacute;par&eacute;ment pour chaque valeur attributaire unique. Supposons par exemple que la premi&egrave;re couche en entr&eacute;e contiennent les limites de ville et que les entit&eacute;s &agrave; synth&eacute;tiser soient des parcelles.  L&rsquo;un des attributs des parcelles est <i>Status</i>. Il contient deux valeurs&nbsp;: VACANT et OCCUPIED. Pour calculer la surface totale des parcelles vacantes et occup&eacute;es au sein des limites des villes, utilisez <i>Status</i> comme groupe par attribut. Les statistiques de chaque groupe, ainsi que le nombre total d'entit&eacute;s au sein de chaque limite de zone, appara&icirc;tront dans la fen&ecirc;tre contextuelle de la couche de r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Ajouter une minorité, majorité</h2></div>
+        <hr/>
+        <div>
+            <p>Cette case &agrave; cocher est activ&eacute;e lorsque vous s&eacute;lectionnez un champ de regroupement. Si vous souhaitez savoir quelles valeurs attributaires au sein de chaque groupe sont minoritaires (les moins dominantes) ou majoritaires (les plus dominantes), dans chaque limite de la premi&egrave;re couche en entr&eacute;e, s&eacute;lectionnez  <b>Ajouter la minorit&eacute; et la majorit&eacute;</b>.   Lorsque vous s&eacute;lectionnez <b>Ajouter la minorit&eacute; et la majorit&eacute;</b>, deux nouveaux champs sont ajout&eacute;s &agrave; votre couche de r&eacute;sultat.   Si vous s&eacute;lectionnez &eacute;galement <b>Ajouter des pourcentages</b>, deux champs suppl&eacute;mentaires sont ajout&eacute;s &agrave; la couche de r&eacute;sultat, contenant les pourcentages des valeurs attributaires minoritaires et majoritaires au sein de chaque groupe.
+            </p>
+            <ul>
+                <li>Si vous agr&eacute;gez les points, les valeurs minoritaires et majoritaires sont calcul&eacute;es en fonction du nombre de points au sein de chaque zone adjacente dans la couche surfacique en entr&eacute;e.  
+                </li>
+                <li>Si vous agr&eacute;gez les lignes, les valeurs minoritaires et majoritaires sont calcul&eacute;es en fonction de la longueur des lignes au sein de chaque zone adjacente dans la couche surfacique en entr&eacute;e.  
+                </li>
+                <li>Si vous agr&eacute;gez les surfaces, les valeurs minoritaires et majoritaires sont calcul&eacute;es en fonction des surfaces au sein de chaque zone adjacente dans la couche surfacique en entr&eacute;e.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Ajouter des pourcentages</h2></div>
+        <hr/>
+        <div>
+            <p>Cette case &agrave; cocher est activ&eacute;e lorsque vous s&eacute;lectionnez un champ de regroupement. S&eacute;lectionnez  <b>Add percentages (Ajouter des pourcentages)</b> si vous souhaitez conna&icirc;tre le pourcentage de chaque valeur attributaire au sein de chaque groupe. Un nouveau champ est ajout&eacute; &agrave; la table de r&eacute;sultat&nbsp;; il contient les pourcentages de chaque valeur attributaire au sein de chaque groupe. Si l&rsquo;option <b>Add minority, majority (Ajouter une minorit&eacute;, majorit&eacute;)</b> est &eacute;galement s&eacute;lectionn&eacute;e, deux champs suppl&eacute;mentaires sont ajout&eacute;s &agrave; la couche de r&eacute;sultats&nbsp;; ils contiennent les pourcentages des valeurs attributaires minoritaires et majoritaires au sein de chaque groupe.
+            </p>
+        </div>
+    </div>
+    <div id="ResultLayerName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

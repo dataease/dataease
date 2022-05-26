@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>创建缓冲区</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="创建缓冲区"></h2>
+        <hr/>
+    <p>缓冲区是一个以点、线或面要素为起点，并覆盖给定距离的区域。
+    </p>
+    <p>缓冲区通常用于创建一些区域，以便使用如&ldquo;叠加图层&rdquo;等工具进行深入分析。例如，假设问题是&ldquo;在距学校一英里的范围内存在哪些建筑物？&rdquo;，则通过在学校周围创建一个一英里的缓冲区，并使用叠加图层工具将缓冲区与包含建筑物覆盖区的图层相叠加即可找到答案。最终结果是一个包含学校一英里范围内建筑物的图层。
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则仅对当前地图范围中可见的要素创建缓冲区。如果未选中，则将对输入图层中的所有要素创建缓冲区，包括超出当前地图范围的要素。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>选择包含待缓冲要素的图层</h2></div>
+        <hr/>
+        <div>
+            <p>要进行缓冲的点要素、线要素或面要素。
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>输入缓冲距离</h2></div>
+        <hr/>
+        <div>
+            <p>可以输入一个距离值或使用空格分开的多个距离值。通过单击 <b>字段</b>，也可以指定包含距离值的输入图层属性。
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>选项</h2></div>
+        <hr/>
+        <div>
+            <p>选择重叠缓冲区的处理方式。对于某个缓冲区上方的另一缓冲区，公共区域可保持不变（重叠）或进行组合（融合）。使用 <b>融合</b>时，将所有缓冲区融合为单个多部分要素，从而移除所有重叠。
+            </p>  
+            <p> 当使用多个距离时，可选择以何种方式来表现相对于上一缓冲距离的距离；例如，如果距离是 10 和 14：
+                <ul>
+                    <li>选择 <b>圆环</b>产生的结果是 0 到 10 和 10 到 14 两个缓冲区。
+                    </li>
+                    <li>选择 <b>圆盘</b>产生的结果是 0 到 10 和 0 到 14 两个缓冲区。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>选项</h2></div>
+        <hr/>
+        <div>
+            <p>选择重叠缓冲区的处理方式。对于某个缓冲区上方的另一缓冲区，公共区域可保持不变（重叠）或进行组合（融合）。使用 <b>融合</b>时，将所有缓冲区融合为单个多部分要素，从而移除所有重叠。
+            </p>
+            <p>在区域要素周围创建一个缓冲区（输入一个距离）时，可选择在结果缓冲区内是否包含进行缓冲的要素。
+            </p>
+            <p>当使用多个距离时，可选择以何种方式来表现相对于上一缓冲距离的距离；例如，如果距离是 10 和 14：
+                <ul>
+                    <li>选择 <b>圆环</b>产生的结果是 0 到 10 和 10 到 14 两个缓冲区。
+                    </li>
+                    <li>选择 <b>圆盘</b>产生的结果是 0 到 10 和 0 到 14 两个缓冲区。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>选项</h2></div>
+        <hr/>
+        <div>
+            <p>选择重叠缓冲区的处理方式。对于某个缓冲区上方的另一缓冲区，公共区域可保持不变（重叠）或进行组合（融合）。使用 <b>融合</b>时，将所有缓冲区融合为单个多部分要素，从而移除所有重叠。
+            </p>
+            <p>在线周围创建单个缓冲区（输入一个距离）时，可选择要对线的哪一侧进行缓冲。通常，同时选择两侧。左侧和右侧的确定犹如从该线的第一个 x,y 坐标（起点坐标）步行至最后一个 x,y 坐标（终点坐标）。选择左侧或右侧通常意味着您知道线要素在特定的方向进行创建和存储（例如，河流网络的上游或下游）。在线的两端，缓冲区可以是圆的（圆形）或者直的（平面）。
+            </p>
+            <p>当创建多个缓冲区（多个距离）时，可选择以何种方式来表现相对于上一缓冲距离的距离；例如，如果距离是 10 和 14：
+                <ul>
+                    <li>选择 <b>圆环</b>产生的结果是 0 到 10 和 10 到 14 两个缓冲区。
+                    </li>
+                    <li>选择 <b>圆盘</b>产生的结果是 0 到 10 和 0 到 14 两个缓冲区。
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>选项</h2></div>
+        <hr/>
+        <div>
+            <p>选择要缓冲的图层后，您可以选择重叠缓冲区的处理方式。对于某个缓冲区上方的另一缓冲区，公共区域可保持不变（重叠）或进行组合（融合）。使用 <b>融合</b>时，将所有缓冲区融合为单个多部分要素，从而移除所有重叠。此外，您可以指定多个距离的显示方式。对于包含线要素的图层，您可以选择要对线的哪一侧进行缓冲。对于包含面要素的图层，可选择在结果缓冲区内是否包含进行缓冲的要素。
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该图层名称已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉菜单，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

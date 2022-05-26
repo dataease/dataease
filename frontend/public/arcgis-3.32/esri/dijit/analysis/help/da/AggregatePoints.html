@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Aggregér punkter</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Aggreg&eacute;r punkter"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j arbejder med et lag af punktobjekter og et lag med omr&aring;deobjekter. Det bestemmer f&oslash;rst, hvilke punkter der ligger inden for hvert omr&aring;de. N&aring;r denne punkt-i-omr&aring;de spatiale relation er bestemt, beregnes statistik om alle punkter i omr&aring;det og denne statistik tildeles omr&aring;det. Den mest grundl&aelig;ggende statistik er opt&aelig;llingen af punkterne i omr&aring;det, men du kan ogs&aring; generere anden statistik. 
+    </p>
+    <p>Forestil dig for eksempel, at du har punktobjekter med placeringer af caf&eacute;er og omr&aring;deobjekter med regioner, og du &oslash;nsker at skabe en oversigt over det samlede salg i caf&eacute;er pr. region. Hvis caf&eacute;erne f.eks. har en  <i>TOTAL_SALES</i>-attribut, s&aring; kan du beregne summen af alt <i>TOTAL_SALES</i> i hver region eller det minimale eller maksimale <i>TOTAL_SALES</i> i hver region, eller du kan beregne standardafvigelsen for alt salg i hver region.
+    </p>
+    <p>Hvis feltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, er det kun objekterne i det inputpunktlag og omr&aring;delag, der er synligt inden for den aktuelle kortudstr&aelig;kning, der analyseres. Hvis feltet ikke er markeret, analyseres alle objekter i b&aring;de inputpunktlaget og omr&aring;delaget, ogs&aring; selvom de befinder sig uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Vælg det lag, der indeholder punkter, som skal aggregeres til områder</h2></div>
+        <hr/>
+        <div>
+            <p>Det punktlag, der skal aggregeres til omr&aring;der.
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Vælg det lag, der indeholder aggregeringsområder</h2></div>
+        <hr/>
+        <div>
+            <p>Det omr&aring;delag, som punkterne bliver aggregeret til. Alle de punkter, der falder inden for omr&aring;degr&aelig;nserne i dette lag, vil blive talt med og vil muligvis indg&aring; i oversigten ud fra dine statistikvalg.  
+            </p>
+            <p>Du kan v&aelig;lge mellem et omr&aring;delag, som du opretter, eller beholdere, der genereres, n&aring;r v&aelig;rkt&oslash;jet k&oslash;rer.   N&aring;r der genereres beholdere, er det for  <b>Kvadratiske</b> beholdere antallet af angivne enheder, der bestemmer h&oslash;jden og l&aelig;ngden p&aring; kvadratet. For <b>Sekskantede</b> beholdere er det antallet af angivne enheder, der bestemmer afstanden mellem de parallelle sider.
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Bevar områder uden punkter.</h2></div>
+        <hr/>
+        <div>
+            <p>Det bestemmes, om omr&aring;der, der ikke indeholder nogen punkter, vil blive vist i resultatlaget. Hvis feltet ikke er markeret, vil omr&aring;der uden punkter ikke blive vist i resultatlaget. Hvis feltet er markeret, vil omr&aring;der uden punkter bliver vist i resultatlaget.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Tilføj statistik</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan beregne statistik om attributter for tilf&oslash;jede punktlag s&aring;som sum, middelv&aelig;rdi, minimumsv&aelig;rdi, makimumsv&aelig;rdi og standardafvigelse. Resultatlaget vil indeholde en ny attribut for hver beregnet statistik. Du kan tilf&oslash;je et vilk&aring;rligt antal statistikker ved at v&aelig;lge attributter og statistikker (der vises en ny rulleliste).
+ 
+            </p>
+            <p>Hvis det lag, der skal summeres, ikke har nogen numeriske felter, vil der ikke v&aelig;re adgang til yderligere statistik.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Vælg felt at gruppere efter</h2></div>
+        <hr/>
+        <div>
+            <p> Du kan oprette statistiske grupper ved hj&aelig;lp af en attribut i inputpunktlaget. Hvis du f.eks. aggregerer kriminalitet i forhold til lokalomr&aring;degr&aelig;nser, kan du have en attribut med navnet <i>Crime_type</i> med fem forskellige kriminalitetstyper. Hver entydig kriminalitetstype danner en gruppe, og den statistik, du v&aelig;lger, vil blive beregnet for hver entydig v&aelig;rdi for <i>Crime_type</i>. Statistikkerne for de enkelte grupper tillige med antallet af punkter vises i pop-up'en med resultatlaget. N&aring;r du v&aelig;lger en grupperingsattribut, fremkommer der to resultater: resultatlaget og en resultattabel med statistik for hver entydig gruppe.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Tilføj minoritet, majoritet</h2></div>
+        <hr/>
+        <div>
+            <p>Dette afkrydsningsfelt er markeret, n&aring;r du v&aelig;lger et felt, der skal grupperes efter. V&aelig;lg   <b>Tilf&oslash;j minoritet/majoritet</b>, hvis du vil vide, hvilke attributv&aelig;rdier i hver gruppe, der er minoriteten (mindst dominante) eller majoriteten (mest dominante), inden for hver gr&aelig;nse. Der f&oslash;jes to nye felter til dit resultatlag, n&aring;r du v&aelig;lger <b>Tilf&oslash;j minoritet/majoritet</b>. Hvis du ogs&aring; v&aelig;lger <b>Tilf&oslash;j procentdele</b>, f&oslash;jes der yderligere to felter til resultatlaget, som indeholder procentdele af attributv&aelig;rdierne for minoritet og majoritet inden for de enkelte grupper.
+            </p>
+            <p>Hvis du f.eks. er byplanl&aelig;gger og &oslash;nsker at vide, hvilke tre arter der er f&aelig;rrest af, og hvilke der er flest af i alle byens parker, kan du aggregere dine data om tr&aelig;er med dine parkomr&aring;der og markere denne indstilling.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Tilføj procentdele</h2></div>
+        <hr/>
+        <div>
+            <p>Dette afkrydsningsfelt er markeret, n&aring;r du v&aelig;lger et felt, der skal grupperes efter. V&aelig;lg  <b>Tilf&oslash;j procentdele</b>, hvis du vil finde procentdelen af hver attributv&aelig;rdi i hver gruppe. Der f&oslash;jes et nyt felt til resultattabellen, der indeholder procentdelen af hver attributv&aelig;rdi inden for hver gruppe. Hvis du ogs&aring; v&aelig;lger <b>Tilf&oslash;j minoritet/majoritet</b>, f&oslash;jes der yderligere to felter til resultatlaget, som indeholder procentdele af attributv&aelig;rdierne for minoritet og majoritet inden for de enkelte grupper.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

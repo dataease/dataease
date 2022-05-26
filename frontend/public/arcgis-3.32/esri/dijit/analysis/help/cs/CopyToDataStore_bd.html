@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Kopírovat do datového úložiště (Copy to Data Store)</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="Kop&iacute;rovat do datov&eacute;ho &uacute;loži&scaron;tě"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj vezme vstupn&iacute; vrstvu a zkop&iacute;ruje ji do datov&eacute;ho &uacute;loži&scaron;tě. V&yacute;sledky můžete kop&iacute;rovat do  ArcGIS Data Store (&uacute;loži&scaron;tě pro velk&aacute; relačn&iacute; nebo časoprostorov&aacute; data) a vrstva bude vytvořena na va&scaron;em port&aacute;lu nebo v&yacute;sledky můžete rozhodně kop&iacute;rovat do souboru velk&yacute;ch dat. 
+    </p>
+    <p>Např&iacute;klad můžete zkop&iacute;rovat prvky, kter&eacute; jsou uloženy ve  <code>sd&iacute;len&eacute;m souboru velk&yacute;ch dat,</code> do <code>&uacute;loži&scaron;tě relačn&iacute;ch dat</code> a určit, aby byly zkop&iacute;rov&aacute;ny pouze prvky uvnitř současn&eacute;ho rozsahu mapy. Vytvoř&iacute;te t&iacute;m hostovanou službu prvků obsahuj&iacute;c&iacute; pouze ty prvky, kter&eacute; se nach&aacute;zely v určen&eacute;m rozsahu mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Zvolit vrstvu pro kopírování</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva nebo tabulka, kter&aacute; bude zkop&iacute;rov&aacute;na. 
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>Můžete použít všechny prvky nebo provést výběr (volitelné).</h2></div>
+        <hr/>
+        <div>
+            <p>Pomoc&iacute; tlač&iacute;tka pro v&yacute;běr můžete určit um&iacute;stěn&iacute;, kter&aacute; maj&iacute; b&yacute;t zkop&iacute;rov&aacute;na.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Vyberte datové úložiště, do kterého chcete kopírovat.</h2></div>
+        <hr/>
+        <div>
+            <p>Datov&eacute; &uacute;loži&scaron;tě, do kter&eacute;ho se vrstva zkop&iacute;ruje. Tento parametr přep&iacute;&scaron;e v&yacute;běr možnosti v  <b>Prostřed&iacute; anal&yacute;zy</b>. Možnosti jsou n&aacute;sleduj&iacute;c&iacute;:
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>Časoprostorov&eacute;</b> &ndash; Toto je v&yacute;choz&iacute; hodnota.
+                            </li>
+                            <li> <b>Relačn&iacute;</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>V&yacute;stupn&iacute; &scaron;ablony sd&iacute;len&yacute;ch souborů velk&yacute;ch dat</b>
+                        <ul>
+                            <li>Seznam &scaron;ablon sd&iacute;len&yacute;ch souborů velk&yacute;ch dat dostupn&yacute;ch ve form&aacute;tu  <b>bigDataFileShareName-templateName</b>. &Scaron;ablony sd&iacute;len&yacute;ch souborů velk&yacute;ch dat mus&iacute; b&yacute;t před spu&scaron;těn&iacute;m tohoto n&aacute;stroje konfigurov&aacute;ny.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p> N&aacute;zev vytv&aacute;řen&eacute; vrstvy. Pokud zapisujete ArcGIS Data Store, va&scaron;e v&yacute;sledky budou uloženy v  <b>Můj obsah</b> a přid&aacute;ny na mapu. Pokud zapisujete sd&iacute;len&yacute; soubor velk&yacute;ch dat, va&scaron;e v&yacute;sledky budou uloženy ve sd&iacute;len&eacute;m souboru velk&yacute;ch dat a přid&aacute;ny do jejich manifestu.  Nebudou přid&aacute;ny na mapu. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, n&aacute;stroj selže.
+            </p>
+            <p>Když zapisujete do   ArcGIS Data Store  (datov&eacute; &uacute;loži&scaron;tě relačn&iacute;ch a časoprostorov&yacute;ch velk&yacute;ch dat) pomoc&iacute; rozbalovac&iacute;ho seznamu  <b>Uložit v&yacute;sledek do</b> , můžete zadat n&aacute;zev složky v <b>Můj obsah</b>, kde budou v&yacute;sledky uloženy.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

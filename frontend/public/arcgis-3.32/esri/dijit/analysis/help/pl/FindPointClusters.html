@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Znajdź klastry punktów</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Znajdź klastry punkt&oacute;w"></h2>
+        <hr/>
+    <p>To narzędzie znajduje klastry obiekt&oacute;w punktowych wśr&oacute;d otaczającego szumu w oparciu o ich rozkład przestrzenny.
+    </p>
+    <p>Jeśli opcja  <b>Użyj bieżącego zasięgu mapy</b> jest zaznaczona, analizowane będą tylko obiekty w wejściowej warstwie punktowej widoczne w bieżącym zasięgu mapy. Jeśli opcja ta nie jest zaznaczona, przeanalizowane zostaną wszystkie obiekty w wejściowej warstwie punktowej, nawet jeśli znajdują się one poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Wybierz warstwę, dla której mają zostać znalezione klastry</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa punktowa, w kt&oacute;rej będą wyszukiwane klastry. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimalna liczba punktów, które są uznawane za klaster</h2></div>
+        <hr/>
+        <div>
+            <p>Minimalna liczba obiekt&oacute;w, kt&oacute;re są uznawane za klaster. Każdy klaster o mniejszej niż zdefiniowana liczbie obiekt&oacute;w zostanie uznany za szum. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Ogranicz zakres wyszukiwania do (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Maksymalna odległość pozwalająca uznać obiekty za część tego samego klastra. Jeśli dla tej opcji nie podano wartości, w narzędziu zostanie uruchomiony proces HDBSCAN, kt&oacute;ry rozdziela klastry o r&oacute;żnej gęstości od rzadszego szumu przy użyciu r&oacute;żnych odległości. Jeśli wartość jest podana, w narzędziu zostanie uruchomiony proces DBSCAN, kt&oacute;ry rozdziela gęste klastry od rzadszego szumu przy użyciu podanej odległości.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli ta nazwa warstwy już istnieje, wyświetlona zostanie prośba o podanie innej nazwy.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

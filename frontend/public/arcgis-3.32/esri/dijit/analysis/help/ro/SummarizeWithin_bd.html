@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rezumat în interior</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Rezumat &icirc;n interior"></h2>
+        <hr/>
+    <p>Acest instrument găseşte obiecte spaţiale (şi porţiuni de obiecte spaţiale) care se &icirc;nscriu &icirc;n graniţele suprafeţelor din primul strat tematic de intrare.  
+        <ul>
+            <li>Av&acirc;nd un strat tematic de graniţe de cumpănă de ape şi un strat tematic cu graniţe de utilizare a terenurilor, calculaţi suprafaţa totală pentru fiecare tip de utilizare a terenului pentru fiecare cumpănă de ape. 
+            </li>
+            <li>Av&acirc;nd un strat tematic de parcele dintr-un judeţ şi un strat tematic de limite ale localităţilor, rezumaţi valoarea medie a parcelelor libere dintre graniţele fiecărei localităţi.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă hartă</b>, vor fi analizate numai acele obiecte spaţiale din stratul tematic de intrare şi din stratul tematic de sumarizat care sunt vizibile din extinderea curentă a hărţii.  Dacă nu se bifează, vor fi analizate toate obiectele spaţiale at&acirc;t din stratul tematic de intrare, c&acirc;t şi din stratul tematic de analizat, chiar dacă acestea se află &icirc;n afara extinderii curente a hărţii.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Alegeţi stratul tematic de suprafeţe care va rezuma celelalte obiecte spaţiale între graniţele sale</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic de suprafeţe care va fi utilizat pentru a rezuma obiectele spaţiale care se &icirc;ncadrează &icirc;ntre graniţele sale. Puteţi alege să rezumaţi &icirc;ntr-un strat tematic de poligoane pe care &icirc;l furnizaţi sau &icirc;n containere pătrate sau hexagonale care sunt generate atunci c&acirc;nd rulează instrumentul.  Atunci c&acirc;nd sunt generate coşuri, pentru  <b>Pătrat</b>, numărul şi unităţile specificate determină &icirc;nălţimea şi lungimea pătratului. Pentru <b>Hexagon</b>, numărul şi unităţile specificate determină distanţa dintre laturi paralele.
+            </p>
+            <p>Analiza cu coşurile  <b>Pătrat</b> sau <b>Hexagon</b> necesită un sistem de coordonate proiectat. Puteţi seta <b>Sistemul de coordonate de procesare</b> din <b>Medii de analiză</b>. Dacă sistemul dvs. de coordonate de procesare nu este setat la un sistem de coordonate proiectat, vi se va indica să &icirc;l setaţi atunci c&acirc;nd <b>Executați Analiza</b> .
+            </p>
+            <p>&Icirc;n afară de a alege un strat tematic din harta dvs., puteţi selecta opţiunile  <b>Alegere strat tematic de analiză</b> &icirc;n partea inferioară a listei verticale pentru a răsfoi conţinutul pentru stratul tematic sau setul de date pentru partajarea de fişiere big data.
+            </p>
+        </div>
+    </div>
+    <div id="summaryLayer">
+        <div><h2>Alegere strat tematic pentru rezumat</h2></div>
+        <hr/>
+        <div>
+            <p>Obiectele spaţiale din acest strat tematic, care se &icirc;ncadrează &icirc;n graniţele obiectelor spaţiale din stratul tematic de intrare sau ale containerelor specificate mai sus vor fi rezumate. 
+            </p>
+            <p>&Icirc;n afară de a alege un strat tematic din harta dvs., puteţi selecta opţiunile  <b>Alegere strat tematic de analiză</b> &icirc;n partea inferioară a listei verticale pentru a răsfoi conţinutul pentru stratul tematic sau setul de date pentru partajarea de fişiere big data.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Selectaţi o distanţă pentru generarea de containere şi în care se realizează agregarea</h2></div>
+        <hr/>
+        <div>
+            <p>Distanţa folosită pentru a genera containere.  
+            </p>
+            <p>Trebuie setată  <b>Dimensiunea coșului</b> pentru coșuri sau <b>Stratul tematic al zonei</b>.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Agregare utilizând segmente temporale (opţional)</h2></div>
+        <hr/>
+        <div>
+            <p>Dacă timpul este activat &icirc;n stratul tematic de puncte de intrare şi este de tip instantaneu, puteţi analiza prin intermediul intervalelor de trepte temporare. Există trei parametri pe care &icirc;i puteţi seta atunci c&acirc;nd utilizaţi timpul:
+                <ul>
+                    <li> <b>Interval trepte temporale</b>
+                    </li>
+                    <li> <b>C&acirc;t de des se repetă treapta temporală</b>
+                    </li>
+                    <li> <b>Ora la care se aliniază treptele temporale</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>De exemplu, dacă aveți date care reprezintă un an &icirc;n timp și doriți să le analizați cu ajutorul treptelor săptăm&acirc;nale, setați  <b>Interval trepte temporale</b> la <code>1 săpt&acirc;m&acirc;nă</code>. 
+            </p>
+            <p>De exemplu, dacă aveți date care reprezintă un an &icirc;n timpși doriți să le analizați folosindprima săptăm&acirc;nă a lunii, setați  <b>Interval trepte temporale</b> la <code>1 săptăm&acirc;nă</code>, <b>C&acirc;t de des se repetă treapta temporală</b> la <code>1 lună</code>, și <b>Momentul de aliniere treptele temporale</b> la <code>1 ianuarie, la 12:00 am</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Interval temporal în care se realizează îmbinarea</h2></div>
+        <hr/>
+        <div>
+            <p>Interval de timp folosit la generarea treptelor temporale.  <b>Intervalul de trepte temporale</b> poate fi folosit individual sau cu <b>C&acirc;t de des se repetă treptele temporale</b> sau <b>Timpul de aliniere a treptelor temporale la</b> parametru.
+            </p>
+            <p>De exemplu, dacă doriți să creați trepte temporale care  au loc &icirc;n fiecare luni de la 09:00 p&acirc;nă la 10:00, setați  <b>Interval de trepte temporale</b> la <code>1 oră</code>, <b>C&acirc;t de des se repetă treapta temporală</b> la <code>1 săptăm&acirc;nă</code>, și <b>Timpul de aliniere a treptelor temporale</b> la <code>9:00:00 &icirc;ntr-o zi de luni</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Treaptă temporală în care se va realiza îmbinarea</h2></div>
+        <hr/>
+        <div>
+            <p> Treapta utilizată pentru calculul unui segment de timp. <b>C&acirc;t de des se repetă treapta temporală</b> poate fi utilizat individual, cu <b>Interval treaptă temporală</b>, cu <b>Timp de Referință</b>, sau at&acirc;t cu <b>Interval trepte temporale</b> c&acirc;t și cu <b>Timpul de aliniere a treptelor temporale la</b>.
+            </p>
+            <p> De exemplu, dacă doriți să creați trepte temporale care au loc &icirc;n fiecare luni de la 09:00 p&acirc;nă la 10:00, setați <b>Interval de trepte temporale</b> la <code>1 oră</code>, <b>C&acirc;t de des se repetă treapta temporală</b> la <code>1 săptăm&acirc;nă</code>, și <b>Timpul de aliniere a treptelor temporale la</b> la <code>9:00:00 a.m. &icirc;ntr-o zi de luni</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Ora de referinţă utilizată pentru alinierea segmentelor temporale</h2></div>
+        <hr/>
+        <div>
+            <p>Data şi ora utilizate pentru alinierea segmentelor temporale. Treptele temporale vor &icirc;ncepe la și vor continua &icirc;napoi de la această oră. Dacă nu este selectat nicio oră de referinţă, treptele temporare se vor alinia la 1 ianuarie 1970. 
+            </p>
+            <p> De exemplu, dacă doriți să creați trepte temporale care au loc &icirc;n fiecare luni de la 09:00 p&acirc;nă la 10:00, setați <b>Interval de trepte temporale</b> la <code>1 oră</code>, <b>C&acirc;t de des se repetă treapta temporală</b> la <code>1 săptăm&acirc;nă</code>, și <b>Timpul de aliniere a treptelor temporale la</b> la <code>9:00:00 a.m. &icirc;ntr-o zi de luni</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Adăugare statistici (opţional)</h2></div>
+        <hr/>
+        <div>
+            <p> Puteţi calcula statistici despre obiectele spaţiale rezumate. Puteți calcula următoarele pe c&acirc;mpuri numerice:
+                <ul>
+                    <li>Numărare&mdash;Calculează numărul de valori care nu sunt nule. Poate fi utilizat &icirc;n c&acirc;mpuri numerice sau șiruri. Calculul [nul, 0, 2] este egal cu 2.
+                    </li>
+                    <li>Sumă - Suma valorilor numerice dintr-un c&acirc;mp. Suma [nul, 0, 3] este egală cu 3.
+                    </li>
+                    <li>Media&mdash;Media valorilor numerice. Media dintre [0, 2, nul] este 1.
+                    </li>
+                    <li>Min&mdash;Valoarea minimă a unui c&acirc;mp numeric. Minimul dintre [0, 2, nul] este 0. 
+                    </li>
+                    <li>Max&mdash;Valoarea maximă a unui c&acirc;mp numeric. Valoarea maximă a [0, 2, nul] este 2.
+                    </li>
+                    <li>Interval&mdash;Intervalul unui c&acirc;mp numeric. Acesta este calculat ca valoare minimă scăzută din valoare maximă. Intervalul [nul, 0, 1] este 1. Intervalul [nul, 0, 4] este 0.
+                    </li>
+                    <li>Variaţia&mdash;Variaţia unui c&acirc;mp numeric pe o pistă. Variaţia [1] este nulă. Variația [nul, 1,0,1,1] este de 0,25.
+                    </li>
+                    <li>Deviaţia standard&mdash;Deviaţia standard a unui c&acirc;mp numeric. Deviaţia standard [1] este nulă. Deviaţia standard [nul, 1,0,1,1] este 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Puteți calcula următoarele pe c&acirc;mpuri de șiruri:
+                <ul>
+                    <li>Calcul&mdash;Numărul şirurilor care nu sunt nule.
+                    </li>
+                    <li>Oricare - Această statistică este un exemplu aleatoriu al unei valori de tip şir &icirc;n c&acirc;mpul specificat.
+                    </li>
+                </ul>
+                Toate statisticile sunt calculate pentru valori care nu sunt nule. Stratul tematic rezultat va conţine un c&acirc;mp nou pentru fiecare statistică calculată. Se pot adăuga oric&acirc;te statistici aleg&acirc;nd un atribut şi o statistică. 
+            </p>
+            <p>Pe l&acirc;ngă aceste statistici, pentru toate c&acirc;mpurile numerice vor fi calculate statistici proporţionale:
+                <ul>
+                    <li>Număr - Numărul fiecărui c&acirc;mp multiplicat cu proporţia stratului tematic de rezumat din poligoane. 
+                    </li>
+                    <li>Sumă - Suma valorilor ponderate din fiecare c&acirc;mp. Acolo unde se aplică ponderarea este proporţia stratului tematic de rezumat din poligoane.
+                    </li>
+                    <li>Medie - Media ponderată a valorilor din fiecare c&acirc;mp. Acolo unde se aplică ponderarea este proporţia stratului tematic de rezumat din poligoane.
+                    </li>
+                    <li>Min - Minimul valorilor ponderate din fiecare c&acirc;mp. Acolo unde se aplică ponderarea este proporţia stratului tematic de rezumat din poligoane.
+                    </li>
+                    <li>Max - Maximul valorilor ponderate din fiecare c&acirc;mp. Acolo unde se aplică ponderarea este proporţia stratului tematic de rezumat din poligoane.
+                    </li>
+                    <li>Interval - Diferenţa dintre valorile ponderate maxime şi minime.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>&Icirc;n funcţie de tipurile de obiecte spaţiale pe care le sumarizaţi, vor fi calculate numărul total de puncte din apropiere, lungimile totale ale liniilor sau suprafaţa totală.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Alegere câmp după care să se facă gruparea</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este un atribut al obiectelor spaţiale rezultate după  <b>Sumarizare</b>, pe care &icirc;l puteţi utiliza pentru a calcula statistici separate pentru fiecare valoare de atribut unică. De exemplu, să presupunem că stratul tematic de intrare conţine graniţe de oraşe, iar obiectele spaţiale rezumate sunt parcele.  Unul dintre atributele parcelelor este <i>Status</i> care conține două valori: LIBER și OCUPAT. Pentru a calcula suprafaţa totală a parcelelor libere şi ocupate din interiorul graniţelor oraşelor, utilizaţi <i>Status</i> ca grup după atribut. Statistica pentru fiecare punct &icirc;mpreună cu numărul de obiecte spaţiale din interiorul graniţelor fiecărei suprafeţe vor fi afişate &icirc;n fereastra pop-up a stratului tematic rezultat.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Adăugare minoritate, majoritate</h2></div>
+        <hr/>
+        <div>
+            <p>Această casetă de selectare este activată c&acirc;nd alegeţi un c&acirc;mp după care să efectuaţi gruparea. Dacă doriţi să aflaţi ce valori de atribute din fiecare grup reprezintă minoritatea (cele mai puţin frecvente) sau majoritatea (cele mai frecvente) din interiorul primului strat tematic de intrare, selectaţi  <b>Adăugare minoritate, majoritate</b>.   C&acirc;nd selectaţi <b>Adăugare minoritate, majoritate</b>, &icirc;n stratul tematic rezultat sunt adăugate două c&acirc;mpuri noi.   Dacă selectaţi şi opţiunea <b>Adăugare procentaje</b>, &icirc;n stratul tematic rezultat sunt adăugate &icirc;ncă două c&acirc;mpuri, conţin&acirc;nd procentajele valorilor de atribute aflate &icirc;n minoritate şi majoritate &icirc;n fiecare grup.
+            </p>
+            <ul>
+                <li>&Icirc;n cazul &icirc;n care creaţi un rezumat al punctelor, valorile aflate &icirc;n minoritate şi majoritate sunt calculate pe baza numărului de puncte din interiorul fiecărei graniţe din stratul tematic de suprafeţe de intrare.  
+                </li>
+                <li>&Icirc;n cazul &icirc;n care creaţi un rezumat al liniilor, valorile aflate &icirc;n minoritate şi majoritate sunt calculate pe baza lungimii liniilor din interiorul fiecărei graniţe din stratul tematic de suprafeţe de intrare.  
+                </li>
+                <li>&Icirc;n cazul &icirc;n care creaţi un rezumat al suprafeţelor, valorile aflate &icirc;n minoritate şi majoritate sunt calculate pe baza ariei suprafeţelor din interiorul fiecărei graniţe din stratul tematic de suprafeţe de intrare.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Adăugare procente</h2></div>
+        <hr/>
+        <div>
+            <p>Această casetă de selectare este activată c&acirc;nd alegeţi un c&acirc;mp după care să efectuaţi gruparea. Selectaţi  <b>Adăugare procentaje</b> dacă doriţi să aflaţi procentajul fiecărei valori de atribut din fiecare grup. &Icirc;n tabelul de rezultate este adăugat un nou c&acirc;mp, care conţine procentajele fiecărei valori de atribut din fiecare grup. Dacă este bifată şi opţiunea <b>Adăugare minoritate, majoritate</b>, &icirc;n stratul tematic rezultat sunt adăugate &icirc;ncă două c&acirc;mpuri cu procentajele valorilor de atribute aflate &icirc;n minoritate şi majoritate &icirc;n fiecare grup.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Selectare depozit de date</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultatele GeoAnalytics sunt stocate &icirc;ntr-un depozit de date și sunt expuse ca strat tematic de obiecte spaţiale &icirc;n  Portal for ArcGIS. &Icirc;n cele mai multe situaţii, rezultatele trebuie stocate &icirc;n depozitul de date spaţio-temporar, &icirc;n mod implicit. &Icirc;n unele cazuri, salvarea rezultatelor &icirc;n depozitul depozit de date relaţionale este o opțiune bună. Mai jos sunt motivele pentru care ați dori să stocați rezultatele &icirc;n depozitul depozit de date relaţionale: 
+                <ul>
+                    <li>Puteți folosi rezultatele &icirc;n colaborarea-dintre-portaluri.
+                    </li>
+                    <li>Puteți activa capacitățile de sincronizare cu rezultatele dvs.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nu trebuie să utilizaţi depozitul de date relaţionale dacă vă aşteptaţi ca rezultatele GeoAnalytics să crească &icirc;n cantitate şi aveţi nevoie de capacităţile depozitului mare de stocare spaţio-temporal de a gestiona cantităţi mari de date.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p> Numele stratului tematic care va fi creat. Dacă scrieți &icirc;ntr-un ArcGIS Data Store, rezultatele dvs. vor fi salvate &icirc;n  <b>Resursele mele</b> și adăugate pe hartă. Dacă scrieți &icirc;ntr-o partajare de fişiere big data, rezultatele dvs. vor fi stocate &icirc;n partajarea de fişiere big data și adăugate la manifestul acesteia. Nu vor fi adăugate pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic există deja, instrumentul va eşua.
+            </p>
+            <p>C&acirc;nd scrieți &icirc;n  ArcGIS Data Store (depozit de date relaționale sau spațio-temporale de volum mare) utiliz&acirc;nd caseta derulantă  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

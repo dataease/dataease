@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Ringkas Pusat dan Penyebaran</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Ringkas Pusat dan Penyebaran"></h2>
+        <hr/>
+    <p>Alat ini menemukan fitur pusat dan distribusi arah.
+Alat ini dapat digunakan untuk menjawab pertanyaan seperti:
+        <ul>
+            <li>Di mana pusatnya?
+            </li>
+            <li>Fitur mana yang paling dapat diakses dari semua fitur lainnya?
+            </li>
+            <li>Seberapa tersebar, ringkas, atau terintegrasi fitur tersebut?
+            </li>
+            <li>Apakah ada tren arah?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya fitur di layer input tersebut yang visibel dalam jangkauan peta saat ini yang akan dianalisis.  Jika tidak dicentang, seluruh fitur pada layer input akan dianalisis, meskipun berada di luar jangkauan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Pilih layer yang akan diuraikan</h2></div>
+        <hr/>
+        <div>
+            <p>Layer titik, garis, atau area akan digunakan untuk menemukan fitur utama dan distribusi arah.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Jenis ringkasan</h2></div>
+        <hr/>
+        <div>
+            <p>Metode untuk meringkas pusat dan penyebaran. 
+            </p>
+            <ul>
+                <li>Fitur pusat - Mengidentifikasi fitur yang berada paling pusat di set data.
+                </li>
+                <li>Pusat rata-rata - Mengidentifikasi pusat geografis (atau pusat konsentrasi) untuk serangkaian fitur.
+                </li>
+                <li>Pusat median - Mengidentifikasi lokasi yang meminimalkan keseluruhan jarak Euclidean ke fitur set data.
+                </li>
+                <li>Elips - Membuat elips deviasional standar untuk meringkas karakteristik spasial fitur geografis: kecenderungan pusat, penyebaran, dan tren arah. Elips dapat diberi ukuran sebagai simpangan baku 1, 2, atau 3.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Hitung bobot menurut (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Kolom ini digunakan untuk menghitung bobot lokasi menurut kepentingan relatifnya. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Kelompokkan menurut (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Kolom ini digunakan untuk mengelompokkan fitur untuk penghitungan terpisah dari fitur atau penyebaran pusat. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta.  Nama default ditetapkan berdasarkan nama layer input. Jika nama layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Dengan menggunakan  <b>Simpan hasil di</b> menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

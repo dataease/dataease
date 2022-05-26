@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Pura rasteri</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Portaalin Pura rasteri -ty&ouml;kalu"></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu voi leikata rasterin rajaan joko suorakaiteen muotoiseksi alueeksi tai muotoon, jonka m&auml;&auml;rit&auml;t interaktiivisesti n&auml;yt&ouml;ss&auml;. Voit leikata parhaillaan kartassa n&auml;kyv&auml;&auml;n alueen laajuuteen tai alueen m&auml;&auml;ritt&auml;m&auml;n tutkimusalueen mukaan.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse purettava lähtöaineisto</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse leikattava l&auml;ht&ouml;aineiston karttataso.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Määritä leikkaava geometria</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse laajuuden tyyppi, jota haluat k&auml;ytt&auml;&auml; karttatason geometriaa leikattaessa.
+
+                <ul>
+                    <li>K&auml;yt&auml; nykyist&auml; laajuutta: Tuloksena olevan karttatason leikkaamiseen k&auml;ytet&auml;&auml;n nykyist&auml; kartan laajuutta. T&auml;m&auml; on oletusarvo.
+                        
+
+                    </li>
+                    <li>Valitse tutkimusalue: Voit valita, n&auml;ytet&auml;&auml;nk&ouml; alue tuloksessa geometrian laajuuden sis&auml;puolella vai ulkopuolella. Jos valitset  <b>Aineisto geometrian sis&auml;ll&auml;</b> -vaihtoehdon, laajuuksien ulkopuolella olevat kuvat poistetaan. Jos valitset <b>Aineisto geometrian ulkopuolella</b> -vaihtoehdon, laajuuksien sis&auml;puolella olevat kuvat poistetaan. Voit m&auml;&auml;ritt&auml;&auml; leikkaavan geometrian my&ouml;s piirtoty&ouml;kalun avulla.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen karttatason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -kohtaan ja lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos taso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; kansion nimen  <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan avattavan <b>Tallenna tulos kohteeseen</b> -valikon avulla.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

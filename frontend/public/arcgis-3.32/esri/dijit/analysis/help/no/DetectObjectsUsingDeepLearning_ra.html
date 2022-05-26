@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Påvis objekter ved hjelp av dyp læring</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="P&aring;vis objekter ved hjelp av dyp l&aelig;ring"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet kj&oslash;rer en opptrent modell for dyp l&aelig;ring p&aring; et inndataraster for &aring; produsere en geoobjektklasse som inneholder objektene det finner. Geoobjektene kan v&aelig;re avgrensende rammer eller polygoner rundt objektene som er funnet, eller punkter i objektenes sentrum.
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, analyseres bare det rasteromr&aring;det som er synlig innenfor gjeldende kartutstrekning. Hvis dette ikke er avmerket, analyseres hele rasteret, selv om det befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Velg bilde som skal brukes til å påvise objekter</h2></div>
+        <hr/>
+        <div>
+            <p>Inndatabildet som skal brukes til &aring; p&aring;vise objekter.
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Velg modellen for dyp læring som skal brukes til å påvise objekter</h2></div>
+        <hr/>
+        <div>
+            <p>Dypl&aelig;ringspakken for ( <code>.dlpk</code>)-elementet som er inndata.
+            </p>
+            <p>Dypl&aelig;ringspakken er sammensatt av Esris JSON-fil for modelldefinering ( <code>.emd</code>), den bin&aelig;re modellfilen for dyp l&aelig;ring og (valgfritt) Python-rasterfunksjonen som skal brukes.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Angi modellargumenter for dyp læring</h2></div>
+        <hr/>
+        <div>
+            <p>Funksjonsargumentene er definert i Python-rasterfunksjonsklassen det vises til i inndatamodellen. Det er her du f&oslash;rer opp ytterligere parametre for dyp l&aelig;ring og argumenter for eksperimenter og avgrensninger, for eksempel en konfidensterskel for justering av f&oslash;lsomhet.
+            </p>
+            <p>Navnene p&aring; argumentene fylles ut av verkt&oslash;yet etter lesing av Python-modulen p&aring; rasteranalyseserveren.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>Fjern dupliserte geoobjekter i utdataene (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Utf&oslash;rer ikke-maksimal undertrykking, der dupliserte objekter identifiseres, og det dupliserte geoobjektet med lavest konfidensverdi blir fjernet. 
+                <ul>
+                    <li>Ikke avmerket &ndash;&nbsp;Alle objekter som p&aring;vises, blir med i geoobjektklassen som utdata. Dette er standardalternativet.
+                        
+
+                    </li>
+                    <li>Avmerket &ndash;&nbsp;Fjerner dupliserte objekter som p&aring;vises.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>Konfidensverdifelt</h2></div>
+        <hr/>
+        <div>
+            <p>Feltet i geoobjekttjenesten som inneholder konfidensverdiene som utdata etter objektp&aring;visningsmetoden.
+            </p>
+            <p>Denne parameteren er p&aring;krevd n&aring;r du merker av for parameteren  <b>Ikke-maksimal undertrykking</b>.
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>Klasseverdifelt</h2></div>
+        <hr/>
+        <div>
+            <p>Klasseverdifeltet i utdatageoobjekttjenesten. Hvis det ikke angis, bruker verkt&oslash;yet standardklasseverdifeltene  <i>Classvalue</i> og <i>Value</i>. Hvis disse feltene ikke finnes, blir alle geoobjekter behandlet som samme objektklasse.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>Største overlapp</h2></div>
+        <hr/>
+        <div>
+            <p>St&oslash;rste overlapp for to overlappende geoobjekter, definert som snittomr&aring;det over unionomr&aring;det. Standardverdien er 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Du kan angi navnet p&aring; en mappe i  <b>Mitt innhold</b>, der resultatet blir lagret via rullegardinlisten <b>Lagre resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

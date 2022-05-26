@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Daten anhängen</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Workflow-Diagramm des Werkzeugs &quot;Daten anh&auml;ngen&quot;"></h2>
+        <hr/>
+    <p>Dieses Werkzeug h&auml;ngt Daten an einen vorhandenen gehosteten Feature-Layer an. &quot;Daten anh&auml;ngen&quot; &auml;ndert den urspr&uuml;nglichen Eingabe-Layer und erzeugt keinen neuen Ausgabe-Layer. Sie k&ouml;nnen Felder basierend auf dem Feldnamen und dem Feldtyp abgleichen oder fortgeschrittene Abgleichmethoden anwenden.
+    </p>
+    <p>Nachfolgend finden Sie einige Beispiele: 
+        <ul>
+            <li>Sie sind in einem gro&szlig;en Versicherungsunternehmen angestellt, das monatlich Verkaufsdatens&auml;tze erzeugt. F&uuml;r den Jahresbericht m&uuml;ssen die Monatsdaten zu Analysezwecken zusammengestellt werden. Starten Sie die Verkaufsanalyse mit &quot;Daten anh&auml;ngen&quot;, um den Layer &quot;AnnualReport_2018&quot; einmal pro Monat zu aktualisieren, wenn die monatlichen Zahlen verf&uuml;gbar sind. Da Ihr Unternehmen bekannterma&szlig;en jeden Monat ein konsistentes Schema beibeh&auml;lt, k&ouml;nnen Sie die Methode der standardm&auml;&szlig;igen Feldzuordnung anwenden, um Features effizient basierend auf Feldnamen und -typ anzuh&auml;ngen.
+            </li>
+            <li>Zehn Umweltschutzgruppen sammeln jeweils unz&auml;hlige Klimamessungen innerhalb ihrer Zust&auml;ndigkeitsbereiche. Die Organisationen m&ouml;chten ihre Daten zusammenstellen, um regionale und globale Muster besser verstehen zu k&ouml;nnen. Jede Organisation ermittelt das Schema f&uuml;r ihr Dataset. Sie haben jeweils andere Feldnamen f&uuml;r Temperatur- und Windgeschwindigkeitsdaten angegeben. Aufgrund der unterschiedlichen Feldnamen in den Datasets kann die Feldzuordnung verwendet werden, um anzugeben, wie Temperatur- und Windgeschwindigkeitsmessungen an die jeweiligen Felder angeh&auml;ngt werden sollen.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Layer auswählen an den angehängt werden soll</h2></div>
+        <hr/>
+        <div>
+            <p>Die Tabellen-, Punkt-, Linien- und Polygon-Features, an die Daten angeh&auml;ngt werden sollen.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Der Layer an den angeh&auml;ngt wird, wird w&auml;hrend der Ausf&uuml;hrung des Werkzeugs ge&auml;ndert. Bevor Sie fortfahren, sollten Sie sich vergewissern, dass Sie diesen Layer &auml;ndern m&ouml;chten.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Sie k&ouml;nnen nicht nur einen Layer aus der Karte ausw&auml;hlen, sondern auch unten in der Dropdown-Liste die Option  <b>Analyse-Layer ausw&auml;hlen</b> ausw&auml;hlen, um zu Ihren Inhalten f&uuml;r einen gehosteten Feature-Layer zu navigieren.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Anzuhängenden Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Punkt-, Linien- oder Polygon-Features, die an den Eingabe-Layer angeh&auml;ngt werden sollen.
+            </p>
+            <p>Sie k&ouml;nnen nicht nur einen Layer aus der Karte ausw&auml;hlen, sondern auch unten in der Dropdown-Liste die Option  <b>Analyse-Layer ausw&auml;hlen</b> ausw&auml;hlen, um zu Ihren Inhalten f&uuml;r ein Big-Data-Dateifreigabe-Dataset bzw. -Feature-Layer zu navigieren.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Alle Features anhängen oder eine Teilmenge definieren (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Identifiziert die anzuh&auml;ngenden Features. Dieser Parameter ist optional.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Festlegen, wie Felder angehängt werden sollen (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Gibt an, wie die Felder des Layers f&uuml;r Anh&auml;nge an den Eingabe-Layer angeh&auml;ngt werden. Standardm&auml;&szlig;ig werden alle &uuml;bereinstimmenden Eingabefelder und Felder im Anhang angeh&auml;ngt. Felder stimmen &uuml;berein, wenn sie denselben Feldnamen und denselben Feldtyp aufweisen. Optional k&ouml;nnen Sie ausw&auml;hlen, wie Felder zugeordnet werden, oder Arcade-Ausdr&uuml;cke zur Angabe von Feldwerten berechnen.
+            </p>
+            <p>Sie verf&uuml;gen beispielsweise &uuml;ber einen Eingabe-Layer mit den Feldern  <i>field_number</i>, <i>field_string</i>, <i>date_field</i> und <i>unused_field</i> und einen Layer f&uuml;r Anh&auml;nge mit den Feldern <i>field_string</i>, <i>field_number</i> und <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>Standardm&auml;&szlig;ig ordnet das Werkzeug das Feld  <i>field_number</i> im Eingabe-Layer dem Feld <i>field_number</i> im angeh&auml;ngten Layer und das Feld <i>field_string</i> im Eingabe-Layer dem Feld <i>field_string</i> im angeh&auml;ngten Layer zu.
+                    </li>
+                    <li>Die Felder  <i>date_field</i> und <i>unused_field</i> des Eingabe-Layers werden standardm&auml;&szlig;ig mit dem Wert <i>null</i> gef&uuml;llt, da der angeh&auml;ngte Layer kein zugeordnetes Feld f&uuml;r sie enth&auml;lt.
+                    </li>
+                    <li>Optional k&ouml;nnen Sie Werte an Felder anh&auml;ngen, die nicht automatisch zugeordnet werden. Das Feld  <i>date_field</i> im Eingabe-Layer kann beispielsweise dem angeh&auml;ngten Feld <i>MY_DATE_FIELD</i> zugeordnet werden. Verwenden Sie hierzu das Dropdown-Men&uuml; neben <i>date_field</i> in der ersten Spalte und w&auml;hlen Sie im Dropdown-Men&uuml; der zweiten Spalte <i>MY_DATE_FIELD</i> aus.
+                    </li>
+                </ul>
+                 Ein weiteres Beispiel: Ein Eingabe-Layer besitzt die numerischen Felder <i>value_1</i>, <i>value_2</i>, <i>value_3</i> und <i>my_Average</i> und ein Layer f&uuml;r Anh&auml;nge die numerischen Felder <i>value_1</i>, <i>value_2</i> und <i>value_3</i>.
+                <ul>
+                    <li>Standardm&auml;&szlig;ig werden die Felder  <i>value_1</i>, <i>value_2</i> und <i>value_3</i> zugeordnet und angehangen.
+                    </li>
+                    <li>Zus&auml;tzlich zum Standardverhalten k&ouml;nnen Werte f&uuml;r das Feld  <i>my_Average</i> berechnet werden. Verwenden Sie hierzu mehrere Felder und mathematische Operationen, indem Sie die Dropdown-Option <b>Ausdruck</b> in der Spalte neben <i>my_Average</i> ausw&auml;hlen und einen benutzerdefinierten Arcade-Ausdruck wie <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre> erstellen.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

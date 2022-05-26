@@ -1,0 +1,25 @@
+<div data-dojo-attach-point="containerNode">
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'RangeDim',minOccurs:1,showHeader:false,label:'${i18nArcGIS.contInfo.RangeDim.caption}'">
+    
+    <!-- sequence id and type -->
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'seqID',minOccurs:1,showHeader:false">
+      <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+        data-dojo-props="target:'aName',minOccurs:1,label:'${i18nArcGIS.contInfo.covDim.seqID}'">
+      </div>
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'attributeType',minOccurs:1,showHeader:false">
+        <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+          data-dojo-props="target:'aName',minOccurs:1,label:'${i18nArcGIS.contInfo.covDim.seqIDType}'">
+        </div>
+      </div>
+    </div>
+    
+    <!-- descriptor -->
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'dimDescrp',minOccurs:0,label:'${i18nArcGIS.contInfo.covDim.dimDescrp}'">
+    </div>
+    
+  </div>
+</div>

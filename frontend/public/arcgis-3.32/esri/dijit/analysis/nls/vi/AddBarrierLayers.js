@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/vi/AddBarrierLayers",{addBarriers:"Ch\u1ecdn l\u1edbp r\u00e0o c\u1ea3n",pointBarrier:"R\u00e0o c\u1ea3n d\u1ea1ng \u0111i\u1ec3m",lineBarrier:"R\u00e0o c\u1ea3n d\u1ea1ng \u0111\u01b0\u1eddng",polygonBarrier:"R\u00e0o c\u1ea3n d\u1ea1ng v\u00f9ng",choosePointBarrier:"Ch\u1ecdn l\u1edbp r\u00e0o c\u1ea3n d\u1ea1ng \u0111i\u1ec3m",chooseLineBarrier:"Ch\u1ecdn l\u1edbp r\u00e0o c\u1ea3n d\u1ea1ng \u0111\u01b0\u1eddng",choosePolygonBarrier:"Ch\u1ecdn l\u1edbp r\u00e0o c\u1ea3n d\u1ea1ng v\u00f9ng",
+selectPointBarrier:"Ch\u1ecdn r\u00e0o c\u1ea3n d\u1ea1ng \u0111i\u1ec3m",selectLineBarrier:"Ch\u1ecdn r\u00e0o c\u1ea3n d\u1ea1ng \u0111\u01b0\u1eddng",selectPolygonBarrier:"Ch\u1ecdn r\u00e0o c\u1ea3n d\u1ea1ng v\u00f9ng"});

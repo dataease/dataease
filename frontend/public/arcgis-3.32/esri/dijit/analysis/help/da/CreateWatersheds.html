@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Opret vandskel</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Opret vandskel"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j fasts&aelig;tter vandskellet, eller afvandingsomr&aring;det, for hver punkt i dit inputlag. 
+    </p>
+    <p>Forestil dig f.eks., at du har punktobjekter, der repr&aelig;senterer steder med vandb&aring;ret forurening, og du &oslash;nsker at finde de sandsynlige kilder til denne forurening. Da kilden til forureningen m&aring; ligge p&aring; denne side af vandskellet, men oven for det p&aring;g&aelig;ldende punkt, kan du bruge dette v&aelig;rkt&oslash;j til at definere vandskel, der indeholder forureningskilder.
+    </p>
+    <p>Placeringen af dine inputpunkter er vigtig. Hvis de ikke er placeret n&oslash;jagtigt p&aring; en afvandingslinje, kan de resulterende vandskel v&aelig;re meget sm&aring; og ikke v&aelig;re brugbare for din analyse. Indstillingen  <b>S&oslash;geafstand til n&aelig;rmeste afvanding</b> kan bruges til at justere placeringen af dine inputpunkter, s&aring; de falder n&oslash;jagtigt p&aring; en afvandingslinje med henblik p&aring; at finde det vandskel, der sender vand til det punkt, der er placeret p&aring; afvandingslinjen. De justerede placeringer, der bruges til at finde vandskellene, skrives til outputlaget &ndash; dine inputpunkter &aelig;ndres ikke.
+    </p>
+    <p>Resultatet er et gruppelag, der indeholder to lag: vandskellene og de justerede punkter, der bruges til at beregne vandskellene.     
+    </p>
+    <p>De resulterende vandskel vil have alle dine inputpunkters attributter samt disse supplerende attributter:     
+        <ul>
+            <li> <i>PourPtID</i> &ndash; Indeholder ID-v&aelig;rdien fra inputpunktet
+            </li>
+            <li> <i>Area Square Kilometers</i> &ndash; Indeholder det afvandingsomr&aring;de, der ligger &quot;opstr&oslash;ms&quot; i forhold til det aktuelle punkt, i kvadratkilometer
+            </li>
+            <li> <i>Description</i> og <i>DataResolution</i> &ndash; Indeholder oplysninger vedr&oslash;rende de hydrologiske data, der benyttes til at beregne sporingen
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hvis feltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, er det kun objekterne i den aktuelle kortudstr&aelig;kning, der benyttes til at beregne vandskellene. Hvis markeringen fjernes, analyseres alle objekter i inputlaget, ogs&aring; selvom de er placeret uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punktobjekter, der anvendes til beregning af vandskel</h2></div>
+        <hr/>
+        <div>
+            <p>Et vandskel (afvandingsomr&aring;det) vil blive beregnet for hvert punkt.  
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Søgeafstand til nærmeste afvanding</h2></div>
+        <hr/>
+        <div>
+            <p>Hvis dine inputpunkter er placeret v&aelig;k fra afvandingslinjen, vil de resulterende vandskel sandsynligvis v&aelig;re meget sm&aring; og ikke v&aelig;re s&aelig;rligt brugbare i forbindelse med analyse, s&aring;som bestemmelse af forureningskilden. I de fleste tilf&aelig;lde &oslash;nsker du formentlig, at dit inputpunkt l&aring;ser sig fast til den n&aelig;rmeste afvandingslinje med henblik p&aring; at finde de vandskel, der afvander til et punkt, der er placeret p&aring; afvandingslinjen. Angiv en s&oslash;geafstand for at finde den n&aelig;rmeste afvandingslinje. Hvis du ikke angiver en s&oslash;geafstand, vil v&aelig;rkt&oslash;jet beregne og bruge en lav s&oslash;geafstand.  
+            </p>
+            <p>Hvis du vil bruge den n&oslash;jagtige placering af dit inputpunkt, skal du angive en s&oslash;geafstand p&aring; &quot;0&quot;.  
+            </p>
+            <p>Af hensyn til analyseform&aring;l har Esri forudberegnet afvandingslinjer ved hj&aelig;lp af hydrologiske standardmodeller. Hvis der ikke findes nogen afvandingslinje inden for s&oslash;geafstanden, benyttes det sted, der har den h&oslash;jeste flow-akkumulering inden for s&oslash;geafstanden.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+            <p> Brug af dette v&aelig;rkt&oslash;j forbruger ikke credits.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Summér attributter</h2><p/>
+        <h2><img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" alt="Summ&eacute;r attributter diagram"></h2>
+        <hr/>
+    <p> Dette v&aelig;rkt&oslash;j summerer alle de matchende v&aelig;rdier i &eacute;t eller flere felter og beregner statistik for dem. Den mest grundl&aelig;ggende statistik er opt&aelig;llingen af de objekter, der summeres, men du kan ogs&aring; beregne mere avanceret statistik.
+    </p>
+    <p>Forestil dig for eksempel, at du har punktobjekter med butiksplaceringer med et felt, der repr&aelig;senterer  <i>DISTRICT_MANAGER_NAME</i>, og du &oslash;nsker at f&aring; en oversigt over det samlede salg af kaffe pr. leder. Du kan angive feltet <i>DISTRICT_MANAGER_NAME</i> som det felt, der skal opl&oslash;ses til, samt alle de r&aelig;kker med data, der repr&aelig;senterer de enkelte ledere, der skal summeres. Dette betyder, at alle de butiksplaceringer, der styres af <pre>Manager1</pre>, vil blive summeret til &eacute;n r&aelig;kke , med den beregnede oversigtsstatistik. I dette tilf&aelig;lde betyder det, at statistik s&aring;som antallet af butikker og summen af <i>TOTAL_SALES</i> for alle de butikker, som <pre>Manager1</pre> styrer, ville blive beregnet, og det samme g&aelig;lder for alle andre ledere, der er angivet i feltet <i>DISTRICT_MANAGER_NAME</i>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg input, der skal summeres</h2></div>
+        <hr/>
+        <div>
+            <p>Det lag, der indeholder de felter, som skal summeres.  
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Vælg, hvordan dine data skal summeres</h2></div>
+        <hr/>
+        <div>
+            <p>Data kan summeres p&aring; to m&aring;der:
+                <ul>
+                    <li> <b>Alle objekter i et enkelt objekt</b>&mdash;Beregner statistik for alle objekter.
+                    </li>
+                    <li> <b>Efter felter</b>&mdash;Grupperer objekter efter lignende v&aelig;rdier i angivne felter.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Forestil dig f.eks., at du har et datas&aelig;t med tr&aelig;er, der indeholder felter med  <i>tr&aelig;sorter</i> med v&aelig;rdierne <code>Ahorn</code>, <code>Gran</code> og <code>Fyr</code>, samt et felt for <i>tr&aelig;h&oslash;jde</i>, og du gerne vil finde den middelv&aelig;rdien for <i>tr&aelig;h&oslash;jde</i>. Hvis du summerer alle objekter til et enkelt objekt, finder du middeltr&aelig;h&oslash;jden for  alle tr&aelig;er, hvilket vil resultere i &eacute;n middelv&aelig;rdi. Hvis du summerer efter feltet <i>tr&aelig;h&oslash;jde</i>, vil du opn&aring; en middelv&aelig;rdi for ahorntr&aelig;er, en middelv&aelig;rdi for grantr&aelig;er og en middelv&aelig;rdi for fyrretr&aelig;er.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Tilføj statistik (valgfrit)</h2></div>
+        <hr/>
+        <div>
+            <p> Du kan beregne statistik for objekter, der er summeret.Dukan beregne f&oslash;lgende for numeriske felter :
+                <ul>
+                    <li>Antal &ndash; Beregner antallet af ikke-nul-v&aelig;rdier.Det anvendes til numeriske felter eller strenge. Opt&aelig;llingen af [null, 0, 2] er 2.
+                    </li>
+                    <li>Sum &ndash; Summen af numeriske v&aelig;rdier i et felt. Summen af [null, null, 3] er 3.
+                    </li>
+                    <li>Middelv&aelig;rdi &ndash; Middelv&aelig;rdier af de numeriske v&aelig;rdier. Middelv&aelig;rdien af [0, 2, null] er 1.
+                    </li>
+                    <li>Min. &ndash; Minimumv&aelig;rdien for et numerisk felt. Minimumsv&aelig;rdien af [0, 2, null] er 0. 
+                    </li>
+                    <li>Maks. &ndash; Maksimumv&aelig;rdien for et numerisk felt. Maksimumv&aelig;rdien af [0, 2, null] er 2.
+                    </li>
+                    <li>Omr&aring;de &ndash; Omr&aring;det for et numerisk felt. Dette beregnes som minimumv&aelig;rdierne, der er trukket fra maksimumv&aelig;rdien. Omr&aring;det for [0, null, 1] er 1. Omr&aring;det for [null, 4] er 0.
+                    </li>
+                    <li>Varians &ndash; Variansen af et numerisk felt i et spor. Variansen af [1] er nul. Variansen af [null, 1,0, 1,1] er 0,25.
+                    </li>
+                    <li>Standardafvigelse &ndash; Standardafvigelsen for et numerisk felt. Standardafvigelsen for [1] er nul. Standardafvigelsen for [null, 1,0, 1,1] er 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du kan beregne f&oslash;lgende for strengfelter :
+                <ul>
+                    <li>Antal &ndash; Antallet af ikke-nul-strenge.
+                    </li>
+                    <li>Vilk&aring;rlig &ndash; Denne statistik er et vilk&aring;rligt eksempel p&aring; en strengv&aelig;rdi i det angivne felt.
+                    </li>
+                </ul>
+                Alle statistiske data beregnes ud fra ikke-nul-v&aelig;rdier. Resultatlaget vil indeholde et nyt felt for hver beregnet statistik. Du kan tilf&oslash;je et vilk&aring;rligt antal statistikker ved at v&aelig;lge attributter og statistikker. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Vælg Datastore</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytic-resultater lagres i et datalager og vises som et vektorlag i  Portal for ArcGIS. I de fleste tilf&aelig;lde b&oslash;r resultaterne blive lagret i et spatiotemporalt datalager, hvilket ogs&aring; er standarden. I nogle tilf&aelig;lde er det at lagre resultaterne i et relationsdatalager en god mulighed. Her er &aring;rsagerne til, at du m&aring;ske &oslash;nsker at lagre resultaterne i et relationsdatalager: 
+                <ul>
+                    <li>Du kan  bruge resultaterne i portalen-til-portalsamarbejde.
+                    </li>
+                    <li>Du kan  aktivere synkroniseringsfunktioner i forbindelse med dine resultater
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; det lag, som oprettes. Hvis du skriver til et ArcGIS Data Store, bliver  dine resultater gemt i  <b>Mit indhold</b> og f&oslash;jet til kortet. Hvis du skriver til en big data-fildeling, bliver dine resultater gemt i big data-fildelingen og f&oslash;jet til dens manifest. De bliver ikke f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil v&aelig;rkt&oslash;jet ikke fungere.
+            </p>
+            <p>N&aring;r du skriver til   ArcGIS Data Store  (relationelt eller spatiotemporalt big data-lager) ved hj&aelig;lp af rullelisten  <b>Gem resultat i </b>, kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

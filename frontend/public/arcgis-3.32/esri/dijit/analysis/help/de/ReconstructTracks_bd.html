@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Spuren rekonstruieren</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="Spuren rekonstruieren"></h2>
+        <hr/>
+    <p> Dieses Werkzeug kann mit einem Layer mit aktivierten Zeiteigenschaften mit Punkt- oder Fl&auml;chen-Features, die einen <code>Zeitpunkt</code> darstellen, verwendet werden. Zun&auml;chst wird anhand eines Identifikators ermittelt, welche Features zu einer Spur geh&ouml;ren. Mithilfe der Zeit f&uuml;r jede Position werden die Spuren sequenziell angeordnet und in eine Linie oder Fl&auml;che umgewandelt, die die Zugbahn im Zeitverlauf darstellt. Die Eingabe kann optional durch ein Feld gepuffert werden, wodurch an jeder Position eine Fl&auml;che erstellt wird. Diese gepufferten Punkte oder Eingabefl&auml;chen werden dann sequenziell verbunden, um eine Spur als Fl&auml;che zu erstellen, wobei die Breite das Interessenattribut darstellt. Die resultierenden Spuren haben einen Start- und einen Endpunkt, die zeitlich das erste und letzte Feature in einer angegebenen Spur darstellen. Beim Erstellen der Spuren werden Statistiken zu den Eingabe-Features berechnet und der Ausgabe-Spur zugewiesen. Die einfachste Statistik ist die Anzahl der Punkte innerhalb der Fl&auml;che. Sie k&ouml;nnen jedoch auch andere Statistiken berechnen.
+    </p>
+    <p>Es gibt zwei M&ouml;glichkeiten, Features in Layern mit aktivierten Zeiteigenschaften darzustellen:
+        <ul>
+            <li>Zeitpunkt: Ein einzelner Zeitpunkt
+            </li>
+            <li>Intervall: Eine Start- und eine Endzeit
+            </li>
+        </ul>
+        
+    </p>
+    <p>Angenommen, Ihnen liegen alle 10 Minuten GPS-Messungen von Hurrikanen vor. Jede GPS-Messung erfasst den Namen, die Position, die Uhrzeit der Erfassung und die Windgeschwindigkeit. Mit diesen Informationen k&ouml;nnen Sie Spuren f&uuml;r jeden Hurrikan anhand des Namens f&uuml;r die Spur-ID erstellen, sodass f&uuml;r jeden Hurrikan Spuren erstellt werden. Au&szlig;erdem k&ouml;nnen Sie Statistiken wie den Mittelwert, die maximale und minimale Windgeschwindigkeit jedes Hurrikans sowie die Anzahl der Messungen in jeder Spur berechnen.
+    </p>
+    <p>Anhand desselben Beispiels k&ouml;nnen Sie Ihre Spuren durch die Windgeschwindigkeit puffern. Dabei werden die einzelnen Messungen durch das Windgeschwindigkeitsfeld an dieser Position gepuffert und die gepufferten Fl&auml;chen verbunden. So wird eine Fl&auml;che erstellt, die den Spurpfad und die &Auml;nderungen der Windgeschwindigkeit im Verlauf von Hurrikanen darstellt.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Features zum Rekonstruieren von Spuren auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Punkt- oder Fl&auml;chen-Layer, der in Spuren rekonstruiert wird. F&uuml;r den Eingabe-Layer m&uuml;ssen Zeiteigenschaften aktiviert sein, die einen Zeitpunkt darstellen. Der Layer muss sich in einem projizierten Koordinatensystem befinden, oder der Raumbezug f&uuml;r die Verarbeitung muss unter  <b>Analyseumgebungen</b> auf ein projiziertes Koordinatensystem festgelegt werden, wenn ein Puffer angewendet wird.
+            </p>
+            <p>Sie k&ouml;nnen nicht nur einen Layer aus der Karte ausw&auml;hlen, sondern auch unten in der Dropdown-Liste die Option  <b>Analyse-Layer ausw&auml;hlen</b> ausw&auml;hlen, um zu Ihren Inhalten f&uuml;r ein Big-Data-Dateifreigabe-Dataset bzw. -Feature-Layer zu navigieren.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Mindestens ein Feld zum Identifizieren von Spuren auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Felder, die die Spur-ID darstellen. 
+            </p>
+            <p>Wenn Sie beispielsweise die Spuren von Hurrikanen rekonstruieren, k&ouml;nnen Sie den Namen des Hurrikans als Spurfeld verwenden.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Methoden zum Rekonstruieren von Spuren auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Methode, die zum Verbinden von Spuren und zum Anwenden von Puffern (falls zutreffend) verwendet wird. Die Methode  <b>Planar</b> kann die Ergebnisse schneller berechnen, beim Puffern werden jedoch keine Spuren an der internationalen Datumslinie umgebrochen bzw. die tats&auml;chliche Form der Erde wird nicht ber&uuml;cksichtigt. Bei der Methode <b>Geod&auml;tisch</b> werden Spuren bei Bedarf an der internationalen Datumslinie umgebrochen und wird ein geod&auml;tischer Puffer angewendet, um die Form der Erde zu ber&uuml;cksichtigen.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Einen Ausdruck zum Puffern von Eingabe-Features auswählen (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Die Gleichung zum Berechnen der Pufferentfernung um Eingabe-Features. Diese Gleichung kann mittels Pufferberechnung erstellt werden, und grundlegende Operationen wie Addieren, Subtrahieren, Multiplizieren und Dividieren werden unterst&uuml;tzt. Werte werden anhand des Analyse-Koordinatensystems berechnet. Der Layer muss sich in einem projizierten Koordinatensystem befinden, oder der Raumbezug f&uuml;r die Verarbeitung muss unter  <b>Analyseumgebungen</b> auf ein projiziertes Koordinatensystem festgelegt werden, wenn ein Puffer angewendet wird.
+            </p>
+            <p>Eine Gleichung wie  <code>$feature.windspeed * 1000</code> wendet einen Puffer von 1.000, multipliziert mit dem Feld <i>windspeed</i>, an. Sie k&ouml;nnen mehrere Felder in der Pufferberechnung verwenden.
+            </p>
+            <p> Dar&uuml;ber hinaus k&ouml;nnen Sie einen Tracking-bezogenen Ausdruck angeben. Beispielsweise k&ouml;nnen Sie die Summe des Feldwertes <i>windspeed</i> f&uuml;r das aktuelle Feature und die zwei vorherigen Features mit einer Gleichung wie der folgenden berechnen: <code>$track.field(windspeed).history(-3)</code>. An jeder Position wird die Summe des aktuellen Wertes von <i>windspeed</i> und der zwei vorherigen Messwerte berechnet und gepuffert.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Einen Zeitraum zum Aufteilen von Spuren auswählen (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Zeit, die zum Aufteilen von Spuren verwendet wird. Wenn der Zeitraum zwischen Eingabepunkten oder -fl&auml;chen gr&ouml;&szlig;er ist als die Zeitaufteilung, werden sie in verschiedene Spuren aufgeteilt.
+            </p>
+            <p>Wenn Sie eine Zeitaufteilung und eine Entfernungsaufteilung angeben, werden Spuren aufgeteilt, wenn mindestens eine der beiden Bedingungen erf&uuml;llt ist. 
+            </p>
+            <p>Angenommen, Sie verf&uuml;gen &uuml;ber Punkt-Features, die Flugzeuge darstellen, und das Spurfeld entspricht der Flugzeug-ID. Dieses Flugzeug kann mehrere Fl&uuml;ge durchf&uuml;hren und wird als eine Spur dargestellt.  Wenn Ihnen bekannt ist, dass zwischen den Fl&uuml;gen eine einst&uuml;ndige Pause liegt, k&ouml;nnen Sie  <code>1 Stunde</code> als Spuraufteilung verwenden und jeder Flug wird in eine eigene Spur unterteilt.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Spuren aufteilen (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Spuren lassen sich mit drei verschiedenen Methoden teilen. Sie k&ouml;nnen eine Kombination aus keiner, allen oder einigen der Teilungsmethoden verwenden. 
+            </p>
+            <p>Teilungen k&ouml;nnen auf folgende Arten durchgef&uuml;hrt werden:
+                <ul>
+                    <li> <b>Basierend auf einer Entfernung zwischen Eingaben</b>: Wenn die Entfernung zwischen Eingabepunkten oder -fl&auml;chen gr&ouml;&szlig;er ist als die angegebene Entfernung, werden sie in verschiedene Spuren aufgeteilt. Wenn Sie zum Beispiel eine Entfernung von 10&nbsp;Kilometern festgelegt haben, werden nachfolgende Punkte, die mehr als 10&nbsp;Kilometer entfernt sind, zu getrennten Spuren.
+                    </li>
+                    <li> <b>Basierend auf einer Zeit zwischen Eingaben</b>: Wenn der Zeitraum zwischen Eingabepunkten oder -fl&auml;chen gr&ouml;&szlig;er ist als die Zeitaufteilung, werden sie in verschiedene Spuren aufgeteilt. Beispiel: Sie verf&uuml;gen &uuml;ber Punkt-Features, die Flugzeuge darstellen, und das Spurfeld entspricht der Flugzeug-ID. Dieses Flugzeug kann mehrere Fl&uuml;ge durchf&uuml;hren und wird als eine Spur dargestellt.  Wenn Ihnen bekannt ist, dass zwischen den Fl&uuml;gen eine einst&uuml;ndige Pause liegt, k&ouml;nnen Sie <code>1 Stunde</code> als Spuraufteilung verwenden und jeder Flug wird in eine eigene Spur unterteilt.
+                    </li>
+                    <li> <b>In definierten Zeitintervallen</b>: Die Teilung erfolgt anhand regelm&auml;&szlig;iger Intervalle, die durch ein Zeitintervall und eine Referenzzeit festgelegt sind. Wird keine Bezugszeit festgelegt, wird der 1.&nbsp;Januar&nbsp;1970 verwendet. Wenn Sie beispielsweise 1&nbsp;Jahr mit der Bezugszeit 2.&nbsp;Februar&nbsp;1990 um 10:00 Uhr angegeben haben, werden Spuren am 2.&nbsp;Februar&nbsp;1990 um 10:00 Uhr, am 2.&nbsp;Februar&nbsp;1991 um 10:00 Uhr usw. aufgeteilt, und dieser Vorgang wird in Intervallen von einem Jahr fortgesetzt.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Wenn Sie mehrere Teilungsoptionen festlegen, werden Spuren aufgeteilt, wenn eine oder mehrere Bedingungen erf&uuml;llt sind. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Eine Entfernung zum Aufteilen von Spuren auswählen (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Entfernung, die zum Aufteilen von Spuren verwendet wird. Wenn die Entfernung zwischen Eingabepunkten oder -fl&auml;chen gr&ouml;&szlig;er ist als die Entfernungsaufteilung, werden sie in verschiedene Spuren aufgeteilt.
+            </p>
+            <p>Wenn Sie eine Zeitaufteilung und eine Entfernungsaufteilung angeben, werden Spuren aufgeteilt, wenn mindestens eine der beiden Bedingungen erf&uuml;llt ist. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Statistiken hinzufügen (optional)</h2></div>
+        <hr/>
+        <div>
+            <p> Sie k&ouml;nnen f&uuml;r Features, die zusammengefasst wurden, Statistiken berechnen.F&uuml;r numerische Felder sind folgende Berechnungen m&ouml;glich:
+                <ul>
+                    <li>Anzahl: Berechnet die Anzahl der Nicht-NULL-Werte.Sie kann f&uuml;r numerische Felder oder Zeichenfolgen verwendet werden. Die Anzahl von [NULL, 0, 2] betr&auml;gt 2.
+                    </li>
+                    <li>Summe: Die Summe der numerischen Werte in einem Feld. Die Summe von [NULL, NULL, 3] betr&auml;gt 3.
+                    </li>
+                    <li>Mittelwert: Der Mittelwert der numerischen Werte. Der Mittelwert von [0, 2, NULL] betr&auml;gt 1.
+                    </li>
+                    <li>Min: Der Minimalwert eines numerischen Feldes. Der Minimalwert von [0, 2, NULL] betr&auml;gt 0. 
+                    </li>
+                    <li>Max: Der Maximalwert eines numerischen Feldes. Der Maximalwert von [0, 2, NULL] betr&auml;gt 2.
+                    </li>
+                    <li>Bereich: Der Bereich eines numerischen Feldes. Dieser wird durch die Subtraktion der Minimalwerte vom Maximalwert berechnet. Der Bereich von [0, NULL, 1] lautet 1. Der Bereich von [NULL, 4] lautet 0.
+                    </li>
+                    <li>Varianz: Die Varianz eines numerischen Feldes in einer Spur. Die Varianz von [1] betr&auml;gt Null. Die Varianz von [NULL, 1,0,1,1] betr&auml;gt 0,25.
+                    </li>
+                    <li>Standardabweichung: Die Standardabweichung eines numerischen Feldes. Die Standardabweichung von [1] ist Null. Die Standardabweichung von [NULL, 1,0,1,1] ist 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>F&uuml;r Zeichenfolgenfelder sind folgende Berechnungen m&ouml;glich:
+                <ul>
+                    <li>Anzahl: Die Anzahl der Nicht-NULL-Werte.
+                    </li>
+                    <li>Beliebig: Diese Statistik ist eine auf dem Zufallsprinzip basierende Stichprobe eines Zeichenfolgenwertes im angegebenen Feld.
+                    </li>
+                </ul>
+                Alle Statistiken werden f&uuml;r Nicht-NULL-Werte berechnet. Der resultierende Layer enth&auml;lt ein neues Feld f&uuml;r jede berechnete Statistik. Jede Anzahl von Statistiken kann durch Auswahl eines Attributs und einer Statistik ausgew&auml;hlt werden. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Einen ArcGIS Data Store zum Speichern der Ergebnisse auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-Ergebnisse werden in einem Data Store gespeichert und als Feature-Layer in  Portal for ArcGIS dargestellt. In den meisten F&auml;llen sollten Ergebnisse im Data Store vom Typ &quot;spatiotemporal&quot; gespeichert werden, was gleichzeitig die Standardeinstellung ist. Manchmal empfiehlt es sich auch, Ergebnisse im Data Store vom Typ &quot;relational&quot; zu speichern. Die folgenden Gr&uuml;nde sprechen daf&uuml;r, die Ergebnisse im Data Store vom Typ &quot;relational&quot; zu speichern: 
+                <ul>
+                    <li>Sie k&ouml;nnen die Ergebnisse in portal&uuml;bergreifender Zusammenarbeit verwenden.
+                    </li>
+                    <li>Sie sind in der Lage, Synchronisierungsfunktionen mit Ihren Ergebnissen zu aktivieren.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Der Einsatz des Data Stores vom Typ &quot;relational&quot; wird nicht empfohlen, wenn abzusehen ist, dass Ihre GeoAnalytics-Ergebnisse weiter zunehmen. Nutzen Sie in diesem Fall die Funktionen des Big Data Store vom Typ &quot;spatiotemporal&quot; zur Verwaltung von gro&szlig;en Datenmengen.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p> Der Name des Layers, der erstellt wird.  Wenn Sie in einen ArcGIS Data Store schreiben, werden Ihre Ergebnisse in  <b>Eigene Inhalte</b> gespeichert und der Karte hinzugef&uuml;gt. Wenn Sie in eine Big-Data-Dateifreigabe schreiben, werden Ihre Ergebnisse in der Big-Data-Dateifreigabe gespeichert und  ihrem Manifest hinzugef&uuml;gt. Sie werden nicht der Karte hinzugef&uuml;gt. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, kann das Werkzeug nicht ausgef&uuml;hrt werden.
+            </p>
+            <p>Wenn Sie &uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> in ArcGIS Data Store (Big Data Store vom Typ &quot;relational&quot; oder &quot;spatiotemporal&quot;) schreiben, k&ouml;nnen Sie den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

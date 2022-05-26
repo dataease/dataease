@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Apkopot punktus</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Punktu apkopo&scaron;ana"></h2>
+        <hr/>
+    <p>&Scaron;is rīks darbojas ar punktu elementu slāni un teritorijas elementu slāni. Vispirms tiek noteikts, kuri punkti ietilpst katrā laukumā. Pēc tam, kad ir noteikta punktu skaita apgabalā telpiskā attiecība, tiek aprēķināta un pie&scaron;ķirta statistika par visiem punktiem laukumā. Visvienkār&scaron;ākā statistika ir punktu skaits laukumā, bet jūs varat iegūt arī citu statistiku. 
+    </p>
+    <p>Pieņemsim, ka jums ir kafijas veikalu izvietojuma punktu elementi un apgabala laukumu elementi un jūs vēlaties apkopot kafijas pārdo&scaron;anas apjomus apgabalā. Pieņemot, ka kafijas veikaliem ir  <i>TOTAL_SALES</i> atribūts, jūs varat iegūt summu no visiem <i>TOTAL_SALES</i> katrā apgabalā, vai minimumu, vai maksimumu <i>TOTAL_SALES</i> katrā apgabalā, vai standarta novirzi no visām pārdo&scaron;anām katra apgabala ietvaros.
+    </p>
+    <p>Ja ir atzīmēts  <b>Izmantot eso&scaron;o kartes pārklājumu</b>, elementi tiks analizēti tikai ievades punkta slānī un apgabala slānī, kas redzams pa&scaron;reizējā kartes pārklājuma ietvaros.  Ja nav atzīmēts, tiks analizēti visi elementi abos slāņos, arī ārpus pa&scaron;reizējā kartes pārklājuma.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Izvēlieties slāni, kas satur laukumos apkopojamos punktus</h2></div>
+        <hr/>
+        <div>
+            <p>Punktu slānis,kas tiks apkopots apgabalos.
+            </p>
+            <p>Papildus slāņa izvēlei no kartes varat atlasīt opciju  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta lejasdaļā. &Scaron;ī opcija atver galeriju, kurā varēsiet pārlūkot un atlasīt datu kopas no dažādiem avotiem un izmantot savā analīzē. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Izvēlieties slāni, kas satur apkopojamos laukumus</h2></div>
+        <hr/>
+        <div>
+            <p>Apgabala slānis, kuram tiks apkopoti punkti. Visi punkti, kas ietilpst &scaron;ī slāņa apgabala robežās, tiks saskaitīti un pēc izvēles apkopoti, izmantojot jūsu izvēlēto statistiku.  
+            </p>
+            <p>Varat izvēlēties savu teritorijas slāni vai nodalījumus, kas tiek ģenerēti, palaižot rīku. Ģenerējot nodalījumus,  <b>Kvadrātam</b> norādītais skaitlis un mērvienības nosaka kvadrāta augstumu un garumu. <b>Se&scaron;stūrim</b> norādītais skaitlis un mērvienības nosaka attālumu starp paralēlajām skaldnēm.
+            </p>
+            <p>Papildus slāņa izvēlei no kartes varat atlasīt opciju  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta lejasdaļā. &Scaron;ī opcija atver galeriju, kurā varēsiet pārlūkot un atlasīt datu kopas no dažādiem avotiem un izmantot savā analīzē. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Paturēt teritorijas bez punktiem</h2></div>
+        <hr/>
+        <div>
+            <p>Nosaka, vai laukumi, kuros nav attēloti punkti, tiek rādīti rezultātu slānī. Ja opcija nav atzīmēta, laukumi bez punktiem rezultātos netiks rādīti. Ja atzīmēsiet izvēles rūtiņu, rezultātā tiks ietvertas teritorijas bez punktiem.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Pievienot statistikas datus</h2></div>
+        <hr/>
+        <div>
+            <p>Jūs varat aprēķināt statistiku par ievades punktu slāņa atribūtiem, piemēram, summa, vidējais, minimums, maksimums un standarta novirze. Rezultātu slānī ir ietverts jauns atribūts par katru aprēķināto statistiku. Jebkurus statistikas datus var pievienot, izvēloties atribūtu un statistikas datus (parādīsies jauns nolaižamais lodziņ&scaron;).
+ 
+            </p>
+            <p>Ja apkopojamam slānim nav skaitļu lauku, papildu statistika nebūs pieejama.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Izvēlieties lauku, pēc kura grupēt</h2></div>
+        <hr/>
+        <div>
+            <p> Varat izveidot statistiskās grupas, izmantojot kādu atribūtu ievades punkta slānī.    Piemēram, ja jūs apkopojat noziegumus apkārtnes robežās, jums var būt atribūts <i>Crime_type</i> ar pieciem dažādiem noziegumu tipiem. Katrs unikāls noziegumu tips veido grupu, un jūsu izvēlētā statistika tiks aprēķināta katrai unikālajai <i>Crime_type</i> vērtībai. Katras grupas statistika, kā arī punktu skaits tiks parādīti rezultātu slāņa uznirsto&scaron;ajā logā. Kad jūs izvēlaties grupēt atribūtus, tiks izveidoti divi rezultāti: rezultātu slānis un rezultātu tabula, kurā ietilpst katras unikālās grupas statistika.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Pievienot mazākuma, vairākuma vērtības</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;ī izvēles rūtiņa tiks iespējota, ja izvēlēsieties lauku Grupēt pēc. Ja vēlaties uzzināt, kuras atribūtu vērtības katrā grupā ir mazākumā (mazākā mērā dominējo&scaron;as) vai vairākumā (vislielākajā mērā dominējo&scaron;as) katrās robežās, izvēlieties  <b>Pievienot mazākumu vai vairākumu</b>.   Ja izvēlēsieties <b>Pievienot mazākumu vai vairākumu</b>, jūsu rezultātu slānim tiks pievienoti divi jauni lauki.   Ja izvēlēsieties arī <b>Pievienot procentus</b>, rezultātu slānim tiks pievienoti divi papildu lauki, kuros būs ietverts katrā grupā eso&scaron;ais mazākuma un vairākuma atribūtu vērtību skaits procentos.
+            </p>
+            <p>Piemēram, ja nodarbojaties ar teritoriju plāno&scaron;anu un vēlaties noteikt, kuras koku sugas visos pilsētas parkos ir mazākumā, bet kuras vairākumā, apkopojiet datus par kokiem ar parku apgabaliem un atzīmējiet &scaron;o opciju.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Pievienot procentus</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;ī izvēles rūtiņa tiek iespējota, kad izvēlaties lauku, pēc kura grupēt. Izvēlieties  <b>Pievienot procentus</b>, ja vēlaties atrast katra atribūta vērtības skaitu procentos katrā grupā. Rezultātu tabulai tiek pievienots jauns lauks, kurā ir ietverts katra atribūta vērtības skaits procentos katrā grupā. Ja ir atzīmēta arī opcija <b>Pievienot mazākumu, vairākumu</b>, rezultātu slānim tiks pievienoti divi papildu lauki, kuros būs ietverts katrā grupā eso&scaron;ais mazākuma un vairākuma atribūtu vērtību skaits procentos.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slāņa nosaukums jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta izvēlnē, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

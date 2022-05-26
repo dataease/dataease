@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/ko/GenerateTessellations",{chooseShape:"\uc250\uc774\ud504 \uc120\ud0dd",defineExtent:"\ubc94\uc704 \uc815\uc758",defineBin:"\uc9c0\uc815\ud558\uc5ec \uadf8\ub8f9 \ud06c\uae30 \uc815\uc758",area:"\uc601\uc5ed",distance:"\uac70\ub9ac",resultLayerName:"\uacb0\uacfc \ub808\uc774\uc5b4 \uc774\ub984",hexagon:"\uc721\uac01\ud615",transverseHexagon:"\uac00\ub85c\ucd95 \uc721\uac01\ud615",square:"\uc81c\uacf1",triangle:"\uc0bc\uac01\ud615",diamond:"\ub9c8\ub984\ubaa8",sameAsDisplay:"\ud45c\uc2dc \ubc94\uc704\uc640 \ub3d9\uc77c\ud568",
+emptyBinSize:"\uadf8\ub8f9 \ud06c\uae30\ub294 \ube44\uc6cc\ub458 \uc218 \uc5c6\uc74c",currentExtent:"\ud604\uc7ac \ubc94\uc704",intersectExtent:"\uad50\ucc28\ud558\ub294 \uacf5\uac04 \ubd84\ud560\ub9cc \uc720\uc9c0",outputLayerName:"${extentLayerName}\uc5d0 \uacf5\uac04 \ubd84\ud560 \uc0dd\uc131",itemDescription:"${extentLayerName}\uc758 \ubc94\uc704\uac00 \uc0ac\uc6a9\ub418\uc5c8\uc2b5\ub2c8\ub2e4.",itemTags:"\ubd84\uc11d \uacb0\uacfc, \uacf5\uac04 \ubd84\ud560 \uc0dd\uc131, ${extentLayerName}",
+itemSnippet:"\uacf5\uac04 \ubd84\ud560 \uc0dd\uc131\uc5d0\uc11c \uc0dd\uc131\ub41c \ud53c\ucc98 \ub808\uc774\uc5b4\uc785\ub2c8\ub2e4."});

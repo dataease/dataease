@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Üldistatud lineaarne regressioon</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="&Uuml;ldistatud lineaarse regressiooni t&ouml;&ouml;voo skeem"></h2>
+        <hr/>
+    <p>Teostab &uuml;ldistatud lineaarse regressiooni 
+(GLR), et koostada ennustusi v&otilde;i modelleerida s&otilde;ltuvat muutujat oma seoste kaudu selgitavate muutujate komplektiga. Seda t&ouml;&ouml;riista saab kasutada pidevate (Gaussi) ja binaarsete (logistiliste) mudelite ning loendamismudelite (Poissoni mudelite) kohandamiseks.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analüüsitüüp</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab t&ouml;&ouml;riista t&ouml;&ouml;režiimi. T&ouml;&ouml;riista v&otilde;ib kasutada selleks, et &otilde;petada mudelit ainult toimivuse hindamiseks, v&otilde;i luua mudelit ja ennustada objekte. Ennustamise t&uuml;&uuml;bid on allj&auml;rgnevad:
+                <ul>
+                    <li> <b>Mudeli sobitamine mudeli toimivuse hindamiseks</b>&mdash; Mudelit sobitatakse ja seda rakendatakse sisendandmetele. Kasutage seda varianti, et hinnata oma mudeli t&auml;psust enne uue andmestiku ennustuste koostamist, ja selleks, et m&otilde;ista ennustatud muutuja seoseid ja k&auml;itajaid. Selle valiku v&auml;ljund on teie sobitatud &otilde;petusandmete objektiteenus ja mudeli diagnostika.
+                    </li>
+                    <li> <b>Mudeli sobitamine ja v&auml;&auml;rtuste ennustamine</b>&mdash; Ennustused v&otilde;i klassifikatsioonid luuakse sisendobjektide ja ennustusobjektide jaoks. Selgitavad muutujad tuleb esitada nii ennustusobjektide kui ka ennustatavate objektide kohta. Selle valiku v&auml;ljund on teie sisendandmetega kohandatud objektiteenus, ennustatud v&auml;&auml;rtuste objektiteenus ja mudeli diagnostika.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Mudeli sobitamine mudeli toimivuse hindamiseks</h2></div>
+        <hr/>
+        <div>
+            <p>Kasutage seda režiimi, kui soovite mudelit sobitada ja uurida selle sobivust.
+            </p>
+            <p>Selle valiku korral &otilde;petatakse mudelit sisendkihi abil. Kasutage seda varianti, et hinnata oma mudeli t&auml;psust enne uue andmestiku ennustuste koostamist. See valik v&auml;ljastab mudeli diagnostika ja rakendab mudelit teie &otilde;petusandmetele.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Mudeli sobitamine ja väärtuste ennustamine</h2></div>
+        <hr/>
+        <div>
+            <p>Kasutage seda režiimi, kui soovite sobitada mudelit ja rakendage mudelit andmestikule, et koostada ennustusi.
+            </p>
+            <p>Ennustused v&otilde;i klassifikatsioonid luuakse objektidele. Selle valiku v&auml;ljund on objektiteenus, mudeli diagnostika ja muutuja t&auml;htsuse valikuline tabel.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Valige mudeli vormi genereerimiseks kiht</h2></div>
+        <hr/>
+        <div>
+            <p>Kiht sisaldab punkte, jooni, pindu v&otilde;i tabeli kujul olevaid objekte, mis sisaldavad s&otilde;ltuvaid ja selgitavaid muutujaid.
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Mudeli välja valimine</h2></div>
+        <hr/>
+        <div>
+            <p>Numbriv&auml;li sisaldab j&auml;lgitavaid v&auml;&auml;rtusi, mida modelleeritakse, ja modelleeritava v&auml;&auml;rtuse t&uuml;&uuml;pi. Modelleerida saab kolme t&uuml;&uuml;pi v&auml;&auml;rtusi
+                <ul>
+                    <li>Pidev &mdash; esindab pidevaid v&auml;&auml;rtusi. Kasutatav mudel on Gaussi mudel ja t&ouml;&ouml;riist teostab standardselt v&auml;hemalt ruutregressiooni.
+                    </li>
+                    <li>Binaarne &mdash; esindab olemasolu- v&otilde;i puudumisv&auml;&auml;rtusi. Nende v&auml;&auml;rtused peavad olema 1 s ja 0 s. Seda mudelit kasutatakse logistilise regressiooni korral.
+                    </li>
+                    <li>Loendamine &mdash; Esindab diskreetseid andmeid ja v&auml;ljendab s&uuml;ndmusi, n&auml;iteks kriminaalkuritegude statistikat, haigestumisjuhtude v&otilde;i liiklus&otilde;nnetuste arvu. Seda mudelit kasutatakse Poissoni regressiooni korral. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Valige kiht, millele on vaja ennustada väärtusi</h2></div>
+        <hr/>
+        <div>
+            <p>Objektidega kiht v&auml;ljendab asukohti, kus tuleb arvutada hinnangud, Selle andmestiku iga objekt peab sisaldama v&auml;&auml;rtusi k&otilde;igi m&auml;&auml;ratud selgitavate muutujate kohta. Nende objektide s&otilde;ltuvat muutujat hinnatakse sisendkihi jaoks kalibreeritud mudeli abil.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Selgitavate väljade valimine</h2></div>
+        <hr/>
+        <div>
+            <p>&Uuml;ks v&auml;li v&otilde;i mitu v&auml;lja, mis v&auml;ljendavad selgitavaid muutujaid (v&auml;lju), mis aitavad ennustada v&auml;&auml;rtust. N&auml;htavad on ainult numbrilised v&auml;ljad.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Valige selgitavate väljade sobitamise viis</h2></div>
+        <hr/>
+        <div>
+            <p>Kuidas sisendkihi vastavad muutujad sobivad kokku ennustuskihi muutujatega. Tabelisse kaasatakse ainult mudeli koostamiseks kasutatavad muutujad. Kasutatakse ainult numbrilisi v&auml;&auml;rtusi. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Loodavakihi nimi.  Kui kirjutate andmelattu ArcGIS Data Store, salvestatakse teie tulemused  <b>Minu sisus</b> ja lisatakse kaardile. Kui kirjutate suurandmete failikettale, salvestatakse teie andmed suurandmete failikettale  ja lisatakse  selle manifestifailile. Seda  ei lisata kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui see kiht on juba olemas, siis t&ouml;&ouml;tlemine nurjub.
+            </p>
+            <p>Saadud tulemused s&otilde;ltuvad anal&uuml;&uuml;si t&uuml;&uuml;bist. Kui hindate mudeli sobivust, sisaldavad tulemused mudelitega sobivate sisendandmete kihti ja annavad teavet mudeli sobivuse hindamiseks. Kui sobitate ja ennustate, sisaldavad tulemused mudelitega sobivate sisendandmete kihti, ennustatud tulemuste kihti ja tulemusi mudeli sobivuse hindamiseks.
+            </p>
+            <p>Kui salvestate admelattu   ArcGIS Data Store (relatsioonilisse v&otilde;i ajalisruumilisse andmelattu), kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemused salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

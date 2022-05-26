@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Localizar Valor Alto de Incidência</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Localizar Pontos de Incid&ecirc;ncia"></h2>
+        <hr/>
+    <p>A ferramenta Localizar Valor Alto de Incid&ecirc;ncia determinar&aacute; se existe qualquer agrupamento estatisticamente significativo no modelo espacial dos seus dados. 
+        <ul>
+            <li>Seus pontos est&atilde;o (incidentes de crimes, &aacute;rvores, acidentes de tr&aacute;fego) realmente agrupados?  Como voc&ecirc; pode estar certo?
+            </li>
+            <li>Voc&ecirc; realmente descobriu um valor alto de incid&ecirc;ncia estatisticamente significativo, ou seu mapa contar&aacute; uma hist&oacute;ria diferente se voc&ecirc; mudou a forma como ele foi simbolizado?
+            </li>
+        </ul>
+        A ferramenta Localizar Valor Alto de Incid&ecirc;ncia o ajudar&aacute; a responder estas perguntas com confian&ccedil;a.
+    </p>
+    <p>At&eacute; os modelos espaciais aleat&oacute;rios exibem um grau de agrupamento. Al&eacute;m disso, nossos olhos e c&eacute;rebro naturalmente tentam encontrar modelos mesmo quando n&atilde;o existe nenhum. Consequentemente, pode ser dif&iacute;cil saber se os modelos em seus dados s&atilde;o o resultado dos processos espaciais reais no trabalho ou apenas o resultado da altera&ccedil;&atilde;o aleat&oacute;ria. Isto &eacute; devido ao fato dos pesquisadores e analistas utilizarem m&eacute;todos de estat&iacute;stica como Localizar Valor Alto de Incid&ecirc;ncia (Getis-Ord Gi*) para quantificar modelos espaciais. Quando voc&ecirc; localiza um agrupamento estatisticamente significativo em seus dados, voc&ecirc; tem informa&ccedil;&otilde;es valiosas. Saber onde e quando ocorre um agrupamento pode fornecer pistas importantes sobre os processos promovendo os modelos que voc&ecirc; est&aacute; vendo. Saber que roubos residenciais, por exemplo, s&atilde;o constantemente mais altos em determinados bairros &eacute; uma informa&ccedil;&atilde;o vital se voc&ecirc; precisar projetar estrat&eacute;gias de preven&ccedil;&atilde;o efetivas, alocar recursos de pol&iacute;cia escassos, iniciar programas de cuidados da vizinhan&ccedil;a, autorizar investiga&ccedil;&otilde;es criminais detalhadas ou identificar potenciais suspeitos.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Escolha a camada para a qual os valores altos de incidência serão calculados</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de ponto da qual os valores altos e baixos de incid&ecirc;mcia ser&atilde;o localizados.
+            </p>
+            <p>Esta an&aacute;lise utiliza caixas e exige um sistema de coordenadas plana. Voc&ecirc; pode configurar o  <b>Processamento de sistema de coordenadas</b> nos <b>Ambientes de An&aacute;lise</b>. Se seu processamento de sistema de coordenadas n&atilde;o estiver configurado para um sistema de coordenada plana, voc&ecirc; ser&aacute; solicitado para defin&iacute;-lo quando voc&ecirc; <b>Executar An&aacute;lise</b> .
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista suspensa para procurar por seu conte&uacute;do para um conjunto de dados de compartilhamento do arquivo de grandes dados ou camada de fei&ccedil;&atilde;o.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Localizar agrupamentos de valores altos e baixos</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Esta an&aacute;lise responde a pergunta: Onde h&aacute; agrupamento espaciais de valores altos e baixos?
+            </p>
+            <p>Se os seus dados forem de pontos e voc&ecirc; escolher  <b>Contagens de Ponto</b>, esta ferramenta avaliar&aacute; a disposi&ccedil;&atilde;o espacial das fei&ccedil;&otilde;es de ponto para responder a pergunta: Onde os pontos s&atilde;o inesperadamente agrupados ou separados?
+            </p>
+            <p>Se voc&ecirc; escolher um campo, esta ferramenta avaliar&aacute; a disposi&ccedil;&atilde;o espacial dos valores associados com cada fei&ccedil;&atilde;o para responder a pergunta: Onde est&atilde;o os agrupamentos de valores altos e baixos?
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Selecione o tamanho da caixa para agregação</h2></div>
+        <hr/>
+        <div>
+            <p>A dist&acirc;ncia utilizada para gerar bins quadrados que ser&atilde;o utilizados para analisar seus pontos de entrada.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Localizar ponto ativo utilizando intervalos de tempo (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Se o tempo estiver habilitado na camada de ponto, e for do tipo instant&acirc;neo, voc&ecirc; poder&aacute; analisar utilizando intervalos de tempo.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Intervalo de tempo</h2></div>
+        <hr/>
+        <div>
+            <p>Intervalo de tempo utilizado para gerar intervalos de tempo. O tempo pode ser alinhado para o tempo inicial ou final dos dados de entrada, ou para um tempo de refer&ecirc;ncia especificado.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Intervalo de tempo</h2></div>
+        <hr/>
+        <div>
+            <p>Intervalo de tempo utilizado para gerar intervalos de tempo. O tempo pode ser alinhado para o tempo inicial ou final dos dados de entrada, ou para um tempo de refer&ecirc;ncia especificado.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Escolha como alinhar intervalos de tempo</h2></div>
+        <hr/>
+        <div>
+            <p>Como intervalos de tempo s&atilde;o alinhados. H&aacute; tr&ecirc;s maneiras de alinhar os intervalos de tempo:
+                <ul>
+                    <li> <b>Tempo Inicial</b>&mdash;Os intervalos de tempo s&atilde;o alinhados com a primeira fei&ccedil;&atilde;o no tempo.
+                    </li>
+                    <li> <b>Tempo Final</b>&mdash;Os intervalos de tempo s&atilde;o alinhados com a &uacute;ltima fei&ccedil;&atilde;o no tempo.
+                    </li>
+                    <li> <b>Tempo de Refer&ecirc;ncia</b>&mdash;Os intervalos de tempo s&atilde;o alinhados com um tempo especificado.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Tempo de referência para alinhar intervalo de tempo</h2></div>
+        <hr/>
+        <div>
+            <p>A data e hora utilizadas para alinhar os intervalos de tempo.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Selecione o tamanho da vizinhança para cálculos de ponto ativo</h2></div>
+        <hr/>
+        <div>
+            <p>A dist&acirc;ncia utilizada para determinar a vizinhan&ccedil;a utilizada para c&aacute;lculos de ponto ativo. A vizinhan&ccedil;a deve ser maior que o tamanho de bin para garantir que cada bin tenha pelo menos um vizinho. Cada bin &eacute; analisado e comparado aos bins da vizinhan&ccedil;a.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; um par&acirc;metro tempor&aacute;rio do pr&eacute; lan&ccedil;amento para configurar a refer&ecirc;ncia de processamento espacial. Muitas ferramentas de big data exigem que um sistema de coordenada plana seja utilizada como a refer&ecirc;ncia espacial para processamento. Por padr&atilde;o, a ferramenta utilizar&aacute; o sistema de coordenadas de entrada mas falhar&aacute; se for um sistema de coordenadas geogr&aacute;ficas. Para configurar um sistema de coordenadas plana, insira o WKID. Por exemplo,  <b>Web Mercator</b> seria inserido como <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Escolher um ArcGIS Data Store para salvar os resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Os resultados do GeoAnalytic s&atilde;o armazenados em um armazenamento de dados e expostos como uma camada de fei&ccedil;&atilde;o no  Portal for ArcGIS. Na maioria dos casos, os resultados devem ser armazenados no armazenamento de dados de espa&ccedil;o-tempo e este &eacute; o padr&atilde;o. Em alguns casos, salvar resultados no armazenamento de dados relacional &eacute; uma boa op&ccedil;&atilde;o. Abaixo est&atilde;o as raz&otilde;es pelas quais voc&ecirc; talvez queira armazenar resultados em  um armazenamento de dados relacional: 
+                <ul>
+                    <li>Voc&ecirc; pode  utilizar os resultados no portal-para-colabora&ccedil;&atilde;o do portal.
+                    </li>
+                    <li>Voc&ecirc; pode habilitar os recursos de sincroniza&ccedil;&atilde;o com seus resultados.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Voc&ecirc; n&atilde;o deve utilizar um armazenamento de dados relacional se voc&ecirc; espera que os resultados do GeoAnalytics aumentem e deseja aproveitar os recursos do armazenamento de grandes dados de espa&ccedil;o-tempo para lidar com grandes quantidades de dados.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se voc&ecirc; estiver gravando em um ArcGIS Data Store, seus resultados ser&atilde;o salvos em  <b>Meu Conte&uacute;do</b> e adicionados no mapa. Se voc&ecirc; estiver gravando em um compartilhamento do arquivo de grandes dados, seus resultados ser&atilde;o armazenados compartilhamento do arquivo de grandes dados  e adicionados em seu   manifesto. N&atilde;o ser&atilde;o adicionados no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existe, a ferramenta falhar&aacute;.
+            </p>
+            <p>Esta camada resultante mostrar&aacute; a voc&ecirc; agrupamentos estatisticamente significativos de valores altos e baixos ou contagens de ponto. Se o nome da camada resultante j&aacute; existir, voc&ecirc; ser&aacute; avisado para renome&aacute;-lo.
+            </p>
+            <p>Ao gravar no  ArcGIS Data Store  (armazenamento de grandes dados de espa&ccedil;o-tempo ou relacional) utilizando a caixa suspensa  <b>Salvar resultados em</b> , voc&ecirc; pode especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

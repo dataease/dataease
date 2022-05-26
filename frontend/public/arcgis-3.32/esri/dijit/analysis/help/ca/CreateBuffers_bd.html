@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Crea àrees d'influència</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="Crea &agrave;rees d'influ&egrave;ncia"></h2>
+        <hr/>
+    <p>Una &agrave;rea d'influ&egrave;ncia &eacute;s una &agrave;rea que cobreix una dist&agrave;ncia determinada d'una entitat de punts, de l&iacute;nies o d'&agrave;rees. 
+    </p>
+    <p>Les &agrave;rees d'influ&egrave;ncia se solen utilitzar per crear &agrave;rees que es poden analitzar amb m&eacute;s profunditat mitjan&ccedil;ant altres eines. Per exemple, per trobar la resposta de la pregunta &quot;Quins edificis estan a un quil&ograve;metre de l'escola?&quot;, es pot crear una &agrave;rea d'influ&egrave;ncia d'un quil&ograve;metre al voltant de l'escola i superposar l'&agrave;rea d'influ&egrave;ncia amb la capa que cont&eacute; les superf&iacute;cies dels edificis. El resultat final &eacute;s una capa amb els edificis que es troben com a m&agrave;xim a un quil&ograve;metre de l'escola.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu la capa a la qual s'aplicarà l'àrea d'influència</h2></div>
+        <hr/>
+        <div>
+            <p>Entitats de punts, de l&iacute;nies o d'&agrave;rees amb les quals es crearan les &agrave;rees d'influ&egrave;ncia. Les capes d'entrada s'han de trobar en un sistema de coordenades projectades o han de tenir la refer&egrave;ncia espacial de processament definida en un sistema de coordenades projectades mitjan&ccedil;ant els  <b>entorns d'an&agrave;lisi</b>.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>Seleccioneu el tipus d'àrea d'influència que s'aplicarà</h2></div>
+        <hr/>
+        <div>
+            <p>Hi ha tres maneres d'especificar la mida de l'&agrave;rea d'influ&egrave;ncia de les entitats d'entrada: 
+                <ul>
+                    <li>Especifiqueu una dist&agrave;ncia que s'hagi aplicat a totes les entitats.
+                    </li>
+                    <li>Especifiqueu un camp a la capa d'entrada que contingui el valor de dist&agrave;ncia. Podeu utilitzar un camp de cadena o un camp num&egrave;ric. Si no hi ha una unitat lineal definida, s'utilitzaran les unitats de la refer&egrave;ncia espacial. Si esteu utilitzant un sistema de coordenades geogr&agrave;fiques, se suposar&agrave; que els camps sense unitats s&oacute;n metres. 
+                    </li>
+                    <li>Creeu una expressi&oacute; amb diversos camps i operadors matem&agrave;tics. Per exemple, per crear una &agrave;rea d'influ&egrave;ncia de 10 vegades el valor d'un camp anomenat  <i>wind_speed</i>, afegiu l'expressi&oacute; <i>$feature[&quot;wind_speed&quot;] x 10</i>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Seleccioneu el mètode d'àrea d'influència</h2></div>
+        <hr/>
+        <div>
+            <p>Podeu optar per utilitzar un m&egrave;tode  <b>Pla</b> o un m&egrave;tode <b>Geod&egrave;sic</b>. El m&egrave;tode <b>Pla</b> pot ser m&eacute;s r&agrave;pid i &eacute;s adequat per a l'an&agrave;lisi local de dades projectades. El m&egrave;tode <b>Geod&egrave;sic</b> &eacute;s adequat per a &agrave;rees grans i per a qualsevol sistema de coordenades geogr&agrave;fiques.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>Seleccioneu el tipus de mètode de dissolució</h2></div>
+        <hr/>
+        <div>
+            <p>Opcions per especificar el m&egrave;tode de dissoluci&oacute;.   En cas de triar un m&egrave;tode de dissoluci&oacute;, tindreu l'opci&oacute; de crear &agrave;rees multipart o d'una part i podreu calcular estad&iacute;stiques basades en els camps proporcionats.
+                <ul>
+                    <li> <b>Tot</b>: es dissoldran totes les entitats. Si es permeten les entitats multipart, totes les entitats es dissoldran en un entitat &uacute;nica. Si no es permeten, es dissoldran les entitats adjacents o superposades.
+                    </li>
+                    <li> <b>Camps</b>: es dissoldran les entitats que comparteixen el mateix camp especificat o la combinaci&oacute; de camps especificada. Si es permeten les entitats multipart, totes les entitats amb el mateix camp es dissoldran en un entitat &uacute;nica. Si no es permeten, es dissoldran les entitats adjacents o superposades amb el mateix valor de camp.
+                    </li>
+                    <li> <b>Cap</b>: no es dissoldr&agrave; cap entitat.  Aquesta &eacute;s l'opci&oacute; per defecte.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Permet les entitats multipart</h2></div>
+        <hr/>
+        <div>
+            <p>Opci&oacute; per especificar si el resultat estar&agrave; format per entitats d'una part o multipart. 
+
+            </p>
+            <p>
+                <ul>
+                    <li>Activada: els resultats de l'an&agrave;lisi contindran entitats multipart.   
+                    </li>
+                    <li>Desactivada: els resultats de l'an&agrave;lisi contindran entitats d'una part; aquesta &eacute;s l'opci&oacute; per defecte.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Afegeix estadístiques (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p> Podeu calcular les estad&iacute;stiques sobre les entitats que s'han resumit. Als camps num&egrave;rics, podeu calcular el seg&uuml;ent:
+                <ul>
+                    <li>Recompte: calcula el nombre de valors no nuls. Es pot utilitzar a les cadenes o als camps num&egrave;rics. El recompte de [nul, 0, 2] &eacute;s 2.
+                    </li>
+                    <li>Suma: suma dels valors num&egrave;rics d'un camp. La suma de [nul, nul, 3] &eacute;s 3.
+                    </li>
+                    <li>Mitjana: mitjana dels valors num&egrave;rics. La mitjana de [0, 2, nul] &eacute;s 1.
+                    </li>
+                    <li>M&iacute;nim: valor m&iacute;nim d'un camp num&egrave;ric. El m&iacute;nim de [0, 2, nul] &eacute;s 0. 
+                    </li>
+                    <li>M&agrave;xim: valor m&agrave;xim d'un camp num&egrave;ric. El valor m&agrave;xim de [0, 2, nul] &eacute;s 2.
+                    </li>
+                    <li>Interval: interval d'un camp num&egrave;ric. Es calcula com els valors m&iacute;nims restats del m&agrave;xim. L'interval de [0, nul, 1] &eacute;s 1. L'interval de [nul, 4] &eacute;s 0.
+                    </li>
+                    <li>Vari&agrave;ncia: vari&agrave;ncia d'un camp num&egrave;ric en un recorregut. La vari&agrave;ncia de [1] &eacute;s nul. La vari&agrave;ncia de [nul, 1,0,1,1] &eacute;s 0,25.
+                    </li>
+                    <li>Desviaci&oacute; est&agrave;ndard: desviaci&oacute; est&agrave;ndard d'un camp num&egrave;ric. La desviaci&oacute; est&agrave;ndard de [1] &eacute;s nul. La desviaci&oacute; est&agrave;ndard de [nul, 1,0,1,1] &eacute;s 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Als camps num&egrave;rics, podeu calcular el seg&uuml;ent:
+                <ul>
+                    <li>Recompte: nombre de cadenes no nul&middot;les.
+                    </li>
+                    <li>Qualsevol: aquesta estad&iacute;stica &eacute;s una mostra aleat&ograve;ria del valor d'una cadena al camp especificat.
+                    </li>
+                </ul>
+                Totes les estad&iacute;stiques es calcularan sobre valors no nuls. La capa resultant contindr&agrave; un camp nou per a cada estad&iacute;stica calculada. Per afegir qualsevol nombre d'estad&iacute;stiques, podeu triar un atribut i una estad&iacute;stica. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Trieu un ArcGIS Data Store on desar els resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Els resultats del GeoAnalytics s'emmagatzemen en un magatzem de dades i s'exposen com una capa d'entitats al  Portal for ArcGIS. En la majoria dels casos, conv&eacute; emmagatzemar els resultats en un magatzem de dades espaciotemporal, que &eacute;s l'opci&oacute; per defecte. En alguns casos, desar els resultats al magatzem de dades relacional &eacute;s una bona opci&oacute;. A continuaci&oacute; teniu alguns motius pels quals &eacute;s bona idea desar els resultats al magatzem de dades relacional: 
+                <ul>
+                    <li>Podeu utilitzar els resultats en la col&middot;laboraci&oacute; de portal a portal.
+                    </li>
+                    <li>Podeu habilitar les funcions de sincronitzaci&oacute; amb els vostres resultats.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>No &eacute;s recomanable fer servir un magatzem de dades relacionals si espereu que els resultats del GeoAnalytics augmentin i necessiteu utilitzar les funcions del magatzem de dades massives espaciotemporals per gestionar grans quantitats de dades.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la capa que es crear&agrave;.  Si esteu escrivint en un ArcGIS Data Store, els resultats es desaran a  <b>El meu contingut</b> i s'afegiran al mapa. Si esteu escrivint en un recurs compartit de fitxers de dades massives, els resultats s'emmagatzemaran en aquest recurs i s'afegiran al seu manifest. No s'afegiran al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, l'eina no funcionar&agrave;.
+            </p>
+            <p>Si escriviu a l' ArcGIS Data Store (magatzem de dades massives relacional o espaciotemporal) mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta a <b>El meu contingut</b>, on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

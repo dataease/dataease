@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Buat Buffer</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="Buat Buffer"></h2>
+        <hr/>
+    <p>Buffer adalah sebuah area yang mencakup jarak dari fitur titik, garis, atau area yang diberikan. 
+    </p>
+    <p>Buffer biasanya digunakan untuk membuat area-area yang dapat dianalisis lebih lanjut dengan menggunakan alat lain. Sebagai contoh, jika pertanyaannya adalah &quot;Bangunan apa yang berada dalam jarak 1 mil dari sekolah?&quot;, jawabannya bisa ditemukan dengan membuat buffer sejauh 1 mil di sekeliling sekolah dan melapisi buffer tadi dengan layer yang memuat jejak bangunan. Hasil akhirnya adalah sebuah layer dari bangunan-bangunan yang berada dalam jarak 1 mil dari sekolah.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pilih layer untuk menerapkan buffer ke</h2></div>
+        <hr/>
+        <div>
+            <p>Fitur titik, garis, atau area akan dijadikan buffer. Layer input harus berada pada sistem koordinat yang diproyeksikan atau referensi spasial yang diproses harus ditetapkan ke sistem koordinat yang diproyeksikan menggunakan  <b>Lingkungan Analisis</b>.
+            </p>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk set data atau feature layer berbagi file big data.
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>Pilih tipe buffer untuk diterapkan</h2></div>
+        <hr/>
+        <div>
+            <p>Terdapat tiga cara bagi Anda dalam menentukan ukuran buffer untuk fitur input Anda: 
+                <ul>
+                    <li>Tentukan jarak yang diterapkan pada semua fitur.
+                    </li>
+                    <li>Tentukan kolom di layer input yang berisi nilai jarak. Anda dapat menggunakan string kolom atau kolom numerik. Jika satuan linear tidak ditentukan, satuan referensi spasial yang akan digunakan. Jika Anda menggunakan sistem koordinat geografik, kolom tanpa satuan akan diasumsikan dalam meter. 
+                    </li>
+                    <li>Kembangkan ekspresi dengan kolom ganda dan operator matematis. Contoh, untuk mem-buffer 10 kali nilai suatu kolom bernama  <i>kecepatan_angin</i> tambahkan ekspresi <i>$feature[&quot;kecepatan_angin&quot;] x 10</i>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Pilih metode buffer</h2></div>
+        <hr/>
+        <div>
+            <p>Anda dapat memilih untuk menggunakan metode  <b>Planar</b> atau metode <b>Geodesic</b>. Metode <b>Planar</b> mungkin lebih cepat dan cocok untuk analisis lokal atas data yang diproyeksikan. Metode <b>Geodesic</b> cocok untuk area besar dan sistem koordinat geografik mana pun.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>Pilih tipe metode penyatuan</h2></div>
+        <hr/>
+        <div>
+            <p>Opsi untuk menentukan metode penyatuan.   Jika metode penyatuan dipilih, Anda akan diberikan opsi membuat area multi-bagian atau satu-bagian dan Anda dapat menghitung statistik berdasarkan kolom yang disediakan.
+                <ul>
+                    <li> <b>Semua</b>&mdash;Semua fitur akan disatukan. Jika fitur multi-bagian diperbolehkan, semua fitur akan disatukan ke dalam sebuah fitur. Jika multi-bagian tidak diperbolehkan, fitur yang bersebelahan atau tumpang tindih akan disatukan.
+                    </li>
+                    <li> <b>Kolom</b>&mdash;Fitur yang memiliki kolom tertentu yang sama atau kombinasi kolom khusus akan disatukan. Jika fitur multi-bagian diperbolehkan, semua fitur dengan kolom yang sama akan disatukan ke dalam sebuah fitur. Jika multi-bagian tidak diperbolehkan, fitur yang bersebelahan atau tumpang tindih dengan nilai kolom yang sama akan disatukan.
+                    </li>
+                    <li> <b>Tidak Ada</b>&mdash;Tidak ada fitur yang akan disatukan.  Ini adalah default.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Izinkan fitur multi-bagian</h2></div>
+        <hr/>
+        <div>
+            <p>Opsi untuk menentukan apakah hasil Anda akan terdiri dari fitur satu-bagian atau multi-bagian. 
+
+            </p>
+            <p>
+                <ul>
+                    <li>Dicentang&mdash;Hasil analisis Anda akan berisi fitur multi-bagian.   
+                    </li>
+                    <li>Tidak Dicentang&mdash;Hasil analisis Anda akan berisi fitur satu-bagian, Ini adalah default.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Tambahkan statistik (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p> Anda dapat menghitung statistik pada fitur yang diringkas. Anda dapat menghitung yang berikut di kolom numerik:
+                <ul>
+                    <li>Jumlah&mdash;Menghitung jumlah nilai nonnull. Dapat digunakan di kolom numerik ataupun string. Jumlah [null, 0, 2] adalah 2.
+                    </li>
+                    <li>Jumlah&mdash;Jumlah nilai numerik di kolom. Jumlah [null, null, 3] adalah 3.
+                    </li>
+                    <li>Rata-rata&mdash;Rata-rata nilai numerik. Rata-rata [0, 2, null] adalah 1.
+                    </li>
+                    <li>Min.&mdash;Nilai minimum kolom numerik. Minimal [0, 2, null] adalah 0. 
+                    </li>
+                    <li>Maks.&mdash;Nilai maksimum kolom numerik. Nilai maksimum [0, 2, null] adalah 2.
+                    </li>
+                    <li>Rentang&mdash;Rentang kolom numerik. Ini dihitung sebagai nilai minimum yang disubtraksi dari nilai maksimum. Rentang [0, null, 1] adalah 1. Rentang [null, 4] adalah 0.
+                    </li>
+                    <li>Varian&mdash;Varian kolom numerik di jalur. Varian [1] adalah null. Varian [null, 1,0,1,1] adalah 0,25.
+                    </li>
+                    <li>Simpangan baku&mdash;Simpangan baku kolom numerik. Simpangan baku [1] adalah null. Simpangan baku [null, 1,0,1,1] adalah 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Anda dapat menghitung yang berikut di kolom numerik:
+                <ul>
+                    <li>Jumlah&mdash;Jumlah string nonnull.
+                    </li>
+                    <li>Apa saja&mdash;Statistik ini adalah contoh acak nilai string di dalam kolom yang telah ditentukan.
+                    </li>
+                </ul>
+                Semua statistik dihitung pada nilai nonnull. Layer hasil akan berisi kolom baru untuk setiap statistik yang dihitung. Angka statistik berapa pun dapat ditambahkan dengan memilih sebuah atribut dan statistik. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Pilih ArcGIS Data Store untuk penyimpanan hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Hasil GeoAnalytics disimpan pada penyimpanan data dan ditampilkan sebagai feature layer di  Portal for ArcGIS. Secara umum, hasil harus disimpan di penyimpanan data spatiotemporal dan ini adalah pilihan default. Secara umum, menyimpan hasil data store relasional adalah opsi yang bagus. Berikut adalah alasan mengapa Anda mungkin ingin menyimpan hasil di data store relasional: 
+                <ul>
+                    <li>Anda dapat menggunakan hasil di portal-ke-kolaborasi portal.
+                    </li>
+                    <li>Anda dapat mengaktifkan kemampuan sinkronisasi dengan hasil Anda.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Anda tidak boleh menggunakan data store relasional jika Anda berharap hasil GeoAnalytics untuk ditingkatkan dan ingin memanfaatkan kemampuan big data store spatiotemporal untuk menangani jumlah data yang besar.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p> Nama layer yang akan dibuat.  Jika Anda menulis ke sebuah ArcGIS Data Store, hasil Anda akan disimpan di  <b>Konten Saya</b> dan ditambahkan ke dalam peta. Jika Anda menulis ke berbagi file big data, hasil Anda akan disimpan ke berbagi file big data dan ditambahkan ke manifestasinya. Ini tidak akan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer sudah ada, alat tidak akan berfungsi.
+            </p>
+            <p>Saat menulis ke  ArcGIS Data Store (penyimpanan big data relasional atau spasiotemporal) menggunakan  <b>Simpan hasil di</b> kotak drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> tempat hasil akan disimpan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

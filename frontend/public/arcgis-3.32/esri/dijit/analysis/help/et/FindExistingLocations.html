@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Leia olemasolevad asukohad</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Leia olemasolevad asukohad"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist selekteerib olemasolevad n&auml;htused teid huvitavast piirkonnast, mis vastavad t&auml;psustatud kriteeriumitele. Need kriteeriumid v&otilde;ivad baseeruda atribuutide p&auml;ringutel (n&auml;iteks vabad maat&uuml;kid) ja ruumilistel p&auml;ringutel (n&auml;iteks k&otilde;ik maat&uuml;kid &uuml;he kilomeetri ulatuses j&otilde;est jne) 
+    </p>
+    <p>Kui ruut  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, anal&uuml;&uuml;sitakse ainult neid sisendkihi objekte, mis on kaardil praegu n&auml;htavad.  Kui ei ole m&auml;rgistatud, anal&uuml;&uuml;sitakse k&otilde;iki objekte, sh neid, mis asuvad kaardi kuvaulatusest v&auml;ljaspool.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Vali kiht, mis sisaldab atribuudipäringute või ruumiliste päringute kaudu otsitavaid objekte</h2></div>
+        <hr/>
+        <div>
+            <p>Punkti-, joone- v&otilde;i alakiht, mille jaoks soovite otsida objekte allpool m&auml;&auml;ratletud atribuudip&auml;ringute ja ruumiliste p&auml;ringute p&otilde;hjal.
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Loo objektide otsimiseks päring</h2></div>
+        <hr/>
+        <div>
+            <p>Avaldise defineerimiseks kl&otilde;psake nuppu  <b>Lisa avaldis</b>.  V&otilde;ite lisada mitu avaldist. P&auml;rast avaldise sisestamist ja nupu <b>K&auml;ivita anal&uuml;&uuml;s</b> kl&otilde;psamist filtreeritakse sisendkihi objektid vastavalt igale avaldisele.  Need objektid, mis vastavad k&otilde;ikidele avaldistele, kirjutatakse tulemuste kihti.
+            </p>
+            <p>V&otilde;ite luua kaht t&uuml;&uuml;pi avaldisi: atribuutide ja ruumip&otilde;hiseid. Atribuutide avaldised on p&auml;ringud v&auml;lja v&auml;&auml;rtustest, n&auml;iteks  <code>kus nimi on 'Tallinn'</code>.  Esineb nelja t&uuml;&uuml;pi ruumilisi avaldisi
+                <ul>
+                    <li> <b></b> kaugusel: objekt peab olema kindlas kauguses teise kihi objektidest.  N&auml;iteks leia maad, mis paiknevad Pirita j&otilde;est maksimaalselt 500 meetri raadiuses.
+                    </li>
+                    <li> <b>sisaldab t&auml;ielikult</b>: objekt peab h&otilde;lmama terve objekti teisest kihist.  N&auml;iteks leia valgalad, mis t&auml;ielikult sisaldavad t&ouml;&ouml;stusalasid. &Uuml;kski maa-ala osa ei tohi olla veelahkmest v&auml;ljaspool.
+                    </li>
+                    <li> <b>t&auml;ielikult</b> sees: teise kihi objekt peab seda objekti t&auml;ielikult &uuml;mbritsema.  N&auml;iteks leia koolide piirkonnad, mis on terviklikult linna piirides. &Uuml;kski kooli piirkonna osa ei tohi olla linna piiridest v&auml;ljaspool.
+                    </li>
+                    <li> <b>l&otilde;ikub</b>: objekt sisaldab osa teise kihi objektist.  N&auml;iteks leia maad, mis l&otilde;ikuvad j&otilde;gedega. Iga j&otilde;e osa, mis l&auml;bib maad v&otilde;i puudutav maa piiri, l&otilde;ikub maaga.
+                    </li>
+                    <li> <b>l&auml;him</b>: objekt peab teise kihi objektile asuma k&otilde;ige l&auml;hemal. N&auml;iteks saate otsida igale hotellile l&auml;hima restorani.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Igal ruumilisel avaldisel (v.a avaldis  <b>l&auml;him</b>) on ka talle vastav eitus: <b>ei ole raadiuses</b>, <b>ei sisalda t&auml;ielikult</b>, <b>ei asu t&auml;ielikult</b> ja <b>ei l&otilde;iku</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Vaikenimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui samanimeline kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemused</b> kaudu saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemus salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

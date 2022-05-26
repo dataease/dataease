@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Sulanda piirajad</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Sulanda piirajad"></h2>
+        <hr/>
+    <p>&Uuml;hist piiri omavad v&otilde;i kattuvuses olevad alad liidetakse &uuml;heks tervikuks.    
+    </p>
+    <p>Te saate kontrollida, kas piirajad &uuml;hendatakse m&auml;&auml;ratud v&auml;lja alusel. Kui teil on n&auml;iteks maakondade kiht ja igal maakonnal on atribuut  <i>State_Name</i>, saate piirajad sulandada atribuudiga <i>State_Name</i>.  K&uuml;lgnevad maakonnad &uuml;hendatakse, kui neil on v&auml;ljal <i>State_Name</i> sama v&auml;&auml;rtus. L&otilde;pptulemusena tekib suurema ulatusega haldus&uuml;ksuste kiht.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vali alakiht, mille piirid sulandatakse</h2></div>
+        <hr/>
+        <div>
+            <p>Kiht, mis sisaldab sulatatavaid pindobjekte. 
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Vali sulandamise meetod</h2></div>
+        <hr/>
+        <div>
+            <p>Pindobjektide &uuml;hendamisel on v&otilde;imalik valida kahe meetodi vahel:
+                <ul>
+                    <li> <b>Alad, mis on &uuml;lekattes v&otilde;i k&uuml;lgnevad</b> &ndash; kaks v&otilde;i enam ala, mille piirid kattuvad, liidetakse &uuml;heks alaks.  Lisaks sellele alad, mis on omavahel k&uuml;lgnevad ehk mis omavad &uuml;hist piiri, liidetakse samuti &uuml;heks tervikalaks.
+                    </li>
+                    <li> <b>Sama v&auml;lja v&auml;&auml;rtust omavad alad</b> &ndash; alad, mis kattuvad v&otilde;i mis omavad &uuml;hist piiri, liidetakse &uuml;heks alaks juhul, kui neil on sama v&auml;lja v&auml;&auml;rtus.
+                        <p>Kui teil on n&auml;iteks maakondade kiht ja igal maakonnal on v&auml;li  <i>State_Name</i>, saate piirajad sulandada v&auml;lja <i>State_Name</i> abil.  K&uuml;lgnevad maakonnad &uuml;hendatakse, kui neil on v&auml;ljal <i>State_Name</i> sama v&auml;&auml;rtus. L&otilde;pptulemusena tekib suurema ulatusega haldus&uuml;ksuste kiht.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Kui ruut  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, liidetakse ainult need sisendkihi objektid, mis on kaardil praegu n&auml;htavad. Kui see ruut pole m&auml;rgitud, sulandatakse k&otilde;ik sisendkihis olevad objektid ka siis, kui neid pole praegu kaardil n&auml;ha.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Loo mitmeosalised objektid</h2></div>
+        <hr/>
+        <div>
+            <p>Mitmeosaline objekt on ArcGIS-i kontekstis paiga v&otilde;i n&auml;htuse digitaalne kujutis, mis koosneb rohkem kui &uuml;hest osast, ent on kirjeldatud &uuml;he objektina, kuna see viitab &uuml;hele atribuutide komplektile. USA osariikide kihis n&auml;iteks v&otilde;iks Hawaii osariiki k&auml;sitleda mitmeosalise objektina, kuna selle erinevad geomeetrilised osad on liigitatud &uuml;he osariigina. See Boole'i parameeter pakub kahte varianti:
+                <ul>
+                    <li>t&otilde;ene (m&auml;rgitud): v&auml;ljundi teenus v&otilde;ib sisaldada mitmeosalisi objekte;
+                    </li>
+                    <li>v&auml;&auml;r (m&auml;rkimata): v&auml;ljundi teenus sisaldab ainult &uuml;heosalisi objekte ja iga osa jaoks luuakse eraldiseisev &uuml;ksikobjekt.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Lisa statistika</h2></div>
+        <hr/>
+        <div>
+            <p>P&auml;rast alade kokku &uuml;hendamist saate summeerida ka nende atribuudid. Kui n&auml;iteks sulandate maakondade piirid kokku atribuudi  <i>State_Name</i> alusel ja igal maakonnal on v&auml;li <i>Population</i>, saate arvutada ka v&auml;lja <i>Population</i> summa maakonna jaoks.
+            </p>
+            <p>Kasutatavad statistikute t&uuml;&uuml;bid on:
+            </p>
+            <ul>
+                <li> <b>Summa</b> &ndash; summeerib m&auml;&auml;ratud v&auml;lja koguv&auml;&auml;rtuse
+                    
+
+                </li>
+                <li> <b>Keskmine</b> &ndash; arvutab m&auml;&auml;ratud v&auml;lja keskmise v&auml;&auml;rtuse
+                    
+
+                </li>
+                <li> <b>Miinimum</b> &ndash; leiab m&auml;&auml;ratud v&auml;lja k&otilde;igi v&auml;&auml;rtuste v&auml;ikseima v&auml;&auml;rtuse
+                    
+
+                </li>
+                <li> <b>Maksimum</b> &ndash; leiab m&auml;&auml;ratud v&auml;lja k&otilde;igi kirjete suurima v&auml;&auml;rtuse
+                    
+
+                </li>
+                <li> <b>Standardh&auml;lve </b> &ndash; leiab m&auml;&auml;ratud v&auml;lja v&auml;&auml;rtuste standardh&auml;lbe
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Vaikenimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui samanimeline kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemused</b> kaudu saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemus salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

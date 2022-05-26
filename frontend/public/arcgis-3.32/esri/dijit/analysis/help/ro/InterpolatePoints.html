@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolare puncte</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Interpolare puncte"></h2>
+        <hr/>
+    <p>   Instrumentul Interpolare puncte vă permite să preziceţi valori &icirc;n locaţii noi pe baza măsurătorilor dintr-o colecţie de puncte. Instrumentul ia date punctuale cu valori &icirc;n fiecare punct şi returnează suprafeţe clasificate &icirc;n funcţie de valorile prezise. De exemplu
+        <ul>
+            <li>Un sector de management al calităţii aerului are senzori care măsoară niveluri de poluare. Instrumentul Interpolare puncte poate fi utilizat pentru a prezice nivelurile de poluare din locaţiile &icirc;n care nu există senzori, cum ar fi locaţiile cu populaţii &icirc;n pericol, cum ar fi şcolile sau spitalele.
+            </li>
+            <li>Preziceţi concentraţiile de metale grele din recolte pe baza mostrelor luate din plante individuale.
+            </li>
+            <li>Preziceţi nivelurile de nutrienţi din sol (azot, fosfor, potasiu şi aşa mai departe) şi alţi indicatori (precum conductivitatea electrică) pentru a studia relaţiile acestora cu producţia şi prescrieţi cantităţi precise de fertilizatori pentru fiecare locaţie de pe c&acirc;mp.
+
+            </li>
+            <li>Printre aplicaţiile meteorologice se numără prezicerea temperaturilor, cantitatea de precipitaţii şi variabile asociate (cum ar fi ploaia acidă). 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Alegeţi stratul tematic de puncte care conţine locaţiile cu valori cunoscute</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic de puncte care va fi utilizat ca bază a interpolării.  
+
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Alegere câmp pentru interpolare</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeţi c&acirc;mpul care conţine valorile pe care doriţi să le interpolaţi.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Optimizare pentru</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeţi preferinţa pentru viteză sau precizie. Predicţiile mai precise necesită mai mult timp pentru a fi calculate.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Erori de predicţie rezultat</h2></div>
+        <hr/>
+        <div>
+            <p> Dacă bifaţi, va fi creat un strat tematic de erori standard pentru predicţii de interpolare.  Numele stratului tematic de ieşire va fi numele stratului tematic rezultat, av&acirc;nd adăugat cuv&acirc;ntul &bdquo;Erori&rdquo;.
+            </p>
+            <p>Erorile standard sunt utile, deoarece furnizează informaţii despre siguranţa valorilor prezise. O metodă empirică simplă este aceea că valoarea adevărată se va &icirc;ncadra &icirc;ntre două erori standard ale valorii prezise, 95% din timp. De exemplu, să presupunem că o nouă locaţie primeşte o valoare prezisă 50 cu o eroare standard de 5.  Aceasta &icirc;nseamnă că cea mai sigură bănuială a instrumentului este că valoarea adevărată &icirc;n locaţia respectivă este 50, &icirc;nsă ar putea &icirc;n mod rezonabil să fie şi cel puţin 40 sau cel mult 60.  Pentru a calcula acest interval de valori rezonabile, multiplicaţi eroarea standard cu 2, adunaţi această valoare la valoarea prezisă pentru a obţine limita superioară a intervalului şi scădeţi-o din valoarea prezisă pentru a obţine limita inferioară a intervalului.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Clasificare după</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeţi cum vor fi clasificate valorile prezise &icirc;n suprafeţe.
+                <ul>
+                    <li>Interval geometric&mdash;Suprafeţele sunt bazate pe intervale de clase, care au o serie geometrică. Această metodă asigură că fiecare interval de clasă are aproximativ acelaşi număr de valori &icirc;n fiecare clasă şi că modificarea de la un interval la altul este consecventă.
+                    </li>
+                    <li>Interval egal&mdash;Sunt create suprafeţe astfel &icirc;nc&acirc;t intervalul valorilor prezise să fie egal pentru fiecare suprafaţă.
+                    </li>
+                    <li>Suprafaţă egală&mdash;Suprafeţele sunt create astfel &icirc;nc&acirc;t numărul valorilor de date să fie egal pentru fiecare suprafaţă. De exemplu, dacă datele au valori mai mult valori mari dec&acirc;t valori mici, se vor crea mai multe suprafeţe pentru valori mari.
+                    </li>
+                    <li>Manual&mdash;Această opţiune vă permite să definiţi propriul interval de valori pentru suprafeţe. Aceste valori vor fi introduse &icirc;n parametrul  <b>Valori limită ale claselor</b> de mai jos.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Număr de clase</h2></div>
+        <hr/>
+        <div>
+            <p>Specifică numărul de clase (interval sau valori anticipate) &icirc;n stratul tematic rezultat. Fiecare clasă defineşte limitele suprafeţelor. Valorile acestor clase vor fi determinate de parametrul 
+ <b>Clasificare după</b> de mai sus.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Valori de separare clase</h2></div>
+        <hr/>
+        <div>
+            <p>Introduceţi valorile limită ale claselor dorite, separate cu spaţii. De exemplu, dacă doriţi limite de clase la valorile 1,5, 3 şi 7, introduceţi  <code>1,5 3 7</code>.  Aceste valori vor defini limita superioară a fiecărei clase, astfel &icirc;nc&acirc;nt numărul de clase va fi egal cu numărul de valori introduse. Nu vor fi create suprafeţe pentru nicio locaţie cu valori prevăzute peste cea mai mare valoare limită introdusă. Trebuie să introduceţi cel puţin două valori, dar nu mai mult de 32.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Decupare rezultat la</h2></div>
+        <hr/>
+        <div>
+            <p>trasaţi sau furnizaţi un strat tematic, care să specifice suprafaţa &icirc;n care doriţi să fie trasat rezultatul. De exemplu, dacă interpolaţi măsurători ale poluării unui lac, puteţi utiliza limitele lacului &icirc;n acest parametru, iar rezultatul va fi trasat numai pe suprafaţa lacului.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Predicţie în aceste locaţii</h2></div>
+        <hr/>
+        <div>
+            <p>Trasaţi sau furnizaţi un strat tematic &icirc;n care să specificaţi locaţii punctuale pentru a calcula valori prezise. Acest lucru vă permite să efectuaţi predicţii &icirc;n anumite locaţii de interes. De exemplu, dacă stratul tematic de intrare reprezintă măsurători ale nivelurilor de poluare, puteţi utiliza acest parametru pentru a prezice nivelurile de poluare ale locaţiilor cu populaţii mari expuse la riscuri, cum ar fi şcolile şi spitalele.  Apoi, puteţi utiliza aceste informaţii pentru a formula recomandări responsabililor pentru sănătate din locaţiile respective.
+            </p>
+            <p>Dacă este utilizat, acest instrument va produce un strat tematic de puncte cu predicţii &icirc;n locaţiile specificate. Numele stratului tematic de ieşire va fi numele stratului tematic rezultat, av&acirc;nd adăugat cuv&acirc;ntul &bdquo;Puncte&rdquo;.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic care va fi creat &icirc;n  <b>Resursele mele</b> și adăugat &icirc;n hartă.  Numele implicit se bazează pe numele instrumentului și numele stratului tematic de intrare. Dacă numele stratului tematic rezultat există deja, vi se va solicita să furnizați un alt nume.
+            </p>
+            <p>Utiliz&acirc;nd meniul derul&acirc;nd  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

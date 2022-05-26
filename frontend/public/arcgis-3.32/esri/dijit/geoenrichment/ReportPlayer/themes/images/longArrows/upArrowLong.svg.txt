@@ -1,0 +1,3 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 16 16">
+	<path fill="${fillColor}" d="M3.79 4.71L8 0.5L12.21 4.71L10.8 4.71L8.5 2.42L8.5 15.5L7.51 15.5L7.51 2.4L5.2 4.71L3.79 4.71Z"/>
+</svg>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Izvedi nove lokacije</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="Izvedi nove lokacije"></h2>
+        <hr/>
+    <p>Ova alatka izvodi nove geoobjekte u va&scaron;oj oblasti ispitivanja koji ispunjavaju seriju kriterijuma koje navedete. Ovi kriterijumi mogu da budu zasnovani na atributnim upitima (na primer, parcele koje su prazne) i prostornim upitima (na primer, parcele koje su unutar zona poplave).
+
+    </p>
+    <p>Ako je opcija  <b>Koristi trenutni obuhvat mape</b> izabrana, samo oni geoobjekti koji su vidljivi unutar trenutnog obuhvata mape biće analizirani. Ako nije izabrana, analiziraće se svi geoobjekti, čak i ako su izvan trenutnog obuhvata mape.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>Izvedite nove lokacije koje se podudaraju sa sledećim izrazima</h2></div>
+        <hr/>
+        <div>
+            <p>Kliknite na dugme  <b>Dodaj izraz</b> da biste definisali izraz. Možete da dodate vi&scaron;e izraza. Nakon &scaron;to unesete izraz i kliknete na dugme <b>Pokreni analizu</b>, geoobjekti u va&scaron;em sloju analize biće filtrirani kroz svaki izraz. Delovi geoobjekata koji zadovoljavaju sve izraze upisuju se u sloj sa rezultatima.
+            </p>
+            <p>Postoje dva osnovna tipa izraza koje možete da kreirate: atributni i prostorni. Atributni izrazi su upiti nad vrednostima polja, kao &scaron;to je  <code>gde je ime &lsquo;San Francisko&rsquo;</code>. Postoje četiri tipa prostornih izraza:
+                <ul>
+                    <li> <b>unutar razdaljine</b>: delovi geoobjekata unutar razdaljine od geoobjekta na drugom sloju. Na primer, pronađite delove parcela koje su na razdaljini od najvi&scaron;e 500 metara od reke Los Anđeles.
+                    </li>
+                    <li> <b>sadrži potpuno</b>: geoobjekat mora da sadrži čitav geoobjekat iz drugog sloja. Na primer, pronađite vododelnice koje potpuno sadrže parcele zonirane za industrijsku upotrebu. Nijedan deo parcele ne sme da bude izvan vododelnice.
+                    </li>
+                    <li> <b>potpuno unutar</b>: geoobjekat mora potpuno da bude okružen geoobjektom iz drugog sloja. Na primer, pronađite &scaron;kolske distrikte koji su potpuno unutar granica grada. Nijedan deo &scaron;kolskog distrikta ne sme da bude izvan granica grada.
+                    </li>
+                    <li> <b>preseca</b>: geoobjekat ili delovi geoobjekta moraju da se preklapaju sa geoobjektom iz drugog sloja ili da ga presecaju. Na primer, pronađite oblasti izgorele vegetacije nastale usled većeg broja požara u nacionalnom parku. Izgorele oblasti izvan granica parka neće biti obuhvaćene.
+                    </li>
+                    <li> <b>najbliži do</b>: geoobjekat mora najbliži do geoobjekta iz drugog sloja. Na primer, pronađite zeleni prostor koji je najbliži svakoj &scaron;koli.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Svaki prostorni izraz ima odgovarajuću negaciju, sa izuzetkom za  <b>najbliži do</b>; <b>nije unutar razdaljine</b>, <b>ne sadrži u potpunosti</b>, <b>nije potpuno unutar</b> i <b>ne preseca</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako naziv sloja već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Koristeći padajući meni  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> u kojoj će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

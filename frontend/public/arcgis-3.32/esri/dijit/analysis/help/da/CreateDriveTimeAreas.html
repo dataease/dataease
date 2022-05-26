@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Opret køretidsområder</h2><p/>
+        <h2><img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" alt="Opret k&oslash;retidsomr&aring;der"></h2>
+        <hr/>
+    <p>Med Opret k&oslash;retidsomr&aring;de oprettes der omr&aring;der, som kan n&aring;s inden for en bestemt k&oslash;retid, k&oslash;reafstand, g&aring;afstand osv. Det m&aring;les ud fra et eller flere punkter (op til 1.000) langs veje eller fortove, s&aring; der oprettes et lag, der kan hj&aelig;lpe dig med at besvare sp&oslash;rgsm&aring;l som:
+        <ul>
+            <li>Hvor kan jeg komme hen, hvis jeg k&oslash;rer i en halv time?
+            </li>
+            <li>Hvor kan jeg komme hen, hvis jeg k&oslash;rer i en halv time kl. 17.30 i myldretiden?
+            </li>
+            <li>Hvad ligger inden for to kilometers gang fra mit hotel?
+            </li>
+            <li>Hvilke omr&aring;der i byen kan brandv&aelig;senet n&aring; inden for fem minutter? 
+            </li>
+            <li>Hvordan vil det p&aring;virke brandv&aelig;senets responstid at bygge en ny brandstation her?
+            </li>
+            <li>Hvilke markedsomr&aring;der d&aelig;kker min virksomhed?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Du kan besvare sp&oslash;rgsm&aring;let alene gennem at visualisere outputomr&aring;derne. Du kan ogs&aring; udf&oslash;re yderligere spatial analyse vha. outputomr&aring;derne. Du kan f.eks. k&oslash;re Aggreg&eacute;r punkter vha. k&oslash;retidsomr&aring;der med demografiske data for at f&aring; hj&aelig;lp til at bestemme, hvilken placering af en potentiel forretning, der giver det bedste kundeunderlag for din virksomhed. 
+    </p>
+    <p>
+        <table>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        <tr><td valign="baseline"><img src="../images/tip.png"></td><td valign="baseline"><h2>Tip:&ensp;</h2></td>
+        <td valign="baseline">
+            <p>Brug v&aelig;rkt&oslash;jet Opret buffere til at oprette omr&aring;der ved at m&aring;le fugleflugtslinjer i stedet for at m&aring;le langs veje.
+            </p>
+        </td></tr>
+        <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+        </table>
+    </p>
+    <p>Hvis feltet  <b>Anvend aktuel kortudstr&aelig;kning</b> er markeret, er det kun objekterne, der er synlige inden for den aktuelle kortudstr&aelig;kning, der anvendes til at oprette k&oslash;retids- eller k&oslash;reafstandsbaserede omr&aring;der. Hvis feltet ikke er markeret, anvendes alle objekter i inputlaget, ogs&aring; selvom de befinder sig uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg det punktlag, som der skal beregnes køretidsområder omkring</h2></div>
+        <hr/>
+        <div>
+            <p>De punktobjekter, der skal beregnes omr&aring;der omkring. Du kan v&aelig;lge, hvordan omr&aring;der beregnes p&aring; grundlag af rejsetilstand (bilk&oslash;rsel, lastbilk&oslash;rsel eller gang) og m&aring;ling (tid eller afstand).
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+            <p>V&aelig;rkt&oslash;jet underst&oslash;tter op til 1.000 objekter i hvert inputlag.
+
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Opmål</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg din rejsem&aring;de (k&oslash;rsel, lastbil eller gang) og m&aring;l (tid eller afstand De tilg&aelig;ngelige rejsetilstande fasts&aelig;ttes af administratoren for din organisation. N&aring;r du har valgt tilstand og m&aring;l, skal du angive en varighed eller afstand p&aring; op til  5 timer (300 minutter) eller  300 miles (482,80 kilometer). 
+            </p>
+            <p>Rejseretningen ( <b>v&aelig;k fra facilitet</b> eller <b>mod facilitet</b>) kan p&aring;virke, hvordan omr&aring;derne genereres. Opret k&oslash;retidsomr&aring;der overholder ensretning, undg&aring;r ulovlige sving og f&oslash;lger &oslash;vrige regler baseret p&aring; k&oslash;rselsretningen. Du skal v&aelig;lge k&oslash;rselsretning ud fra typen af input-placeringer og konteksten af din analyse. F.eks. skal k&oslash;retidsomr&aring;det for en pizza-udbringer oprettes v&aelig;k fra facilitet, mens k&oslash;retidsomr&aring;det for et hospital skal oprettes mod facilitet.
+            </p>
+            <p>N&aring;r du v&aelig;lger  <b>K&oslash;retid</b>, <b>K&oslash;retid i landlige omgivelser</b>, eller <b>Lastbilsk&oslash;retid</b> kan du v&aelig;lge, hvordan k&oslash;retiden skal m&aring;les.
+                <ul>
+                    <li>
+                        <p>Fjern markeringen af  <b>Brug trafik</b> for at oprette k&oslash;retidsomr&aring;der baseret p&aring; faste hastigheder. V&aelig;lg denne indstilling, hvis du &oslash;nsker et generelt k&oslash;retidsomr&aring;de og ikke et, der er beregnet ved at tage h&oslash;jde for skiftende trafikforhold p&aring; et bestemt afgangstidspunkt.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Marker feltet  <b>Brug trafik</b> for at oprette k&oslash;retidsomr&aring;der baseret p&aring; et givent starttidspunkt og skiftende trafikforhold. Hvis du ogs&aring; v&aelig;lger <b>Aktuel trafik</b>, angives afgangstidspunktet fra inputpunkterne til den aktuelle tid, og den aktuelle trafikhastighed samt prognoser for trafikhastighed hentes fra sensorer og feeds for at oprette k&oslash;retidsomr&aring;der. De forventede k&oslash;rehastigheder beregnes under henvisning til trafikkens aktuelle hastigheder, historiske hastigheder og aktuelle forhold som f.eks. vejret. Trafikkens hastighed forudsiges 12 timer frem, s&aring; afgangstidspunktet kan indstilles ved at flytte skyderen op til 12 timer frem.
+                        </p>
+                        <p>Brug disse indstillinger for den aktuelle trafik til at finde ud af, hvilke omr&aring;der der kan n&aring;s ved afgang nu, afgang en time fra nu osv.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Hvis du markerer  <b>Brug trafik</b> og v&aelig;lger <b>Trafik baseret p&aring; typiske forhold for</b> en dag og et klokkesl&aelig;t, opretter v&aelig;rkt&oslash;jet k&oslash;retidsomr&aring;der baseret p&aring; gennemsnittet af historisk hastighed for hvert femte minut i en normal uge. Resultaterne omfatter trafik, men fjerner p&aring;virkningen af aktuelle trafikforhold og h&aelig;ndelser, som i betydelig grad kan skille sig ud fra normen.
+                        </p>
+                        <p>Du kan bruge disse historiske trafikindstillinger til eksempelvis at f&aring; svar p&aring; sp&oslash;rgsm&aring;let: &quot;hvilke omr&aring;der kan jeg generelt n&aring;, hvis jeg k&oslash;rer fra startobjekterne kl. 11.30 p&aring; en onsdag?&quot; 
+                        </p>
+                        <p>Klokkesl&aelig;ttet, du indstiller, henviser til tidszonen, som inputpunkterne befinder sig i. S&aring; hvis du indstiller tidspunktet til 8.00 og har to punkter &ndash; &eacute;t i New York City og et andet i Los Angeles, genereres k&oslash;retidsomr&aring;derne for henholdsvis kl. 8.00 p&aring; &oslash;stkysten (Eastern Time) og kl. 8.00 p&aring; vestkysten (Pacific Time).
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Bem&aelig;rk, at n&aring;r et k&oslash;ret&oslash;j begiver sig v&aelig;k fra et punkt, s&aring; g&aring;r tiden, og trafikforholdene &aelig;ndrer sig. V&aelig;rkt&oslash;jet til k&oslash;retidsomr&aring;der tager h&oslash;jde for disse variationer, hvis du v&aelig;lger  <b>K&oslash;retid</b> og markerer <b>Brug trafik</b>; men ikke alle regioner underst&oslash;tter trafik. Klik p&aring; linket <b>Se tilg&aelig;ngelighed</b> i v&aelig;rkt&oslash;jet for at finde ud af, hvorvidt det er tilf&aelig;ldet i det omr&aring;de, du unders&oslash;ger.
+            </p>
+            <p> <b>Lastbilsk&oslash;retid</b> kan benytte dynamiske rejsehastigheder baseret p&aring; trafikken, men kun op til hastighedsgr&aelig;nserne for lastbiler. Hvis den dynamiske hastighed for en vej baseret p&aring; den aktuelle trafik f.eks. er 110 km/t , men hastighedsgr&aelig;nsen for lastbiler p&aring; den p&aring;g&aelig;ldende vej er 80 km/t, benytter beregningen 80 km/t for denne  vej.
+            </p>
+            <p> <b>G&aring;tid</b> og <b>G&aring;afstand</b> anvender en fast hastighed p&aring; 5 kilometer i timen (3,1 miles i timen) og f&oslash;lger fortove og udpegede gader (men ignorerer regler, der p&aring;virker biler, f.eks. ensrettede gader). </p>
+            <p> <b>Lastbilsk&oslash;reafstand</b> anvender faste hastigheder og f&oslash;lger de regler, der g&aelig;lder for tunge lastbiler, hvorimod <b>K&oslash;reafstand</b> og <b>K&oslash;reafstand  i landlige omgivelser</b> anvender faste hastigheder og f&oslash;lger de regler, der g&aelig;lder for almindelige personbiler.
+            </p> 
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Vælg grænselag</h2></div>
+        <hr/>
+        <div>
+            <p> Et eller flere objekter, der fungerer som midlertidige begr&aelig;nsninger (barrierer) under transport p&aring; de underliggende gader. Du kan angive gr&aelig;nser vha. punkt-, linje- eller polygonobjekter.
+            </p>
+            <p>En punktgr&aelig;nse kan modellere et f&aelig;ldet tr&aelig;, en ulykke, en nedfalden elektrisk ledning eller andet, der blokerer helt for trafikken p&aring; en specifik position p&aring; gaden. Transport er tilladt p&aring; gaden, men ikke gennem gr&aelig;nsen (barrieren). Du kan angive op til 250 objekter, der kan fungere som punktgr&aelig;nser.
+            </p>
+            <p>En linjegr&aelig;nse forhindrer transport alle steder, hvor gr&aelig;nsen gennemsk&aelig;rer gaderne. En linjegr&aelig;nse kan f.eks. bruges til at modellere en parade eller en demonstration, der blokerer trafikken p&aring; tv&aelig;rs af flere gadesegmenter. Hvis det antal gadesegmenter, der gennemsk&aelig;res af linjegr&aelig;nserne, overskrider 500, returnerer v&aelig;rkt&oslash;jet en fejl.
+            </p>
+            <p>En polygongr&aelig;nse forhindrer transport alle steder, hvor polygonen gennemsk&aelig;rer gaderne. &Eacute;n m&aring;de at benytte denne type gr&aelig;nse p&aring; er at modellere oversv&oslash;mmelser, der d&aelig;kker s&aring; store dele af vejnettet, at vejtransport bliver umulig. Hvis det antal gadesegmenter, der gennemsk&aelig;res af polygongr&aelig;nserne, overskrider 2000, returnerer v&aelig;rkt&oslash;jet en fejl.
+            </p>
+        </div>
+    </div>
+    <div id="DissolveType">
+        <div><h2>Områder fra forskellige punkter</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg, hvordan delte omr&aring;der fra forskellige inputpunkter, skal h&aring;ndteres, n&aring;r de n&aring;r hinanden. De kan:
+                <ul>
+                    <li> <b>Overlap</b> &ndash; Omr&aring;der fra forskellige inputpunkter kan d&aelig;kke samme vej. Dette er nyttigt, n&aring;r du har behov for at kende alle inputpunkter, der kan n&aring; et bestemt sted inden for en given tid eller -afstand.
+                    </li>
+                    <li> <b>Opl&oslash;s</b> &ndash; Alle omr&aring;der flettes til &eacute;t, og ikke mere end et omr&aring;de, der kan d&aelig;kke et bestemt sted. Dette er nyttigt, hvis det eneste, du beh&oslash;ver at vide er, at omr&aring;det kan n&aring;s inden for et givent tidsrum eller en given afstand, men ikke hvilke specifikke inputpunkter, der kan n&aring; stedet.
+                    </li>
+                    <li> <b>Opdel</b> &ndash; Omr&aring;derne fra forskellige inputsteder, som ville overlappe hinanden, deles p&aring; midten, s&aring; de i stedet st&oslash;der op til hinanden. Dette er nyttigt, hvis du vil se, hvilke omr&aring;der der er inden for et givent tidsrum eller en given afstand fra inputpunkterne, og samtidigt bestemme, hvilket inputpunkt der er n&aelig;rmest det p&aring;g&aelig;ldende omr&aring;de.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="showHoles">
+        <div><h2>Vis utilgængelige områder som huller</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg, om output-omr&aring;derne skal indeholde huller, hvis nogle gader ikke kunne n&aring;s p&aring; grund af  <b>M&aring;le</b>-tiden eller -afstanden eller p&aring; grund af begr&aelig;nsninger, der stammer fra rejsetilstanden.
+            </p>
+            <p>K&oslash;retidsomr&aring;der, der er oprettet ved hj&aelig;lp af denne parameter, har en gr&aelig;nse p&aring; 15 minutter eller 24 kilometer.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+    <div id="includeReachableStreets">
+        <div><h2>Medtag gader, der kan nås</h2></div>
+        <hr/>
+        <div>
+            <p>Medtag de gader, der bruges til at oprette k&oslash;retidsomr&aring;derne, som et outputlag. 
+            </p>
+            <p>Opret k&oslash;retidsomr&aring;der m&aring;ler r&aelig;kkevidden for en facilitet langs vejnettet og opretter derefter k&oslash;retidsomr&aring;der ud fra de gader, der blev benyttet. Derfor er omr&aring;derne en tiln&aelig;rmelse baseret p&aring; de gader, der blev benyttet. Hvis din analyse skal fastl&aelig;gge, hvilke gader der er d&aelig;kket af en bestemt rejseafstand eller tid fra en facilitet, kan det v&aelig;re mere n&oslash;jagtigt at generere gader, der kan n&aring;s, end at bruge k&oslash;retidsomr&aring;derne til at vurdere, om en bestemt gade kan n&aring;s.
+            </p>
+            <p>K&oslash;retidsomr&aring;der, der er oprettet ved hj&aelig;lp af denne parameter, har en gr&aelig;nse p&aring; 15 minutter eller 24 kilometer.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

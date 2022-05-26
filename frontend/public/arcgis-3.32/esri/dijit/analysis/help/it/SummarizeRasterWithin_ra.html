@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Riepiloga raster entro</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Strumento Riepiloga raster entro"></h2>
+        <hr/>
+    <p>Questo strumento riepiloga un raster basato su aree (zone) definite dal primo layer di input.
+    </p>
+    <p>Di seguito sono riportate alcune applicazioni di esempio:
+    </p>
+    <p>
+        <ul>
+            <li>Dati un layer di confini spartiacque ed un layer di confini di utilizzo del suolo per tipo di utilizzo, &egrave; possibile calcolare la superficie totale in acri del tipo di utilizzo del suolo per ogni spartiacque.
+                
+
+            </li>
+            <li>Dati un layer di lotti di una regione ed un layer di confini di citt&agrave;, &egrave; possibile riepilogare il valore medio di lotti non occupati entro ciascun confine di citt&agrave;.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se l'opzione  <b>Usa estensione mappa corrente</b> &egrave; selezionata, vengono analizzate solo quelle feature nel layer di input e nel layer da riepilogare visibili all'interno dell'estensione mappa corrente.  Se &egrave; deselezionata, vengono analizzate tutte le feature presenti nel layer di input e nel layer da riepilogare, anche se esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Scegli layer di area per riepilogare un layer raster entro confini definiti</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer che definisce i confini delle aree, o zone, che verranno riepilogati.
+            </p>
+            <p>Il layer pu&ograve; essere un raster o dati feature. Per i raster, le zone sono definite da tutte le posizioni nell'input aventi lo stesso valore di cella. Le aree non devono essere contigue.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Scegli campo per definire i confini</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; l'attributo del layer che verr&agrave; utilizzato per definire i confini delle aree.
+            </p>
+            <p>Si supponga, ad esempio, che il primo layer di input definisca i confini dell'unit&agrave; di gestione, con attributi che definiscono la regione, il distretto e l'ID particella di ciascuna unit&agrave;. Si dispone anche di un layer raster che definisce un indice di biodiversit&agrave; per ciascuna posizione. Con il campo selezionato, &egrave; possibile decidere di calcolare la biodiversit&agrave; media a livello locale, di distretto o di regione.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Scegli layer raster per il riepilogo</h2></div>
+        <hr/>
+        <div>
+            <p>Le celle raster in questo layer saranno riepilogate in base alle aree (zone) comprese.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Scegli statistiche da calcolare</h2></div>
+        <hr/>
+        <div>
+            <p>Dopo aver scelto un layer da riepilogare, &egrave; possibile, facoltativamente, calcolare statistiche di qualsiasi attributo numerico dei punti, delle linee o delle aree che si trovano all'interno del layer di area di input.
+            </p>
+            <p>I tipi di statistiche disponibili quando il campo selezionato &egrave; un intero sono Media, Maggioranza, Massimo, Mediana, Minimo, Minoranza, Intervallo, Deviazione standard, Somma e Variet&agrave;.
+            </p>
+            <p>Se il campo &egrave; a virgola mobile, le opzioni sono Media, Massimo, Minimo, Intervallo, Deviazione standard e Somma.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Ignora valori mancanti nei calcoli</h2></div>
+        <hr/>
+        <div>
+            <p>Se si sceglie di ignorare i valori mancanti, solo le celle che hanno un valore nel layer da riepilogare verranno utilizzate per determinare il valore di output per tale area. In caso contrario, se mancano dei valori in un punto qualunque di un'area, le informazioni non saranno sufficienti per eseguire calcoli statistici per tutte le celle in quella zona e tale area ricever&agrave; un valore null (NoData) nell'output.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome.
+            </p>
+            <p>&Egrave; possibile specificare il nome di una cartella in  <b>I miei contenuti</b> in cui salvare il risultato usando la casella a discesa <b>Salva risultato in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>尋找點叢集</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="尋找點叢集"></h2>
+        <hr/>
+    <p> 尋找點叢集工具可在基於其空間分佈的周圍噪訊內，尋找點圖徵的叢集。
+    </p>
+    <p>例如，一個非政府組織正在研究一種特殊的害蟲傳播疾病。它有一個代表研究區域中家庭的點資料集，其中一些已經被感染，另一些則沒有。藉由使用 尋找點叢集工具，分析人員可判定受感染的家庭叢集，以協助鎖定某個區域來開始治療和消滅害蟲。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇要尋找的叢集所在的圖層</h2></div>
+        <hr/>
+        <div>
+            <p>將在其中尋找叢集的點圖層。圖層必須位於投影空間參考中，或必須使用 <b>分析環境</b>，將處理空間參考設為投影座標系統。
+            </p>
+            <p>除了從地圖選擇圖層外，您也可以選擇下拉式清單底部的 <b>選擇分析圖層</b>，以瀏覽到大數據檔案分享資料集或圖徵圖層的內容。
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>選擇要使用的叢集方法</h2></div>
+        <hr/>
+        <div>
+            <p>將用來區隔點圖徵叢集與周圍噪訊的叢集方法。您可以選擇使用定義的距離或自我調整的叢集演算法。
+            </p>
+            <p>定義的距離 (DBSCAN) 使用指定的搜尋範圍來區分密集叢集與稀疏噪訊。定義的距離 (DBSCAN) 較快速，但只有在使用極清晰的搜尋範圍以定義可能出現的所有叢集時才適用。定義的距離 (DBSCAN) 會尋找具有類似密度的叢集。
+            </p>
+            <p>自我調整 (HDBSCAN) 不需要指定搜尋範圍，但它是一種更耗時的方法。自我調整 (HDBSCAN) 會尋找與定義的距離 (DBSCAN) 相類似的點叢集，但使用不同的搜尋範圍以允許密度不同的叢集。
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>要視為一個叢集的最少點數</h2></div>
+        <hr/>
+        <div>
+            <p>依據選擇的叢集方法，此參數具有不同的使用方式：
+            </p>
+            <p>
+                <ul>
+                    <li>定義的距離 (DBSCAN) - 指定必須在某點的特定距離內的圖徵數量，讓該點開始形成叢集。距離是使用 <b>將搜尋範圍限制為</b>參數所定義。
+                    </li>
+                    <li>自我調整 (HDBSCAN) - 指定在估計密度時，將考量的每個點（包含點本身）鄰近的圖徵數量。此數量也是擷取叢集時所允許的叢集大小下限。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>將搜尋範圍限制為</h2></div>
+        <hr/>
+        <div>
+            <p>使用定義的距離 (DBSCAN) 時，此參數是 <b>要視為一個叢集的最少點數</b>內的必要距離。選擇使用自我調整 (HDBSCAN) 叢集方法時不會使用此參數。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p> 將建立之圖層的名稱。若是寫入到 ArcGIS Data Store，您的結果將儲存於<b>我的內容</b>並新增至地圖中。若是寫入到大數據檔案分享，您的結果將儲存於大數據檔案分享並新增至其資訊清單中。不會將它新增到地圖。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層已存在，工具將失敗。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式方塊寫入到 ArcGIS Data Store（關聯式或大型的時空資料儲存庫）時，可以在<b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

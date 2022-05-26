@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>附加資料</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="附加資料工作流程圖"></h2>
+        <hr/>
+    <p>此工具可將資料附加到現有的託管圖徵圖層。附加資料會修改原始輸入圖層，並且不會產生新的輸出圖層。您可以根據欄位名稱和欄位類型，或套用更先進的比對方法來比對欄位。
+    </p>
+    <p>以下是範例： 
+        <ul>
+            <li>您是一家大型保險公司的員工，每月都會產生銷售記錄。您必須針對年度報告，編制每月資料以進行分析。若要啟動銷售分析，您可以在得出每月數字時，利用「附加資料」來更新您的 AnnualReport_2018 圖層。由於您知道您的組織每個月都會維持使用一致的方案，因此您可以根據欄位名稱和類型，使用預設的欄位對應方法來有效地附加圖徵。
+            </li>
+            <li>十個環保組織會各自在其轄區內收集數十萬筆氣候測量資料。這些組織希望編譯資料以更好地理解地區和全球模式。每一個組織會決定其資料集的方案。它們會各自為溫度和風速資料指定不同的欄位名稱。基於資料集之間的欄位名稱差異，可利用欄位 對應來指定如何將溫度和風速測量附加到其相應的欄位。
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇要附加到的圖層</h2></div>
+        <hr/>
+        <div>
+            <p>將附加資料的表格、點、線或多邊形圖徵。
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>執行工具時將修改附加到的圖層。繼續前請確定您要修改此圖層。
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>除了從地圖選擇圖層外，您也可以選擇下拉式清單底部的 <b>選擇分析圖層</b>，以瀏覽到託管圖徵圖層的內容。
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>選擇要附加的圖層</h2></div>
+        <hr/>
+        <div>
+            <p>要附加到輸入圖層的表格、點、線或多邊形圖徵。
+            </p>
+            <p>除了從地圖選擇圖層外，您也可以選擇下拉式清單底部的 <b>選擇分析圖層</b>，以瀏覽到大數據檔案分享資料集或圖徵圖層的內容。
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>附加所有圖徵或定義子集 (選用)</h2></div>
+        <hr/>
+        <div>
+            <p>識別要附加的圖徵。此參數是選用的。
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>選擇如何附加欄位 (選用)</h2></div>
+        <hr/>
+        <div>
+            <p>指定如何將附加圖層欄位附加到輸入圖層。預設情況下，將附加所有符合的輸入和附加欄位。若欄位具有相同的欄位名稱和相同的欄位類型，則它們是符合項。（選用）您可以選擇欄位的比對方式，或計算 Arcade 表達式來填入欄位值。
+            </p>
+            <p>例如，您擁有包含  <i>field_number</i>、 <i>field_string</i>、 <i>date_field</i>、 <i>unused_field</i> 欄位的輸入圖層，及包含 <i>field_string</i>、 <i>field_number</i> 和 <i>MY_DATE_FIELD</i> 欄位的附加圖層。
+                <ul>
+                    <li>預設情況下，工具將比對輸入圖層中的  <i>field_number</i> 與附加圖層中的 <i>field_number</i>，及輸入圖層中的 <i>field_string</i> 與附加圖層中的 <i>field_string</i>。
+                    </li>
+                    <li>預設情況下，由於輸入圖層  <i>date_field</i> 和 <i>unused_field</i> 欄位在附加圖層中沒有符合的欄位，因此會在這些欄位中填入值 <i>null</i>。
+                    </li>
+                    <li>（選用）您可以將值附加到預設不會自動匹配的欄位中。例如，輸入圖層中的  <i>date_field</i> 可匹配附加欄位 <i>MY_DATE_FIELD</i>。若要這麼做，請使用第一欄中 <i>date_field</i> 旁的下拉式功能表，並在第二欄中從下拉式功能表選擇 <i>MY_DATE_FIELD</i>。
+                    </li>
+                </ul>
+                 另有一個例子，即輸入圖層具有數值欄位 <i>value_1</i>、 <i>value_2</i>、 <i>value_3</i> 和 <i>my_Average</i>，而附加圖層具有數值欄位 <i>value_1</i>、 <i>value_2</i> 和 <i>value_3</i>。
+                <ul>
+                    <li>預設情況下，將比對並附加  <i>value_1</i>、 <i>value_2</i> 和 <i>value_3</i>。
+                    </li>
+                    <li>除了預設行為外，也可以計算  <i>my_Average</i> 欄位的值。可使用多個欄位和數學運算來執行此動作，方法是在 <i>my_Average</i> 旁的欄中選擇 <b>表達式</b>下拉式選項，再建立自訂的 Arcade 表達式，例如 <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

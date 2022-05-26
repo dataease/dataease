@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calcular Densidade</h2><p/>
+        <h2><img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" alt="Calcular Densidade"></h2>
+        <hr/>
+    <p>A ferramenta Calcular Densidade cria um mapa de densidade de ponto ou linha de elementos espalhando quantidades conhecidas de algum fen&oacute;meno (representados como atributos dos pontos ou linhas) atrav&eacute;s do mapa. O resultado &eacute; uma camada de &aacute;reas classificadas da menos densa para a mais densa.   
+
+    </p>
+    <p>Para a entrada de ponto, cada ponto deve representar a localiza&ccedil;&atilde;o de algum evento ou incidente, e a camada resultado representa uma contagem do incidente por unidade de &aacute;rea. Um valor de densidade mais elevado numa nova localiza&ccedil;&atilde;o significa que existem mais pontos perto desse local. Em muitos casos, a camada de resultado pode ser interpretada como uma superf&iacute;cie de risco para futuros eventos. Por exemplo, se os pontos de entrada representam locais de queda de rel&acirc;mpagos, a camada resultado pode ser interpretada como uma superf&iacute;cie de risco para quedas de raios futuras.
+    </p>
+    <p>Para a entrada de linha, a superf&iacute;cie da linha de densidade representa o valor total da linha que est&aacute; perto de cada local. As unidades dos valores de densidade calculados s&atilde;o o comprimento de linha por unidade de &aacute;rea. Por exemplo, se as linhas representam rios, a camada resultado representar&aacute; o comprimento total dos rios que se encontram dentro do raio de busca. Este resultado pode ser usado para identificar as &aacute;reas que s&atilde;o hospitaleiras para animais de pasto.
+    </p>
+    <p> Outros casos de uso desta ferramenta incluem o seguinte:
+        <ul>
+            <li>Cria&ccedil;&atilde;o de mapas de densidade de crime para ajudar os departamentos de pol&iacute;cia a alocar adequadamente os recursos para &aacute;reas de alta criminalidade.
+            </li>
+            <li>Calculando densidades de hospitais dentro de um munic&iacute;pio. A camada resultado mostrar&aacute; as &aacute;reas com acessibilidades alta e baixa para os hospitais, e esta informa&ccedil;&atilde;o pode ser usada para decidir onde o novo deve ser constru&iacute;do.
+            </li>
+            <li>Identificar &aacute;reas que est&atilde;o em risco elevado de inc&ecirc;ndios florestais com base em locais hist&oacute;ricos de inc&ecirc;ndios florestais.
+            </li>
+            <li>Localizar as comunidades que est&atilde;o longe de auto-estradas, a fim de planejar onde as novas estradas devem ser constru&iacute;das.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolher ponto ou camada de linha da qual calcular densidade.</h2></div>
+        <hr/>
+        <div>
+            <p>O ponto ou camada de linha da qual a densidade ser&aacute; calculada.
+
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, pode selecionar  <b>Escolher Camada de An&aacute;lise</b> que se encontra na parte inferior da lista pendente. Esta op&ccedil;&atilde;o abre uma galeria, na qual pode navegar e selecionar conjuntos de dados de v&aacute;rias fontes para utilizar na sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Use um campo de contagem</h2></div>
+        <hr/>
+        <div>
+            <p>Fornecer um campo especificando o n&uacute;mero de incidentes em cada local. Por exemplo, se tem pontos que representam as cidades, pode usar um campo que representa a popula&ccedil;&atilde;o da cidade, como o campo de contagem, e a camada de densidade populacional resultante ir&aacute; calcular as densidades populacionais maiores perto de cidades com popula&ccedil;&otilde;es maiores.
+            </p>
+            <p> Se a op&ccedil;&atilde;o por omiss&atilde;o Nenhum &eacute; usada, cada local assumir&aacute; a representa&ccedil;&atilde;o de uma &uacute;nica contagem.
+            </p>
+        </div>
+    </div>
+    <div id="radius">
+        <div><h2>Distância de Pesquisa</h2></div>
+        <hr/>
+        <div>
+            <p>Introduza uma dist&acirc;ncia especificando o qu&atilde;o longe deve pesquisar para encontrar o ponto ou linha de elementos ao calcular os valores de densidade. Por exemplo, se proporcionar uma dist&acirc;ncia de busca de 10.000 metros, a densidade de qualquer local na camada de sa&iacute;da &eacute; calculada com base nas caracter&iacute;sticas que se encontram dentro dos 10.000 metros em redor do local. Qualquer local que n&atilde;o tenha nenhum incidente dentro de 10.000 metros receber&aacute; um valor de densidade de zero.     
+
+            </p>
+            <p>Se a dist&acirc;ncia n&atilde;o for fornecida, por omiss&atilde;o ser&aacute; calculado com base nos locais dos elementos de entrada e os valores do campo de contagem (se um campo de contagem &eacute; fornecido).
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Recortar saída para</h2></div>
+        <hr/>
+        <div>
+            <p>Ou desenhar ou fornecer uma camada especificando a &aacute;rea onde quer que as densidades sejam calculadas. Por exemplo, se est&aacute; a calcular densidade de peixes num lago, pode usar o limite do lago neste par&acirc;metro e o ponto de sa&iacute;da s&oacute; vai desenhar dentro do limite do lago.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Classificar Por</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha como os valores de densidade ser&atilde;o classificados em &aacute;reas.
+                <ul>
+                    <li>Intervalos iguais&mdash;&Aacute;reas s&atilde;o criadas de tal modo que a gama de valores de densidade &eacute; igual para cada &aacute;rea.
+                    </li>
+                    <li>Intervalos geom&eacute;tricos&mdash;&Aacute;reas s&atilde;o baseadas em intervalos de classe que t&ecirc;m uma s&eacute;rie geom&eacute;trica. Este m&eacute;todo assegura que cada intervalo de classe tem aproximadamente o mesmo n&uacute;mero de valores dentro de cada classe, e que a varia&ccedil;&atilde;o entre os intervalos &eacute; consistente.
+                    </li>
+                    <li>Intervalos naturais&mdash;Intervalos de classe para &aacute;reas s&atilde;o baseadas em agrupamentos naturais de dados. Os valores de quebra de classe s&atilde;o identificados de forma a agrupar o melhor poss&iacute;vel valores semelhantes e a maximizar as diferen&ccedil;as entre classes
+
+                    </li>
+                    <li>&Aacute;rea igual - as &aacute;reas s&atilde;o criadas de forma a terem todas a mesma &aacute;rea. Por exemplo, se a camada de resultado tiver mais valores de alta densidade do que de baixa densidade, ser&atilde;o criadas mais &aacute;reas para altas densidades.
+                    </li>
+                    <li>Desvio por omiss&atilde;o&mdash;&Aacute;reas por omiss&atilde;o s&atilde;o criadas com base no desvio-padr&atilde;o dos valores de densidade previsto. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Número de Classes</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica o n&uacute;mero de classes (intervalo de valores previstos) na camada de resultado. Cada classe define o limite das &aacute;reas. Os valores destas classes ser&atilde;o determinados pelo par&acirc;metro  <b>Classifique</b> acima.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Unidades de área de saída</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique a unidade de &aacute;rea de sa&iacute;da. A densidade &eacute; dividida por contagem de &aacute;rea, e este par&acirc;metro especifica a unidade de &aacute;rea no c&aacute;lculo da densidade.  
+
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se o nome da camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Guardar resultado em</b> pode definir o nome da pasta em <b>O Meu Conte&uacute;do</b> onde o resultado ser&aacute; guardado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

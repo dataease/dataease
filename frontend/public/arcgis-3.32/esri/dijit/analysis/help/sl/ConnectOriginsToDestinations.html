@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Poveži izhodišča s cilji</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="Poveži izhodi&scaron;ča s cilji"></h2>
+        <hr/>
+    <p>Poveži izhodi&scaron;ča s cilji meri potovalni čas ali razdaljo med pari točk. Orodje lahko poda zračne razdalje, oddaljenost na podlagi načina potovanja, kot je hoja ali vožnja, ali trajanje potovanja na podlagi načina potovanja. S tem orodjem lahko naredite naslednje:
+    </p>
+    <p>
+        <ul>
+            <li>Izračunate skupno razdaljo ali potovalni čas dnevnih migrantov od doma do službe.
+            </li>
+            <li>Izmerite, kako daleč potujejo stranke, da kupujejo v va&scaron;ih trgovinah. Uporabite te informacije za tržni doseg, &scaron;e posebej, ko ciljno usmerjate ogla&scaron;evalske kampanje ali izbirate nove lokacije za trgovine.
+            </li>
+            <li>Izračunate pričakovano kilometrino za va&scaron; vozni park. Za tem zaženite orodje Povzemi znotraj, za poročilo o kilometrini po občini ali regiji.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Vi navedete začetne in končne točke in orodje vrne sloj, ki vsebuje linije poti, vključno z meritvami, med izhodi&scaron;či in cilji. 
+    </p>
+    <p>Če je obkljukano  <b>Uporabi trenutni obseg karte</b>, bodo v analizi upo&scaron;tevani samo geoobjekti, vidni znotraj trenutnega obsega karte. Če je možnost odkljukana, bodo upo&scaron;tevani vsi geoobjekti v vhodnem sloju, tudi če so zunaj trenutnega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Izberite točkovni sloj, ki predstavlja izhodišča lokacij</h2></div>
+        <hr/>
+        <div>
+            <p>Izberite točkovni sloj, ki predstavlja izhodi&scaron;če ali izhodi&scaron;ča. Orodje podpira do  5.000 izhodi&scaron;č in  5.000 ciljev. </p>
+            <p>Če izberete sloj, ki ima natančno eno izhodi&scaron;če, se bo povezalo z vsemi cilji.
+            </p>
+            <p>Poleg izbire sloja s karte lahko izberete  <b>Izberi sloj za analizo</b> ki se nahaja v spodnjem delu spustnega menija. Ta možnost odpre galerijo, kjer lahko brskate in izberete sklope podatkov iz različnih virov za uporabo v svoji analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Izberi ciljni sloj</h2></div>
+        <hr/>
+        <div>
+            <p>Izberite sloj, ki predstavlja cilj ali cilje, s katerimi se naj povežejo izhodi&scaron;ča. Orodje podpira do  5.000 izhodi&scaron;č in  5.000 ciljev. </p>
+            <p>Če izberete sloj, ki ima natančno en cilj, se bodo vsa izhodi&scaron;ča povezala s tem ciljem. 
+            </p>
+            <p>Če obstaja eno izhodi&scaron;če in več ciljev, orodje poveže izhodi&scaron;če z vsakim od ciljev.
+            </p>
+            <p>Poleg izbire sloja s karte lahko izberete  <b>Izberi sloj za analizo</b> ki se nahaja v spodnjem delu spustnega menija. Ta možnost odpre galerijo, kjer lahko brskate in izberete sklope podatkov iz različnih virov za uporabo v svoji analizi. 
+            </p>
+            <p> Če obstaja veliko izhodi&scaron;č in veliko ciljev, morate imeti vsaj dve polji, ki opisujeta pare izhodi&scaron;če&ndash;cilj: <b>ID polje v izhodi&scaron;čih</b> in <b>Ujemajoče ID polje v ciljih</b>. Orodje med analizo poveže pare izhodi&scaron;če&ndash;cilj. Na primer, predstavljajte si, da imate dve izhodi&scaron;či z vrednostmi ID polja <code>Rosie</code> in <code>Harold</code> in dva cilja z istimi ID vrednostmi. Izhodi&scaron;če <code>Rosie</code> se bo povezalo s ciljem <code>Rosie</code> in <code>Harold</code> se bo povezal s <code>Harold</code>. Druge meritve ali povezave ne bodo izvedene.
+            </p>
+            <p>Če obstaja enako &scaron;tevilo izhodi&scaron;č in ciljev, morajo biti ID vrednosti enolične znotraj vsakega sloja: na primer, sloj ciljev ne more imeti dveh vrednosti  <code>Rosie</code>. Vrednosti slojev izhodi&scaron;č in ciljev se morajo natanko ujemati, da tvorijo pare: <code>Harold</code> se ne bo povezal z vrednostjo, ki ni pravilno zapisana &ndash; <code>Harodl</code>. 
+            </p>
+            <p>Orodja prav tako podpirajo povezovanje vsakega izhodi&scaron;ča z več kot enim ciljem ali vsakega cilja z več kot enim izhodi&scaron;čem. V takih primerih morate kljub temu imeti dve polji, ki opisujeta pare izhodi&scaron;če-cilj. Samo eden od slojev (bodisi sloj izhodi&scaron;ča ali cilja) mora imeti enolično ID vrednost.
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Izmera</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Izberite, ali boste izhodi&scaron;ča povezali s cilji glede na oddaljenost po zračni razdalji ali načinu potovanja. Izhodne poti bodo sledile cestam ali pe&scaron;potem in upo&scaron;tevale veljavna pravila, kot so enosmerne ceste in nedovoljeno obračanje osebnega ali tovornega vozila. Razpoložljive načine potovanja določi administrator va&scaron;e organizacije.  
+            </p>
+            <p>Ko izberete  <b>čas vožnje</b>, <b>čas vožnje po neasfaltiranih cestah</b> ali <b>čas vožnje s tovornjakom</b>, lahko izberete način merjenja časa vožnje.
+                <ul>
+                    <li>
+                        <p>Odkljukajte  <b>Uporabi promet</b>, da najdete najhitrej&scaron;e poti na podlagi hitrostnih omejitev.
+                        </p>
+                        <p>To je možnost, ki jo izberete, če želite splo&scaron;no meritev časa vožnje in ne tisto, ki je izračunana z uporabo spreminjajočih se prometnih razmer za določen čas odhoda.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Obkljukajte  <b>Uporabi promet</b>, da najdete najhitrej&scaron;e poti na podlagi podanega časa začetka in spreminjajočih se prometnih razmer. Če izberete tudi možnost <b>Trenutni promet</b>, se čas odhoda iz izhodi&scaron;č nastavi na trenuten čas, trenutne in predvidene hitrosti prometa pa prihajajo od senzorjev in vsebin, da se ustvarijo poti. Predvidene hitrosti prometa se izračunajo glede na hitrosti trenutnega prometa, pretekle hitrosti in trenutne dogodke, kot je vreme. Hitrosti prometa so predvidene 12 ur v prihodnost, da lahko premaknete drsnik in nastavite čas odhoda do  12 ur vnaprej. </p>
+                        <p>Uporabite te nastavitve trenutnega prometa, da izveste trajanje vožnje, če se odpravite zdaj, čez eno uro in tako naprej.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Če obkljukate možnost  <b>Uporabi promet</b> in izberete <b>Promet na podlagi tipičnih pogojev za</b> dan in čas, orodje najde najhitrej&scaron;e poti na podlagi preteklih povprečij hitrosti za vsak petminutni interval v običajnem tednu. Rezultati vključujejo promet, vendar odstranijo vpliv trenutnih prometnih razmer in dogodkov, ki lahko močno odstopajo od običajnih.
+                        </p>
+                        <p>Te nastavitve preteklega prometa lahko uporabite za vpra&scaron;anje, na primer: &raquo;Kako dolgo je običajno potrebno za prihod na te cilje, če je odhod ob 11:30 v sredo?&laquo;
+                        </p>
+                        <p>Čas, ki ga nastavite, upo&scaron;teva časovni pas, v katerem se nahajajo va&scaron;a izhodi&scaron;ča. Če torej nastavite čas na 8:00 in imate dve izhodi&scaron;či, eno v New Yorku in drugo v Los Angelesu, bosta poti ustvarjeni za čas odhoda ob 8:00. Vzhodni čas in 8:00. Pacifi&scaron;ki čas.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Upo&scaron;tevajte, da ko vozilo pelje stran od izhodi&scaron;ča, se trenutni čas in prometne razmere spreminjajo. Orodje Poveži izhodi&scaron;ča s cilji upo&scaron;teva te spremembe, če obkljukate možnost  <b>Uporabi promet</b>; vse regije ne podpirajo prometa. Kliknite povezavo <b>Glej razpoložljivost</b> na orodju, da preverite, ali je na voljo na va&scaron;em &scaron;tudijskem območju.
+            </p>
+            <p>Pri  <b>času vožnje s tovornjakom</b> se lahko uporabljajo dinamične hitrosti vožnje na podlagi prometa, a le do z zakonom dovoljene omejitve hitrosti za tovornjake. Na primer, če je dinamična hitrost za ulico na podlagi trenutnega prometa 65 km/h, omejitev hitrosti za tovornjake na tej ulici pa je 50 km/h na uro, bo pri izračunu uporabljena hitrost 50 km/h za to ulico.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Izberi sloje ovire</h2></div>
+        <hr/>
+        <div>
+            <p> Ena ali več geoobjektov, ki imajo vlogo začasnih omejitev (pregrad) pri potovanju po ulicah. Pregrado je mogoče določiti z uporabo točkovnih, linijskih ali poligonskih geoobjektov.
+            </p>
+            <p>Točkovna ovira lahko prikazuje padlo drevo, nesrečo, padlo električno linijo oziroma kar koli, kar popolnoma blokira promet na določeni točki vzdolž ulice. Potovanje po ulici je dovoljeno, vendar ne skozi oviro. Do 250 geoobjektov lahko opredelite kot točkovne ovire.
+            </p>
+            <p>Linijska ovira prepoveduje potovanje na območju, kjer se ovira križa z ulico. Na primer, z linijsko oviro je mogoče prikazati parado ali protest, ki blokira promet po več uličnih segmentih. Če &scaron;tevilo geoobjektov ulice, ki se križajo z linijskimi ovirami, presega 500, orodje javi napako.
+            </p>
+            <p>Poligonska ovira prepoveduje potovanje na območju, kjer se poligon križa z ulico. En način uporabe te vrste ovire je prikaz poplav, ki pokrivajo območja uličnega omrežja, in zaradi katerih je potovanje po cesti nemogoče. Če &scaron;tevilo geoobjektov ulice, ki se križajo s poligonskimi ovirami, presega 2000, orodje javi napako.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Oblika poti</h2></div>
+        <hr/>
+        <div>
+            <p>V načinu potovanja izberite obliko poti, ki vsako izhodi&scaron;če povezuje z njegovim ciljem:
+            </p>
+            <ul>
+                <li> <b>Sledi ulicam</b> - Oblika je odvisna od mreže osnovnih ulic. Ta izbira je najbolj&scaron;a, če želite ustvariti poti med izhodi&scaron;či in cilji.
+                </li>
+                <li> <b>Zračna razdalja</b> - Oblika je ravna linija, ki povezuje par izhodi&scaron;če-cilj. Ta možnost je najbolj&scaron;a, ko želite ustvariti diagram pajkove mreže ali želene linije (na primer, da bi prikazali katere trgovine stranke obiskujejo).
+                </li>
+            </ul>
+            
+            <p>Najbolj&scaron;a pot med izhodi&scaron;čem in njegovim ujemajočim se ciljem je izračunana na podlagi načina potovanja, ne glede na izbiro oblike poti.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>Ime geoobjektnega sloja, ki bo ustvarjen v odseku  <b>Moja vsebina</b> in dodan na karto. Če geoobjektni sloj že obstaja, boste morali navesti drugo ime. Geoobjektni sloj bo vseboval sloj za vsako od naslednjega: poti, nedodeljena izhodi&scaron;ča in nedodeljene cilje, ko nekaterih izhodi&scaron;č ni mogoče povezati z njihovimi cilji.
+            </p>
+            <p>Če izberete  <b>Vključi usmerjevalne sloje</b>, se vsaka pot iz rezultata prav tako shrani kot usmerjevalni sloj. Usmerjevalni sloj vsebuje vse informacije za določeno pot, kot so dodeljeni postanki, kot tudi navodila za pot. Ustvarjanje usmerjevalnega sloja je uporabno, če želite deliti posamezne poti z drugimi uporabniki v va&scaron;i organizaciji ali nadalje spremeniti poti s pomočjo gumba <b>Navodila za pot</b> v pregledovalniku kart. Usmerjevalni sloj uporablja samodejno generirano enolično ime, ki je sestavljeno iz predpone imena vhodnega geoobjektnega sloja.
+            </p>
+            <p>Največje &scaron;tevilo ustvarjenih usmerjevalnih slojev je  1.000. Če rezultat vsebuje več kot  1.000 poti in če je obkljukano  <b>Vključi usmerjevalne sloje</b>, bo orodje ustvarilo samo izhodno geoobjektno storitev.
+            </p>
+            <p>Z uporabo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moji vsebini</b>, kjer bodo, če bodo ustvarjeni, shranjeni geoobjektni in usmerjevalni sloji.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>汇总属性</h2><p/>
+        <h2><img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" alt="汇总属性 示意图"></h2>
+        <hr/>
+    <p> 该工具可汇总一个或多个字段中的所有匹配值并计算相关的统计数据。最基本的统计数据是汇总到一起的要素的计数，但是也可以计算更高级的统计数据。
+    </p>
+    <p>例如，假设您拥有商店位置的点要素和表示  <i>DISTRICT_MANAGER_NAME</i> 的字段，并且希望按经理汇总咖啡销售额。可以将字段 <i>DISTRICT_MANAGER_NAME</i> 指定为要融合的字段，然后将汇总表示各个经理的所有数据行。这意味着由 <pre>Manager1</pre> 管理的所有商店位置以及计算的汇总统计数据将汇总到同一行。在此情况下，将计算 <pre>Manager1</pre> 管理的商店数量计数和所有商店的 <i>TOTAL_SALES</i> 总和等统计数据，这同样适用于在 <i>DISTRICT_MANAGER_NAME</i> 字段中列出的任何其他经理。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>选择要汇总的输入</h2></div>
+        <hr/>
+        <div>
+            <p>包含将要汇总的字段的图层。
+            </p>
+            <p>除了从地图中选择图层外，还可以在下拉列表的底部选择 <b>选择分析图层</b>，以浏览至大数据文件共享数据集或要素图层中的内容。
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>选择数据的汇总方法</h2></div>
+        <hr/>
+        <div>
+            <p>数据汇总的方法有两种：
+                <ul>
+                    <li> <b>所有要素融合为单个要素</b> - 计算所有要素的统计数据。
+                    </li>
+                    <li> <b>按字段</b> - 在指定字段中按类值对要素进行分组。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>例如，假设您有一个关于树木的数据集，其中包含的  <i>treetype</i> 字段值为 <code>Maple</code>、 <code>Fir</code> 和 <code>Pine</code>，并且还包含一个名为 <i>treeheight</i> 的字段，而您对查找 <i>treeheight</i> 的平均值感兴趣。如果将所有要素汇总到单个要素，则将查找所有树木的平均高度，从而得出一个平均值。如果按字段 <i>treeheight</i> 进行汇总，将分别得到 maple、fir 和 pine 的平均值。
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>添加统计数据（可选）</h2></div>
+        <hr/>
+        <div>
+            <p> 可以计算汇总的要素的统计数据。可计算数值字段的以下内容：
+                <ul>
+                    <li>计数 - 计算非空值的数目。此项可用于数值字段或字符串。[null, 0, 2] 的计数为 2。
+                    </li>
+                    <li>总和 - 字段内数值的总和。[null, null, 3] 的总和为 3。
+                    </li>
+                    <li>平均值 - 数值的平均值。[0, 2, null] 的平均值为 1。
+                    </li>
+                    <li>最小值 - 数值字段的最小值。[0, 2, null] 的最小值为 0。
+                    </li>
+                    <li>最大值 - 数值字段的最大值。[0, 2, null] 的最大值为 2。
+                    </li>
+                    <li>范围 - 数值字段的范围。其计算方法为最大值减去最小值。[0, null, 1] 的范围为 1。[null, 4] 的范围为 0。
+                    </li>
+                    <li>方差 - 轨迹中数值字段内数值的方差。[1] 的方差为空。[null, 1,0,1,1] 的方差为 0.25。
+                    </li>
+                    <li>标准差 - 数值字段的标准差。[1] 的标准差为空。[null, 1,0,1,1] 的标准差为 0.5。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>可计算字符串字段的以下内容：
+                <ul>
+                    <li>计数 - 非空字符串的数目。
+                    </li>
+                    <li>任意 - 该统计数据是指定字段中字符串值的随机样本。
+                    </li>
+                </ul>
+                所有统计数据均根据非空值计算而得。生成的图层将包含一个针对每个计算而得的统计数据的新字段。通过选择一个属性和统计数据可添加任意数量的统计数据。 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>选择数据存储</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics 结果存储在数据存储中并显示为  Portal for ArcGIS 中的要素图层。大多数情况下，结果应存储在时空数据存储中（此为默认设置）。某些情况下，将结果存储在关系数据存储也是一个很好的选择。下列内容说明了您可能需要将结果存储在关系数据存储中的原因： 
+                <ul>
+                    <li>可在门户到门户协作中应用结果。
+                    </li>
+                    <li>可启用结果的同步功能。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p> 要创建的图层的名称。如果您要写入 ArcGIS Data Store，则您的结果将保存在<b>我的内容</b>并添加到地图中。如果您要写入大数据文件共享，则您的结果将存储于大数据文件共享中，并添加到其清单。结果将不会添加到地图中。默认名称基于工具名称以及输入图层名称。如果该图层已存在，将无法使用该工具。
+            </p>
+            <p>如果写入  ArcGIS Data Store（关系或时空大数据存储），可以使用<b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

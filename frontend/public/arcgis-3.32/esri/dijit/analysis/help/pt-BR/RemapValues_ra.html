@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Remapear Valores</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="Ferramenta Remapear Valores do Portal"></h2>
+        <hr/>
+    <p>Esta ferramenta permite que voc&ecirc; altere ou reclassifique os valores de pixels dos dados raster. Os valores de pixels s&atilde;o remapeados especificando uma faixa de valores de pixel para mapear um valor de pixel de sa&iacute;da. O valor de pixel de sa&iacute;da pode ser um valor v&aacute;lido ou NoData, que s&atilde;o pixels que n&atilde;o t&ecirc;m um valor conhecido associado a ele.
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente as c&eacute;lulas vis&iacute;veis dentro da extens&atilde;o de mapa atual ser&atilde;o remapeadas. Se desmarcado, todas as c&eacute;lulas no raster ser&atilde;o processadas, ainda que eles estejam fora da extens&atilde;o do mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Dados de Entrada</h2></div>
+        <hr/>
+        <div>
+            <p>Os dados de entrada que ter&atilde;o seus valores remapeados.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Remapear valores de pixel para novos valores</h2></div>
+        <hr/>
+        <div>
+            <p>Voc&ecirc; insere uma faixa de valores especificando um valor m&iacute;nimo e m&aacute;ximo e ent&atilde;o atribua um valor de sa&iacute;da ou um valor NoData para a faixa especificada.
+            </p>
+            <p>Para remapear uma nova faixa de valores, clique em  <b>Adicionar</b>, que adiciona uma linha. Clique em cada valor para editar a tabela nas faixas e o valor remapeado que voc&ecirc; precisa. Quando voc&ecirc; especificar as faixas de valor, h&aacute; duas regras importantes que s&atilde;o empregadas:
+                <ul>
+                    <li>O valor m&iacute;nimo da faixa &eacute; inclusivo e o valor m&aacute;ximo &eacute; exclusivo.
+                    </li>
+                    <li>As linhas na tabela est&atilde;o processadas de cima para baixo.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>A tabela abaixo mostra que o valor m&iacute;nimo &eacute; inclu&iacute;do dentro da sa&iacute;da, mas o valor m&aacute;ximo n&atilde;o &eacute; inclu&iacute;do na sa&iacute;da.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>A ordem das faixas especificadas na tabela tamb&eacute;m &eacute; importante. A linha superior da tabela &eacute; processada primeiro, ent&atilde;o a linha abaixo &eacute; processada. As duas tabelas abaixo mostram como as mesmas faixas de valor produzir&atilde;o resultados diferentes, devido &agrave; ordem das linhas da tabela.
+            </p> 
+            <p>A tabela abaixo mostra o valor de sa&iacute;da quando a primeira coluna for classificada numericamente:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>A tabela abaixo mostra como uma ordem diferente das linhas produzir&aacute; valores de sa&iacute;da diferentes:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Ambas as regras s&atilde;o empregadas para reordenar os valores. J&aacute; que cada linha &eacute; processada de cima para baixo, estes valores tomam preced&ecirc;ncia ao determinar a sa&iacute;da, mesmo quando as faixas s&atilde;o utilizadas.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Voc&ecirc; pode especificar o nome de uma pasta em  <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo utilizando a caixa suspensa <b>Salvar resultados em</b> .
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Adat hozzáfűzése</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Az Adat hozz&aacute;fűz&eacute;se munkafolyamat&aacute;nak diagramja"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z adatokat fűz egy l&eacute;tező t&aacute;rolt vektoros r&eacute;teghez. Az Adat hozz&aacute;fűz&eacute;se az eredeti bemenő r&eacute;teget m&oacute;dos&iacute;tja, &eacute;s nem hoz l&eacute;tre &uacute;j kimenő r&eacute;teget. A mezőket a mezőn&eacute;v &eacute;s mezőt&iacute;pus alapj&aacute;n p&aacute;ros&iacute;thatja, vagy enn&eacute;l halad&oacute;bb p&aacute;ros&iacute;t&aacute;si m&oacute;dszereket is alkalmazhat.
+    </p>
+    <p>Ilyenre p&eacute;ld&aacute;k a k&ouml;vetkezők: 
+        <ul>
+            <li>&Ouml;n egy nagy biztos&iacute;t&oacute;t&aacute;rsas&aacute;g alkalmazottja, amely havonta k&eacute;sz&iacute;t &aacute;rbev&eacute;tel-nyilv&aacute;ntart&aacute;st. Az &eacute;ves besz&aacute;mol&oacute;hoz a havi adatokat kell &ouml;ssze&aacute;ll&iacute;tani elemz&eacute;sre.  Az &aacute;rbev&eacute;tel-elemz&eacute;s elind&iacute;t&aacute;s&aacute;hoz haszn&aacute;lhatja az Adat hozz&aacute;fűz&eacute;se eszk&ouml;zt a 2018. &eacute;vi &eacute;ves besz&aacute;mol&oacute;t tartalmaz&oacute; AnnualReport_2018 r&eacute;teg friss&iacute;t&eacute;s&eacute;re, amint a havi adatok rendelkez&eacute;sre &aacute;llnak. Mivel tudja, hogy a szervezet h&oacute;napr&oacute;l h&oacute;napra ugyanazt a s&eacute;m&aacute;t haszn&aacute;lja, az alap&eacute;rtelmezett mezőlek&eacute;pez&eacute;si m&oacute;dszert haszn&aacute;lhatja a vektoros elemek mezőn&eacute;v &eacute;s -t&iacute;pus alapj&aacute;n t&ouml;rt&eacute;nő hat&eacute;kony hozz&aacute;fűz&eacute;s&eacute;hez.
+            </li>
+            <li>T&iacute;z k&ouml;rnyezetv&eacute;dő csoport mindegyike t&ouml;bb sz&aacute;zezer &eacute;ghajlati m&eacute;r&eacute;st gyűjt az illet&eacute;kess&eacute;gi ter&uuml;let&eacute;n.  Ezek a szervezetek szeretn&eacute;k egyes&iacute;teni az adataikat, hogy jobban meg&eacute;rthess&eacute;k a region&aacute;lis &eacute;s glob&aacute;lis mint&aacute;kat. Mindegyik szervezet meg&aacute;llap&iacute;tja a s&eacute;m&aacute;t a saj&aacute;t adathalmaz&aacute;hoz. Mindegyik&uuml;k m&aacute;s mezőneveket adott a hőm&eacute;rs&eacute;kleti &eacute;s sz&eacute;lsebess&eacute;gre vonatkoz&oacute; adatoknak.  Mivel az adathalmazok elt&eacute;rő mezőneveket haszn&aacute;lnak, a mezőlek&eacute;pez&eacute;s seg&iacute;ts&eacute;g&eacute;vel megadhat&oacute;, hogyan legyenek hozz&aacute;fűzve a hőm&eacute;rs&eacute;kleti &eacute;s sz&eacute;lsebess&eacute;gre vonatkoz&oacute; adatok a megfelelő mezőkh&ouml;z.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Válassza ki a réteget, amelyhez hozzá kívánja fűzni az adatokat</h2></div>
+        <hr/>
+        <div>
+            <p>A t&aacute;bl&aacute;zatos, pont-t&iacute;pus&uacute;, vonalas vagy polygon vektoros elemek, amelyekhez az adatokat hozz&aacute; k&iacute;v&aacute;nja fűzni.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>A r&eacute;teg, amelyhez hozz&aacute;fűz, m&oacute;dosulni fog az eszk&ouml;z haszn&aacute;latakor. Mielőtt folytatn&aacute;, győződj&ouml;n meg arr&oacute;l, hogy biztosan m&oacute;dos&iacute;tani szeretn&eacute; az adott r&eacute;teget.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Ahelyett, hogy egy r&eacute;teget v&aacute;laszt a t&eacute;rk&eacute;p&eacute;ről, v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n l&eacute;vő  <b>Eredm&eacute;nyr&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is, ha a saj&aacute;t tartalomban szeretne t&aacute;rolt vektoros r&eacute;teget keresni.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Válassza ki a hozzáfűzni kívánt réteget</h2></div>
+        <hr/>
+        <div>
+            <p>A t&aacute;bl&aacute;zatos, pont-t&iacute;pus&uacute;, vonalas vagy polygon vektoros elemek, amelyeket hozz&aacute; k&iacute;v&aacute;n fűzni a bemenő r&eacute;teghez.
+            </p>
+            <p>Ahelyett, hogy egy r&eacute;teget v&aacute;laszt a t&eacute;rk&eacute;p&eacute;ről, v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n l&eacute;vő  <b>Eredm&eacute;nyr&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is, ha a saj&aacute;t tartalomban szeretne big data-f&aacute;jlmegoszt&oacute; adathalmazt vagy vektoros r&eacute;teget keresni.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Az összes vektoros elem hozzáfűzése vagy részhalmaz definiálása (opcionális)</h2></div>
+        <hr/>
+        <div>
+            <p>A hozz&aacute;fűzni k&iacute;v&aacute;nt vektoros elemek adhat&oacute;k meg. Ez a param&eacute;ter opcion&aacute;lis.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>A mezők hozzáfűzési módjának kiválasztása (opcionális)</h2></div>
+        <hr/>
+        <div>
+            <p>Megadhatja, hogyan legyenek hozz&aacute;fűzve a hozz&aacute;fűzendő r&eacute;teg mezői a bemenő r&eacute;teghez. Alap&eacute;rtelmez&eacute;s szerint minden egyező bemenő &eacute;s hozz&aacute;fűzendő mezőt hozz&aacute;fűz. A mezők akkor egyeznek, ha ugyanaz a mezőnev&uuml;k &eacute;s a mezőt&iacute;pusuk. Opcion&aacute;lisan kiv&aacute;laszthatja a mezők p&aacute;ros&iacute;t&aacute;s&aacute;nak m&oacute;dszer&eacute;t, vagy Arcade-kifejez&eacute;seket is sz&aacute;m&iacute;that a mező&eacute;rt&eacute;kek felt&ouml;lt&eacute;s&eacute;hez.
+            </p>
+            <p>P&eacute;ld&aacute;ul a(z)  <i>field_number</i>, <i>field_string</i>, <i>date_field</i> &eacute;s <i>unused_field</i> mezőkkel rendelkező bemenő r&eacute;teg &eacute;s a(z) <i>field_string</i>, <i>field_number</i> &eacute;s <i>MY_DATE_FIELD</i> mezőkkel rendelkező hozz&aacute;fűzendő r&eacute;teg &aacute;ll rendelkez&eacute;sre.
+                <ul>
+                    <li>Az eszk&ouml;z alap&eacute;rtelmez&eacute;s szerint a bemenő r&eacute;teg  <i>field_number</i> mezőj&eacute;t a hozz&aacute;fűzendő r&eacute;teg <i>field_number</i> mezőj&eacute;vel, &eacute;s a bemenő r&eacute;teg <i>field_string</i> mezőj&eacute;t a hozz&aacute;fűzendő r&eacute;teg <i>field_string</i> mezőj&eacute;vel p&aacute;ros&iacute;tja.
+                    </li>
+                    <li>Alap&eacute;rtelmez&eacute;s szerint a bemenő r&eacute;teg  <i>date_field</i> &eacute;s <i>unused_field</i> mezői <i>null</i> &eacute;rt&eacute;kekkel lesznek felt&ouml;ltve, mert nincs egyező mezőj&uuml;k a hozz&aacute;fűzendő r&eacute;tegben.
+                    </li>
+                    <li>Opcion&aacute;lisan olyan mezőkh&ouml;z is hozz&aacute;fűzhet &eacute;rt&eacute;keket, amelyek nem lettek automatikusan p&aacute;ros&iacute;tva alap&eacute;rtelmez&eacute;s szerint. P&eacute;ld&aacute;ul a bemenő r&eacute;teg  <i>date_field</i> mezője p&aacute;ros&iacute;that&oacute; a <i>MY_DATE_FIELD</i> hozz&aacute;fűzendő mezővel. Ehhez haszn&aacute;lja az első oszlopban a(z) <i>date_field</i> mellett tal&aacute;lhat&oacute; leg&ouml;rd&uuml;lő men&uuml;t, &eacute;s a m&aacute;sodik oszlopban l&eacute;vő leg&ouml;rd&uuml;lő men&uuml;ből v&aacute;lassza a(z) <i>MY_DATE_FIELD</i> lehetős&eacute;get.
+                    </li>
+                </ul>
+                 M&aacute;sik p&eacute;lda: egy bemenő r&eacute;teg a(z) <i>value_1</i>, <i>value_2</i>, <i>value_3</i> &eacute;s <i>my_Average</i> numerikus mezőkkel rendelkezik, &eacute;s egy hozz&aacute;fűzendő r&eacute;teg a <i>value_1</i>, <i>value_2</i> &eacute;s <i>value_3</i> numerikus mezőkkel.
+                <ul>
+                    <li>Alap&eacute;rtelmez&eacute;s szerint az eszk&ouml;z a(z)  <i>value_1</i>, <i>value_2</i> &eacute;s <i>value_3</i> mezőket p&aacute;ros&iacute;tja &eacute;s fűzi hozz&aacute;.
+                    </li>
+                    <li>Az alap&eacute;rtelmezett viselked&eacute;s mellett a(z)  <i>my_Average</i> mező &eacute;rt&eacute;kei is kisz&aacute;m&iacute;that&oacute;k. Ez t&ouml;bb mező &eacute;s matematikai művelet seg&iacute;ts&eacute;g&eacute;vel &eacute;rhető el a leg&ouml;rd&uuml;lő men&uuml;ből a <b>Kifejez&eacute;s</b> lehetős&eacute;get v&aacute;lasztva a(z) <i>my_Average</i> mellett l&eacute;vő oszlopban, &eacute;s a k&ouml;vetkezőh&ouml;z hasonl&oacute; Arcade-kifejez&eacute;st l&eacute;trehozva: <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

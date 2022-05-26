@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>다음 범위 내 요약(Summarize Within)</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="다음 범위 내 요약"></h2>
+        <hr/>
+    <p>이 도구는 첫 번째 입력 레이어의 영역 경계 내에 있는 피처(및 피처의 일부)를 찾습니다.  예시:
+        <ul>
+            <li>유역 경계 레이어와 토지 이용 유형별 토지 이용 경계 레이어가 주어진 경우 각 유역에 대한 토지 이용 유형의 총 면적을 계산합니다. 
+            </li>
+            <li>도시 내 필지 레이어와 도시 경계 레이어가 주어진 경우 각 도시 경계 내의 공지에 대한 평균 값을 요약합니다.
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>현재 맵 범위 사용</b>을 선택한 경우 현재 맵 범위 내에 표시된 입력 레이어 및 요약할 레이어의 피처만 분석되고,  이 옵션을 선택하지 않는 경우 현재 맵 범위를 벗어나는 피처까지 포함하여 입력 레이어와 요약할 레이어에 있는 피처가 전부 분석됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>해당 경계 내의 다른 피처를 요약할 영역 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>피처 요약에 사용되는 영역 레이어로서 경계 내에 속합니다. 
+            </p>
+            <p>제공한 영역 레이어 또는 도구 실행 시 생성되는 그룹 중에 선택할 수 있습니다.   빈을 생성할 때  <b>사각형</b>의 경우 지정된 수 및 단위가 사각형의 높이 및 길이를 결정합니다. <b>육각형</b>의 경우 지정된 수 및 단위가 평행 측면 간 거리를 결정합니다.
+            </p>
+            <p>맵에서 레이어를 선택하는 것 외에도 드롭다운 목록 하단에서  <b>분석 레이어를 선택</b>할 수 있습니다. 해당 옵션을 사용하면 다양한 원본에서 분석에 사용할 데이터셋을 검색하고 선택할 수 있는 갤러리가 열립니다. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>요약할 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>이 레이어의 피처 중 위의 입력 레이어 피처의 경계 내에 있는 피처가 요약됩니다. 
+            </p>
+            <p>맵에서 레이어를 선택하는 것 외에도 드롭다운 목록 하단에서  <b>분석 레이어를 선택</b>할 수 있습니다. 해당 옵션을 사용하면 다양한 원본에서 분석에 사용할 데이터셋을 검색하고 선택할 수 있는 갤러리가 열립니다. 
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>레이어에서 요약할 통계 추가</h2></div>
+        <hr/>
+        <div>
+            <p>필요한 경우 피처 경계 내에 있는 포인트의 수치 속성에 대한 통계를 계산할 수 있습니다. 
+            </p>
+            <p> <b>포인트 수</b> 체크 박스를 선택하면 각 영역 경계 내의 총 포인트 수가 계산됩니다.  또한 각 영역 경계 내에 있는 포인트의 수치 속성에 대한 통계를 계산할 수 있습니다.
+            </p>
+            <ul>
+                <li> <b>합계</b> - 지정된 필드의 합계 값입니다.
+                </li>
+                <li> <b>평균</b> - 지정된 필드의 평균값입니다.
+                </li>
+                <li> <b>최소</b> - 지정된 필드의 가장 작은 값입니다.
+                </li>
+                <li> <b>최대</b> - 지정된 필드의 가장 큰 값입니다.
+                </li>
+                <li> <b>표준 편차</b> - 지정된 필드의 값에 대한 표준편차입니다.
+                </li>
+            </ul>
+            
+            <p>요약할 레이어에 숫자 필드가 없는 경우 추가 통계를 사용할 수 없습니다.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>통계 추가</h2></div>
+        <hr/>
+        <div>
+            <p>필요한 경우 요약할 라인의 수치 속성에 대한 통계를 계산할 수 있습니다. 
+            </p>
+            <p> <b>범위 내 라인의 총 길이</b> 체크 박스를 선택하면 각 영역 경계 내의 전체 라인 길이가 계산됩니다.  또한 각 영역 경계 내에 있는 라인의 수치 속성에 대한 통계를 계산할 수 있습니다.
+            </p>
+            <ul>
+                <li> <b>합계</b> - 지정된 필드의 합계 값입니다.
+                </li>
+                <li> <b>평균</b> - 지정된 필드의 평균값입니다.
+                </li>
+                <li> <b>최소</b> - 지정된 필드의 가장 작은 값입니다.
+                </li>
+                <li> <b>최대</b> - 지정된 필드의 가장 큰 값입니다.
+                </li>
+                <li> <b>표준 편차</b> - 지정된 필드의 값에 대한 표준편차입니다.
+                </li>
+            </ul>
+            
+            <p>요약할 레이어에 숫자 필드가 없는 경우 추가 통계를 사용할 수 없습니다.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>통계 추가</h2></div>
+        <hr/>
+        <div>
+            <p>필요한 경우 요약할 영역의 수치 속성에 대한 통계를 계산할 수 있습니다. 
+            </p>
+            <p> <b>면적 합계</b> 체크 박스를 선택하면 첫 번째 입력 레이어의 각 영역 경계 내에 있는 피처의 전체 면적이 계산됩니다.  또한 각 영역 경계 내에 있는 피처의 수치 속성에 대한 통계를 계산할 수 있습니다.
+            </p>
+            <ul>
+                <li> <b>합계</b> - 지정된 필드의 합계 값입니다.
+                </li>
+                <li> <b>평균</b> - 지정된 필드의 평균값입니다.
+                </li>
+                <li> <b>최소</b> - 지정된 필드의 가장 작은 값입니다.
+                </li>
+                <li> <b>최대</b> - 지정된 필드의 가장 큰 값입니다.
+                </li>
+                <li> <b>표준 편차</b> - 지정된 필드의 값에 대한 표준편차입니다.
+                </li>
+            </ul>
+            
+            <p>요약할 레이어에 숫자 필드가 없는 경우 추가 통계를 사용할 수 없습니다.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>통계 추가</h2></div>
+        <hr/>
+        <div>
+            <p>요약할 레이어를 선택하면, 필요한 경우 입력 영역 레이어 내에 있는 포인트, 라인 또는 영역의 수치 속성에 대한 통계를 계산할 수 있습니다. 
+            </p>
+            <ul>
+                <li> <b>합계</b> - 지정된 필드의 합계 값입니다.
+                </li>
+                <li> <b>평균</b> - 지정된 필드의 평균값입니다.
+                </li>
+                <li> <b>최소</b> - 지정된 필드의 가장 작은 값입니다.
+                </li>
+                <li> <b>최대</b> - 지정된 필드의 가장 큰 값입니다.
+                </li>
+                <li> <b>표준 편차</b> - 지정된 필드의 값에 대한 표준편차입니다.
+                </li>
+            </ul>
+            
+            <p>요약하는 피처의 유형에 따라 포인트의 총 수, 라인의 전체 길이 또는 전체 영역을 계산할 수 있습니다.
+            </p>
+            <p>요약할 레이어에 숫자 필드가 없는 경우 추가 통계를 사용할 수 없습니다.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>그룹화할 필드 선택</h2></div>
+        <hr/>
+        <div>
+            <p>이 속성은 고유한 각 속성 값에 대해 개별적으로 통계를 계산하는 데 사용할 수 있는  <b>요약</b> 피처의 속성입니다. 예를 들어 첫 번째 입력 레이어에 도시 경계가 포함되어 있고 요약 피처가 필지라고 가정해 보겠습니다.  필지의 속성 중 하나는 <i>Status</i>로, 두 값(VACANT 및 OCCUPIED)을 포함합니다. 도시 경계 내의 빈 필지와 이용 중인 필지의 총 면적을 계산하려면 <i>Status</i>를 그룹화 기준 속성으로 사용합니다. 각 그룹에 대한 통계와 각 영역 경계 내의 피처 수가 결과 레이어 팝업에 표시됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>소수(Minority), 다수(Majority) 추가</h2></div>
+        <hr/>
+        <div>
+            <p>그룹화할 필드를 선택하면 체크 박스가 활성화됩니다. 첫 번째 입력 레이어의 각 경계 내에서 어떤 속성 값이 각 그룹의 소수(열세)인지 또는 다수(우세)인지 알아 보려면  <b>소수(Minority), 다수(Majority) 추가</b>를 선택하세요. <b>소수(Minority), 다수(Majority) 추가</b>를 선택하면 새로운 필드 두 개가 결과 레이어에 추가됩니다. <b>백분율 추가</b>를 선택하는 경우에도 새로운 필드 두 개가 각 그룹 내의 소수(Minority), 다수(Majority) 속성 값의 백분율을 포함한 결과 레이어에 추가됩니다.
+            </p>
+            <ul>
+                <li>포인트를 요약하면 첫 번째 입력 레이어의 각 경계 영역 내에 있는 포인트 개수에 따라 소수(Minority), 다수(Majority) 값이 계산됩니다.  
+                </li>
+                <li>라인을 요약하면 입력 영역 레이어의 각 경계 영역 내에 있는 라인 길이에 따라 소수, 다수 값이 계산됩니다.  
+                </li>
+                <li>영역을 요약하면 입력 영역 레이어의 각 경계 영역 내에 있는 면적에 따라 소수, 다수 값이 계산됩니다.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>백분율 추가</h2></div>
+        <hr/>
+        <div>
+            <p>그룹화할 필드를 선택하면 체크박스가 활성화됩니다. 각 그룹 내에 있는 각 속성 값의 백분율을 찾으려는 경우  <b>백분율 추가</b>를 선택합니다.  새 필드가 각 그룹 내에 있는 각 속성 값의 백분율을 포함하는 결과 테이블에 추가됩니다. <b>소수(Minority)/다수(Majority) 추가</b>도 체크된 경우 추가 필드 두 개가 각 그룹 내에 있는 소수(Minority)/다수(Majority) 속성 값의 백분율을 포함한 결과 레이어에 추가됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="ResultLayerName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에서 생성되어 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어 이름이 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 메뉴를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/supportClasses/templateJsonUtils/fieldInfo/FieldInfoPreviewAttributeUtil",["esri/dijit/geoenrichment/utils/FieldUtil","dojo/i18n!esri/nls/jsapi"],function(e,c){c=c.geoenrichment.dijit.ReportPlayer.FieldInfoPreview;var d={},f={BUILDING_AREA:5E3,SITE_AREA:1E4,FRONTAGE:800,PARKING:300};d.getAttributePreviewValue=function(a){if(!a)return"";if(a.domain&&"codedValue"===a.domain.type)return a.domain.codedValues[0].name;if("esriFieldTypeString"===a.type)return c.sampleTextValue;
+if("esriFieldTypeDate"===a.type){var b=new Date;a.domain&&"range"===a.domain.type&&b.setTime(a.domain.range[0]);return b.getTime()}b=a.domain&&"range"===a.domain.type?a.domain.range[0]:f[a.name]||Number((100*Math.random()+50).toFixed(1));return"i"===e.isNumericField(a)?Math.round(b):b};return d});

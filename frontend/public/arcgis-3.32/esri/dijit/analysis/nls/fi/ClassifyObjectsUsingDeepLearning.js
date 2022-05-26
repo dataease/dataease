@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/fi/ClassifyObjectsUsingDeepLearning",{toolDefine:"Luokittele objektit syv\u00e4oppimisen avulla",inputFeaturesLabel:"Valitse objektien karttataso (valinnainen)",outputLayerName:"${layername}_classifiedObjects",modelLabel:"Valitse objektien luokittelussa k\u00e4ytett\u00e4v\u00e4 syv\u00e4oppimismalli",modelArgsLabel:"M\u00e4\u00e4rit\u00e4 syv\u00e4oppimismallin argumentit",classLabelFieldLabel:"M\u00e4\u00e4rit\u00e4 luokan tunnustekstikent\u00e4n nimi (valinnainen)",
+processingModeLabel:"K\u00e4sittelytila",processAsMosaicLabel:"K\u00e4sittele mosaiikkikuvana",processAsItemsLabel:"K\u00e4sittele kaikki rasterikohteet erikseen",queryModelArgsMsg:"Suoritetaan mallin argumenttien kysely\u00e4...",valueLabel:"Arvo",nameLabel:"Nimi",analysisLayerLabel:"Valitse objektien luokittelussa k\u00e4ytett\u00e4v\u00e4 kuva",itemDescription:"Analysointikuvapalvelu on luotu Luokittele objektit syv\u00e4oppimisen avulla -ratkaisusta",itemTags:"Rasterianalyysin tulos, Luokittele objektit syv\u00e4oppimisen avulla, ${layername}",
+itemSnippet:"Analysointikuvapalvelu on luotu Luokittele objektit syv\u00e4oppimisen avulla -ratkaisusta"});

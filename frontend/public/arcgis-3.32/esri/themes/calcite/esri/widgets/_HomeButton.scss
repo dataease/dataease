@@ -1,0 +1,23 @@
+.#{$theme-name} {
+  .HomeButton {
+    span {
+      display: none;
+    }
+    .home {
+      @include esri-icon-button-default;
+      &:before {
+        content: "\e62f";
+      }
+    }
+    .loading {
+      background-image: url($image-loading-circular);
+      background-position: center center;
+      background-repeat: no-repeat;
+      transition: none;
+      &:before {
+        display: none;
+      }
+    }
+  }
+}
+

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Choose Best Facilities</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Choose Best Facilities"></h2>
+        <hr/>
+    <p>Lo strumento Choose Best Facilities consente di scegliere le zone ideali per determinati servizi. Questo strumento consente di localizzare zone con richiesta di servizi in un modo che soddisfa l'obiettivo specificato.
+    </p>
+    <p>Le facility rappresentano zone che offrono un qualche tipo di servizio, ad esempio stazioni dei pompieri, scuole, biblioteche, negozi o centri di distribuzione. Le zone di richiesta rappresentano zone che richiedono i servizi offerti dalle facility, ad esempio punti di censimento che riepilogano la popolazione in un'area specifica.
+    </p>
+    <p>Lo strumento Choose Best Facilities consente di rispondere alle seguenti domande
+        <ul>
+            <li>In caso di emergenza, in che modo &egrave; possibile assegnare unit&agrave; abitative al centro di soccorso corretto, quando il numero di posti letto &egrave; limitato e non deve essere superato?
+            </li>
+            <li>In che modo &egrave; possibile assegnare i quartieri alla biblioteca di quartiere pi&ugrave; vicina e trovare il numero di potenziali mecenati che si servono della biblioteca? 
+            </li>
+            <li>Come &egrave; possibile individuare la migliore localit&agrave; per un centro di distribuzione alimentare che riduca al minimo il tempo di spostamento complessivo (e pertanto i costi) per la consegna a una catena di negozi di alimentari?
+            </li>
+            <li>Dove deve essere ubicato un nuovo parco per essere certi che il maggior numero di residenti della citt&agrave; si trovi a cinque minuti di cammino dalla stesso?
+            </li>
+            <li>Quali sono le migliori localit&agrave; per diversi negozi di animali in un'area urbana in modo che il 40% dei possessori di animali di quell'area non si trovi a pi&ugrave; di 10 minuti di macchina da uno dei negozi?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Obiettivo</h2></div>
+        <hr/>
+        <div>
+            <p>Specificare l'obiettivo che deve essere soddisfatto durante il posizionamento zone di richiesta di facility.
+            </p>
+            <p>Grazie a Choose Best Facilities &egrave; possibile specificare il tipo di problema che si sta cercando di risolvere: l'obiettivo. Questo strumento &egrave; ottimizzato per fornire una soluzione per il particolare obiettivo. A prescindere dall'obiettivo, lo stesso metodo sottostante viene in pratica utilizzato per raggiungere una soluzione: la quantit&agrave; di richiesta da una localit&agrave; di richiesta specifica viene allocata alla struttura pi&ugrave; vicina. Gli obiettivi variano il modo in cui viene gestita l'interazione tra distanza (o tempo) e richiesta. Lo strumento considera sia la distanza/tempo di viaggio sia la quantit&agrave; di richiesta e, in alcuni casi, la capacit&agrave; delle facility. Se un obiettivo favorisce, ad esempio, la riduzione del tempo di viaggio, lo strumento tenter&agrave;, in via secondaria, di massimizzare la richiesta che viene allocata. Analogamente, se l'obiettivo &egrave; quello di massimizzare la richiesta assegnata, lo strumento ridurr&agrave; il tempo di viaggio (assegnando la posizione di richiesta alla struttura pi&ugrave; vicina anzich&eacute; a qualsiasi struttura).
+            </p>
+            <p>In base ai dati e alle impostazioni utilizzate, obiettivi diversi possono produrre gli stessi risultati o risultati simili. Tuttavia, &egrave; necessario specificare l'obiettivo pi&ugrave; appropriato per l'analisi.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Assegna a facility esistenti</h2></div>
+        <hr/>
+        <div>
+            <p>Utilizzare questo obiettivo se non si desidera individuare nuove facility e si desidera applicare la richiesta a facility esistenti con capacit&agrave; limitata o illimitata.    
+            </p>
+            <p>Questo obiettivo applica la richiesta di facility in base alla capacit&agrave; della facility stessa e alla quantit&agrave; di richiesta dall'area circostante. La richiesta viene allocata alla struttura pi&ugrave; vicina finch&eacute; la capacit&agrave; non viene soddisfatta. Se si specifica un intervallo di spostamento massimo, qualsiasi posizione di richiesta oltre tale intervallo non verr&agrave; assegnata a una struttura, anche se la richiesta non &egrave; stata completamente assegnata.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Riduci viaggio</h2></div>
+        <hr/>
+        <div>
+            <p>Utilizzare questo obiettivo se si desidera individuare facility in modo che il tempo o la distanza di viaggio complessiva tra le zone di richiesta e le facility sia ridotto.
+            </p>
+            <p>Questo obiettivo &egrave; spesso applicabile quando occorre spostarsi regolarmente tra la struttura e tutte le localit&agrave; di richiesta. Utilizzare questo obiettivo, ad esempio, per ridurre la distanza di viaggio complessiva per spostare beni dai centri di distribuzione ai negozi o per selezionare una sede per una conferenza in modo tale da ridurre il tempo di viaggio per tutti i partecipanti.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Ottimizza coverage</h2></div>
+        <hr/>
+        <div>
+            <p>Utilizzare questo obiettivo per massimizzare la quantit&agrave; di richiesta coperta entro un tempo o una distanza specifica dalle facility.    
+            </p>
+            <p>Questo obiettivo sceglie le facility in modo tale che venga applicata la quantit&agrave; massima di richiesta, in cui tutte le richieste provenienti da ogni zona di richiesta vengano applicate alla singola facility pi&ugrave; vicina.
+            </p>
+            <p>Un intervallo di spostamento massimo finito &egrave; obbligatorio per questo obiettivo; in caso contrario, tutta la richiesta potrebbe essere assegnata a una singola struttura. Le posizioni di richiesta che si trovano a una distanza (in termini di spazio o tempo) superiore a quella di una qualsiasi delle strutture, non verranno assegnate (questo mostra i punti in cui la richiesta non &egrave; soddisfatta e i punti in cui potrebbero essere necessarie altre strutture).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Ottimizza copertura con capacità</h2></div>
+        <hr/>
+        <div>
+            <p>Utilizzare questo obiettivo per massimizzare la quantit&agrave; di domanda coperta dalle facility, nel caso in cui le facility abbiano capacit&agrave; limitate.    
+            </p>
+            <p>Questo obiettivo consente di scegliere le strutture in modo da applicare la quantit&agrave; massima di richiesta senza superare la capacit&agrave; di qualsiasi facility. Tutta la richiesta, proveniente da ciascuna posizione di richiesta, viene assegnata alla singola struttura, pi&ugrave; vicina, che dispone di capacit&agrave; (ovvero, se l'assegnazione di una posizione di richiesta a una struttura supera la capacit&agrave; disponibile della struttura, anzich&eacute; assegnare una porzione della richiesta, la posizione di richiesta non verr&agrave; assegnata).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Copri una percentuale di richiesta</h2></div>
+        <hr/>
+        <div>
+            <p>Utilizzare questo obiettivo per individuare il numero minimo di facility richieste per coprire una percentuale di richiesta specificata.
+            </p>
+            <p>Questo obiettivo consente di scegliere il numero minimo di facility necessarie per raggiungere la percentuale di richiesta specificata. Per una posizione di richiesta che si trova all'interno dell'intervallo di spostamento massimo di due o pi&ugrave; strutture, la richiesta verr&agrave; suddivisa in maniera proporzionale tra le strutture in base alla sua distanza da ciascuna. Questo obiettivo viene spesso utilizzato quando le persone possono scegliere la struttura da visitare e si presume che, in generale, verr&agrave; visitata la struttura pi&ugrave; vicina (a parit&agrave; di tutte le altre condizioni).
+            </p>
+            <p>A differenza degli altri obiettivi che scelgono le facility, in cui viene specificato quante facility scegliere, questo obiettivo consente di scegliere il numero di facility per l'utente, in base alla percentuale di richiesta che si desidera soddisfare. Si presume che la capacit&agrave; delle facility non sia limitata.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Misura</h2></div>
+        <hr/>
+        <div>
+            <p>Analogamente ad altri strumenti che implicano il viaggio nell'analisi, &egrave; possibile specificare se il viaggio viene misurato utilizzando la distanza o il tempo e scegliere tra diverse modalit&agrave; di viaggio, ad esempio tempo a piedi, tempo di guida, distanza di guida in aree non urbane e cos&igrave; via. Le modalit&agrave; di viaggio disponibili sono determinate dall'amministratore dell'organizzazione. Quando si utilizza  <b>Tempi di guida</b>, <b>Tempi di guida in aree non urbane</b>, o <b>Tempi di guida in camion</b> &egrave; possibile includere facoltativamente il traffico per un giorno specifico della settimana e un&rsquo;ora del giorno.
+            </p>
+            <p> Per applicare in modo accurato zone di richiesta alle facility, specificare se il viaggio &egrave; dalle facility alle zone di richiesta (ad esempio, dalle stazioni dei pompieri alle abitazioni) o da zone di richiesta a facility (come nel caso di frequentatori assidui che si recano alle biblioteche). Choose Best Facilities tiene conto della direzione di viaggio in strade a senso unico, se &egrave; possibile svoltare da una strada a un'altra, se gli incroci sono del tipo divieto di svolta a sinistra e cos&igrave; via, a seconda che il viaggio sia in uscita, dalla servizio alle zone di richiesta, o in entrata, dalle zone di richiesta alle servizio.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Layer posizioni di richiesta</h2></div>
+        <hr/>
+        <div>
+            <p>Le feature puntuali rappresentano zone che richiedono i servizi offerti dalle facility. Lo strumento consente di applicare queste zone di richiesta a facility appropriate in base all'obiettivo selezionato.
+            </p>
+            <p>Alle posizione di richiesta &egrave; associata una quantit&agrave; di richiesta. Utilizzare una costante per specificare il valore se tutte le localit&agrave; di richiesta hanno la stessa richiesta. Se la quantit&agrave; di richiesta varia in base alla localit&agrave; di richiesta, utilizzare un campo nel Layer posizioni di richiesta per specificare il valore per ogni localit&agrave; di richiesta.
+            </p>
+            <p>La richiesta verr&agrave; applicata alle facility finch&eacute; tutta la richiesta non sar&agrave; completata, a prescindere dalla distanza delle zone di richiesta dalle facility. &Egrave; possibile assegnare un intervallo di spostamento massimo al Layer posizioni di richiesta per creare una distanza o tempo limite: qualsiasi localit&agrave; di richiesta che si trova oltre questo valore limite non verr&agrave; allocata. Utilizzare una costante per specificare il valore se tutte le localit&agrave; di richiesta hanno lo stesso intervallo di spostamento massimo. Se l'intervallo di spostamento massimo varia in base alla localit&agrave; di richiesta, utilizzare un campo nel Layer posizioni di richiesta per specificare il valore per ogni localit&agrave; di richiesta.
+            </p>
+            <p>Se il tipo di obiettivo &egrave;  <b>Copri una percentuale di richiesta</b>, &egrave; necessario specificare la percentuale di richiesta minima che deve essere acquisita dalle facility.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+            <p>Lo strumento supporta fino a 10000 feature nel Layer posizioni di richiesta.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Required Facilities Layer</h2></div>
+        <hr/>
+        <div>
+            <p>Le feature puntuali rappresentano posizioni che svolgono la funzione di facility fornendo un qualche tipo di servizio. Le facility richieste rappresentano in genere posizioni gi&agrave; esistenti, al contrario di facility candidate che in genere rappresentano le posizioni in cui le nuove strutture verranno realizzate o ubicate. Durante l'applicazione di zone di richiesta, lo strumento utilizza le facility nel  <b>Required Facilities Layer</b> prima di qualsiasi struttura del <b>Candidate Facilities Layer</b>.
+            </p>
+            <p>Le facility richieste possono avere capacit&agrave; illimitata (ovvero, possono soddisfare tutta la richiesta a loro assegnata) o limitata. Se tutte le facility hanno la stessa capacit&agrave; limitata (ad esempio il numero di unit&agrave; abitative che possono essere servite da una stazione dei pompieri, ad esempio 4000), specificare un valore costante. Se la capacit&agrave; varia tra le facility (ad esempio il numero di posti disponibili per le matricole presso ciascuna scuola superiore), specificare un campo contenente il valore di capacit&agrave; per ogni facility.
+            </p>
+            <p>Lo strumento supporta fino a 100 feature nel  <b>Required Facilities Layer</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Candidate Facilities Layer</h2></div>
+        <hr/>
+        <div>
+            <p>Le feature puntuali rappresentano posizioni che svolgono la funzione di facility fornendo un qualche tipo di servizio. Le facility candidate rappresentano in genere le posizioni in cui le nuove strutture verranno realizzate o posizionate, al contrario delle facility obbligatorie che in genere rappresentano posizioni gi&agrave; esistenti.
+            </p>
+            <p>In base all'obiettivo di analisi, &egrave; necessario specificare il numero di facility candidate da cui scegliere l'insieme di candidati. Se si specificano facility richieste e candidate, lo strumento utilizza le strutture nel  <b>Required Facilities Layer</b> prima di qualsiasi struttura del <b>Candidate Facilities Layer</b>.
+            </p>
+            <p>Le facility candidate possono avere capacit&agrave; illimitata (ovvero, possono soddisfare tutta la richiesta a loro assegnata) o limitata. Se tutte le facility hanno la stessa capacit&agrave; limitata (ad esempio il numero di unit&agrave; abitative che possono essere servite da una stazione dei pompieri, ad esempio 4000), specificare un valore costante. Se la capacit&agrave; varia tra le facility (ad esempio il numero di posti disponibili per le matricole presso ciascuna scuola superiore), specificare un campo contenente il valore di capacit&agrave; per ogni facility.
+            </p>
+            <p>Lo strumento supporta fino a 1000 feature nel  <b>Candidate Facilities Layer</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Seleziona i layer delle barriere</h2></div>
+        <hr/>
+        <div>
+            <p> Una o pi&ugrave; feature che agiscono come restrizioni temporanee (barriere) mentre si viaggia sulle strade sottostanti. &Egrave; possibile specificare le barriere utilizzando feature puntuali, lineari o poligonali.
+            </p>
+            <p>Una barriera puntuale pu&ograve; essere un albero caduto, un incidente, una linea elettrica fuori uso o qualsiasi elemento che blocchi completamente il traffico in un punto specifico sulla strada. &Egrave; possibile viaggiare sulla strada ma non &egrave; possibile attraversare la barriera. &Egrave; possibile specificare fino a 250 feature affinch&eacute; fungano da barriere puntuali.
+            </p>
+            <p>Una barriera lineare impedisce di viaggiare lungo il perimetro di intersezione tra la barriera e le strade. Per esempio, tramite una barriera lineare, &egrave; possibile creare un corteo o una protesta in grado di bloccare il traffico interessando vari segmenti di strade. Se il numero di feature di strade che si intersecano con tutte le barriere lineari supera il numero 500, lo strumento restituir&agrave; un errore.
+            </p>
+            <p>Una barriera poligonale impedisce di viaggiare all&rsquo;interno di tutta l&rsquo;area di intersezione tra il poligono e le strade. &Egrave; possibile utilizzare questo tipo di barriera per creare alluvioni che coprano aree di rete di strade, rendendo impossibile la circolazione stradale. Se il numero di feature di strade che si intersecano con tutte le barriere poligonali supera il numero 2000, lo strumento restituir&agrave; un errore.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Il layer dei risultati conterr&agrave; un layer per facility cui sono applicate richieste, zone di richiesta che sono applicate a facility e linee di applicazione che collegano le zone di richiesta alle loro facility assegnate. Le linee di applicazione sono disegnate come linee rette; tuttavia, il tempo o la distanza di viaggio tra la struttura e la zona di richiesta &egrave; sempre basata sulla modalit&agrave; di viaggio specificata e non sull'utilizzo di distanze in linea retta.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

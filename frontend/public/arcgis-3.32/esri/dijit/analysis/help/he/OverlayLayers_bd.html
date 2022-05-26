@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>כיסוי שכבות</h2><p/>
+        <h2><img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" alt="כיסוי שכבות"></h2>
+        <hr/>
+    <p>'כיסוי שכבות' משלב שתי שכבות או יותר ליצירת שכבה יחידה אחת.  ניתן לחשוב על כיסוי כהתבוננות בערימה של מפות ויצירת מפה אחת שמכילה את כל המידע שנמצא בערימה.    המשמעות של כיסוי היא יותר מאשר מיזוג של עבודת קו; כל המאפיינים של הישויות שכלולות במוצר הסופי. כיסוי משמש לצורך מענה על אחת מהשאלות הבסיסיות ביותר של גאוגרפיה, &quot;מה נמצא מעל מה?&quot; 
+    </p>
+    <p>להלן מספר דוגמאות:
+        <ul>
+            <li>אילו חלקות נמצאות בתוך מישור ההצפה 100-שנה? (&quot;בתוך&quot; זו פשוט דרך אחרת לומר &quot;מעל&quot;.)
+                  
+            </li>
+            <li>איזה שימוש בקרקע נמצא מעל איזה סוג קרקע?
+                 
+            </li>
+            <li>אילו בארות נמצאות בתוך בסיסים צבאיים נטושים?
+            </li>
+        </ul>
+        
+    </p>
+    <p>אם האפשרות  <b>השתמש בתיחום המפה הנוכחי</b> מסומנת, רק הישויות בשכבת הקלט והכיסוי שנראות בתוך תיחום המפה הנוכחי יכוסו.  אם האפשרות לא מסומנת, כל הישויות הן בשכבת הקלט והן בשכבת הכיסוי יכוסו, גם אם הן מחוץ לתיחום המפה הנוכחי.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>בחר שכבת קלט</h2></div>
+        <hr/>
+        <div>
+            <p>שכבת הנקודה, הקו או האזור שיכוסו.
+            </p>
+            <p>בנוסף לבחירת שכבה מהמפה שלך, באפשרותך לבחור באפשרות  <b>בחר שכבת ניתוח</b> בתחתית הרשימה הנפתחת. אפשרות זו פותחת גלריה שבה באפשרותך לעיין ולבחור ערכות נתונים ממקורות שונים לצורך שימוש בניתוח. 
+            </p>
+        </div>
+    </div>
+    <div id="overlayLayer">
+        <div><h2>בחר שכבת כיסוי</h2></div>
+        <hr/>
+        <div>
+            <p>השכבה לכיסוי בשכבת הקלט.  
+            </p>
+            <p>בנוסף לבחירת שכבה מהמפה שלך, באפשרותך לבחור באפשרות  <b>בחר שכבת ניתוח</b> בתחתית הרשימה הנפתחת כדי לדפדף לתכנים שלך עבור סט נתוני שיתוף קובץ Big Data או שכבת ישויות. באפשרותך אופציונלית להחיל מסנן על שכבת הקלט או להחיל בחירה על שכבות מתארחות שנוספו למפה שלך. מסננים ובחירות מוחלים רק עבור ניתוח. 
+            </p>
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>בחר צורת כיסוי</h2></div>
+        <hr/>
+        <div>
+            <p>ציין את צורת הכיסוי לשילוב שכבת הקלט ושכבת הכיסוי.  
+
+                <ul>
+                    <li> <b>חתוך</b> -  רק הישויות או חלקי הישויות בשכבת הכיסוי אשר חופפים עם הישויות בשכבת הקלט ישולבו.
+                    </li>
+                    <li> <b>מחק</b> - ישויות או חלקי ישויות בשכבת הכיסוי שלא חופפים עם האזורים בשכבת הקלט ישולבו.
+                    </li>
+                    <li> <b>איחוד</b> - כל הישויות משתי השכבות ישולבו, ליצירת איחוד גיאומטרי של שכבת הקלט ושכבת הכיסוי.  כל הישויות והמאפיינים שלהן ייכתבו אל השכבה.
+                    </li>
+                    <li> <b>זהה</b> -  ישויות או חלקי ישויות בשכבת הקלט ובשכבת הכיסוי ישולבו. ישויות או חלקי ישויות שחופפים הן בשכבת הקלט והן בשכבת הכיסוי ייכתבו אל שכבת הפלט.
+                    </li>
+                    <li> <b>הבדל סימטרי</b> -  ישויות או חלקי ישויות של שכבת הקלט ושכבת הכיסוי שלא חופפים ישולבו.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>שם שכבת התוצאה</h2></div>
+        <hr/>
+        <div>
+            <p>השם של השכבה שתיווצר ב <b>התוכן שלי</b> ותתווסף למפה.  יהיה לה אותו סוג ישות (אזורים, קווים או נקודות) כמו לשכבות הקלט והכיסוי.  שם ברירת המחדל מבוסס על צורת הכיסוי ושם שכבת הקלט. אם שם השכבה כבר קיים, תתבקש לספק שם אחר.
+            </p>
+            <p>בעזרת התיבה הנפתחת  <b>שמור תוצאה ב</b>, באפשרותך לציין את שם התיקייה ב <b>תוכן שלי</b> שבה התוצאה תישמר.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

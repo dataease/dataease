@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Melakukan Geocode alamat dari Tabel</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Melakukan Geocode alamat dari Tabel"></h2>
+        <hr/>
+    <p>Geocoding adalah cara untuk mengubah alamat menjadi koordinat. Alat ini mengonversi alamat dari tabel, file CSV, atau file Excel menjadi feature layer atau file output dengan koordinat sebagai kolom tambahan.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Pilih tabel input</h2></div>
+        <hr/>
+        <div>
+            <p>Tabel input dengan alamat akan di-geocode. Input harus berupa tabel, file CSV, atau file Excel.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Pilih penentu lokasi</h2></div>
+        <hr/>
+        <div>
+            <p>Pilih service penentu lokasi untuk melakukan geocode. Jika service penentu lokasi yang ingin Anda gunakan tidak berada di menu tarik-turun, hubungi administrator agar service penentu lokasi dikonfigurasi untuk geocoding kelompok.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Negara</h2></div>
+        <hr/>
+        <div>
+            <p>Jika semua alamat Anda berasal dari satu negara, pilih negara tersebut untuk memastikan hasil yang paling akurat. Jika tidak, kosongkan parameter ini.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Pilih Kolom Data</h2></div>
+        <hr/>
+        <div>
+            <p>Service penentu lokasi membutuhkan kolom tertentu di data, seperti alamat, kota, negara, dan kode pos. Cocokkan kolom data di file input atau tabel dengan kolom yang diharapkan penentu lokasi dengan menggunakan kotak tarik-turun. Semakin banyak kolom yang Anda petakan, hasilnya akan semakin akurat. Jika semua data tabel input berada di satu kolom, pilih  <b>Kolom Tunggal</b> dan pilih kolom data dari menu tarik-turun. Jika tidak, pilih <b>Beberapa Kolom</b> dan petakan kolom penentu lokasi yang sesuai dengan kolom dengan banyak bidang di tabel.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Pilih format output</h2></div>
+        <hr/>
+        <div>
+            <p>Format hasil output. Jika Anda memilih untuk membuat sebuah feature service, alamat dari tabel input akan ditambahkan ke peta sebagai layer fitur titik. Opsi CSV dan XLS menambahkan file dengan hasil tugas geocoding ke  <b>Konten Saya</b> ketika tugas selesai.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama hasil output</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta.  Nama default ditetapkan berdasarkan nama layer input. Jika nama layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Dengan menggunakan  <b>Simpan hasil di</b> menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

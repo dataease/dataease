@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Layer überlagern</h2><p/>
+        <h2><img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" alt="Layer &uuml;berlagern"></h2>
+        <hr/>
+    <p>Bei einer &Uuml;berlagerung werden zwei oder mehr Layer zu einem einzelnen Layer kombiniert. 
+Sie k&ouml;nnen sich eine &Uuml;berlagerung als einen Stapel von Karten vorstellen, durch den Sie hindurchsehen und anhand dessen Sie eine einzelne Karte erstellen, die alle Informationen aus diesem Stapel enth&auml;lt.
+ Ein &Uuml;berlagerungsvorgang ist viel mehr als eine einfache Zusammenf&uuml;hrung einzelner Linien. S&auml;mtliche Attribute der Features, die Teil der &Uuml;berlagerung sind, werden auf das endg&uuml;ltige Produkt &uuml;bertragen. Die &Uuml;berlagerung gibt eine Antwort auf die grundlegendsten Fragen der Geographie: &quot;Welche Elemente &uuml;berlagern einander?&quot; Beispiel:
+        <ul>
+            <li>Welche Flurst&uuml;cke befinden sich in einem 100-Jahres-&Uuml;berschwemmungsgebiet? (&quot;In&quot; ist hier nur ein Synonym f&uuml;r &quot;&uuml;ber&quot; bzw. &quot;&uuml;berlagern&quot;.)
+                  
+            </li>
+            <li>Welche Stra&szlig;en befinden sich in welchen Landkreisen?
+            </li>
+            <li>Welche Landnutzung liegt &uuml;ber welchem Bodentyp?
+                 
+            </li>
+            <li>Welche Quellen befinden sich in aufgegebenen milit&auml;rischen Einrichtungen?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features im Eingabe- und Overlay-Layer analysiert, die sich in der aktuellen Kartenausdehnung &uuml;berlagern.  Wenn diese Option deaktiviert ist, werden auch dann alle Features im Eingabe- und Overlay-Layer &uuml;berlagert, wenn sie sich au&szlig;erhalb der aktuellen Ausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Eingabe-Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Punkt-, Linien- oder Fl&auml;chen-Features, die &uuml;berlagert werden.
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+        </div>
+    </div>
+    <div id="OverlayLayer">
+        <div><h2>Overlay-Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Layer, der den Eingabe-Layer &uuml;berlagern soll.  
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p> 
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Overlay-Methode auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Anhand der Overlay-Methode wird definiert, wie der Eingabe-Layer und der Overlay-Layer kombiniert werden.  
+
+                <ul>
+                    <li> <b>&Uuml;berschneiden</b> &ndash; Das Ergebnis enth&auml;lt nur die Features oder Teile der Features im Overlay-Layer, die sich mit Features im Eingabe-Layer &uuml;berlappen. Beim Schneiden von Linien oder Fl&auml;chen-Features k&ouml;nnen Sie festlegen, welcher Typ von Features ausgegeben werden soll.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Punkte mit Punkten
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Punkte und Punkt-Eingabe">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Punkte und Punkte mit Punkt-Ausgabe">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Punkte mit Linien
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-F1E6C6C8-4F51-4063-984D-0FC8D08EB2D2-web.png" alt="Punkte und Linien-Eingabe">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-02CFAFDC-1B3C-4C4B-A58C-7B0B78BA0B56-web.png" alt="Punkte und Linien mit Punkt-Ausgabe">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Punkte mit Fl&auml;chen
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-5EE90BD6-CC3D-4E2F-A5D0-DC57298E8416-web.png" alt="Punkte und Fl&auml;chen-Eingabe">
+                                </p>
+                            </td>
+                            <td> <img src="../images/GUID-5CCA360F-D4C9-43AB-8FB2-E6E62DE93BD4-web.png" alt="Punkte und Fl&auml;chen mit Punkt-Ausgabe">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Linien mit Linien 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Linien und Linien-Eingabe">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-DDCCB226-6490-4914-B87C-299125466256-web.png" alt="Linien und Linien mit Punkt-Ausgabe">
+                                </p>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Linien und Linien mit Linien-Ausgabe ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Linien mit Fl&auml;chen
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-E38EB7D6-9D35-4E0D-937A-9FEC4144AF2E-web.png" alt="Linien und Fl&auml;chen-Eingabe">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-639F492C-BEE7-4A5F-AEBC-325B74FEC766-web.png" alt="Linien und Fl&auml;chen mit Punkt-Ausgabe">
+                                </p>
+                                <p> <img src="../images/GUID-58DF5CF6-0A56-4717-AD9C-C3BEC8EA6906-web.png" alt="Linien und Fl&auml;chen mit Linien-Ausgabe">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Fl&auml;chen mit Fl&auml;chen
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Fl&auml;chen und Fl&auml;chen-Eingabe">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-3F71AD46-A6A2-436D-8BBA-13E014BB94D0-web.png" alt="Fl&auml;chen und Fl&auml;chen mit Punkt-Ausgabe">
+                                </p>
+                                <p> <img src="../images/GUID-6AF62F09-6D32-4212-97C6-844580E34A22-web.png" alt="Fl&auml;chen und Fl&auml;chen mit Linien-Ausgabe">
+                                </p>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="Fl&auml;chen und Fl&auml;chen mit Fl&auml;chen-Ausgabe">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Vereinigen</b> &ndash; Das Ergebnis enth&auml;lt Features aus dem Eingabe-Layer und dem Overlay-Layer. Die Option &quot;Vereinigen&quot; ist nur verf&uuml;gbar, wenn der Eingabe-Layer und der Overlay-Layer Fl&auml;chen-Features enthalten.
+                    </li>
+                    <li> <b>Radieren</b> &ndash; Das Ergebnis enth&auml;lt nur die Features oder Teile der Features im Overlay-Layer, die sich nicht mit den Fl&auml;chen im Eingabe-Layer &uuml;berlappen.  Der Overlay-Layer kann Fl&auml;chen-, Linien- oder Punkt-Features enthalten.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features im Eingabe- und Overlay-Layer analysiert, die sich in der aktuellen Kartenausdehnung &uuml;berlagern.  Wenn diese Option deaktiviert ist, werden auch dann alle Features im Eingabe- und Overlay-Layer &uuml;berlagert, wenn sie sich au&szlig;erhalb der aktuellen Ausdehnung befinden.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p> Dies ist der Name des Layers, der in <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Er enth&auml;lt den gleichen Feature-Typ (Fl&auml;chen, Linien oder Punkte) wie der Overlay-Layer. Der Standardname basiert auf der &Uuml;berlagerungsmethode und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p> 
+        </div>
+    </div>
+</div>
+</html>

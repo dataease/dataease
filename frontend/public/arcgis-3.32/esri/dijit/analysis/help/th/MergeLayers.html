@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>เชื่อมชั้นข้อมูล</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="เชื่อมชั้นข้อมูล"></h2>
+        <hr/>
+    <p>เครื่องมือนี้สามารถคัดลอกฟีทเจอร์จากชั้นข้อมูล 2 ชั้นให้กลายเป็นชั้นข้อมูลใหม่ ชั้นข้อมูลทุกชั้นจะต้องมีฟีทเจอร์ประเภทเดียวกัน (จุด เส้น หรือพื้นที่) คุณสามารถเลือกได้ว่าฟิลด์จากชั้นข้อมูลต่าง ๆ จะถูกคัดลอกหรือรวมกันอย่างไร ตัวอย่างเช่น:
+        <ul>
+            <li>ฉันมีชั้นข้อมูลประเทศอังกฤษ เวลส์ และ สก๊อตแลนด์ ทั้งหมด 3 ชั้นข้อมูล และฉันต้องการผสานให้เหลือชั้นข้อมูลสหราชอาณาจักรเพียงชั้นเดียว 
+            </li>
+            <li>ฉันมีชั้นข้อมูล 12 ชั้น โดยแต่ละชั้นมีข้อมูลพื้นที่ของเมืองที่อยู่ติดกัน ต้องการรวมข้อมูลเหล่านี้ให้กลายเป็นชั้นข้อมูลเดียว และให้ข้อมูลคุณลักษณะเหลือเฉพาะฟีลด์ที่มีชื่อและประเภทตรงกันระหว่าง 12 ชั้นข้อมูลเหล่านี้
+            </li>
+        </ul>
+        
+    </p>
+    <p>ถ้า  <b>ใช้ขอบเขตแผนที่ปัจจุบัน</b> ถูกเลือกไว้ จะมีการใช้ข้อมูลเพื่อการวิเคราะห์นี้เฉพาะข้อมูลที่อยู่ในพื้นที่จากขอบเขตแผนที่ที่เห็นอยู่ในปัจจุบันในการรวมชั้นข้อมูล หากไม่ถูกเลือก ทุก ๆ ฟีทเจอร์จากทั้งสองชั้นข้อมูลจะถูกรวมเข้าด้วยกันแม้ว่าฟีทเจอร์นั้นจะอยู่นอกขอบเขตของแผนที่ปัจจุบันก็ตาม
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>เลือกชั้นข้อมูล</h2></div>
+        <hr/>
+        <div>
+            <p>ฟีเจอร์จุด เส้น หรือพื้นที่ จะรวมเข้ากับชั้นข้อมูลที่ระบุไว้ด้านล่าง 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>เลือกชั้นข้อมูลที่จะรวม</h2></div>
+        <hr/>
+        <div>
+            <p>เลือกชั้นข้อมูลที่จะรวมเป็นชั้นข้อมูลแรก
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>ปรับฟีลด์ที่ต้องการรวมเข้าด้วยกัน</h2></div>
+        <hr/>
+        <div>
+            <p>โดยค่าเริ่มต้น ทุกฟีลด์จากชั้นข้อมูลทั้งสองจะถูกเก็บไว้ในชั้นข้อมูลผลลัพธ์ทั้งหมด คุณสามารถปรับลักษณะของฟีลด์ต่าง ๆ ที่จะปรากฎในชั้นข้อมูลผลลัพธ์ได้ดังนี้:
+                <ul>
+                    <li> <b>เปลี่ยนชื่อ</b>&mdash;ชื่อฟีลด์จะถูกเปลี่ยนในชั้นข้อมูลผลลัพธ์
+                    </li>
+                    <li> <b>ลบออก</b>&mdash;ฟีลด์จะถูกลบออกในชั้นข้อมูลผลลัพธ์
+                    </li>
+                    <li> <b>จับคู่</b>&mdash;ชื่อฟีลด์ที่เหมือนกัน ค่าต่าง ๆ ของฟีลด์จะถูกคัดลอกและนำไปวางไว้ในฟีลด์ที่มีชื่อเหมือนกัน
+                    </li>
+                </ul>
+                
+            </p>
+            <p>หากทั้งสองชั้นข้อมูลมีฟิลด์ที่ชื่อและประเภทข้อมูลเหมือนกัน เนื้อหาของทั้งสองฟิลด์จะถูกรวมกันเป็นฟิลด์เดียวโดยใช้ชื่อนั้น ลักษณะนี้จะไม่เกิดขึ้นกับฟิลด์ที่เลือกใช้ <b>ตรงกัน</b>ในพารามิเตอร์ <b>ปรับฟิลด์ที่ต้องการรวมเข้าด้วยกัน</b>
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>ชื่อของชั้นข้อมูลผลลัพธ์</h2></div>
+        <hr/>
+        <div>
+            <p>เป็นชื่อชั้นข้อมูลที่จะถูกสร้างใน <b>เนื้อหาของฉัน</b> และเพิ่มเข้าไปในแผนที่ ชื่อเริ่มต้นจะขึ้นอยู่กับชื่อเครื่องมือและชื่อชั้นข้อมูลอินพุท ถ้าชื่อชั้นข้อมูลนี้มีอยู่แล้ว คุณจะถูกขอให้ตั้งชื่อใหม่
+            </p>
+            <p>ใช้  <b>บันทึกผลลัพธ์ใน</b> เมนูแบบเลื่อนลง เพื่อระบุชื่อของโฟล์เดอร์ใน <b>เนื้อหาของฉัน</b> เมื่อบันทึกผล
+            </p>
+        </div>
+    </div>
+</div>
+</html>

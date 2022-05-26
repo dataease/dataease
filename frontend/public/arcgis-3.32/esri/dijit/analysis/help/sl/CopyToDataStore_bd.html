@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Kopiraj v shrambo podatkov</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="Kopiraj v shrambo podatkov"></h2>
+        <hr/>
+    <p>To orodje bo vzelo vhodni sloj in ga kopiralo v shrambo podatkov. Rezultate lahko kopirate v  ArcGIS Data Store (relacijsko ali prostorsko-časovno shrambo velikih podatkov) in sloj bo ustvarjen v va&scaron;em portalu ali pa lahko kopirate rezultate v delitev datotek velikih podatkov. 
+    </p>
+    <p>Na primer, geoobjekte, ki so shranjeni v  <code>delitvi datotek velikih podatkov</code>, lahko kopirate v <code>relacijsko shrambo podatkov</code> in navedete, da bodo kopirani samo geoobjekti znotraj trenutnega obsega karte. To bo ustvarilo gostujočo geoobjektno storitev s samo tistimi geoobjekti, ki so bili znotraj navedenega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi sloj za kopiranje</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj ali tabela, ki bo kopirana. 
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>Uporabite lahko vse geoobjekte ali naredite izbiro (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p>Poljubno lahko uporabite izbirni gumb, da identificirate lokacije, ki bodo kopirane.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Izberite shrambo podatkov za kopiranje v</h2></div>
+        <hr/>
+        <div>
+            <p>Shramba podatkov, v katero bo kopiran sloj. Ta parameter bo preglasil izbiro v  <b>okoljih analize</b>. Možnosti so naslednje:
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>Prostorsko-časovno</b> &ndash; to je privzeto.
+                            </li>
+                            <li> <b>Relacijsko</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>Izhodne predloge delitev datotek velikih podatkov</b>
+                        <ul>
+                            <li>Seznam razpoložljivih predlog delitve datotek velikih podatkov v formatu  <b>bigDataFileShareName-templateName</b>. Predloge delitve datotek velikih podatkov je treba konfigurirati pred izvajanjem orodja.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen. Če zapisujete v ArcGIS Data Store, bodo va&scaron;i rezultati shranjeni v  <b>Moji vsebini</b> in dodani na karto. Če zapisujete v delitev datotek velikih podatkov, bodo va&scaron;i rezultati shranjeni v delitev datotek velikih podatkov in dodani v njen manifest. Ne bodo dodani v skupino. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, orodje ne bo uspe&scaron;no.
+            </p>
+            <p>Ko zapisujete v  ArcGIS Data Store (relacijsko ali prostorsko-časovno shrambo velikih podatkov) s pomočjo spustnega menija  <b>Shrani rezultat v</b>, lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

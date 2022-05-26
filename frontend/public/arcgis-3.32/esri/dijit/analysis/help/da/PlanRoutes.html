@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Planlæg ruter</h2><p/>
+        <h2><img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="Planl&aelig;g ruter"></h2>
+        <hr/>
+    <p>Planl&aelig;g ruter bestemmer, hvordan du effektivt kan fordele opgaver blandt en mobil arbejdsstyrke.
+    </p>
+    <p>Du indtaster en r&aelig;kke stop og antallet af tilg&aelig;ngelige k&oslash;ret&oslash;jer for disse stop i v&aelig;rkt&oslash;jet. V&aelig;rkt&oslash;jet tildeler stoppene til k&oslash;ret&oslash;jer og returnerer ruter, som viser, hvordan hvert k&oslash;ret&oslash;j kan n&aring; deres tildelte stop med det mindst mulige tidsforbrug.
+    </p>
+    <p>Med Planl&aelig;g ruter kan mobile medarbejdere n&aring; frem til flere arbejdssteder p&aring; mindre tid, hvilket &oslash;ger produktiviteten og forbedrer kundeservicen.
+        <ul>
+            <li>Inspicere husstande, restauranter eller byggepladser
+                
+
+            </li>
+            <li>Levere reparations- og installationsydelser eller tekniske ydelser
+            </li>
+            <li>Levere varer eller sm&aring; pakker
+            </li>
+            <li>Foretage salgsopkald
+            </li>
+            <li>Transportere folk fra deres hjem til en begivenhed
+            </li>
+        </ul>
+        
+    </p>
+    <p>Outputtet fra Planl&aelig;g ruter indeholder et lag med stop, der er kodet af ruterne, hvortil de er tildelt, et lag med ruter, der viser den korteste vej til de tildelte stop samt, afh&aelig;ngigt af om der er stop, som ikke kan n&aring;s, et lag med ikke-tildelte stop. 
+    </p>
+    <p>Hvis feltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, er det kun objekterne, der er synlige inden for den aktuelle kortudstr&aelig;kning, der medtages i analysen. Hvis markeringen fjernes, medtages alle objekter i inputlaget, ogs&aring; selv om de er uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Vælg det punklag, der repræsenterer stop, der skal besøges</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg det lag med punkter, som ruterne (eller k&oslash;ret&oslash;jerne) skal bes&oslash;ge. Disse punkter bliver tildelte eller ikke-tildelte stop i outputtet. 
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+            <p>V&aelig;rkt&oslash;jet underst&oslash;tter op til 2.000 inputobjekter. 
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Rejsetilstand for ruter</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg din rejsetilstand. Outputruterne vil  f&oslash;lge veje eller g&aring;stier, og de vil overholde g&aelig;ldende regler, s&aring;som ensrettede gader, ulovlige vendinger for k&oslash;rsel med biler eller lastbiler. De tilg&aelig;ngelige rejsetilstande fasts&aelig;ttes af administratoren for din organisation.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Ruter starter ved stop</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv, hvor og hvorn&aring;r k&oslash;ret&oslash;jerne p&aring;begynder deres ruter.
+            </p>
+            <p>Med Planl&aelig;g ruter kan du angive et eller mange startsteder for dine k&oslash;ret&oslash;jer.
+            </p>
+            <p>Hvis der angives &eacute;t punktsted, vil alle k&oslash;ret&oslash;jer starte fra dette punkt, uafh&aelig;ngigt af antallet af tilg&aelig;ngelige k&oslash;ret&oslash;jer. Du kan v&aelig;lge et punktlag med &eacute;t punkt eller f&oslash;je et punkt til kortet ved at v&aelig;lge  <b>F&oslash;j punkt til kort</b>, klikke p&aring; redigeringsknappen ud for punktet og klikke p&aring; kortet. 
+            </p>
+            <p>Hvis der angives mange steder, skal hvert k&oslash;ret&oslash;j knyttes til sit eget punkt. Antallet af k&oslash;ret&oslash;jer skal matche antallet af punkter i laget. V&aelig;lg et lag med flere punkter, og angiv et felt, som entydigt identificerer de enkelte ruter, k&oslash;ret&oslash;jer eller chauff&oslash;rer i rullelisten  <b>Rute-ID-felt</b>.
+            </p>
+            <p>Starttidspunktet er det samme for alle ruter. Tidszonen for starttidspunktet er den samme, som den tidszone, hvor startpunktet eller -punkterne er placeret, s&aring; du skal s&oslash;rge for at indtaste tidspunktet i lokal tid. Forestil dig f.eks., at du er i Pacific Standard Time (UTC-8:00), og de k&oslash;ret&oslash;jer, som du dirigerer, er i Mountain Standard Time (UTC-7:00). Hvis klokken p&aring; nuv&aelig;rende tidspunkt er 9:30 a.m. Pacific Standard Time (kl. 10.30 a.m Mountain Standard Time), og dine k&oslash;ret&oslash;jer skal p&aring;begynde deres ruter om 30 minutter, skal du indstille starttidspunktet til kl. 11:00 a.m. 
+            </p>
+            <p>Hvis dine k&oslash;ret&oslash;jer starter fra forskellige tidszoner, kan starttidspunktet ikke v&aelig;re samtidig, i stedet herfor forskydes de. Hvis en rute f.eks. starter fra et punkt i PST, og en anden rute starter fra MST, og du angiver kl. 11:00 a.m. som starttidspunkt, vil ruten i PST starte kl. 11:00 a.m. PST, og ruten i MST vil starte kl. 11:00 a.m. MST, dvs. med en times forskel.
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Ruter slutter ved stop</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv, hvor k&oslash;ret&oslash;jerne slutter deres ruter.
+            </p>
+            <p>Du kan konfigurere ruterne, s&aring; de slutter p&aring; et af tre steder: 
+                <ul>
+                    <li>Det samme sted, hvor ruterne startede, uafh&aelig;ngigt af, om de havde udgangspunkt fra et eller mange steder
+                    </li>
+                    <li>&Eacute;t enkelt sted
+                    </li>
+                    <li>Mange steder, dvs. et slutpunkt for hver rute
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Mark&eacute;r  <b>Tilbage til start</b>, hvis k&oslash;ret&oslash;jerne starter og slutter deres ruter de samme steder.
+            </p>
+            <p>For at dirigere alle k&oslash;ret&oslash;jer til et f&aelig;lles slutpunkt, som ikke er startpunktet, skal du fjerne markeringen  <b>Tilbage til start</b> og enten f&oslash;je et punkt til kortet eller v&aelig;lge et lag, som indeholder &eacute;t punkt.
+            </p>
+            <p>Hvis du vil have ruter, som slutter p&aring; unikke steder, skal du fjerne markeringen  <b>Tilbage til start</b> og v&aelig;lge et lag, som indeholder mere end et punkt. Antallet af k&oslash;ret&oslash;jer skal svare til antallet af punkter i det valgte lag. I rullelisten <b>Rute-ID-felt</b> skal du v&aelig;lge et felt, som entydigt identificerer de enkelte ruter, k&oslash;ret&oslash;jer eller chauff&oslash;rer. Hvis k&oslash;ret&oslash;jerne starter forskellige steder og slutter flere steder, skal de rute-ID'er, der er valgt for start- og slutlaget, matche.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Vælg grænselag</h2></div>
+        <hr/>
+        <div>
+            <p> Et eller flere objekter, der fungerer som midlertidige begr&aelig;nsninger (barrierer) under transport p&aring; de underliggende gader. Du kan angive gr&aelig;nser vha. punkt-, linje- eller polygonobjekter.
+            </p>
+            <p>En punktgr&aelig;nse kan modellere et f&aelig;ldet tr&aelig;, en ulykke, en nedfalden elektrisk ledning eller andet, der blokerer helt for trafikken p&aring; en specifik position p&aring; gaden. Transport er tilladt p&aring; gaden, men ikke gennem gr&aelig;nsen (barrieren). Du kan angive op til 250 objekter, der kan fungere som punktgr&aelig;nser.
+            </p>
+            <p>En linjegr&aelig;nse forhindrer transport alle steder, hvor gr&aelig;nsen gennemsk&aelig;rer gaderne. En linjegr&aelig;nse kan f.eks. bruges til at modellere en parade eller en demonstration, der blokerer trafikken p&aring; tv&aelig;rs af flere gadesegmenter. Hvis det antal gadesegmenter, der gennemsk&aelig;res af linjegr&aelig;nserne, overskrider 500, returnerer v&aelig;rkt&oslash;jet en fejl.
+            </p>
+            <p>En polygongr&aelig;nse forhindrer transport alle steder, hvor polygonen gennemsk&aelig;rer gaderne. &Eacute;n m&aring;de at benytte denne type gr&aelig;nse p&aring; er at modellere oversv&oslash;mmelser, der d&aelig;kker s&aring; store dele af vejnettet, at vejtransport bliver umulig. Hvis det antal gadesegmenter, der gennemsk&aelig;res af polygongr&aelig;nserne, overskrider 2000, returnerer v&aelig;rkt&oslash;jet en fejl.
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Maksimalt antal køretøjer, der skal dirigeres</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv antallet af k&oslash;ret&oslash;jer, der er tilg&aelig;ngelige for stoppene. V&aelig;rkt&oslash;jet underst&oslash;tter op til  100 k&oslash;ret&oslash;jer. 
+            </p>
+            <p>V&aelig;rkt&oslash;jet kan m&aring;ske finde en l&oslash;sning, som bruger f&aelig;rre k&oslash;ret&oslash;jer end det antal, du angiver her, afh&aelig;ngigt af det samlede antal stop, hvor mange stop du tillader pr. k&oslash;ret&oslash;j, hvor langt stoppene ligger fra hinanden, tidsforbrug ved hvert stop og enhver begr&aelig;nsning du fasts&aelig;tter for den samlede rutetid pr. k&oslash;ret&oslash;j.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Maksimalt antal stop pr. køretøj</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er et af to parametre, som fordeler den samlede arbejdsbyrde p&aring; tv&aelig;rs af ruterne. Du kan angive en v&aelig;rdi mellem 1 og  200. 
+            </p>
+            <p>Ved at reducere det maksimale antal stop, der kan tildeles til hvert k&oslash;ret&oslash;j, er det mere sandsynligt, at k&oslash;ret&oslash;jerne f&aring;r tildelt lige mange stop. Dette bidrager til at fordele arbejdsbyrden mellem chauff&oslash;rerne. Ulempen er, at det kan resultere i en l&oslash;sning, der er mindre effektiv.
+            </p>
+            <p>Ved at &oslash;ge antallet af stop pr. k&oslash;ret&oslash;j har v&aelig;rkt&oslash;jet et st&oslash;rre spillerum til at finde mere effektive l&oslash;sninger, men arbejdsbyrden kan blive uj&aelig;vnt fordelt blandt chauff&oslash;rer og k&oslash;ret&oslash;jer. Bem&aelig;rk, at du kan fordele arbejdsbyrden efter tid tillige med antallet af stop ved at angive en v&aelig;rdi for parametret  <b>Begr&aelig;ns den samlede rutetid pr. k&oslash;ret&oslash;j</b>.
+            </p>
+            <p>De f&oslash;lgende eksempler viser effekten af at begr&aelig;nse det maksimale antal stop pr. k&oslash;ret&oslash;j eller den samlede tid pr. k&oslash;ret&oslash;j. I alle eksempler er der seks stop og to ruter, som starter det samme sted.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="../images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="Balancerede stop og rejsetider">
+                </td>
+                <td>
+                    <p>Balancerede rejsetider og stop pr. rute:
+                    </p>
+                    <p>Stoppene er mere eller mindre j&aelig;vnt spredt ud, s&aring; hvis der fasts&aelig;ttes et maksimalt antal stop pr. k&oslash;ret&oslash;j for at fordele arbejdsbyrden, resulterer det i ruter med omtrent den samme varighed.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Ubalancerede rutetider">
+                </td>
+                <td>
+                    <p>Balancerede stop pr. rute, men ubalancerede rejsetider:
+                    </p>
+                    <p>Fem ud af seks stop er samlet n&aelig;r startstedet, men et stop skiller sig ud, idet det kr&aelig;ver en meget l&aelig;ngere k&oslash;retid. En ligelig fordeling af stoppene mellem de to ruter medf&oslash;rer ubalancerede rejsetider.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="Balancerede rejsetider">
+                </td>
+                <td>
+                    <p>Ubalancerede stop pr. rute, men afbalancerede rejsetider:
+                    </p>
+                    <p>Stoppene er placeret samme sted som i den forrige grafik, men ved at &oslash;ge det maksimale antal stop pr. rute og begr&aelig;nse den samlede rejsetid pr. k&oslash;ret&oslash;j opn&aring;s balancerede rejsetider.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Tidsforbrug ved hvert stop</h2></div>
+        <hr/>
+        <div>
+            <p>Fasts&aelig;t det forventede gennemsnitlige tidsforbrug ved hvert stop. Hvis du f.eks. udarbejder en tidsplan for arbejdsdagen for inspekt&oslash;rer og den gennemsnitlige inspektionstid er 45 minutter, skal du indtaste <code>45</code>.
+            </p>
+            <p>Tidsforbruget antages at v&aelig;re det samme ved alle stop.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Begræns den samlede rutetid pr. køretøj</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv det maksimale tidsforbrug for en rute fra start til slut. Dette omfatter forventet rejsetid og tidsforbrug ved stop langs ruten. Hvis chauff&oslash;rerne ikke skal arbejde l&aelig;ngere end en given tid om dagen, f.eks. otte timer, kan du angive en begr&aelig;nsning her.
+            </p>
+            <p>Se i hj&aelig;lpen under  <b>Maksimalt antal stop pr. k&oslash;ret&oslash;j</b> for overvejelser i forbindelse med fordeling af arbejdsbyrde.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; det vektorlag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Hvis vektorlaget allerede findes, vil du blive bedt om at angive et andet navn. Vektorlaget vil indeholde et lag for hvert af f&oslash;lgende: ruter, tildelte stop og ikke-tildelte stop, n&aring;r nogle input-stop ikke kan knyttes til nogen af ruterne.
+            </p>
+            <p>Hvis du v&aelig;lger  <b>Medtag rutelag</b>, gemmes hver rute fra resultatet ogs&aring; som rutelag. Et rutelag indeholder alle oplysninger for en bestemt rute, s&aring;som de stop, der er tildelt til ruten, samt rejsevejledningen. Det er nyttigt at oprette rutelag, hvis du gerne vil dele individuelle ruter med andre medlemmer i din organisation, eller hvis du &oslash;nsker at foretage yderligere redigering af ruterne ved hj&aelig;lp af knappen <b>K&oslash;rselsvejledninger</b> i kortviseren. Rutelagene bruger det navn, der er angivet for vektorlaget, som pr&aelig;fiks, og det rutenavn, der genereres som en del af analysen, tilf&oslash;jes for at oprette et unikt navn for hvert rutelag.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat i</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor vektorlaget og rutelagene &ndash; hvis de er oprettet &ndash;  vil blive gemt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

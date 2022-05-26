@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Lacak Alur Hilir</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Lacak Alur Hilir"></h2>
+        <hr/>
+    <p>Alat ini menentukan pelacakan, atau arah aliran ke hilir dari titik-titik pada layer input Anda.
+    </p>
+    <p>Sebagai contoh, misalkan Anda punya fitur-fitur titik yang menunjukkan sumber-sumber pencemaran, dan dalam penelitian, Anda ingin menentukan ke mana pencemaran ini akan mengalir. Anda dapat menggunakan Lacak Alur Hilir untuk mengidentifikasi jalur yang akan ditempuh oleh pencemaran tersebut. Jalur ini juga dapat dibagi menjadi segmen-segmen garis individu dengan menentukan nilai dan unit jarak. Garis yang dimunculkan bisa berupa total panjang jalur aliran, panjang pelacakan maksimal yang sudah ditetapkan, atau memotong sesuai fitur area misalnya area studi Anda. Seringkali, jika total panjang jalur pelacakan dimunculkan, ini berarti dari sumbernya sampai ke laut.
+    </p>
+    <p>Hasilnya adalah garis yang melambangkan pelacakan ke alur hilir. Jika Anda menetapkan jarak untuk  <b>Pisahkan pelacakan menjadi segmen garis</b>, garis pelacakan tersebut akan dibagi menjadi banyak garis yang masing-masingnya punya panjang yang sudah ditetapkan. Sebagai contoh, jika titik input Anda mewakili tumpahan pencemaran dan sungai yang dialirinya mengalir dengan kecepatan 0,6 mil per jam, atau 15 mil per hari, Anda mungkin ingin membagi sungai ini ke dalam segmen-segmen dengan panjang 15 mil. Membagi pelacakan ke dalam interval sepanjang 15 mil akan memperlihatkan kira-kira ke mana tumpahan tadi akan bergerak setiap harinya. Garis akan dilambangkan dengan warna-warna gradasi berdasarkan jarak, dan akan diberi label dengan jarak dari awal pelacakan.
+    </p>
+    <p>Pelacakan yang dihasilkan akan mempunyai semua atribut dari titik-titik input Anda serta atribut-atribut lainnya. 
+        <ul>
+            <li> <i>PointID</i>&mdash;Berisi nilai ID dari titik input.
+                
+
+            </li>
+            <li> <i>LengthKm</i>&mdash;Berisi panjang dalam kilometer untuk pelacakan alur hilir total.
+                
+
+            </li>
+            <li> <i>Description</i> dan <i>DataResolution</i>&mdash;Berisi informasi terkait dengan data hidrologi yang digunakan untuk menghitung pelacakan.
+                
+
+            </li>
+            <li> <i>FromDistance</i> dan <i>ToDistance</i>&mdash;Berisi jarak dari dan ke untuk setiap segmen garis. Semua atribut ini ditulis jika <b>Pisahkan pelacakan menjadi segmen garis</b> digunakan.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, yang akan dianalisis hanya fitur-fitur titik dalam layer input yang terlihat di jangkauan peta saat ini. Jika tidak dicentang, semua fitur pada layer input akan dianalisis meskipun berada di luar jangkauan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Fitur titik yang digunakan sebagai lokasi awal untuk setiap pelacakan alur hilir</h2></div>
+        <hr/>
+        <div>
+            <p>Fitur titik yang digunakan sebagai lokasi awal untuk setiap pelacakan alur hilir. Hasilnya akan memuat sebuah garis untuk setiap titik input.
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Pisahkan pelacakan menjadi segmen garis</h2></div>
+        <hr/>
+        <div>
+            <p>Garis pelacakan tersebut akan dibagi menjadi banyak garis yang masing-masingnya punya panjang yang ditentukan. Sebagai contoh, jika titik input Anda mewakili tumpahan pencemaran dan sungai yang dialirinya mengalir dengan kecepatan 0,6 mil per jam, atau 15 mil per hari, Anda mungkin ingin membagi sungai ini ke dalam segmen-segmen dengan panjang 15 mil. Membagi pelacakan ke dalam interval sepanjang 15 mil akan memperlihatkan kira-kira ke mana tumpahan tadi akan bergerak setiap harinya. Garis akan dilambangkan dengan warna-warna gradasi berdasarkan jarak, dan akan diberi label dengan jarak dari awal pelacakan. Pelacakan yang dihasilkan akan mempunyai banyak segmen garis, masing-masing dengan kolom  <i>FromDistance</i> dan <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Jarak maksimal pelacakan</h2></div>
+        <hr/>
+        <div>
+            <p>Menentukan total panjang garis yang akan dikembalikan. Jika Anda menyediakan fitur area untuk memotong pelacakan tersebut, hasilnya akan ditempel ke fitur area, terlepas dari jarak yang Anda masukkan di sini.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Tempel keluaran menjadi</h2></div>
+        <hr/>
+        <div>
+            <p>Anda bisa menggambar atau menyediakan layer dari area tempat yang ingin Anda potong. Sebagai contoh, jika Anda hanya menginginkan agar hasil pelacakan berada di dalam area studi Anda, misalnya daerah Anda, gunakan fitur daerah Anda sebagai input supaya pelacakan berhenti di batas daerah tersebut.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta.  Nama default ditetapkan berdasarkan nama layer input. Jika nama layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Dengan menggunakan  <b>Simpan hasil di</b> menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+            <p> Menjalankan alat ini tidak memakan kredit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

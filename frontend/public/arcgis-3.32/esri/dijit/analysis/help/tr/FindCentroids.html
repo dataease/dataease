@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Ağırlık Merkezi Bul</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Ağırlık Merkezi Bul"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, her detayın temsil merkezini belirlemek i&ccedil;in &ccedil;oklu nokta, &ccedil;izgi veya alan detayları katmanı ile &ccedil;alışır.
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> işaretli ise, yalnızca ge&ccedil;erli harita yayılımında g&ouml;r&uuml;n&uuml;r olan girdi &ccedil;oklu noktası katmanı, &ccedil;izgi katmanı ve alan katmanındaki detaylar analiz edilir. İşaretli değilse, girdi katmanındaki t&uuml;m detaylar, ge&ccedil;erli harita yayılımının dışında bile olsa analiz edilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Özellikleri ağırlık merkezi oluşturmak için kullanılacak katmanı seç</h2></div>
+        <hr/>
+        <div>
+            <p> Ağırlık merkezini bulmak i&ccedil;in kullanılacak &ccedil;oklu nokta, &ccedil;izgi veya alan katmanı.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Doğru ağırlık merkezlerinde</h2></div>
+        <hr/>
+        <div>
+            <p>  <b>Ger&ccedil;ek Ağırlık Merkezinde</b> se&ccedil;eneği işaretli olduğunda (varsayılan), &ccedil;ıktı her bir girdi detayı i&ccedil;in ağırlık merkezinin ger&ccedil;ek konumunu getirir. Ağırlık merkezleri aşağıdaki gibi konumlandırılacaktır:
+                <ul>
+                    <li>&Ccedil;oklu nokta detayları&mdash;&Ccedil;ıktı ağırlık merkezi, &ccedil;oklu nokta detayındaki t&uuml;m noktaların x ve y koordinatlarının ortalamasında yer alır.
+                    </li>
+                    <li>&Ccedil;izgi detayları&mdash;&Ccedil;ıktı ağırlık merkezi, &ccedil;izgi detayındaki t&uuml;m doğru par&ccedil;alarının x ve y koordinatlarının ağırlıklı ortalamasında yer alır. Ağırlık, doğru par&ccedil;asının uzunluğuna bağlıdır.
+                    </li>
+                    <li>Alan detayları&mdash;&Ccedil;ıktı ağırlık merkezi, alanın merkezinde bulunur.
+                    </li>
+                </ul>
+                
+            </p>
+            <p> <b>Girdi detayları tarafından i&ccedil;erilir</b> işaretli olduğunda, &ccedil;ıktı nokta detayları her girdi detayı tarafından i&ccedil;erilir veya i&ccedil;erisinde bulunur. Oluşan nokta detayları aşağıdaki gibi g&ouml;r&uuml;necektir:
+                <ul>
+                    <li>&Ccedil;oklu nokta detayları&mdash;&Ccedil;ıktı ağırlık merkezi, &ccedil;oklu nokta grubundaki noktalardan biriyle &ccedil;akışacak.
+                    </li>
+                    <li>&Ccedil;izgi detayları&mdash;&Ccedil;ıktı ağırlık merkezi, &ccedil;izginin &uuml;zerinde olacak. &Ccedil;izgi kavisli ise &ccedil;ıktı, &ccedil;izginin orta noktasında olacaktır. 
+                    </li>
+                    <li>Alan detayları&mdash;&Ccedil;ıktı noktası alan detayı i&ccedil;erisinde olacaktır.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adıdır.  Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman adı zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Verrijken vanuit multivariabele grid</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Verrijken vanuit multivariabele grid"></h2>
+        <hr/>
+    <p>De tool  Verrijken vanuit multivariabele grid voegt op een effici&euml;nte manier attributen samen van een multivariabele gridlaag naar een puntlaag.
+    </p>
+    <p>Een multivariabele grid is elke laag die is gemaakt met de tool Multivariabel grid bouwen, waarmee attributen uit meerdere lagen worden samengevoegd tot een enkel raster van vlakken. Door een multivariabele grid voor verrijking te gebruiken, kunt u snel grote en diverse verzamelingen van informatie toevoegen aan puntgegevens voor gebruik in verdere ruimtelijke analyse.
+    </p>
+    <p>Stel dat u een laag nieuwe misdaadcijfers heeft gekregen van misdaden die zich het afgelopen jaar in een stad hebben voorgedaan. U wilt de relaties modelleren tussen criminaliteitsfrequentie en verschillende demografische, economische en geografische factoren. U hebt toegang tot gegevens die deze factoren beschrijven, maar deze wordt opgeslagen in vijf verschillende lagen met verschillende geometrietypes. Bovendien worden sommige lagen opgeslagen in een big data bestand share terwijl andere opgeslagen zijn als object
+services. Door een multivariabele grid te maken om deze informatie op te slaan en dit raster vervolgens samen te voegen met uw misdaadstatistieken met de tool  Verrijken vanuit multivariabele grid, kan u op een effici&euml;nte manier een groot aantal verschillende attributen met uw puntlaag verbinden met slechts twee toolruns.U kunt dan de gekoppelde attributen gebruiken als verklarende variabelen en beginnen met het bouwen van een misdaadmodel met de resultaatlaag.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Kies de puntobjecten die u wilt verrijken</h2></div>
+        <hr/>
+        <div>
+            <p>De puntobjecten die worden verrijkt door het multivariabele grid.
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Kies de multivariabele grid waaruit verrijkt moet worden</h2></div>
+        <hr/>
+        <div>
+            <p>De multivariabele gridlaag die objecten bevat die worden samengevoegd met de kenmerken van het invoerpunt. De laag moet zijn gemaakt met de tool Multivariabele grid bouwen en moet een gehoste objectlaag zijn. Multivariabele gridlagen die worden opgeslagen in een big data file share orden niet ondersteund als invoer voor deze tool.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Kies de variabelen die u wilt toevoegen</h2></div>
+        <hr/>
+        <div>
+            <p>De attributen in de multivariabele gridlaag die worden samengevoegd met het invoerpunt, worden weergegeven wanneer het punt het raster kruist.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p> De naam van de laag die wordt gemaakt. Als u naar een ArcGIS Data Store,  schrijft, worden uw resultaten opgeslagen in  <b>Mijn Content</b> en toegevoegd aan de kaart. Als u naar een big data file share schrijft, worden uw resultaten opgeslagen in de big data file share en toegevoegd aan het bijhorende manifest. Ze zullen niet worden toegevoegd aan de kaart. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, zal de tool falen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

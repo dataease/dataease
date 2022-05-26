@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Trova Hot Spot</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Trova Hot Spot"></h2>
+        <hr/>
+    <p>Lo strumento Trova Hot Spot consente di determinare la presenza di cluster statisticamente rilevanti nel modello spaziale dei dati. 
+        <ul>
+            <li>I punti (reati, alberi o incidenti stradali) sono realmente organizzati in cluster?  Come si pu&ograve; verificarlo?
+            </li>
+            <li>&Egrave; stato effettivamente individuato un hot spot di rilevanza statistica oppure la mappa raffigurerebbe una situazione diversa se venisse cambiata la simbologia?
+            </li>
+        </ul>
+        Lo strumento Trova hot spot consente di rispondere con sicurezza a queste domande.
+    </p>
+    <p>&Egrave; possibile individuare cluster anche in modelli spaziali casuali. Gli occhi e il cervello umano provano inoltre naturalmente a individuare modelli anche quando non esistono. Di conseguenza pu&ograve; risultare difficile sapere se i modelli presenti nei dati sono il risultato di processi spaziali reali o semplicemente il risultato del caso. &Egrave; per questo motivo che ricercatori e analisti utilizzano metodi statistici, ad esempio Trova hot spot (Getis-Ord Gi*) per quantificare modelli spaziali. L'individuazione di cluster di rilevanza statistica nei dati consente di disporre di informazioni importantissime. Sapere dove e quando si verificano i cluster pu&ograve; offrire indizi importanti sui processi che portano alla creazione dei modelli visualizzati. Sapere, ad esempio, che il numero di furti in appartamento &egrave; particolarmente elevato in un determinato quartiere &egrave; essenziale per definire adeguate strategie di prevenzione, allocare risorse di polizia inadeguate, predisporre programmi di sorveglianza del quartiere, autorizzare investigazioni approfondite sui reati o identificare potenziali sospetti.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Scegli il layer per il quale verranno calcolati gli hot spot</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer di punti dal quale verranno trovati hot spot e cold spot.
+            </p>
+            <p>Questa analisi utilizza contenitori e richiede un sistema di coordinate proiettate. &Egrave; possibile impostare il  <b>Sistema di coordinate di elaborazione</b> negli <b>Ambienti di analisi</b>. Se il sistema di coordinate di elaborazione non &egrave; impostato su un sistema di coordinate proiettate, verr&agrave; chiesto di impostarlo quando si <b>Esegue l'analisi</b> .
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Trova cluster di valori alti e bassi</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Questa analisi consente di rispondere alla domanda seguente: dove si raggruppano in cluster i valori alti e bassi?
+            </p>
+            <p>Se i dati sono punti e si sceglie  <b>Conteggi punti</b>, questo strumento valuter&agrave; la disposizione delle feature puntuali nello spazio e consentir&agrave; di rispondere alla seguente domanda: in che area i punti si raggruppano in cluster o si distribuiscono in modo imprevisto?
+            </p>
+            <p>Se si sceglie un campo, lo strumento valuter&agrave; la disposizione nello spazio dei valori associati a ciascuna feature e consentir&agrave; di rispondere alla seguente domanda: in che area i valori alti e bassi si raggruppano in cluster?
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Seleziona le dimensioni contenitore per l'aggregazione</h2></div>
+        <hr/>
+        <div>
+            <p>La distanza utilizzata per generare i contenitori quadrati che verranno utilizzati per analizzare i punti di input.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Trova hot spot usando passaggi temporali (facoltativo)</h2></div>
+        <hr/>
+        <div>
+            <p>Se il layer di punti &egrave; abilitato per variazioni temporali ed &egrave; di tipo istante, &egrave; possibile eseguire l'analisi utilizzando passaggi temporali.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Intervallo del passaggio temporale</h2></div>
+        <hr/>
+        <div>
+            <p>Intervallo di tempo utilizzato per la generazione di passaggi temporali. Il tempo pu&ograve; essere allineato all'ora di inizio o all'ora di fine dei dati di input o a un periodo di riferimento specifico.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Intervallo del passaggio temporale</h2></div>
+        <hr/>
+        <div>
+            <p>Intervallo di tempo utilizzato per la generazione di passaggi temporali. Il tempo pu&ograve; essere allineato all'ora di inizio o all'ora di fine dei dati di input o a un periodo di riferimento specifico.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Scegliere come allineare i passaggi temporali</h2></div>
+        <hr/>
+        <div>
+            <p>Modalit&agrave; di allineamento dei passaggi temporali. Esistono tre modi per allineare i passaggi temporali:
+                <ul>
+                    <li> <b>Ora di inizio</b>: i passaggi temporali sono allineati con la prima feature nel tempo.
+                    </li>
+                    <li> <b>Ora di fine</b>: i passaggi temporali sono allineati con l'ultima feature nel tempo.
+                    </li>
+                    <li> <b>Ora di riferimento</b>: i passaggi temporali sono allineati con un tempo specificato.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Ora di riferimento a cui allineare i passaggi temporale</h2></div>
+        <hr/>
+        <div>
+            <p>La data e l'ora utilizzati per allineare i passaggi temporali.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Seleziona le dimensioni del confine per i calcoli hotspot</h2></div>
+        <hr/>
+        <div>
+            <p>La distanza utilizzata per determinare la vicinanza utile per calcolare gli hot spot. La vicinanza deve essere maggiore delle dimensioni del contenitore per garantire che ciascun contenitore abbia almeno un vicino. Ciascun contenitore viene analizzato e confrontato con i contenitori nelle vicinanze.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Riferimento spaziale (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; un parametro temporaneo per la versione provvisoria che consente di impostare il riferimento spaziale per l'elaborazione. Molti strumenti Big Data richiedono l'utilizzo di un sistema di coordinate proiettato come riferimento spaziale per l'elaborazione. Per impostazione predefinita, lo strumento utilizzer&agrave; il sistema di coordinate di input ma non verr&ograve; eseguito se si tratta di un sistema di coordinate geografiche. Per impostare un sistema di coordinate proiettato, immettere il WKID. Ad esempio,  <b>Mercatore Sferica</b> deve essere inserito come <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Scegliere un ArcGIS Data Store in cui salvare i risultati</h2></div>
+        <hr/>
+        <div>
+            <p>I risultati di GeoAnalytics sono memorizzati in un data store ed esposti come un feature layer in  Portal for ArcGIS. Nella maggior parte dei casi, i risultati devono essere memorizzati nello Spatiotemporal Data Store e questa &egrave; l'impostazione predefinita. In alcuni casi,, il salvataggio dei risultati nel Data Store relazionale &egrave; un'ottima opzione. Di seguito sono memorizzate le ragioni per memorizzare i risultati nel Data Store relazionale: 
+                <ul>
+                    <li>&Egrave; possibile utilizzare i risultati in una collaborazione tra portali.
+                    </li>
+                    <li>&Egrave; possibile abilitare funzionalit&agrave; di sincronizzazione con i risultati.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Non utilizzare il Data Store relazionale se si prevede un incremento dei risultati GeoAnalytics ed &egrave; necessario sfruttare le funzionalit&agrave; dello Spatiotemporal Big Data Store per gestire grandi quantit&agrave; di dati.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p> Il nome del layer che verr&agrave; creato.  Se si scrive su un ArcGIS Data Store, i risultati saranno salvati in  <b>I miei contenuti</b> e aggiunti alla mappa. Se si scrive su una condivisione file Big Data, i risultati saranno memorizzati nella condivisione file Big Data e aggiunti al suo Manifest. Non saranno aggiunti alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, lo strumento non verr&agrave; eseguito.
+            </p>
+            <p>Nel layer risultante saranno visualizzati i cluster di rilevanza statistica con valori alti e bassi o conteggi di punti. Se il nome del layer di risultati esiste gi&agrave;, verr&agrave; chiesto di rinominarlo.
+            </p>
+            <p>Quando si scrive su  ArcGIS Data Store (data store relazionale o Spatiotemporal Big Data Store) usando la casella a discesa  <b>Salva risultato in</b>, &egrave; possibile specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

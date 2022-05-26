@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Belátható terület létrehozása</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Bel&aacute;that&oacute; ter&uuml;let l&eacute;trehoz&aacute;sa eszk&ouml;z"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z egy megfigyelő &aacute;ltal l&aacute;that&oacute; ter&uuml;leteket azonos&iacute;tja, a felsz&iacute;n topogr&aacute;fi&aacute;j&aacute;t figyelembe v&eacute;ve. A bemenő pontok helyei k&eacute;pviselhetnek megfigyelőket (p&eacute;ld&aacute;ul a felsz&iacute;nen l&eacute;vő szem&eacute;lyeket, vagy egy tűztoronyban l&eacute;vő megfigyelőket), vagy megfigyelt objektumokat (p&eacute;ld&aacute;ul sz&eacute;lerőműveket, v&iacute;ztornyokat, j&aacute;rműveket vagy m&aacute;s szem&eacute;lyeket). A eredm&eacute;nyek a megfigyelő tart&oacute;zkod&aacute;si hely&eacute;ről l&aacute;that&oacute; ter&uuml;leteket foglalj&aacute;k magukban.
+    </p>
+    <p>A megfigyelőknek &eacute;s a megfigyelt objektumoknak is lehet felsz&iacute;n feletti magass&aacute;ga, &eacute;s a magass&aacute;gok haszn&aacute;lat&aacute;val meghat&aacute;rozhat&oacute; a l&aacute;that&oacute;s&aacute;g. 300 l&aacute;b magas sz&eacute;lerőművek &eacute;s egy 6 l&aacute;b magas, felsz&iacute;nen &aacute;ll&oacute; szem&eacute;ly eset&eacute;n a sz&aacute;m&iacute;tott bel&aacute;that&oacute; ter&uuml;let jellemzően nagyobb lesz, mint 200 l&aacute;b magas sz&eacute;lerőművek &eacute;s egy 5 l&aacute;b magas szem&eacute;ly eset&eacute;n.
+    </p>
+    <p>Az eredm&eacute;nyr&eacute;teg azoknak az eseteknek a sz&aacute;m&aacute;t r&ouml;gz&iacute;ti, amikor a bemeneti felsz&iacute;nt tartalmaz&oacute; raszteren l&eacute;vő cellahelyek l&aacute;that&oacute;ak a bemeneti megfigyelőpontokr&oacute;l. A nem l&aacute;that&oacute; cell&aacute;k NoData &eacute;rt&eacute;keket kapnak.
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;s haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel a program csak a raszteres ter&uuml;letet &eacute;s az aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;sen l&aacute;that&oacute; megfigyelőpontokat elemzi. Ha nincs bejel&ouml;lve, akkor a bemenő r&eacute;teg &ouml;sszes megfigyelőpontj&aacute;t figyelembe veszi, akkor is, ha azok k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Felszínmagasság</h2></div>
+        <hr/>
+        <div>
+            <p>A bel&aacute;that&oacute; ter&uuml;let sz&aacute;m&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt magass&aacute;gfelsz&iacute;n.
+            </p>
+            <p>Ha a bemeneti felsz&iacute;n f&uuml;ggőleges m&eacute;rt&eacute;kegys&eacute;ge elt&eacute;r a v&iacute;zszintes m&eacute;rt&eacute;kegys&eacute;gtől, p&eacute;ld&aacute;ul a magass&aacute;g&eacute;rt&eacute;kek l&aacute;bban vannak megadva, de a koordin&aacute;ta-rendszer m&eacute;terben, a felsz&iacute;nnek meghat&aacute;rozott f&uuml;ggőleges vonatkoztat&aacute;si rendszerrel kell rendelkeznie. Ennek az az oka, hogy az eszk&ouml;z a f&uuml;ggőleges (Z) &eacute;s a v&iacute;zszintes (XY) m&eacute;rt&eacute;kegys&eacute;gekből sz&aacute;m&iacute;tja a Z t&eacute;nyezőt a bel&aacute;that&oacute; ter&uuml;let elemz&eacute;s&eacute;hez. A f&uuml;ggőleges vonatkoztat&aacute;si rendszer n&eacute;lk&uuml;l, vagyis ha nem &aacute;ll rendelkez&eacute;sre a Z m&eacute;rt&eacute;kegys&eacute;g&eacute;vel kapcsolatos inform&aacute;ci&oacute;, az eszk&ouml;z felt&eacute;telezi, hogy a Z m&eacute;rt&eacute;kegys&eacute;ge megegyezik az XY m&eacute;rt&eacute;kegys&eacute;g&eacute;vel. Ennek eredm&eacute;nyek&eacute;ppen 1,0 &eacute;rt&eacute;kű belső Z t&eacute;nyezőt haszn&aacute;l az elemz&eacute;shez, ami v&aacute;ratlan eredm&eacute;nyekhez vezethet.
+            </p>
+            <p>A magass&aacute;gfelsz&iacute;n lehet integer vagy lebegőpontos &eacute;rt&eacute;k.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Megfigyelőhelyeknek megfelelő pontként ábrázolt vektoros elemek</h2></div>
+        <hr/>
+        <div>
+            <p>A bel&aacute;that&oacute; ter&uuml;let sz&aacute;m&iacute;t&aacute;sakor a megfigyelőhelyeket &aacute;br&aacute;zol&oacute; pont-t&iacute;pus&uacute; vektoros elemek.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimalizálás alapja</h2></div>
+        <hr/>
+        <div>
+            <p>A bel&aacute;that&oacute; ter&uuml;let sz&aacute;m&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt optimaliz&aacute;l&aacute;si m&oacute;dszer.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Ez a m&oacute;dszer a feldolgoz&aacute;s sebess&eacute;g&eacute;t optimaliz&aacute;lja; a nagyobb teljes&iacute;tm&eacute;ny miatt az eredm&eacute;ny pontoss&aacute;ga valamelyest cs&ouml;kken. Ez az alap&eacute;rtelmez&eacute;s.
+
+                </li>
+                <li>Accuracy &mdash; 
+Ez a m&oacute;dszer az eredm&eacute;nyek pontoss&aacute;g&aacute;ra van optimaliz&aacute;lva hosszabb feldolgoz&aacute;si idő&eacute;rt cser&eacute;be.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Legnagyobb megtekintési távolság</h2></div>
+        <hr/>
+        <div>
+            <p>Adja meg a t&aacute;vols&aacute;ghat&aacute;rt, amelyn&eacute;l a l&aacute;that&oacute; ter&uuml;letek sz&aacute;m&iacute;t&aacute;sa v&eacute;get &eacute;r. Ezen a t&aacute;vols&aacute;gon t&uacute;l az eszk&ouml;z nem figyeli, hogy a megfigyelőpontok &eacute;s az egy&eacute;b objektumok k&ouml;lcs&ouml;n&ouml;sen r&aacute;l&aacute;tnak-e egym&aacute;sra.
+            </p>
+            <p>Megadhat egy line&aacute;ris t&aacute;vols&aacute;got jelentő numerikus &eacute;rt&eacute;ket, vagy kiv&aacute;laszthat egy numerikus mezőt a bemeneti megfigyelői vektoros elemek k&ouml;z&uuml;l. Mező megad&aacute;sa eset&eacute;n a mező &aacute;ltal tartalmazott &eacute;rt&eacute;keknek ugyanolyan m&eacute;rt&eacute;kegys&eacute;ggel kell rendelkezni&uuml;k, mint a bemeneti magass&aacute;gfelsz&iacute;n XY egys&eacute;g&eacute;nek.
+            </p>
+            <p>&Uuml;gyeljen arra, hogy nagy &eacute;rt&eacute;kekn&eacute;l megnő a sz&aacute;m&iacute;t&aacute;si idő. Ha nincs megadva, az eszk&ouml;z a felbont&aacute;s &eacute;s a bemeneti magass&aacute;gfelsz&iacute;n kiterjed&eacute;se alapj&aacute;n kisz&aacute;m&iacute;t egy alap&eacute;rtelmezett legnagyobb t&aacute;vols&aacute;got.
+            </p>
+            <p>Ez a param&eacute;ter hasznos bizonyos jelens&eacute;gek modellez&eacute;s&eacute;hez. A l&aacute;that&oacute;s&aacute;g kiterjed&eacute;s&eacute;nek korl&aacute;toz&aacute;s&aacute;val p&eacute;ld&aacute;ul modellezhetőek az időj&aacute;r&aacute;si k&ouml;r&uuml;lm&eacute;nyek, p&eacute;ld&aacute;ul az enyhe k&ouml;d. Szint&eacute;n a l&aacute;that&oacute;s&aacute;g kiterjed&eacute;s&eacute;nek korl&aacute;toz&aacute;s&aacute;val bizonyos fok&uacute; ir&aacute;ny&iacute;t&aacute;sa lehet a napszakok f&ouml;l&ouml;tt az alkonyat hat&aacute;s&aacute;nak szimul&aacute;l&aacute;s&aacute;val.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Legnagyobb megtekintési távolság</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Legkisebb látótávolság</h2></div>
+        <hr/>
+        <div>
+            <p>Adja meg a t&aacute;vols&aacute;got, amelyn&eacute;l a l&aacute;that&oacute; ter&uuml;letek sz&aacute;m&iacute;t&aacute;sa kezdődik. A felsz&iacute;nen l&eacute;vő, enn&eacute;l a t&aacute;vols&aacute;gn&aacute;l k&ouml;zelebbi cell&aacute;k nem l&aacute;that&oacute;ak a kimenetben, azonban a legkisebb l&aacute;t&oacute;t&aacute;vols&aacute;g &eacute;s a legnagyobb megtekint&eacute;si t&aacute;vols&aacute;g k&ouml;z&eacute; eső cell&aacute;k l&aacute;that&oacute;s&aacute;g&aacute;t akad&aacute;lyozhatj&aacute;k.
+            </p>
+            <p>Megadhat egy line&aacute;ris t&aacute;vols&aacute;got jelentő numerikus &eacute;rt&eacute;ket, vagy kiv&aacute;laszthat egy numerikus mezőt a bemeneti megfigyelői vektoros elemek k&ouml;z&uuml;l. Mező megad&aacute;sa eset&eacute;n a mező &aacute;ltal tartalmazott &eacute;rt&eacute;keknek ugyanolyan m&eacute;rt&eacute;kegys&eacute;ggel kell rendelkezni&uuml;k, mint a bemeneti magass&aacute;gfelsz&iacute;n XY egys&eacute;g&eacute;nek.
+            </p>
+            <p>Ez a param&eacute;ter a bel&aacute;that&oacute; ter&uuml;let szab&aacute;lyoz&aacute;s&aacute;ra alkalmas a megfigyelőtől meghat&aacute;rozott t&aacute;vols&aacute;gra eső elemz&eacute;si ter&uuml;leten bel&uuml;l. Ha p&eacute;ld&aacute;ul azt elemzi, hogy milyen a r&aacute;l&aacute;t&aacute;s egy &eacute;p&uuml;let tetej&eacute;ről egy t&aacute;voli parkra, be&aacute;ll&iacute;thatja a legkisebb l&aacute;t&oacute;t&aacute;vols&aacute;got, &eacute;s ezzel kiz&aacute;rhatja az &Ouml;nt nem &eacute;rdeklő k&ouml;zeli ter&uuml;leteket, hogy gyorsabb legyen a feldolgoz&aacute;s.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Legkisebb látótávolság</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>3D távolság</h2></div>
+        <hr/>
+        <div>
+            <p>Megadhat&oacute;, hogy a legkisebb l&aacute;t&oacute;t&aacute;vols&aacute;g &eacute;s a legnagyobb megtekint&eacute;si t&aacute;vols&aacute;g param&eacute;terek m&eacute;r&eacute;se h&aacute;romdimenzi&oacute;s m&oacute;don vagy egyszerűbben, k&eacute;tdimenzi&oacute;s m&oacute;don t&ouml;rt&eacute;njen. A lehetős&eacute;g kijel&ouml;l&eacute;sekor az eszk&ouml;z 3D t&aacute;vols&aacute;gk&eacute;nt kezeli a l&aacute;t&oacute;t&aacute;vols&aacute;gokat. Ha nincs kijel&ouml;lve, 2D t&aacute;vols&aacute;gk&eacute;nt kezeli.
+            </p> 
+            <p>A 2D t&aacute;vols&aacute;g az egyszerű line&aacute;ris t&aacute;vols&aacute;g egy megfigyelő &eacute;s a c&eacute;lpont k&ouml;z&ouml;tt a tengerszintre vet&iacute;tett hely&uuml;ket felhaszn&aacute;lva. A 3D t&aacute;vols&aacute;g val&oacute;s&aacute;ghűbb &eacute;rt&eacute;ket ad az&aacute;ltal, hogy figyelembe veszi a relat&iacute;v magass&aacute;gukat is.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Megfigyelőhelyek magassága</h2></div>
+        <hr/>
+        <div>
+            <p>Adja meg a megfigyelőhelyek magass&aacute;g&aacute;t.
+            </p>
+            <p>Megadhat egy, az &ouml;sszes megfigyelő magass&aacute;g&aacute;t jelk&eacute;pező numerikus &eacute;rt&eacute;ket, vagy az egyes megfigyelők magass&aacute;g&aacute;t le&iacute;r&oacute; mezőt. Mező megad&aacute;sa eset&eacute;n a mező &aacute;ltal tartalmazott &eacute;rt&eacute;knek ugyanolyan m&eacute;rt&eacute;kegys&eacute;ggel kell rendelkeznie, mint a bemeneti magass&aacute;gfelsz&iacute;n Z egys&eacute;g&eacute;nek.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Megfigyelőhelyek magassága</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Megfigyelők magassága</h2></div>
+        <hr/>
+        <div>
+            <p>Adja meg a megfigyelőhelyek f&ouml;ldfelsz&iacute;n feletti magass&aacute;g&aacute;t.
+            </p> 
+            <p>Magass&aacute;gk&eacute;nt megadhat egy numerikus &eacute;rt&eacute;ket, vagy egy mezőt a bemeneti megfigyelői vektoros elemek k&ouml;z&uuml;l. Mező megad&aacute;sa eset&eacute;n a mező &aacute;ltal tartalmazott &eacute;rt&eacute;knek ugyanolyan m&eacute;rt&eacute;kegys&eacute;ggel kell rendelkeznie, mint a bemeneti magass&aacute;gfelsz&iacute;n Z egys&eacute;g&eacute;nek.
+            </p>
+            <p>Az alap&eacute;rtelmezett &eacute;rt&eacute;k 6 l&aacute;b. Ha a megfigyel&eacute;s magaslati pontr&oacute;l t&ouml;rt&eacute;nik, p&eacute;ld&aacute;ul megfigyelőtoronyb&oacute;l vagy egy magas &eacute;p&uuml;letből, annak a magass&aacute;g&aacute;t haszn&aacute;lja az alap&eacute;rtelmezett &eacute;rt&eacute;k helyett. A bel&aacute;that&oacute; ter&uuml;let sz&aacute;m&iacute;t&aacute;sakor az eszk&ouml;z hozz&aacute;adja ezt az &eacute;rt&eacute;ket a megfigyelőhely magass&aacute;g&aacute;hoz, ha azt megadt&aacute;k, m&aacute;sk&uuml;l&ouml;nben az interpol&aacute;lt felsz&iacute;ni z &eacute;rt&eacute;khez adja hozz&aacute;.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Megfigyelők magassága</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Cél magassága</h2></div>
+        <hr/>
+        <div>
+            <p>Megadhatja a l&aacute;that&oacute;s&aacute;g meghat&aacute;roz&aacute;s&aacute;hoz haszn&aacute;lt, a felsz&iacute;nen l&eacute;vő &eacute;p&iacute;tm&eacute;nyek vagy szem&eacute;lyek magass&aacute;g&aacute;t.
+            </p>
+            <p>Magass&aacute;gk&eacute;nt megadhat egy numerikus &eacute;rt&eacute;ket, vagy egy mezőt a bemeneti megfigyelői vektoros elemek k&ouml;z&uuml;l. Mező megad&aacute;sa eset&eacute;n a mező &aacute;ltal tartalmazott &eacute;rt&eacute;knek ugyanolyan m&eacute;rt&eacute;kegys&eacute;ggel kell rendelkeznie, mint a bemeneti magass&aacute;gfelsz&iacute;n Z egys&eacute;g&eacute;nek.
+            </p>
+            <p>Az eredm&eacute;nyk&eacute;nt kapott bel&aacute;that&oacute; ter&uuml;letek k&ouml;z&ouml;tt azok a ter&uuml;letek szerepelnek, ahonnan egy megfigyelőpontb&oacute;l l&aacute;that&oacute;ak ezek a felsz&iacute;nen l&eacute;vő objektum. Ennek a ford&iacute;tottja is igaz: a felsz&iacute;nen l&eacute;vő objektumokb&oacute;l r&aacute; lehet l&aacute;tni a megfigyelőpontra. 
+            </p>
+            <p>Az al&aacute;bbiakban n&eacute;h&aacute;ny p&eacute;ld&aacute;t mutatunk be a c&eacute;l magass&aacute;g&aacute;nak be&aacute;ll&iacute;t&aacute;s&aacute;ra:
+            </p>
+            <ul>
+                <li>Ha a bemeneti pontok sz&eacute;lerőműveket k&eacute;pviselnek, &eacute;s szeretn&eacute; meg&aacute;llap&iacute;tani, hogy a felsz&iacute;nen &aacute;ll&oacute; szem&eacute;lyek l&aacute;tj&aacute;k-e a sz&eacute;lerőműveket, akkor adja meg a szem&eacute;lyek &aacute;tlagos testmagass&aacute;g&aacute;t (k&ouml;r&uuml;lbel&uuml;l 6 l&aacute;b).
+                    
+
+                </li>
+                <li>Ha a bemeneti pontok tűzfigyelő tornyoknak felelnek meg, &eacute;s szeretn&eacute; meg&aacute;llap&iacute;tani, hogy melyik kil&aacute;t&oacute;toronyb&oacute;l l&aacute;that&oacute; egy legal&aacute;bb 20 l&aacute;b magasra felsz&aacute;ll&oacute; f&uuml;stoszlop, akkor adjon meg 20 l&aacute;bat a c&eacute;l magass&aacute;gak&eacute;nt.
+                    
+
+                </li>
+                <li>Ha a bemeneti pontok k&ouml;zutak vagy gyalogutak ment&eacute;n tal&aacute;lhat&oacute; kil&aacute;t&oacute;k, &eacute;s szeretn&eacute; meg&aacute;llap&iacute;tani, hogy honnan l&aacute;that&oacute;k a legal&aacute;bb 400 l&aacute;b magas sz&eacute;lerőművek, akkor adjon meg 400 l&aacute;b magass&aacute;got.
+                    
+
+                </li>
+                <li>Ha a bemeneti pontok kil&aacute;t&oacute;helyeknek felelnek meg, &eacute;s szeretn&eacute; meg&aacute;llap&iacute;tani, hogy a kil&aacute;t&oacute;helyen a felsz&iacute;nen &aacute;ll&oacute; szem&eacute;ly mekkora ter&uuml;letet l&aacute;that be, akkor adjon meg null&aacute;t a c&eacute;l magass&aacute;gak&eacute;nt. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Megfigyelők magassága</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Kimeneti magasság a láthatóvá váláshoz</h2></div>
+        <hr/>
+        <div>
+            <p>A f&ouml;ldfelsz&iacute;n feletti magass&aacute;g mint kimeneti eredm&eacute;ny neve. Az eredm&eacute;ny&uuml;l kapott f&ouml;ldfelsz&iacute;n feletti magass&aacute;g egy raszter, ahol minden egyes cella &eacute;rt&eacute;ke az a legkisebb magass&aacute;g, amelyet hozz&aacute; kell adni egy egy&eacute;bk&eacute;nt nem l&aacute;that&oacute; cell&aacute;hoz ahhoz, hogy l&aacute;that&oacute;v&aacute; v&aacute;ljon legal&aacute;bb egy megfigyelő sz&aacute;m&aacute;ra. A m&aacute;r l&aacute;that&oacute; cell&aacute;k 0 &eacute;rt&eacute;ket kapnak ebben a kimeneti raszterben.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az Eredm&eacute;ny ment&eacute;si helye leg&ouml;rd&uuml;lő mezőben megadhatja a  <b>Saj&aacute;t tartalom</b>mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z <b>menti az eredm&eacute;nyt</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

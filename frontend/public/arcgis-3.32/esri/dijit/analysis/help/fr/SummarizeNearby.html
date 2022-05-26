@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Synthétiser - A proximité</h2><p/>
+        <h2><img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" alt="Synth&eacute;tiser - A proximit&eacute;"></h2>
+        <hr/>
+    <p>Cet outil recherche et synth&eacute;tise les entit&eacute;s qui se trouvent &agrave; une distance donn&eacute;e des entit&eacute;s dans la premi&egrave;re couche en entr&eacute;e. La distance peut &ecirc;tre mesur&eacute;e soit en tant que distance en ligne droite soit &agrave; l'aide d'un mode de d&eacute;placement s&eacute;lectionn&eacute;.  Les options de mode de d&eacute;placement sont la distance &agrave; parcourir, le temps de conduite, la distance pour camions, la dur&eacute;e du trajet pour camions, la distance &agrave; pied ou le temps de marche.   Les statistiques sont ensuite calcul&eacute;es pour les entit&eacute;s &agrave; proximit&eacute;. Par exemple
+        <ul>
+            <li>Calcule la population totale qui se trouve &agrave; un temps de trajet de moins de cinq minutes d'un nouvel emplacement sugg&eacute;r&eacute; de magasin.
+            </li>
+            <li>Calcule le nombre de bretelles d'acc&egrave;s d'autoroute qui se trouvent &agrave; une distance de moins d'un mile d'un nouvel emplacement sugg&eacute;r&eacute; de magasin afin de mesurer l'accessibilit&eacute; du magasin.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si l'option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s de la couche en entr&eacute;e et de la couche &agrave; synth&eacute;tiser qui sont visibles au sein de l'&eacute;tendue courante de la carte seront analys&eacute;es.  Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent &agrave; la fois dans la couche en entr&eacute;e et dans la couche &agrave; synth&eacute;tiser seront analys&eacute;es, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumNearbyLayer">
+        <div><h2>Choisissez la couche à partir de laquelle les distances seront mesurées jusqu'aux entités dans la couche à synthétiser</h2></div>
+        <hr/>
+        <div>
+            <p>La couche ponctuelle, lin&eacute;aire ou surfacique qui sera utilis&eacute;e comme emplacement de d&eacute;part pour synth&eacute;tiser les entit&eacute;s &agrave; proximit&eacute;.
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+            <p>L'outil prend en charge jusqu'&agrave; 1&nbsp;000&nbsp;entit&eacute;s dans cette couche. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Choisir la couche à synthétiser</h2></div>
+        <hr/>
+        <div>
+            <p>Les entit&eacute;s de cette couche qui se trouvent &agrave; la distance sp&eacute;cifi&eacute;e par rapport aux entit&eacute;s dans la couche sp&eacute;cifi&eacute;e ci-dessus seront synth&eacute;tis&eacute;es. 
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Récapituler les entités les plus proches avec</h2></div>
+        <hr/>
+        <div>
+            <p> Vous pouvez d&eacute;finir le type de mesure de la distance que vous voulez utiliser, soit distance en ligne droite, soit un mode de d&eacute;placement s&eacute;lectionn&eacute;. Les modes de d&eacute;placement sont activ&eacute;s uniquement si la premi&egrave;re couche en entr&eacute;e (la couche &agrave; partir de laquelle les distances sont mesur&eacute;es) contient des points.  Les modes de d&eacute;placement &agrave; votre disposition sont d&eacute;termin&eacute;s par l'administrateur de votre organisation. Lorsque vous utilisez l'un des modes de d&eacute;placement, les mesures sont prises le long des routes ou des voies, elles respectent les r&egrave;gles en vigueur, par exemple les rues en sens unique, l'interdiction de faire demi-tour, etc. Les options <b>Driving Time (Temps de trajet)</b>, <b>Rural Driving Time (Temps de trajet en zone rurale)</b> et <b>Trucking Time (Temps de trajet pour camions)</b> respectent les vitesses de d&eacute;placement que vous avez choisies, soit celles bas&eacute;es sur le trafic r&eacute;el, soit celles bas&eacute;es sur le trafic habituel. Les vitesses r&eacute;elles sont lues &agrave; l'aide de capteurs actifs et les vitesses habituelles sont calcul&eacute;es &agrave; partir de moyennes historiques.
+            </p>
+            <p>Vous pouvez entrer plusieurs distances. Les entit&eacute;s qui se trouvent au sein (ou qui sont &eacute;gales &agrave;) des distances que vous entrez seront synth&eacute;tis&eacute;es.  
+            </p>
+            <p>La case &agrave; cocher  <b>Retourner les zones d'emprise</b>, si elle est activ&eacute;e, retourne une couche de r&eacute;sultats des zones d&eacute;finies par la mesure de la distance sp&eacute;cifi&eacute;e. La couche de r&eacute;sultats contiendra toutes les informations synth&eacute;tis&eacute;es demand&eacute;es. Par exemple, lorsque vous synth&eacute;tisez des points &agrave; proximit&eacute;, si vous utilisez une <b>Distance lin&eacute;aire</b> de 5&nbsp;miles, votre r&eacute;sultat contiendra des zones situ&eacute;es dans un rayon de 5&nbsp;miles autour des entit&eacute;s en entr&eacute;e et toutes les informations synth&eacute;tis&eacute;es telles que le nombre de points et les &eacute;ventuelles statistiques ajout&eacute;es. Si la case &agrave; cocher n'est pas activ&eacute;e, la couche r&eacute;sultante retourne les m&ecirc;mes entit&eacute;s que la premi&egrave;re couche en entr&eacute;e avec toutes les informations de synth&egrave;se demand&eacute;es.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Ajouter des statistiques depuis la couche à synthétiser</h2></div>
+        <hr/>
+        <div>
+            <p>Vous pouvez &eacute;galement calculer les statistiques des attributs num&eacute;riques des points &agrave; proximit&eacute;. 
+            </p>
+            <p>Si elle est coch&eacute;e, la case  <b>Nombre de points</b> permet de calculer le nombre total de points &agrave; proximit&eacute;.  Vous pouvez en outre calculer des statistiques pour les champs num&eacute;riques des points &agrave; proximit&eacute;.
+            </p>
+            <ul>
+                <li> <b>Somme</b> : la valeur totale du champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Moyenne</b> : la moyenne du champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Minimum</b> : la valeur la plus faible dans le champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Maximum</b> : la valeur la plus &eacute;lev&eacute;e dans le champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Ecart type</b>&nbsp;: l'&eacute;cart type des valeurs dans le champ sp&eacute;cifi&eacute;.
+                </li>
+            </ul>
+            
+            <p>Si la couche &agrave; synth&eacute;tiser ne contient aucun champ num&eacute;rique, les statistiques suppl&eacute;mentaires ne seront pas disponibles.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Ajouter des statistiques depuis la couche à synthétiser</h2></div>
+        <hr/>
+        <div>
+            <p>Vous pouvez &eacute;galement calculer les statistiques des attributs num&eacute;riques des lignes &agrave; proximit&eacute;. 
+            </p>
+            <p>Si elle est coch&eacute;e, la case  <b>Longueur totale</b> permet de calculer la longueur totale des lignes &agrave; proximit&eacute;.  Vous pouvez en outre calculer des statistiques pour les champs num&eacute;riques des lignes &agrave; proximit&eacute;.
+            </p>
+            <ul>
+                <li> <b>Somme</b> : la valeur totale du champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Moyenne</b> : la moyenne du champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Minimum</b> : la valeur la plus faible dans le champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Maximum</b> : la valeur la plus &eacute;lev&eacute;e dans le champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Ecart type</b>&nbsp;: l'&eacute;cart type des valeurs dans le champ sp&eacute;cifi&eacute;.
+                </li>
+            </ul>
+            
+            <p>Si la couche &agrave; synth&eacute;tiser ne contient aucun champ num&eacute;rique, les statistiques suppl&eacute;mentaires ne seront pas disponibles.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Ajouter des statistiques depuis la couche à synthétiser</h2></div>
+        <hr/>
+        <div>
+            <p>Vous pouvez &eacute;galement calculer les statistiques des attributs num&eacute;riques des surfaces &agrave; proximit&eacute;. 
+            </p>
+            <p>Si elle est coch&eacute;e, la case  <b>Surface totale</b> permet de calculer la surface totale des entit&eacute;s &agrave; proximit&eacute;.  Vous pouvez en outre calculer des statistiques pour les champs num&eacute;riques des entit&eacute;s &agrave; proximit&eacute;.
+            </p>
+            <ul>
+                <li> <b>Somme</b> : la valeur totale du champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Moyenne</b> : la moyenne du champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Minimum</b> : la valeur la plus faible dans le champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Maximum</b> : la valeur la plus &eacute;lev&eacute;e dans le champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Ecart type</b>&nbsp;: l'&eacute;cart type des valeurs dans le champ sp&eacute;cifi&eacute;.
+                </li>
+            </ul>
+            
+            <p>Si la couche &agrave; synth&eacute;tiser ne contient aucun champ num&eacute;rique, les statistiques suppl&eacute;mentaires ne seront pas disponibles.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Ajouter des statistiques depuis la couche à synthétiser</h2></div>
+        <hr/>
+        <div>
+            <p>Une fois la couche &agrave; synth&eacute;tiser choisie, vous pouvez &eacute;galement calculer des statistiques pour les attributs num&eacute;riques des points, lignes ou surfaces &agrave; proximit&eacute;. 
+            </p>
+            <ul>
+                <li> <b>Somme</b> : la valeur totale du champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Moyenne</b> : la moyenne du champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Minimum</b> : la valeur la plus faible dans le champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Maximum</b> : la valeur la plus &eacute;lev&eacute;e dans le champ sp&eacute;cifi&eacute;.
+                </li>
+                <li> <b>Ecart type</b>&nbsp;: l'&eacute;cart type des valeurs dans le champ sp&eacute;cifi&eacute;.
+                </li>
+            </ul>
+            
+            <p>Selon les types d'entit&eacute;s que vous synth&eacute;tisez, vous pouvez calculer le nombre total de points &agrave; proximit&eacute;, la longueur totale des lignes &agrave; proximit&eacute; ou la surface totale des entit&eacute;s surfaciques &agrave; proximit&eacute;.
+            </p>
+            <p>Si la couche &agrave; synth&eacute;tiser ne contient aucun champ num&eacute;rique, les statistiques suppl&eacute;mentaires ne seront pas disponibles.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Choisir le champ de regroupement</h2></div>
+        <hr/>
+        <div>
+            <p> Il s'agit d'un attribut des entit&eacute;s &agrave; proximit&eacute; qui permet de calculer les statistiques s&eacute;par&eacute;ment pour chaque valeur attributaire unique. Supposons par exemple que votre premi&egrave;re couche en entr&eacute;e (la couche &agrave; partir de laquelle les distances sont mesur&eacute;es) contienne des parcelles de terrain vacantes et que vos entit&eacute;s &agrave; proximit&eacute; soient des emprises de b&acirc;timents.  L&rsquo;un des attributs des emprises de b&acirc;timents est <i>UseType</i>&nbsp;; il contient des valeurs comme RETAIL, RESIDENTIAL, MANUFACTURING, PUBLIC, et ainsi de suite. Pour caract&eacute;riser les diff&eacute;rentes utilisations des b&acirc;timents &agrave; proximit&eacute; de chaque parcelle vacante, vous pouvez calculer la surface totale de chaque type unique d'utilisation de b&acirc;timent dans un rayon de deux kilom&egrave;tres des parcelles vacantes en utilisant <i>UseType</i> comme groupe par attribut. Les statistiques de chaque groupe, ainsi que le nombre total d'entit&eacute;s &agrave; proximit&eacute;, appara&icirc;tront dans la fen&ecirc;tre contextuelle de la couche de r&eacute;sultat.
+            </p>    
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Ajouter une minorité, majorité</h2></div>
+        <hr/>
+        <div>
+            <p>Cette case &agrave; cocher est activ&eacute;e lorsque vous s&eacute;lectionnez un champ de regroupement. Si vous souhaitez savoir quelles valeurs attributaires au sein de chaque groupe sont minoritaires (les moins dominantes) ou majoritaires (les plus dominantes), au sein de la distance ou de l'intervalle temporel que vous avez indiqu&eacute;, s&eacute;lectionnez  <b>Ajouter la minorit&eacute; et la majorit&eacute;</b>.   Lorsque vous s&eacute;lectionnez <b>Ajouter la minorit&eacute; et la majorit&eacute;</b>, deux nouveaux champs sont ajout&eacute;s &agrave; votre couche de r&eacute;sultat.   Si vous s&eacute;lectionnez &eacute;galement <b>Ajouter des pourcentages</b>, deux champs suppl&eacute;mentaires sont ajout&eacute;s &agrave; la couche de r&eacute;sultat, contenant les pourcentages des valeurs attributaires minoritaires et majoritaires au sein de chaque groupe.
+            </p>
+            <ul>
+                <li>Si vous agr&eacute;gez les points &agrave; proximit&eacute;, les valeurs minoritaires et majoritaires sont calcul&eacute;es en fonction du nombre de points au sein de la distance ou de l'intervalle temporel que vous avez indiqu&eacute;.
+                </li>
+                <li>Si vous agr&eacute;gez les lignes &agrave; proximit&eacute;, les valeurs minoritaires et majoritaires sont calcul&eacute;es en fonction des longueurs de lignes au sein de la distance ou de l'intervalle temporel que vous avez indiqu&eacute;.  
+                </li>
+                <li>Si vous agr&eacute;gez les surfaces &agrave; proximit&eacute;, les valeurs minoritaires et majoritaires sont calcul&eacute;es en fonction des surfaces au sein de la distance ou de l'intervalle temporel que vous avez indiqu&eacute;.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Ajouter des pourcentages</h2></div>
+        <hr/>
+        <div>
+            <p>Cette case &agrave; cocher est activ&eacute;e lorsque vous s&eacute;lectionnez un champ de regroupement. S&eacute;lectionnez  <b>Add percentages (Ajouter des pourcentages)</b> si vous souhaitez conna&icirc;tre le pourcentage de chaque valeur attributaire au sein de chaque groupe. Un nouveau champ est ajout&eacute; &agrave; la table de r&eacute;sultat&nbsp;; il contient les pourcentages de chaque valeur attributaire au sein de chaque groupe. Si l&rsquo;option <b>Add minority, majority (Ajouter une minorit&eacute;, majorit&eacute;)</b> est &eacute;galement s&eacute;lectionn&eacute;e, deux champs suppl&eacute;mentaires sont ajout&eacute;s &agrave; la couche de r&eacute;sultats&nbsp;; ils contiennent les pourcentages des valeurs attributaires minoritaires et majoritaires au sein de chaque groupe.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

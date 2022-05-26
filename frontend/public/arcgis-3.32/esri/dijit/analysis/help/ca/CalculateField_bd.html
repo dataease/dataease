@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calcula el camp</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Calcula el camp"></h2>
+        <hr/>
+    <p> Aquesta eina funciona amb una capa d'entrada per calcular els valors d'un camp nou o existent. Crea una expressi&oacute; de l'Arcade per calcular els valors amb els quals s'emplenaran les entitats.   Si les vostres dades tenen la funci&oacute; de temps habilitada i de tipus de temps d'instant, teniu l'opci&oacute; de crear expressions que tinguin en compte el seguiment.
+    </p>
+    <p>Per exemple, suposem que voleu modificar un camp existent anomenat  <i>TotalSales</i>. Voleu que el camp es representi amb la suma de les vendes totals de 2016 i 2017. Amb aquests camps a l'expressi&oacute;, heu de calcular el valor del camp com a <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>Un altre exemple: suposem que teniu mesures de GPS que registren la ubicaci&oacute;, el temps, l'ID d'autob&uacute;s i la velocitat dels autobusos d'una ciutat. Volem crear un camp nou anomenat  <i>SpeedFrom3</i> que faci la mitja de velocitat de les 3 darreres mesures de GPS registrades de cada entitat. Per a aquest c&agrave;lcul, utilitzarem un c&agrave;lcul que tingui en compte el seguiment i on el recorregut sigui el d'un autob&uacute;s indicat amb l'ID d'autob&uacute;s.    El c&agrave;lcul per determinar la velocitat mitja dels 3 intervals de temps anteriors i l'actual &eacute;s <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu la capa de la qual es calcularan els valors de camp</h2></div>
+        <hr/>
+        <div>
+            <p>Punts, l&iacute;nies, &agrave;rees o taules dels quals es calcularan els valors de camp.  
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Calcula els valors de camp per al camp</h2></div>
+        <hr/>
+        <div>
+            <p>Camp nou o existent del qual es calcularan els valors i tipus de dades del camp. Si esteu calculant valors en un camp que ja existeix, no cal que feu coincidir el tipus de dades. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Crea una expressió per calcular els valors de camp</h2></div>
+        <hr/>
+        <div>
+            <p>Afegiu una expressi&oacute; amb el builder d'expressions per calcular els valors de camp. 
+            </p>
+            <p>Per exemple, suposem que volem afegir els valors d'un camp anomenat  <i>income</i> i <i>bonus</i>. Per fer-ho, afegiu l'expressi&oacute; <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;]</code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>L'expressió té en compte el seguiment</h2></div>
+        <hr/>
+        <div>
+            <p>Especifiqueu si la vostra expressi&oacute; t&eacute; en compte el seguiment. Una expressi&oacute; que tingui en compte el seguiment inclour&agrave; format, com ara  <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. Les expressions que tenen en compte el seguiment necessiten camps per identificar recorreguts individuals. Els recorreguts es poden compondre de punts, l&iacute;nies, &agrave;rees o taules i nom&eacute;s necessiten que l'entrada tingui un identificador de recorregut i que les dades tinguin la funci&oacute; de temps habilitada i siguin del tipus de temps instant.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analitza les dades amb intervals de temps</h2></div>
+        <hr/>
+        <div>
+            <p>Especifiqueu si voleu calcular els valors dels seguiments mitjan&ccedil;ant intervals de temps que segmentaran les vostres entrades per a l'an&agrave;lisi. Si utilitzeu intervals de temps, heu de definir l'interval de temps que voleu utilitza i, de manera opcional, definir el temps de refer&egrave;ncia. Si no definiu un temps de refer&egrave;ncia, s'utilitzar&agrave; l'1 de gener de 1970. 
+            </p>
+            <p>Per exemple, si definiu el l&iacute;mit de temps en 1 dia, a partir de les 9:00 de l'1 de gener de 1990, tots els seguiments es truncaran a les 9:00 cada dia i s'analitzaran dins d'aquest segment. 
+            </p>
+            <p>Els intervals de temps s&oacute;n un m&egrave;tode r&agrave;pid per accelerar el temps de c&agrave;lcul, ja que creen seguiments m&eacute;s petits r&agrave;pidament per a l'an&agrave;lisi. Si la divisi&oacute; per un interval de temps recurrent t&eacute; sentit per a la vostra an&agrave;lisi, &eacute;s recomanable per al processament de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la capa que es crear&agrave;.  Si esteu escrivint en un ArcGIS Data Store, els resultats es desaran a  <b>El meu contingut</b> i s'afegiran al mapa. Si esteu escrivint en un recurs compartit de fitxers de dades massives, els resultats s'emmagatzemaran en aquest recurs i s'afegiran al seu manifest. No s'afegiran al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, l'eina no funcionar&agrave;.
+            </p>
+            <p>Si escriviu a l' ArcGIS Data Store (magatzem de dades massives relacional o espaciotemporal) mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta a <b>El meu contingut</b>, on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

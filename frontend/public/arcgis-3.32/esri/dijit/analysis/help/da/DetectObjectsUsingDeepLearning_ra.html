@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Registrer objekter ved hjælp af Deep Learning</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="Registrer objekter ved hj&aelig;lp af Deep Learning"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j k&oslash;rer en tr&aelig;net Deep Learning-model p&aring; en inputraster for at frembringe en objektklasse, der indeholder de objekter, den finder. Objekterne kan v&aelig;re afgr&aelig;nsende kasser eller polygoner rundt om de objekter, der findes, eller de kan pege p&aring; objekternes centrum.
+    </p>
+    <p>Hvis afkrydsningsfeltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, er det kun det rasteromr&aring;de, der er synligt inden for den aktuelle kortudstr&aelig;kning, der analyseres. Hvis det ikke er markeret, analyseres hele rasteren, selvom den er uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Vælg det billede, der skal bruges til at registrere objekter</h2></div>
+        <hr/>
+        <div>
+            <p>Inputbilledet, der bruges til at registrere objekter.
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Vælg den Deep Learning-model, der skal bruges til at registrere objekter</h2></div>
+        <hr/>
+        <div>
+            <p>Elementet Deep Learning-inputpakken ( <code>.dlpk</code>).
+            </p>
+            <p>Deep Learning-pakken best&aring;r af Esri-modeldefinitionens JSON-filen ( <code>.emd</code>), den bin&aelig;re Deep Learning-modelfil, og evt. den Python rasterfunktion, der skal anvendes.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Angiv argumenter for Deep Learning-model</h2></div>
+        <hr/>
+        <div>
+            <p>Funktionsargumenterne er defineret i Python raster-funktionsklassen, der refereres til i inputmodellen.. Her angiver du p&aring; yderligere Deep learning-parametre og -argumenter for eksperimenter og forfinelse, f.eks. en trov&aelig;rdighedst&aelig;rskel for justering af f&oslash;lsomheden.
+            </p>
+            <p>Navnet p&aring; argumenterne udfyldes af v&aelig;rkt&oslash;jet ved at l&aelig;se Python-modulet p&aring; rasteranalyse-serveren.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>Fjern dublet-objekter fra output (valgfrit)</h2></div>
+        <hr/>
+        <div>
+            <p>Udf&oslash;rer ikke-maksimal undertrykkelse, hvor dublet-objekter identificeres, og dublet-objektet med den laveste trov&aelig;rdighedsv&aelig;rdi fjernes. 
+                <ul>
+                    <li>Ikke markeret &ndash; Alle objekter, der er registreret, kommer til at ligge i output-objektklassen. Dette er standardv&aelig;rdien.
+                        
+
+                    </li>
+                    <li>Markeret &ndash; Fjerner dublet-objekter, der registreres.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>Felt til troværdigheds-score</h2></div>
+        <hr/>
+        <div>
+            <p>Feltet i featuretjenesten, der indeholder trov&aelig;rdighedsscorer som output efter objektregistreringsmetoden.
+            </p>
+            <p>Denne parameter er p&aring;kr&aelig;vet, n&aring;r du afkrydser parameteren  <b>Ikke-maksimal undertrykkelse</b> .
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>Felt til klasseværdi</h2></div>
+        <hr/>
+        <div>
+            <p>Feltet Klassev&aelig;rdi i output-featuretjenesten. Hvis ikke andet er angivet, anvender v&aelig;rkt&oslash;jet standardfelterne for klassev&aelig;rdi  <i>Classvalue</i> og <i>Value</i>. Hvis disse felter ikke findes, behandles alle objekter som samme objektklasse.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>Maksimalt overlapningsforhold</h2></div>
+        <hr/>
+        <div>
+            <p>Det maksimale overlapningsforhold for to overlappende objekter, defineret som forholdet mellem sk&aelig;ringsomr&aring;det over union-omr&aring;det. Standard er 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; det lag, som oprettes under  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Du kan angive navnet p&aring; en mappe i  <b>Mit indhold</b>, hvor resultatet bliver gemt ved at benytte rullelisten <b>Gem resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

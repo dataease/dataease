@@ -320,6 +320,7 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_map',
     icon: 'map'
   },
+  /* 下面是highcharts图表类型 */
   // highcharts
   {
     render: 'highcharts',
@@ -327,5 +328,12 @@ export const TYPE_CONFIGS = [
     value: '3dpie',
     title: 'chart.chart_pie',
     icon: '3dpie'
+  },
+  {
+    render: 'highcharts',
+    category: 'chart.chart_type_distribute',
+    value: 'arc_map',
+    title: 'chart.chart_arcgis_map',
+    icon: 'arc_map'
   }
 ]

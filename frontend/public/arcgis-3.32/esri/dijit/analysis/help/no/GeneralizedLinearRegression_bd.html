@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Generalisert lineær regresjon</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Arbeidsflytdiagram for generalisert line&aelig;r regresjon"></h2>
+        <hr/>
+    <p>Utf&oslash;rer generalisert line&aelig;r regresjon 
+(GLR) som genererer prediksjoner eller modellerer en avhengig variabel ut fra dens relasjon til et sett med forklaringsvariabler. Dette verkt&oslash;yet kan brukes til tilpassing av line&aelig;re (gaussiske)-, bin&aelig;re (logistiske)- og antallsbaserte (Poisson)-modeller.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analysetype</h2></div>
+        <hr/>
+        <div>
+            <p>Angir verkt&oslash;yets driftsmodus. Verkt&oslash;yet kan kj&oslash;res for &aring; trene opp en modell til kun &aring; vurdere ytelse, eller trene opp en modell og predikere for geoobjekter. Prediksjonstypene er f&oslash;lgende:
+                <ul>
+                    <li> <b>Tilpass en modell for &aring; vurdere modellytelse</b> &ndash;&nbsp;En modell tilpasses og anvendes p&aring; inndataene. Bruk dette alternativet til &aring; vurdere n&oslash;yaktigheten av modellen du bruker, f&oslash;r du genererer prediksjoner p&aring; et nytt datasett, eller til &aring; forst&aring; relasjoner og drivere for den predikerte variabelen. Resultatet av dette alternativet blir en geoobjekttjeneste for de tilpassede dataene og modelldiagnostikken.
+                    </li>
+                    <li> <b>Tilpass en modell og prediker verdier</b> &ndash;&nbsp;Prediksjoner eller klassifiseringer genereres for inndatageoobjekter og prediksjonsgeoobjekter. Forklaringsvariabler m&aring; oppgis for b&aring;de prediksjonsgeoobjektene og for geoobjektene som skal predikeres. Resultatet av dette alternativet blir en geoobjekttjeneste for modellen tilpasset inndataene, en geoobjekttjeneste med predikerte verdier og modelldiagnostikk.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Tilpass en modell til å vurdere modellytelse</h2></div>
+        <hr/>
+        <div>
+            <p>Bruk denne modusen hvis du vil tilpasse en modell og unders&oslash;ke tilpasningen.
+            </p>
+            <p>Med dette valget blir modellen trent opp ved hjelp av et inndatalag. Bruk dette alternativet til &aring; vurdere n&oslash;yaktigheten av modellen du bruker, f&oslash;r du genererer prediksjoner p&aring; et nytt datasett. Dette alternativet utarbeider modelldiagnoser og anvender modellen p&aring; treningsdataene.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Tilpass en modell og prediker verdier</h2></div>
+        <hr/>
+        <div>
+            <p>Bruk denne modusen hvis du vil tilpasse en modell og anvende modellen p&aring; datasettet for &aring; generere prediksjoner.
+            </p>
+            <p>Prediksjoner eller klassifiseringer genereres for geoobjekter. Resultatet av dette alternativet blir en geoobjekttjeneste, modelldiagnostikk og en valgfri tabell med varierende viktighetsgrad.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Velg et lag å generere en modell fra</h2></div>
+        <hr/>
+        <div>
+            <p>Laget med punkter, linjer, polygoner eller tabul&aelig;re data som inneholder de avhengige- og forklarende variablene.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Velg feltet som skal modelleres</h2></div>
+        <hr/>
+        <div>
+            <p>Det numeriske feltet som inneholder de observerte verdiene som skal modelleres, og typen verdi du modellerer. Det er tre typer verdier som kan modelleres
+                <ul>
+                    <li>Line&aelig;re &ndash;&nbsp;Representerer line&aelig;re verdier. Det brukes en gaussisk modell, og verkt&oslash;yet utf&oslash;rer en OLS-regresjon (minste kvadraters metode).
+                    </li>
+                    <li>Bin&aelig;re &ndash;&nbsp;Representerer tilstedev&aelig;rende eller frav&aelig;rende verdier. Disse m&aring; v&aelig;re 1 eller 0. Modellen som brukes, er logistisk regresjon.
+                    </li>
+                    <li>Antallsbaserte &ndash;&nbsp;Representerer avgrensede verdier og hendelser, for eksempel antall lovbrudd, sykdomstilfeller eller trafikkulykker. Modellen som brukes, er Poisson-regresjon. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Velg et lag å predikere verdier for</h2></div>
+        <hr/>
+        <div>
+            <p>Et lag med geoobjekter som representerer lokasjoner der estimater skal beregnes. Hvert av geoobjektene i dette datasettet skal inneholde verdier for alle de angitte forklaringsvariablene. Den avhengige variabelen for disse geoobjektene blir estimert ved hjelp av modellen som er kalibrert for inndatalaget.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Velg forklaringsfeltene</h2></div>
+        <hr/>
+        <div>
+            <p>Ett eller flere felter som representerer forklaringsvariablene (felter) som bidrar til &aring; predikere verdien. Kun numeriske felt vises.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Velg hvordan forklaringsfelter skal samsvare</h2></div>
+        <hr/>
+        <div>
+            <p>Hvordan tilsvarende variabler i inndatalaget skal samsvare med variablene i prediksjonslaget. Kun variablene som ble brukt til &aring; generere modellen, blir inkludert i tabellen. Kun numeriske verdier kan brukes. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; laget som opprettes. Hvis du skriver til en ArcGIS Data Store, blir resultatene dine lagret i  <b>Mitt innhold</b> og lagt til kartet. Hvis du skriver til et fildelingsomr&aring;de for stordata, blir resultatene lagret i fildelingsomr&aring;det for stordata og lagt til dets innholdsoversikt. De blir ikke lagt til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget allerede eksisterer, vil verkt&oslash;yet mislykkes.
+            </p>
+            <p>Resultatene som returneres, vil avhenge av type analyse. Hvis tilpassingens form&aring;l er &aring; vurdere modelltilpassing, vil resultatene inneholde et lag med inndata tilpasset modellen og resultatinformasjon som vurderer modelltilpassingen. Hvis det dreier seg om tilpassing og prediksjon, vil resultatene inneholde et lag med inndata tilpasset modellen og resultatinformasjon som vurderer modelltilpassingen.
+            </p>
+            <p>N&aring;r du skriver til  ArcGIS Data Store (fildelingsomr&aring;de for relasjons- eller geotemporale stordata) via rullegardinlisten  <b>Lagre resultat i</b>, kan du angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatet skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

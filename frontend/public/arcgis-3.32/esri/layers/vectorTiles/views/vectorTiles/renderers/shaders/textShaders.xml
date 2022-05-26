@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Add your GLSL snippets to this file. You should start from
+  importing your old GLSL files. For instance, if you have a
+  file such as myShader.vs.glsl you should create a new <snippet name="myShaderVS">
+  and then copy and paste the GLSL source as the content. You will then convert your
+  code to use the {@link module:esri/views/vectorTiles/renderers/vtShaderSnippets vtShaderSnippets}
+  instance to access the GLSL code, instead of importing it directly with require("dojo/text!...").
+-->
+<snippets>
+
+  <snippet name="rgba2float"><![CDATA[
+    // TODO this snippet should only be in views/3d/webgl-engine/materials/internal/Util.xml
+
+    // Factors to convert rgba back to float
+    const vec4 toFloat = vec4(
+        255.0 / (256.0),
+        255.0 / (256.0 * 256.0),
+        255.0 / (256.0 * 256.0 * 256.0),
+        255.0 / (256.0 * 256.0 * 256.0 * 256.0)
+      );
+
+    float rgba2float(vec4 rgba) {
+      // Convert components from 0->1 back to 0->255 and then
+      // add the components together with their corresponding
+      // fixed point factors, i.e. (256^1, 256^2, 256^3, 256^4)
+      return dot(rgba, toFloat);
+    }
+  ]]></snippet>
+
+  <snippet name="textVS">
+    <![CDATA[
+      attribute vec2 a_pos;
+      attribute vec2 a_vertexOffset;
+      attribute vec4 a_tex;
+      attribute vec4 a_levelInfo;
+
+      uniform lowp vec4 u_color; // always defined as halo does not support data driven but text does
+    #ifdef DD
+      attribute vec4 a_color;
+    #endif // DD
+      varying lowp vec4 v_color;
+
+      uniform mediump float u_size;
+    #ifdef DD
+      attribute mediump float a_size;
+    #endif // DD
+      varying mediump float v_size;
+
+    #ifdef ID
+      uniform mediump vec4 u_id;
+      varying mediump vec4 v_id;
+    #endif // ID
+
+
+      // attribute bool a_visible; // --> a one bit controlling the visibility of the vertex
+
+      // the relative transformation of a vertex given in tile coordinates to a relative normalized coordinate
+      // relative to the tile's upper left corner
+      // the extrusion vector.
+      uniform highp mat4 u_transformMatrix;
+
+      // the extrude matrix which is responsible for the 'anti-zoom' as well as the rotation
+      uniform highp mat4 u_extrudeMatrix;
+
+      // u_normalized_origin is the tile's upper left corner given in normalized coordinates
+      uniform highp vec2 u_normalized_origin;
+
+      // the size of the mosaic given in pixels
+      uniform vec2 u_mosaicSize;
+
+      // the z of the layer. Given by the order of the layers in the style
+      uniform mediump float u_depth;
+
+      // the map's rotation from the north
+      uniform mediump float u_mapRotation;
+      uniform mediump float u_level;
+
+      // indicate whether the current set of iconst should be kept upright when the map is rotated
+      uniform lowp float u_keepUpright;
+
+      // the rate of the change in the opacity (fade) of the icons
+      uniform mediump float u_fadeSpeed;
+
+      // the low level we transition (to/from)
+      uniform mediump float u_minfadeLevel;
+
+      // the high level we transition (to/from)
+      uniform mediump float u_maxfadeLevel;
+
+      // the amount of fade given teh current time past the last recorded level
+      uniform mediump float u_fadeChange;
+
+      // the opacity of the layer given by the painter
+      uniform mediump float u_opacity;
+
+      // the interpolated texture coordinate value to be used by the fragment shader in order to sample the sprite texture
+      varying lowp vec2 v_tex;
+
+      // the calculated transparency to be applied by the fragment shader. It is incorporating both the fade as well as the
+      // opacity of the layer given by the painter
+      varying lowp float v_transparency;
+
+      // the vertex offsets are given in integers, therefore in order to maintain a reasonable precision we multiply the values
+      // by 8 and then at the shader divide by the same number
+      const float offsetPrecision = 1.0 / 8.0;
+
+      // outline position and appearance
+      const mediump float edgePos = 0.75; // defined by the SDF encoding
+      uniform mediump float u_edgeDistance;
+      uniform mediump float u_edgeBlur;
+      uniform mediump float u_antialiasingWidth; // antialiasing (factors in the pixel_ratio for high res devices)
+
+      varying mediump float v_edgeDistance; // will factor in the size
+      varying mediump float v_edgeWidth; // will factor in the size
+
+      uniform lowp float u_halo; // needed to avoid using the color attribute for halo
+
+      void main()
+      {
+        mediump float a_labelMinLevel = a_levelInfo[0];
+        mediump float a_angle        = a_levelInfo[1];
+        mediump float a_minLevel    = a_levelInfo[2];
+        mediump float a_maxLevel    = a_levelInfo[3];
+
+        // if the given vertex should not be visible simply clip it by adding it a value that will push it outside the clipping plane
+        mediump float delta_z = 0.0;
+
+        // TODO: force clipping the vertex in case that the vertex isn't visible
+        //delta_z += a_visible ? 0.0 : 1.0;
+
+        // If the label rotates with the map, and if the rotated label is upside down, hide it
+        mediump float rotated = mod(a_angle + u_mapRotation, 256.0);
+        delta_z += (1.0 - step(u_keepUpright, 0.0)) * step(64.0, rotated) * (1.0 - step(192.0, rotated)); //ie. z += (flip > 0) && (64 <= rotated) && (rotated < 192)
+
+        // u_level is the current service level adjusted for the change in font size
+        delta_z += 1.0 - step(a_minLevel, u_level); // Test if (level < minLevel)
+        delta_z += step(a_maxLevel, u_level); // Test if (maxLevel <= level)
+
+        // calculate the alpha given the change in the fade and the fade-speed
+        lowp float alpha = clamp((u_fadeChange - a_labelMinLevel) / u_fadeSpeed, 0.0, 1.0);
+
+        // if the speed is positive we are zooming in and therefore we need to 'fade-in'. Else we need to 'fade-out'
+        v_transparency = (u_fadeSpeed >= 0.0 ? alpha : 1.0 - alpha);
+
+        // now deal with the min/max fade-levels. If we exceeded the level we simply snap to 0 or 1
+        if (u_maxfadeLevel < a_labelMinLevel)
+        {
+          v_transparency = 0.0;
+        }
+        if (u_minfadeLevel >= a_labelMinLevel)
+        {
+          v_transparency = 1.0;
+        }
+
+        // if label has been faded out, clip it
+        delta_z += step(v_transparency, 0.0);
+
+        v_tex = a_tex.xy / u_mosaicSize;
+
+      #ifdef DD
+        if (u_halo > 0.5)
+        {
+          v_color = u_color;
+        }
+        else
+        {
+          v_color = a_color * u_color;
+          // opacity already factored in a_color
+        }
+      #else
+        v_color = u_color;
+      #endif // DD
+
+      #ifdef DD
+        v_size = a_size * u_size;
+      #else
+        v_size = u_size;
+      #endif // DD
+
+      #ifdef ID
+        v_id = u_id / 255.0;
+      #endif // ID
+
+        v_edgeDistance = edgePos - u_edgeDistance / v_size;
+        v_edgeWidth = (u_antialiasingWidth + u_edgeBlur) / v_size;
+
+        gl_Position = vec4(u_normalized_origin, u_depth, 0.0) + u_transformMatrix * vec4(a_pos, 0.0, 1.0) + u_extrudeMatrix * v_size * vec4(offsetPrecision * a_vertexOffset, delta_z, 0.0);
+      }
+    ]]>
+  </snippet>
+
+  <snippet name="textFS">
+    <![CDATA[
+      uniform lowp sampler2D u_texture;
+      uniform mediump float u_edgeDistance;
+
+      varying lowp vec2 v_tex;
+      varying lowp float v_transparency;
+      varying lowp vec4 v_color;
+      varying mediump float v_edgeWidth;
+      varying mediump float v_edgeDistance;
+
+    #ifdef ID
+      varying mediump vec4 v_id;
+    #endif // ID
+
+      // this is taken from http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnification.pdf
+      // and https://www.mapbox.com/blog/text-signed-distance-fields/
+      // http://metalbyexample.com/rendering-text-in-metal-with-signed-distance-fields/
+
+      void main()
+      {
+        // read the distance from the SDF texture
+        lowp float dist = texture2D(u_texture, v_tex).a;
+
+        // use a smooth-step in order to calculate the geometry of the shape given by the distance field
+        mediump float alpha = smoothstep(v_edgeDistance - v_edgeWidth, v_edgeDistance + v_edgeWidth, dist) * v_transparency;
+
+        gl_FragColor = alpha * v_color;
+
+      #ifdef ID
+        if (gl_FragColor.a < 1.0 / 255.0) {
+          discard;
+        }
+        gl_FragColor = v_id;
+      #endif // ID
+      }
+    ]]>
+  </snippet>
+
+</snippets>
+

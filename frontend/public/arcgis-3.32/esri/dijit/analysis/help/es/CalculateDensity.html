@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calcular densidad</h2><p/>
+        <h2><img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" alt="Calcular densidad"></h2>
+        <hr/>
+    <p>La herramienta Calcular densidad crea un mapa de densidad a partir de entidades de punto o de l&iacute;nea mediante la extensi&oacute;n de cantidades conocidas de alg&uacute;n fen&oacute;meno (representado como atributos de los puntos o las l&iacute;neas) a todo el mapa. El resultado es una capa de &aacute;reas clasificadas de menor a mayor densidad.   
+
+    </p>
+    <p>En una entrada de punto, cada punto debe representar la ubicaci&oacute;n de un evento o un incidente, y la capa de resultados representa un recuento del incidente por unidad de &aacute;rea. Un valor m&aacute;s alto de la densidad en una nueva ubicaci&oacute;n significa que hay m&aacute;s puntos cerca de esa ubicaci&oacute;n. En muchos casos, la capa de resultados se puede interpretar como una superficie de riesgo para eventos futuros. Por ejemplo, si los puntos de entrada representan ubicaciones en las que ha ca&iacute;do un rayo, la capa de resultados se puede interpretar como una superficie de riesgo para la ca&iacute;da de rayos en el futuro.
+    </p>
+    <p>En el caso de la entrada de l&iacute;nea, la superficie de densidad de l&iacute;nea representa la cantidad total de la l&iacute;nea que est&aacute; cerca de cada ubicaci&oacute;n. Las unidades de los valores de densidad calculados corresponden a la longitud de l&iacute;nea por unidad de &aacute;rea. Por ejemplo, si las l&iacute;neas representan r&iacute;os, la capa de resultados representar&aacute; la longitud total de los r&iacute;os que est&aacute;n dentro del radio de b&uacute;squeda. Este resultado se puede usar para identificar las &aacute;reas que son adecuadas como pastos para animales.
+    </p>
+    <p> Se describen a continuaci&oacute;n otros ejemplos de uso de esta herramienta:
+        <ul>
+            <li>Crear mapas de densidad de delitos para ayudar a los departamentos de polic&iacute;a a asignar los recursos adecuados a las zonas con un alto nivel de delitos.
+            </li>
+            <li>Calcular las densidades de hospitales en un condado. La capa de resultados mostrar&aacute; las &aacute;reas con una accesibilidad alta y baja a los hospitales, y esta informaci&oacute;n se puede usar para decidir d&oacute;nde se deben construir nuevos hospitales.
+            </li>
+            <li>Identificar &aacute;reas con un alto riesgo de incendio forestal en funci&oacute;n del historial de ubicaciones de estos incendios.
+            </li>
+            <li>Buscar comunidades alejadas de las principales carreteras para planificar d&oacute;nde se deben construir nuevas carreteras.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elegir la capa de puntos o líneas a partir de la cual se debe calcular la densidad</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de puntos o l&iacute;neas a partir de la cual se calcular&aacute; la densidad.
+
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Usar un campo de recuento</h2></div>
+        <hr/>
+        <div>
+            <p>Proporciona un campo que especifique el n&uacute;mero de incidentes de cada ubicaci&oacute;n. Por ejemplo, si tienes puntos que representan ciudades, puedes usar un campo que represente la poblaci&oacute;n de la ciudad como campo de recuento, y la capa de densidad de poblaci&oacute;n resultante calcular&aacute; las densidades de poblaci&oacute;n m&aacute;s altas cerca de las ciudades con las mayores poblaciones.
+            </p>
+            <p> Si se usa la opci&oacute;n predeterminada Ninguno, se entender&aacute; que cada ubicaci&oacute;n representa un solo recuento.
+            </p>
+        </div>
+    </div>
+    <div id="radius">
+        <div><h2>Distancia de búsqueda</h2></div>
+        <hr/>
+        <div>
+            <p>Introduce una distancia que especifique hasta d&oacute;nde se debe buscar para encontrar entidades de punto o de l&iacute;nea al calcular valores de densidad. Por ejemplo, si proporcionas una distancia de b&uacute;squeda de 10.000 metros, la densidad de cualquier ubicaci&oacute;n en la capa de salida se calcula a partir de las entidades que est&aacute;n a 10.000 metros de la ubicaci&oacute;n. Cualquier ubicaci&oacute;n que no tenga incidentes en un radio de 10.000 metros tendr&aacute; un valor de densidad igual a cero.     
+
+            </p>
+            <p>Si no se proporciona ninguna distancia, se calcular&aacute; una predeterminada a partir de las ubicaciones de las entidades de entrada y de los valores del campo de recuento (si lo hay).
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Recortar salida a</h2></div>
+        <hr/>
+        <div>
+            <p>Dibuja o proporciona una capa que especifique el &aacute;rea en la que deseas que se calculen las densidades. Por ejemplo, si est&aacute;s calculando densidades de peces en un lago, puedes usar el l&iacute;mite del lago en este par&aacute;metro y la salida solo se dibujar&aacute; dentro del l&iacute;mite del lago.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Clasificar por</h2></div>
+        <hr/>
+        <div>
+            <p>Elige c&oacute;mo se clasificar&aacute;n en &aacute;reas los valores de densidad.
+                <ul>
+                    <li>Intervalos iguales: se crean &aacute;reas de modo que el rango de valores de densidad sea igual para cada &aacute;rea.
+                    </li>
+                    <li>Intervalo geom&eacute;trico: las &aacute;reas se basan en intervalos de clase que tienen una serie geom&eacute;trica. Este m&eacute;todo garantiza que cada rango de clase tiene aproximadamente el mismo n&uacute;mero de valores en cada clase y que el cambio entre intervalos es coherente.
+                    </li>
+                    <li>Cortes naturales: los intervalos de clase de las &aacute;reas se basan en los agrupamientos naturales de los datos. Se identifican los valores de corte de clase que mejor agrupan los valores similares y que maximizan las diferencias entre clases.
+
+                    </li>
+                    <li>Equivalente: se crean &aacute;reas de modo que el tama&ntilde;o sea el mismo para cada &aacute;rea. Por ejemplo, si la capa de resultados tiene m&aacute;s valores de alta densidad que valores de baja densidad, se crear&aacute;n m&aacute;s &aacute;reas para las densidades altas.
+                    </li>
+                    <li>Desviaci&oacute;n est&aacute;ndar: las &aacute;reas se crean en funci&oacute;n de la desviaci&oacute;n est&aacute;ndar de los valores de densidad predichos. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Cantidad de clases</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el n&uacute;mero de clases (rango de valores predichos) en la capa de resultados. Cada clase define el l&iacute;mite de las &aacute;reas. Los valores de estas clases vendr&aacute;n determinados por el par&aacute;metro 
+ <b>Clasificar por</b>.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Unidades de área de salida</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica la unidad de &aacute;rea de salida. La densidad es el n&uacute;mero de entidades dividido por el &aacute;rea, y este par&aacute;metro especifica la unidad de &aacute;rea en el c&aacute;lculo de densidad.  
+
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa.  El nombre predeterminado se basa en el nombre de la herramienta y el nombre de la capa de entrada. Si el nombre de capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Con el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

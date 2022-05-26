@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Punten aggregeren</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Punten aggregeren"></h2>
+        <hr/>
+    <p>Deze tool werkt met een laag van puntobjecten en een laag van oppervlakobjecten. De tool bepaalt eerst welke punten binnen elk oppervlak vallen. Nadat de ruimtelijke relatie van de punten in een oppervlak is bepaald, worden statistieken voor alle punten in het oppervlak berekend en aan het oppervlak toegewezen. De meest eenvoudige statistiek is het aantal punten binnen het oppervlak, maar u kunt ook andere statistieken opvragen. 
+    </p>
+    <p>Stel bijvoorbeeld dat u puntobjecten van locaties van caf&eacute;s hebt en oppervlakobjecten van provincies en u wilt de verkoop van koffie per provincie samenvatten. Stel dat de caf&eacute;s over een  <i>TOTAL_SALES</i>-attribuut beschikken, dan kunt u de som van de <i>TOTAL_SALES</i> in elke provincie opvragen of de minimale of maximale <i>TOTAL_SALES</i> in elke provincie of de standaardafwijking van alle verkoop binnen elke provincie.
+    </p>
+    <p>Als  <b>Huidig extent van de kaart gebruiken</b> is aangevinkt, worden alleen de objecten in de invoerpuntlaag die binnen het huidige extent van de kaart zichtbaar zijn, geanalyseerd. Als deze optie niet wordt geselecteerd, worden alle objecten in de invoerpuntlaag en de gebiedslaag geanalyseerd, ook als ze zich buiten de huidige kaartextent bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Kies laag met punten om in gebieden te aggregeren</h2></div>
+        <hr/>
+        <div>
+            <p>De puntlaag die in gebieden wordt geaggregeerd.
+            </p>
+            <p>Naast het kiezen van een laag uit uw kaart, kunt u  <b>Analyselaag kiezen</b> selecteren onderaan de vervolgkeuzelijst. Met deze optie wordt een galerij geopend waarin u kunt bladeren naar en datasets van verschillende bronnen kunt selecteren die u in uw analyse kunt gebruiken. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Kies laag met aggregatiegebieden</h2></div>
+        <hr/>
+        <div>
+            <p>De gebiedslaag waarnaar de punten worden geaggregeerd. Punten die binnen de grenzen van gebieden in deze laag liggen, worden geteld en eventueel samengevat voor uw keuzes van statistieken.  
+            </p>
+            <p>U kunt kiezen tussen een gebiedslaag die u verstrekt of bins die worden gegenereerd als de tool wordt uitgevoerd. Bij het genereren van bins, voor  <b>Vierkant</b> bepalen het gespecificeerde aantal en de eenheden de hoogte en de lengte van het vierkant. Voor <b>Zeskant</b> bepalen het gespecificeerde aantal en de eenheden de afstand tussen de evenwijdige zijden.
+            </p>
+            <p>Naast het kiezen van een laag uit uw kaart, kunt u  <b>Analyselaag kiezen</b> selecteren onderaan de vervolgkeuzelijst. Met deze optie wordt een galerij geopend waarin u kunt bladeren naar en datasets van verschillende bronnen kunt selecteren die u in uw analyse kunt gebruiken. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Gebieden zonder punten behouden</h2></div>
+        <hr/>
+        <div>
+            <p>Bepaalt of gebieden die geen punten bevatten, in de resultaatlaag worden weergegeven. Als deze optie niet is aangevinkt, worden gebieden zonder punten niet weergegeven in het resultaat. Als deze optie is aangevinkt, worden gebieden zonder punten wel weergegeven in het resultaat.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Statistieken toevoegen</h2></div>
+        <hr/>
+        <div>
+            <p>U kunt statistieken berekenen over attributen van de laag met invoerpunten, zoals de som, het gemiddelde, het minimum, het maximum en de standaardafwijking. De resultaatlaag zal een nieuw attribuut bevatten voor elke statistiek die wordt berekend. Andere statistieken kunnen worden toegevoegd door een attribuut en statistiek te kiezen (er verschijnt een nieuwe vervolgkeuzelijst).
+ 
+            </p>
+            <p>Als de samen te vatten laag geen numerieke velden heeft, zijn de aanvullende statistieken niet beschikbaar.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Kies veld om op te groeperen</h2></div>
+        <hr/>
+        <div>
+            <p> U kunt statistische groepen maken op basis van een attribuut in de invoerpuntlaag. Als u bijvoorbeeld misdaden aggregeert op basis van wijkgrenzen, zou u een attribuut <i>Crime_type</i> kunnen hebben met vijf verschillende misdaadtypen. Elk unieke misdaadtype vormt een groep en de statistieken die u kiest, zullen worden berekend voor elke unieke waarde van <i>Crime_type</i>. De statistieken voor elke groep en het aantal punten worden weergegeven in de pop-up van de resultaatlaag. Als u een groeperingsattribuut kiest, worden twee resultaten gemaakt: de resultaatlaag en een tabel met de statistieken voor elke unieke groep.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Minderheid, meerderheid toevoegen</h2></div>
+        <hr/>
+        <div>
+            <p>Dit selectievakje wordt ingeschakeld wanneer u een veld kiest om op te groeperen. Als u wilt weten welke attribuutwaarden binnen elke groep in de minderheid zijn (minst dominant) of in de meerderheid (meest dominant) binnen de afstand of tijd die u hebt opgegeven, selecteer dan  <b>Minderheid, meerderheid toevoegen</b>. Als u <b>Minderheid, meerderheid toevoegen</b> selecteert, worden er twee nieuwe velden toegevoegd aan uw resultaatlaag. Als u ook <b>Percentages toevoegen</b> kiest worden twee extra velden toegevoegd aan de resultaatlaag met de percentages van de minderheid en de meerderheid van de attribuutwaarden binnen elke groep.
+            </p>
+            <p>Stel bijvoorbeeld dat u een stadsplanner bent die wil uitzoeken welke boomsoorten de minderheid vormen en welke soorten de meerderheid in alle stadsparken, dan voegt u de boomgegevens in uw parkgebieden samen en schakelt u deze optie in.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Percentages toevoegen</h2></div>
+        <hr/>
+        <div>
+            <p>Dit selectievakje wordt ingeschakeld als u een veld kiest om te groeperen. Selecteer  <b>Percentages toevoegen</b> als u het percentage wilt zoeken van elke attribuutwaarde binnen elke groep. Er wordt een nieuw veld toegevoegd aan de resultaattabel met de percentages van elke attribuutwaarde binnen elke groep. Als <b>Minderheid, meerderheid toevoegen</b> ook geselecteerd is, worden twee extra velden toegevoegd aan de resultaatlaag met de percentages van de minderheid en de meerderheid van de attribuutwaarden binnen elke groep.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laagnaam al bestaat, wordt u gevraagd een nieuwe naam te verschaffen.
+            </p>
+            <p>Met behulp van het vervolgkeuzemenu  <b>Resultaat opslaan in</b> kunt u de naam van een map opgeven in <b>Mijn Content</b> waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

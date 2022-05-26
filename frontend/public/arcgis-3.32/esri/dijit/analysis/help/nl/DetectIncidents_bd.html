@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Incidenten Detecteren</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Incidenten Detecteren"></h2>
+        <hr/>
+    <p> Deze tool werkt met een tijdgeschakelde laag van punten, lijnen, gebieden of tabellen die een tijdsmoment vertegenwoordigen. Met behulp van opeenvolgend geordende functies, oftewel tracks, bepaalt deze tool welke objecten interessante incidenten zijn. Incidenten worden bepaald door de voorwaarden die u opgeeft.
+    </p>
+    <p>Eerst bepaalt de tool met een of meer velden welke objecten bij een tracks horen. Met behulp van de tijd bij elk object worden de tracks opeenvolgend gerangschikt en wordt de incidentvoorwaarde toegepast. Objecten die voldoen aan de startincidentvoorwaarde worden gemarkeerd als een incident. U kunt optioneel een eindincidentvoorwaarde toepassen. Wanneer de eindvoorwaarde waar is, is het object geen incident meer. De resultaten worden geretourneerd met de originele objecten (met nieuwe kolommen die de naam van het incident vertegenwoordigen) en geven aan welk object aan de incidentvoorwaarde voldoet. U kunt alle originele objecten of alleen de objecten die incidenten zijn, retourneren.
+    </p>
+    <p>Stel bijvoorbeeld voor dat u GPS-metingen van orkanen hebt elke 10 minuten. Elke GPS-meting registreert de naam van de orkaan, de locatie, het tijdstip van de opname en de windsnelheid. Met behulp van deze velden kunt u een incident cre&euml;ren waarbij elke meting met een windsnelheid van meer dan 208 km/u een incident is met de titel  <code>Catastrofaal</code>. Door geen eindvoorwaarde in te stellen, zou het incident eindigen als het object niet langer voldoet aan de startvoorwaarde (windsnelheid vertraagt tot minder dan 208).
+    </p>
+    <p>Een ander voorbeeld: stel dat u de concentraties van een chemische stof in uw lokale watervoorziening bewaakt met behulp van een veld met de naam  <code>contanimateLevel</code>. U weet dat de aanbevolen waarden lager zijn dan 0,01 mg/L en gevaarlijke niveaus hoger zijn dan 0,03 mg/L. Voor het detecteren van incidenten waarbij een waarde van meer dan 0,03 mg/L een incident is en een incident blijft totdat de verontreinigingsniveaus weer normaal zijn, maakt u een incident met een startvoorwaarde van <code>contanimateLevel &gt; 0,03</code> en een eindvoorwaarde van <code>contanimateLevel &lt; 0,01</code>. Hiermee wordt elke reeks gemarkeerd waarbij de waarden 0,03 mg/L overschrijden totdat ze terugkeren naar een waarde van minder dan 0,01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies laag om incidenten op te sporen</h2></div>
+        <hr/>
+        <div>
+            <p>De punten, lijnen, gebieden of tabellen die worden gebruikt om incidenten te zoeken. De invoerlaag moet tijdsbewust zijn met objecten die een moment in de tijd vertegenwoordigen, evenals een of meer velden die kunnen worden gebruikt om tracks te identificeren.
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Selecteer een of meer velden om track te identificeren</h2></div>
+        <hr/>
+        <div>
+            <p>De velden die de traceringsidentifier vertegenwoordigen. U kunt &eacute;&eacute;n veld of meerdere velden gebruiken om unieke waarden van tracks te representeren.
+            </p>
+            <p>Bijvoorbeeld als u de sporen van orkanen reconstrueert, kunt u de naam van de orkaan gebruiken als het tracksveld.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Bouw een expressievoorwaarde om het begin van een incident te impliceren</h2></div>
+        <hr/>
+        <div>
+            <p>Voeg een voorwaarde toe met behulp van de expressiebouwer om te bepalen wat een incident is. Als de voorwaarde die u opgeeft waar is, is het object een incident. Als u geen eindvoorwaarde opgeeft, eindigt een incident als de startvoorwaarde niet langer geldt.
+            </p>
+            <p>Stel dat u bijvoorbeeld een melding wilt als de som van de velden  <code>concentration_1</code> and <code>concentration_2</code> groter is dan <code>concentration_3</code>.   Om dit te doen, voegt u een voorwaarde toe van <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>Als u wilt weten hoe de concentraties in de loop van de tijd veranderen en u gewaarschuwd wilt worden als de huidige  <code>concentration_1</code> meer is dan de vorige twee metingen van <code>concentration_2</code> kunt u een expressie gebruiken als <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Bouw een expressievoorwaarde om het einde van een incident te impliceren (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p>Voeg optioneel een voorwaarde toe met behulp van de expressiebouwer om het einde van een incident te bepalen. Als de eindvoorwaarde die u opgeeft waar is, is het object niet langer een incident. Als u geen eindvoorwaarde opgeeft, eindigt een incident als de startvoorwaarde niet langer geldt.    
+            </p>
+            <p>Stel dat bijvoorbeeld een melding wilt als de som van de velden   <code>concentration_1</code> en <code>concentration_2</code> groter is dan <code>concentration_3</code>, en u wilt dat het incident eindigt als <code>concentration_4</code> minder is dan <code>concentration_1</code>. Om dit te doen, voegt u een startvoorwaarde toe van <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> en een eindvoorwaarde van <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>.
+            </p>
+            <p>Als u wilt dat een incident eindigt als het gemiddelden van de huidige  <code>concentration_1</code> en de vier voorgaande metingen meer is dan de eerste meting kunt u een expressie gebruiken als <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Laat zien</h2></div>
+        <hr/>
+        <div>
+            <p>Alle uitvoermethoden voegen velden toe aan de originele objecten. Er zijn twee manieren om te bepalen welke objecten worden geretourneerd:
+                <ul>
+                    <li> <b>Alle objecten</b>&mdash;Dit is standaard. Alle objecten in de invoer worden geretourneerd.
+                    </li>
+                    <li> <b>Alleen incidenten</b>&mdash;Deze methode retourneert alleen objecten die incidenten zijn. Objecten die geen incidenten blijken te zijn, worden niet geretourneerd.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analyseer gegevens met tijdsintervallen (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p>Geef aan of u incidenten wilt detecteren met tijdsintervallen die uw invoerobjecten segmenteren voor analyse. Als u tijdsintervallen gebruikt, moet u het tijdsinterval dat u wilt gebruiken instellen en optioneel de referentietijd instellen. Als u geen referentietijd instelt, wordt 1 januari 1970 gebruikt. 
+            </p>
+            <p>Als u bijvoorbeeld de tijdgrens instelt als 1 dag, beginnend om 9:00 op 1 januari 1990, dan wordt elke track afgekapt om 9.00 uur voor elke dag en geanalyseerd binnen dat segment. 
+            </p>
+            <p>Het gebruik van tijdsintervallen is een snelle manier om de rekentijd te versnellen, omdat het snel kleinere tracks voor analyse cre&euml;ert. Als splitsen met een terugkerend tijdsinterval zinvol is voor uw analyse, is het aan te raden voor de verwerking van big data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p> De naam van de laag die wordt gemaakt. Als u naar een ArcGIS Data Store,  schrijft, worden uw resultaten opgeslagen in  <b>Mijn Content</b> en toegevoegd aan de kaart. Als u naar een big data file share schrijft, worden uw resultaten opgeslagen in de big data file share en toegevoegd aan het bijhorende manifest. Ze zullen niet worden toegevoegd aan de kaart. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, zal de tool falen.
+            </p>
+            <p>Wanneer u schrijft naar  ArcGIS Data Store (relationele of spatiotemporele big datastore) met behulp van de vervolgkeuzelijst  <b>Resultaat opslaan in</b>, kunt u de naam van een map opgeven in <b>Mijn Content</b>, waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

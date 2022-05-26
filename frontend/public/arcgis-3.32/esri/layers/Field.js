@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/layers/Field","dojo/_base/declare dojo/_base/lang dojo/has ../kernel ../lang ./RangeDomain ./CodedValueDomain".split(" "),function(b,c,d,e,f,g,h){b=b(null,{declaredClass:"esri.layers.Field",constructor:function(a){if(a&&c.isObject(a)&&(this.name=a.name,this.type=a.type,this.alias=a.alias,this.length=a.length,this.editable=a.editable,this.nullable=a.nullable,this.defaultValue=a.defaultValue,this.description=a.description?JSON.parse(a.description):null,(a=a.domain)&&c.isObject(a)))switch(a.type){case "range":this.domain=
+new g(a);break;case "codedValue":this.domain=new h(a)}},toJson:function(){return f.fixJson({name:this.name,type:this.type,alias:this.alias,length:this.length,editable:this.editable,nullable:this.nullable,defaultValue:this.defaultValue,description:this.description?JSON.stringify(this.description):null,domain:this.domain?this.domain.toJson():null})},toJSON:function(){return this.toJson()}});d("extend-esri")&&c.setObject("layers.Field",b,e);return b});

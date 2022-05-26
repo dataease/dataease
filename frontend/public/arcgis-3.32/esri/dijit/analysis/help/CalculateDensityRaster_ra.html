@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calculate Density</h2><p/>
+        <h2><img src="./images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="Calculate Density tool"></h2>
+        <hr/>
+    <p>This tool creates a density map from point or line features by spreading known quantities of some phenomenon (represented as attributes of the points or lines) across the map. The result is a layer of areas classified from least dense to most dense.
+    </p>
+    <p>For point input, each point should represent the location of some event or incident, and the result layer represents a count of the incident per unit area. A larger density value in a new location means that there are more points near that location. In many cases, the result layer can be interpreted as a risk surface for future events. For example, if the input points represent locations of lightning strikes, the result layer can be interpreted as a risk surface for future lightning strikes.
+    </p>
+    <p>For line input, the line density surface represents the total amount of line that is near each location. The units of the calculated density values are the length of line-per-unit area. For example, if the lines represent rivers, the result layer will represent the total length of rivers that are within the search radius. This result can be used to identify areas that are hospitable to grazing animals.
+    </p>
+    <p>Other use cases of this tool include the following:
+
+        <ul>
+            <li>Creating crime density maps to help police departments properly allocate resources to high crime areas.
+                
+ 
+            </li>
+            <li>Calculating densities of hospitals within a county. The result layer will show areas with high and low accessibility to hospitals, and this information can be used to decide where new hospitals should be built.
+                
+ 
+            </li>
+            <li>Identifying areas that are at high risk of forest fires based on historical locations of forest fires.
+                
+ 
+            </li>
+            <li>Locating communities that are far from major highways in order to plan where new roads should be constructed.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>Choose input point or line layer from which to calculate density</h2></div>
+        <hr/>
+        <div>
+            <p>The input point or line layer that will be used to calculate the density layer.
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>Use a count field</h2></div>
+        <hr/>
+        <div>
+            <p>Provide a field specifying the number of incidents at each location. For example, if you have points that represent cities, you can use a field representing the population of the city as the count field, and the resulting population density layer will calculate larger population densities near cities with larger populations.
+            </p>
+            <p>If the default choice of  <b>None</b> is used, then each location will be assumed to represent a single count.
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Search distance</h2></div>
+        <hr/>
+        <div>
+            <p>Enter a distance specifying how far to search to find point or line features when calculating density values. For example, if you provide a search distance of 10,000 meters, the density of any location in the output layer is calculated based on features that are within 10,000 meters of the location. Any location that does not have any incidents within 10,000 meters will receive a density value of zero.
+            </p>
+            <p>If no distance is provided, a default will be calculated that is based on the locations of the input features and the values in the count field (if a count field is provided).
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>Output area units</h2></div>
+        <hr/>
+        <div>
+            <p>Specify the output area unit. Density is count divided by area, and this parameter specifies the unit of the area in the density calculation.
+            </p>
+            <p>The available areal units are Square Miles, Square Feet, Square Meters, and Square Kilometers.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Output cell size</h2></div>
+        <hr/>
+        <div>
+            <p>The cell size and unit for the output rasters.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map. The default name is based on the tool name and the input layer name. If the layer already exists, you will be prompted to provide another name.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

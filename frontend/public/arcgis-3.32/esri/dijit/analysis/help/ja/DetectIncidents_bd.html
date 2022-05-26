@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>インシデントの検出 (Detect Incidents)</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="インシデントの検出"></h2>
+        <hr/>
+    <p> このツールは、特定時点を表すポイント、ライン、エリア、またはテーブルの時間対応レイヤーを操作します。このツールでは、トラッキングという順番に並んだフィーチャを使用して、対象となるインシデントのフィーチャを決定します。インシデントはユーザーの指定する条件によって決まります。
+    </p>
+    <p>まず、ツールが 1 つ以上のフィールドを使用してトラッキング対応に属するフィーチャを決定します。各フィーチャの時間を使用して、トラッキング対応が順番に並べられ、インシデント条件が適用されます。インシデントの開始条件と一致するフィーチャがインシデントとしてマークされます。オプションでインシデントの終了条件を適用することもできます。終了条件が true になると、フィーチャはインシデントでなくなります。結果は、元のフィーチャ (インシデント名を表す新しい列を含む) で返され、インシデント条件と一致するフィーチャが示されます。元のフィーチャをすべて返すか、インシデントのフィーチャのみを返すことができます。
+    </p>
+    <p>たとえば、10 分間隔でのハリケーンの GPS 計測値があるとします。GPS 計測値ごとに、ハリケーンの名前、場所、記録時刻、および風速が記録されています。これらのフィールドを使用してインシデントを作成し、計測値が風速 208 km/時を超えると  <code>[Catastrophic]</code> というタイトルのインシデントにすることができます。終了条件を設定しないので、このインシデントはフィーチャが開始条件を満たさなくなった (風速 208 を下回った) 時点で終了します。
+    </p>
+    <p>別の例を使用して、地域の水道の化学物質濃度を  <code>[contaminateLevel]</code> という名前のフィールドを使用して監視するとします。推奨されるレベルは 0.01 mg/L 未満で、0.03 mg/L を超えると危険レベルであることがわかっています。値が 0.03 mg/L を超えるとインシデントとなり、汚染レベルが正常に戻るまで解除されないインシデントを検出するには、開始条件に「 <code>contaminateLevel &gt; 0.03</code>」、終了条件に「 <code>contaminateLevel &lt; 0.01</code>」を使用してインシデントを作成します。これにより、値が 0.03 mg/L を超えてから 0.01 未満に戻るまでのすべてのシーケンスがマーク付けされます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>インシデントの検出元のレイヤーを選択</h2></div>
+        <hr/>
+        <div>
+            <p>インシデントの検出に使用するポイント、ライン、エリア、またはテーブル。入力レイヤーは時間対応でなくてはならず、特定時点を表すフィーチャと、トラックの特定に使用できる 1 つ以上のフィールドを含む必要があります。
+            </p>
+            <p>マップからレイヤーを選択できるだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択し、ビッグ データ ファイル共有データセットまたはフィーチャ レイヤーのコンテンツを参照して選択することもできます。
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>トラックの識別に使用する 1 つ以上のフィールドの選択</h2></div>
+        <hr/>
+        <div>
+            <p>トラッキング識別子を表すフィールド。1 つまたは複数のフィールドを使用して、トラックの一意の値を表すことができます。
+            </p>
+            <p>たとえば、ハリケーンのトラックを再構築する場合は、ハリケーン名をトラック フィールドとして使用できます。
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>インシデントの開始を示す条件式の条件を構築</h2></div>
+        <hr/>
+        <div>
+            <p>式の設定を使用して条件を追加し、インシデントの内容を決定します。指定した条件が true の場合、そのフィーチャはインシデントです。終了条件を指定しない場合、開始条件が true でなくなった時点でインシデントが終了します。
+            </p>
+            <p>たとえば、フィールド  <code>[concentration_1]</code> と <code>[concentration_2]</code> の合計が <code>[concentration_3]</code> を上回った時点で警告を表示するとします。このためには、条件として「 <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>」を適用します。
+            </p>
+            <p>時間とともに濃度がどのように変化するかに興味があり、現在の  <code>[concentration_1]</code> が <code>[concentration_2]</code> の 2 つの前の計測値よりも大きい場合に警告されたい場合は、「 <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>」のような条件式を使用できます。
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>インシデントの終了を示す条件式の条件を構築 (オプション)</h2></div>
+        <hr/>
+        <div>
+            <p>オプションで、式の設定を使用して条件を追加し、インシデントの終了を決定します。指定した終了条件が true の場合、そのフィーチャはインシデントでなくなります。終了条件を指定しない場合、開始条件が true でなくなった時点でインシデントが終了します。
+            </p>
+            <p>たとえば、フィールド  <code>[concentration_1]</code> と <code>[concentration_2]</code> の合計が <code>[concentration_3]</code> を上回った時点で警告を表示し、 <code>[concentration_4]</code> が <code>[concentration_1]</code> を下回った時点でインシデントを終了するとします。このためには、開始条件として「 <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code>」を適用し、終了条件として「 <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>」を適用します。
+            </p>
+            <p>現在の  <code>[concentration_1]</code> および 4 つの前の計測値の平均が 1 番目の計測値よりも大きい場合にインシデントを終了したい場合は、「 <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>」のような条件式を使用できます。
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>表示</h2></div>
+        <hr/>
+        <div>
+            <p>どの出力方法でも、元のフィーチャにフィールドが追加されます。どのフィーチャを返すのかを決定するには、次の 2 つの方法があります。
+                <ul>
+                    <li> <b>すべてのフィーチャ</b> - これがデフォルトです。入力内のすべてのフィーチャが返されます。
+                    </li>
+                    <li> <b>インシデントのみ</b> - この方法では、インシデントであるフィーチャのみが返されます。インシデントとして検出されないフィーチャは返されません。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>時間間隔を使用したデータの解析 (オプション)</h2></div>
+        <hr/>
+        <div>
+            <p>時間間隔を使用し、解析のために入力フィーチャをセグメント化して、インシデントを検出するかどうかを指定します。時間間隔を使用する場合は、使用する時間間隔を設定するほか、必要に応じて基準時間を設定する必要があります。基準時間を設定しない場合は、1970 年 1 月 1 日が使用されます。
+            </p>
+            <p>たとえば、時間の境界を 1 日に設定し、1990 年 1 月 1 日午前 9 時から開始した場合、各トラックは毎日午前 9 時に切詰められ、このセグメントの範囲内で解析されます。
+            </p>
+            <p>時間間隔を使用すると、解析のためのトラックを簡単に短縮できるため、計算時間を高速化できます。時間間隔の繰り返しによる分割が解析で有効な場合は、ビッグ データ処理にこの方法を使用することをお勧めします。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p> 作成されるレイヤーの名前。 ArcGIS Data Store に書き込んでいる場合、結果は  <b>[マイ コンテンツ]</b> に保存され、マップに追加されます。ビッグ データ ファイル共有に書き込んでいる場合、結果はビッグ データ ファイル共有に格納され、そのマニフェストに追加されます。この場合、結果はマップに追加されません。 デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合、このツールは正常に実行されません。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して ArcGIS Data Store (リレーショナル データ ストアまたはビッグ データ ストア) に書き込むときは、結果が保存される  <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

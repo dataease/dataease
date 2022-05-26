@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Connecta orígens amb destinacions</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="Connecta or&iacute;gens amb destinacions"></h2>
+        <hr/>
+    <p>Connecta or&iacute;gens amb destinacions mesura la dist&agrave;ncia o el temps de recorregut entre parells de punts. L'eina pot notificar dist&agrave;ncies en l&iacute;nia recta, dist&agrave;ncies basades en un mode de viatge (com ara en cotxe o a peu) o b&eacute; durades de trajecte en funci&oacute; d'un mode de viatge. Si utilitzeu aquesta eina, podreu fer el seg&uuml;ent:
+    </p>
+    <p>
+        <ul>
+            <li>Calcular el total de la dist&agrave;ncia o el temps que els treballadors necessiten per anar de casa a la feina.
+            </li>
+            <li>Mesurar quina dist&agrave;ncia recorren els clients per comprar a les vostres botigues. Feu servir aquesta informaci&oacute; per definir el vostre abast de mercat, especialment quan trieu els destinataris de les campanyes publicit&agrave;ries o decidiu les ubicacions dels establiments nous.
+            </li>
+            <li>Calcular el quilometratge esperat de la vostra flota de vehicles. Despr&eacute;s, executeu l'eina Resumir dins de per con&egrave;ixer el quilometratge per estat o per una altra regi&oacute;.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Heu de proporcionar punts inicials i finals; l'eina retorna una capa que cont&eacute; les l&iacute;nies de ruta (amb les mesures) entre els parells d'or&iacute;gens i destinacions. 
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s s'analitzaran les entitats que siguin visibles a l'extensi&oacute; de mapa actual.  Si l'opci&oacute; est&agrave; desactivada, es tindran en compte totes les entitats de la capa d'entrada, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Trieu la capa de punts que representa les ubicacions d'origen</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu la capa de punts que representa l'origen o els or&iacute;gens.  L'eina admet fins a  5.000 or&iacute;gens i  5.000 destinacions. </p>
+            <p>Si trieu una capa que t&eacute; exactament un origen, es connectar&agrave; amb totes les destinacions.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b>, que es troba al final de la llista desplegable. Aquesta opci&oacute; obre una galeria on podeu cercar i seleccionar datasets de diversos or&iacute;gens per u utilitzar-los a l'an&agrave;lisi. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Trieu la capa de destinacions</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu la capa que representa la destinaci&oacute; o les destinacions amb qu&egrave; s'han de connectar els or&iacute;gens. L'eina admet fins a  5.000 or&iacute;gens i  5.000 destinacions. </p>
+            <p>Si trieu una capa que t&eacute; exactament una destinaci&oacute;, tots els or&iacute;gens s'hi connectaran. 
+            </p>
+            <p>Si hi ha un origen i moltes destinacions, l'eina connecta l'origen amb cadascuna de les destinacions.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b>, que es troba al final de la llista desplegable. Aquesta opci&oacute; obre una galeria on podeu cercar i seleccionar datasets de diversos or&iacute;gens per u utilitzar-los a l'an&agrave;lisi. 
+            </p>
+            <p> Si hi ha molts or&iacute;gens i moltes destinacions, heu de tenir dos camps que descriguin els parells origen-destinaci&oacute;: <b>Camp d'ID als or&iacute;gens</b> i <b>Camp d'ID coincident a les destinacions</b>. L'eina connecta els parells origen-destinaci&oacute; durant l'an&agrave;lisi. Per exemple, imagineu que teniu dos or&iacute;gens amb els valors de camp d'ID <code>Rosie</code> i <code>Harold</code> i dues destinacions amb els mateixos valors d'ID. L'origen <code>Rosie</code> es connectar&agrave; amb la destinaci&oacute; <code>Rosie</code> i l'origen <code>Harold</code> es connectar&agrave; amb la destinaci&oacute; <code>Harold</code>. No es fa cap altra connexi&oacute; ni mesura.
+            </p>
+            <p>Si hi ha nombres iguals d'or&iacute;gens i destinacions, els valors d'ID han de ser &uacute;nics a cada capa. Per exemple, la capa de destinacions no pot tenir dos valors  <code>Rosie</code>. Els valors de les capes d'origen i destinaci&oacute; han de coincidir exactament per formar parells; el valor <code>Harold</code> no es connectar&agrave; amb el valor <code>Harodl</code>, que est&agrave; mal escrit. 
+            </p>
+            <p>L'eina tamb&eacute; admet la connexi&oacute; de cada origen a m&eacute;s d'una destinaci&oacute; o de cada destinaci&oacute; a m&eacute;s d'un origen. En aquests casos, encara heu de tenir dos camps que descriguin els parells origen-destinaci&oacute;. Aix&ograve; no obstant, nom&eacute;s una de les capes (ja sigui la d'origen o la de destinaci&oacute;) ha de tenir valors d'ID &uacute;nics.
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Mesura</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Trieu si voleu connectar els or&iacute;gens amb les destinacions mitjan&ccedil;ant la dist&agrave;ncia en l&iacute;nia recta o un mode de viatge. Les rutes de sortida seguiran carreteres o camins i respectaran les regles aplicables, com ara les vies de sentit &uacute;nic i els girs no permesos en cotxe o en cami&oacute;.  L'administrador de la vostra organitzaci&oacute; determina els modes de viatge disponibles.  
+            </p>
+            <p>Si trieu  <b>Temps de conducci&oacute;</b>, <b>Temps de conducci&oacute; rural</b> o <b>Temps en cami&oacute;</b>, disposeu d'opcions per mesurar el temps de recorregut.
+                <ul>
+                    <li>
+                        <p>Desactiveu  <b>Utilitza el tr&agrave;nsit</b> per trobar les rutes m&eacute;s r&agrave;pides basades en velocitats predeterminades.
+                        </p>
+                        <p>Aquesta &eacute;s l'opci&oacute; que heu de triar si voleu una mesura de temps de recorregut general en lloc d'una mesura que es calculi en funci&oacute; de les condicions de tr&agrave;nsit variables d'una hora de sortida espec&iacute;fica.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Activeu  <b>Utilitza el tr&agrave;nsit</b> per trobar les rutes m&eacute;s r&agrave;pides basades en una hora d'inici determinada i unes condicions de tr&agrave;nsit variables. Si tamb&eacute; trieu l'opci&oacute; <b>Tr&agrave;nsit en temps real</b>, l'hora de sortida dels or&iacute;gens es defineix en l'hora actual i es prenen com a refer&egrave;ncia les velocitats de tr&agrave;nsit actuals i previstes dels sensors i les fonts de dades per crear les rutes. Les velocitats de tr&agrave;nsit previstes es calculen prenent com a refer&egrave;ncia les velocitats del tr&agrave;nsit en temps real, les velocitats hist&ograve;riques i els esdeveniments actuals, com ara les condicions meteorol&ograve;giques. Les velocitats del tr&agrave;nsit es prediuen amb 12 hores d'antelaci&oacute;, aix&iacute; que podeu moure el control lliscant per definir l'hora de sortida m&eacute;s endavant, fins al cap de  12 hores. </p>
+                        <p>Utilitzeu aquestes opcions del tr&agrave;nsit en temps real per saber els temps de recorregut si sortiu ara, d'aqu&iacute; a una hora, etc.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Si activeu  <b>Utilitza el tr&agrave;nsit</b> i trieu <b>Tr&agrave;nsit en funci&oacute; de les condicions t&iacute;piques per a</b> un dia i una hora, l'eina cerca les rutes m&eacute;s r&agrave;pides en funci&oacute; de les velocitats mitjanes hist&ograve;riques per a cada interval de cinc minuts d'una setmana normal. Els resultats inclouen el tr&agrave;nsit per&ograve; eliminen la influ&egrave;ncia de les condicions de tr&agrave;nsit i els esdeveniments actuals, que poden variar considerablement del que &eacute;s habitual.
+                        </p>
+                        <p>Podeu utilitzar aquesta configuraci&oacute; de tr&agrave;nsit hist&ograve;rica per preguntar, per exemple: &quot;En general, quant es tarda a arribar a aquestes destinacions si se surt a les 11.30 del mat&iacute; d'un dimecres?&quot;.
+                        </p>
+                        <p>L'hora que definiu far&agrave; servir de refer&egrave;ncia la zona hor&agrave;ria on es troben els or&iacute;gens. &Eacute;s a dir, si definiu l'hora a les 8.00 del mat&iacute; i teniu dos or&iacute;gens, un a la ciutat de Nova York i un altre a Los Angeles, les rutes es generaran per a una hora de sortida definida a les 8.00 del mat&iacute; hora de l'Est i les 8.00 hora del Pac&iacute;fic, respectivament.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Teniu en compte que, quan un vehicle s'allunya de l'origen, el temps passa i les condicions de tr&agrave;nsit canvien. L'eina Connecta or&iacute;gens amb destinacions t&eacute; en compte aquestes variacions quan activeu  <b>Utilitza el tr&agrave;nsit</b>. Aix&ograve; no obstant, no totes les regions s&oacute;n compatibles amb el tr&agrave;nsit. Feu clic a l'enlla&ccedil; <b>Mostra la disponibilitat</b> a l'eina per saber si est&agrave; disponible a la vostra &agrave;rea d'estudi.
+            </p>
+            <p> <b>Temps en cami&oacute;</b> pot utilitzar velocitats de viatge din&agrave;miques en funci&oacute; del tr&agrave;nsit, per&ograve; nom&eacute;s fins al l&iacute;mit de velocitat legal del cami&oacute;. Per exemple, si la velocitat din&agrave;mica per a una via en funci&oacute; del tr&agrave;nsit en temps real &eacute;s de 65 milles per hora, per&ograve; el l&iacute;mit de velocitat del cami&oacute; per a la via &eacute;s de 55 milles per hora, el c&agrave;lcul utilitzar&agrave; les 55 milles per hora per a la via.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Seleccioneu capes de barrera</h2></div>
+        <hr/>
+        <div>
+            <p> Una o diverses entitats poden actuar com a restriccions temporals (barreres) quan viatgeu per carrers subjacents. Podeu especificar les barreres amb entitats de punt, l&iacute;nia o pol&iacute;gon.
+            </p>
+            <p>Una barrera de punt pot mostrar un arbre caigut, un accident, una l&iacute;nia el&egrave;ctrica fora de servei o qualsevol element que bloquegi completament el tr&agrave;nsit en un punt espec&iacute;fic del carrer. Es pot viatjar pel carrer, per&ograve; no creuar la barrera. Podeu especificar fins a 250 entitats perqu&egrave; actu&iuml;n com a barreres de punt.
+            </p>
+            <p>Una barrera de l&iacute;nia prohibeix viatjar per qualsevol lloc on la barrera s'intersequi amb els carrers. Per exemple, una desfilada o manifestaci&oacute; que bloquegi el tr&agrave;nsit en diversos segments del carrer es pot mostrar amb una barrera de l&iacute;nia. Si el nombre d'entitats de carrer amb qu&egrave; s'intersequen totes les barreres de l&iacute;nia &eacute;s superior a 500, l'eina retornar&agrave; un error.
+            </p>
+            <p>Una barrera de pol&iacute;gon prohibeix viatjar per qualsevol lloc on el pol&iacute;gon s'intersequi amb els carrers. Un dels usos d'aquest tipus de barrera &eacute;s mostrar les inundacions que cobreixen &agrave;rees de la xarxa de carrers i que impedeixen el viatge per carretera. Si el nombre d'entitats de carrer amb qu&egrave; s'intersequen totes les barreres de pol&iacute;gon &eacute;s superior a 2.000, l'eina retornar&agrave; un error.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Forma de la ruta</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu la forma de la ruta que connecta cada origen a la seva destinaci&oacute; quan utilitzeu el mode de viatge:
+            </p>
+            <ul>
+                <li> <b>Segueix carrers</b>: la forma es basa en la xarxa de carrers subjacent. Aquesta opci&oacute; &eacute;s ideal si voleu generar les rutes entre els or&iacute;gens i les destinacions.
+                </li>
+                <li> <b>L&iacute;nia recta</b>: la forma &eacute;s una l&iacute;nia recta que connecta el parell origen-destinaci&oacute;. Aquesta opci&oacute; &eacute;s ideal si voleu generar diagrames d'aranya o l&iacute;nies de desig (per exemple, per mostrar quines botigues visiten els clients).
+                </li>
+            </ul>
+            
+            <p>La millor ruta entre un origen i la seva destinaci&oacute; corresponent sempre es calcula d'acord amb el mode de viatge, independentment de la forma de ruta triada.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa d'entitats que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. Si la capa d'entitats ja existeix, se us demanar&agrave; que escriviu un altre nom. La capa d'entitats inclour&agrave; una capa per a cadascun dels elements seg&uuml;ents: rutes, or&iacute;gens sense assignar i destinacions sense assignar quan alguns or&iacute;gens no es puguin connectar amb les seves destinacions.
+            </p>
+            <p>Si seleccioneu  <b>Inclou les capes de ruta</b>, cada ruta del resultat tamb&eacute; es desar&agrave; com a capa de ruta. Una capa de ruta inclou tota la informaci&oacute; d'una ruta determinada, com ara les parades assignades a la ruta i les indicacions del viatge. La creaci&oacute; de capes de ruta &eacute;s &uacute;til si voleu compartir les rutes individuals amb altres membres de l'organitzaci&oacute; o modificar encara m&eacute;s les rutes mitjan&ccedil;ant el bot&oacute; <b>Indicacions</b> del visor de mapes. Les capes de ruta utilitzen el nom que es proporciona per a la capa d'entitats com a prefix i el nom de la ruta que es genera com a part de l'an&agrave;lisi, que s'afegeix a fi de crear un nom &uacute;nic per a cada capa de ruta.
+            </p>
+            <p>El nombre m&agrave;xim de capes de ruta que es poden crear &eacute;s  1.000. Si el resultat cont&eacute; m&eacute;s de  1.000 rutes i l'opci&oacute;  <b>Inclou les capes de ruta</b> est&agrave; activada, l'eina nom&eacute;s crear&agrave; el servei d'entitats de sortida.
+            </p>
+            <p>Mitjan&ccedil;ant el men&uacute; desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desaran la capa d'entitats i les capes de rutes (si se n'han creat).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

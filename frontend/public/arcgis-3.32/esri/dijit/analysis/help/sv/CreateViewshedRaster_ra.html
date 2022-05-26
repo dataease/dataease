@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Skapa siktområde</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Verktyget Skapa siktomr&aring;de"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget identifierar de omr&aring;den som kan ses av en observat&ouml;r i termer av yttopografi. Indatapunkterna kan representera antingen observat&ouml;rer (till exempel personer p&aring; marken eller spanare i ett brandtorn) eller objekt som observeras (till exempel vindkraftverk, vattentorn, fordon eller andra m&auml;nniskor). Resultaten definierar de omr&aring;den som kan ses fr&aring;n observat&ouml;rsplatserna.
+    </p>
+    <p>B&aring;de observat&ouml;rerna och de observerade objekten kan ha en h&ouml;jd &ouml;ver marken, och den h&auml;r h&ouml;jden anv&auml;nds f&ouml;r att fastst&auml;lla synligheten. Ett siktomr&aring;de som ber&auml;knas f&ouml;r 90 meter h&ouml;ga vindkraftverk och en tv&aring; meter l&aring;ng m&auml;nniska som st&aring;r p&aring; marken, &auml;r till exempel normalt sett st&ouml;rre &auml;n ett siktomr&aring;de ber&auml;knat f&ouml;r 60 meter h&ouml;ga vindkraftverk och en m&auml;nniska som &auml;r 1,70 meter l&aring;ng.
+    </p>
+    <p>Det resulterande lagret registrerar hur m&aring;nga g&aring;nger varje cellplats i ytrastret f&ouml;r indata g&aring;r att se fr&aring;n de angivna observationsplatserna. De celler som inte syns f&aring;r NoData-v&auml;rden.
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> &auml;r markerat analyseras endast de rasteromr&aring;den och observat&ouml;rspunkter som &auml;r synliga i den aktuella kartutbredningen. Om alternativet inte markeras analyseras alla observat&ouml;rspunkter i indatalagret, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Elevationsyta</h2></div>
+        <hr/>
+        <div>
+            <p>Elevationsytan som anv&auml;nds f&ouml;r att ber&auml;kna siktomr&aring;det.
+            </p>
+            <p>Om den vertikala enheten f&ouml;r indataytan inte &auml;r samma som den horisontella enheten, till exempel om elevationsytan anges i fot och koordinatsystemet i meter, m&aring;ste ytan ha ett definierat vertikalt koordinatsystem. Orsaken till detta &auml;r att verktyget anv&auml;nder de vertikala (Z) och horisontella (XY) enheterna f&ouml;r att ber&auml;kna en Z-faktor f&ouml;r siktomr&aring;desanalysen. Utan ett vertikalt koordinatsystem och d&auml;rmed utan tillg&aring;ng till information om Z-enhet, kommer verktyget att utg&aring; fr&aring;n att Z-enheten &auml;r samma som XY-enheten. Resultatet av detta &auml;r att en intern Z-faktor p&aring; 1,0 kommer att anv&auml;ndas f&ouml;r analysen, vilket kan leda till ov&auml;ntade resultat.
+            </p>
+            <p>Elevationsytan kan vara ett heltal eller ett flyttal.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Punktgeoobjekt som representerar observatörsplatser</h2></div>
+        <hr/>
+        <div>
+            <p>De punktgeoobjekt som representerar observat&ouml;rsplatserna vid ber&auml;kning av siktomr&aring;dena.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimera för</h2></div>
+        <hr/>
+        <div>
+            <p>Optimeringsmetoden som anv&auml;nds f&ouml;r att ber&auml;kna siktomr&aring;det.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Den h&auml;r metoden optimerar bearbetningshastigheten och ger h&ouml;gre prestanda i utbyte mot viss noggrannhet i resultatet. Det h&auml;r &auml;r standardinst&auml;llningen.
+
+                </li>
+                <li>Accuracy &mdash; 
+Den h&auml;r metoden &auml;r optimerad f&ouml;r noggrannhet i resultatet, p&aring; bekostnad av l&auml;ngre bearbetningstid.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maximalt siktavstånd</h2></div>
+        <hr/>
+        <div>
+            <p>Ange ett brytavst&aring;nd d&auml;r ber&auml;kningen av synliga omr&aring;den stoppas. Bortom det h&auml;r avst&aring;ndet kommer det inte att fastst&auml;llas om observat&ouml;rsplatserna och de andra objekten kan se varandra.
+            </p>
+            <p>Du kan antingen ange ett numeriskt v&auml;rde som representerar ett linj&auml;rt avst&aring;nd eller v&auml;lja ett numeriskt f&auml;lt fr&aring;n observat&ouml;rsgeoobjekten f&ouml;r indata. Om ett f&auml;lt anges m&aring;ste v&auml;rdena som finns i f&auml;ltet vara i samma enhet som xy-enheten f&ouml;r indatah&ouml;jdk&auml;llan.
+            </p>
+            <p>Observera att stora v&auml;rden &ouml;kar ber&auml;kningstiden. Om inget annat anges, ber&auml;knas ett maximalt standardavst&aring;nd baserat p&aring; uppl&ouml;sningen och utbredningen av indatah&ouml;jdk&auml;llan.
+            </p>
+            <p>Den h&auml;r parametern &auml;r anv&auml;ndbar f&ouml;r att modellera vissa fenomen. Genom att till exempel begr&auml;nsa utbredningen av synligheten, kan du modellera v&auml;derf&ouml;rh&aring;llanden som l&auml;tt dimma. P&aring; samma s&auml;tt kan du begr&auml;nsa utbredningen av synligheten f&ouml;r att f&aring; en viss kontroll &ouml;ver tid p&aring; dagen genom att uppskatta effekten av skymning.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Maximalt siktavstånd</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Minimalt siktavstånd</h2></div>
+        <hr/>
+        <div>
+            <p>Ange ett avst&aring;nd d&auml;r ber&auml;kningen av synliga omr&aring;den b&ouml;rjar. Celler p&aring; ytan n&auml;rmare &auml;n det h&auml;r avst&aring;ndet syns inte i utdata, men kan fortfarande blockera synligheten f&ouml;r celler mellan det minimala och maximala siktavst&aring;ndet.
+            </p>
+            <p>Du kan antingen ange ett numeriskt v&auml;rde som representerar ett linj&auml;rt avst&aring;nd eller v&auml;lja ett numeriskt f&auml;lt fr&aring;n observat&ouml;rsgeoobjekten f&ouml;r indata. Om ett f&auml;lt anges m&aring;ste v&auml;rdena som finns i f&auml;ltet vara i samma enhet som xy-enheten f&ouml;r indatah&ouml;jdk&auml;llan.
+            </p>
+            <p>Den h&auml;r parametern &auml;r anv&auml;ndbar f&ouml;r att styra siktomr&aring;dets analysomr&aring;de till ett visst avst&aring;nd fr&aring;n observat&ouml;ren. Om du till exempel utv&auml;rderar synligheten fr&aring;n taket av en byggnad till en avl&auml;gsen park, kan du st&auml;lla in ett minimalt siktavst&aring;nd f&ouml;r att utesluta omr&aring;den i n&auml;rheten som inte &auml;r intressanta och f&aring; en b&auml;ttre bearbetningshastighet.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Minimalt siktavstånd</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>Avstånd är 3D</h2></div>
+        <hr/>
+        <div>
+            <p>Ange om det minimala och maximala siktavst&aring;ndets parametrar m&auml;ts p&aring; ett tredimensionellt s&auml;tt eller p&aring; ett enklare tv&aring;dimensionellt s&auml;tt. N&auml;r alternativet har markerats hanteras visningsavst&aring;nden som ett 3D-avst&aring;nd. N&auml;r det inte &auml;r markerat behandlas de som 2D-avst&aring;nd.
+            </p> 
+            <p>Ett 2D-avst&aring;nd &auml;r det enkla linj&auml;ra avst&aring;nd som m&auml;ts upp mellan en observat&ouml;r och m&aring;let med hj&auml;lp av deras projicerade plats p&aring; havsniv&aring;. Ett 3D-avst&aring;nd ger ett mer realistiskt v&auml;rde genom att ta h&auml;nsyn till den relativa h&ouml;jden.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Höjd för observatörsplatser</h2></div>
+        <hr/>
+        <div>
+            <p>Ange h&ouml;jden f&ouml;r observat&ouml;rsplatserna.
+            </p>
+            <p>Du kan ange antingen ett numeriskt v&auml;rde som representerar h&ouml;jden f&ouml;r alla observat&ouml;rer, eller ange ett f&auml;lt som representerar h&ouml;jden f&ouml;r varje observat&ouml;r. Om ett f&auml;lt anges m&aring;ste v&auml;rdet som finns i f&auml;ltet vara i samma enhet som Z-enheten f&ouml;r indatah&ouml;jdk&auml;llan.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Höjd för observatörsplatser</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Höjd för observatörer</h2></div>
+        <hr/>
+        <div>
+            <p>Ange h&ouml;jden ovan mark f&ouml;r dina observat&ouml;rsplatser.
+            </p> 
+            <p>Du kan ange antingen ett numeriskt v&auml;rde f&ouml;r h&ouml;jden eller ett f&auml;lt fr&aring;n observat&ouml;rsgeoobjekten f&ouml;r indata. Om ett f&auml;lt anges m&aring;ste v&auml;rdet som finns i f&auml;ltet vara i samma enhet som z-enheten f&ouml;r indatah&ouml;jdk&auml;llan.
+            </p>
+            <p>Standard &auml;r 6 fot. Om du tittar fr&aring;n en upph&ouml;jd plats, till exempel ett utsiktstorn eller en h&ouml;g byggnad, anv&auml;nds den h&ouml;jden ist&auml;llet. Under ber&auml;kningen av siktomr&aring;dena l&auml;ggs det h&auml;r v&auml;rdet till f&ouml;r observat&ouml;rens h&ouml;jd om denna har angetts, annars l&auml;ggs v&auml;rdet till f&ouml;r det interpolerade z-v&auml;rdet f&ouml;r ytan.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Höjd för observatörer</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Höjd för mål</h2></div>
+        <hr/>
+        <div>
+            <p>Ange h&ouml;jden f&ouml;r byggnader eller personer p&aring; marken som anv&auml;nds f&ouml;r att fastst&auml;lla synligheten.
+            </p>
+            <p>Du kan ange antingen ett numeriskt v&auml;rde f&ouml;r h&ouml;jden eller ett f&auml;lt fr&aring;n observat&ouml;rsgeoobjekten f&ouml;r indata. Om ett f&auml;lt anges m&aring;ste v&auml;rdet som finns i f&auml;ltet vara i samma enhet som z-enheten f&ouml;r indatah&ouml;jdk&auml;llan.
+            </p>
+            <p>Det resulterande siktomr&aring;det identifierar de omr&aring;den d&auml;r en observat&ouml;rsplats kan se dessa objekt p&aring; marken. Motsatsen st&auml;mmer ocks&aring;, objekten p&aring; marken kan se en observat&ouml;rsplats. 
+            </p>
+            <p>H&auml;r f&ouml;ljer n&aring;gra exempel p&aring; m&aring;lh&ouml;jdinst&auml;llningar:
+            </p>
+            <ul>
+                <li>Om din indatapunkt representerar vindkraftverk och du vill avg&ouml;ra var personer som st&aring;r p&aring; marken kan se dem, anger du den ungef&auml;rliga l&auml;ngden p&aring; en person (cirka 2 meter).
+                    
+
+                </li>
+                <li>Om indatapunkten representerar brandtorn och du vill avg&ouml;ra vilka torn som kan se ett r&ouml;kmoln som stiger 6 meter eller h&ouml;gre, anger du 6 meter som h&ouml;jd.
+                    
+
+                </li>
+                <li>Om din indatapunkt representerar utsiktsplatser l&auml;ngs vissa v&auml;gar och stigar och du vill fastst&auml;lla var vindkraftverk som &auml;r minst 150 meter h&ouml;ga kan ses, anger du 150 meter som h&ouml;jd.
+                    
+
+                </li>
+                <li>Om indatapunkten representerar utsiktsplatser och du vill avg&ouml;ra hur stort omr&aring;de personer som st&aring;r p&aring; marken kan se, anger du noll som m&aring;lh&ouml;jd. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Höjd för observatörer</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Utdatahöjd som ska bli synlig</h2></div>
+        <hr/>
+        <div>
+            <p>Namnet p&aring; resultatet f&ouml;r utdata &ouml;ver markniv&aring; (AGL). Resultatet f&ouml;r utdata &ouml;ver markniv&aring; &auml;r ett raster d&auml;r varje cellv&auml;rde &auml;r den minsta h&ouml;jd som m&aring;ste l&auml;ggas till f&ouml;r en annars icke-synlig cell f&ouml;r att den ska vara synlig f&ouml;r minst en observat&ouml;r. Celler som redan var synliga tilldelas v&auml;rdet 0 i det h&auml;r utdatarastret.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Du kan ange namnet p&aring; en mapp i  <b>Mitt inneh&aring;ll</b> d&auml;r resultatet sparas med listrutan <b>Spara resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

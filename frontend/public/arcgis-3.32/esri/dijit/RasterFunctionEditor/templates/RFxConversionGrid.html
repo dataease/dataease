@@ -1,0 +1,12 @@
+<div class="esriRFxConversionGrid esriRFxMatrix">
+  <div class="conversion-grid-label">
+    <label data-dojo-attach-point="gridLabel"></label>
+    <label class="conversion-grid-size-container">
+      <label class="conversion-grid-size-label">${_i18n.rfxConversionGrid.size}</label>
+      <input class="conversion-grid-size-selector" data-dojo-type="dijit/form/NumberSpinner" value="3" data-dojo-props="smallDelta:1, constraints:{min:1,max:100,places:0}"
+        data-dojo-attach-point="gridSize" data-dojo-attach-event="onChange: _onSizeValueChange" />
+    </label>
+  </div>
+
+  <div class="conversion-grid-container" data-dojo-attach-point="gridDiv"></div>
+</div>

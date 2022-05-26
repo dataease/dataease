@@ -1,0 +1,68 @@
+Rule	RussAQ	1981	1984	-	Apr	 1	 0:00	1:00	S
+Rule	RussAQ	1981	1983	-	Oct	 1	 0:00	0	-
+Rule	RussAQ	1984	1991	-	Sep	lastSun	 2:00s	0	-
+Rule	RussAQ	1985	1991	-	Mar	lastSun	 2:00s	1:00	S
+Rule	RussAQ	1992	only	-	Mar	lastSat	 23:00	1:00	S
+Rule	RussAQ	1992	only	-	Sep	lastSat	 23:00	0	-
+Rule	RussAQ	1993	max	-	Mar	lastSun	 2:00s	1:00	S
+Rule	RussAQ	1993	1995	-	Sep	lastSun	 2:00s	0	-
+Rule	RussAQ	1996	max	-	Oct	lastSun	 2:00s	0	-
+Rule	ArgAQ	1964	1966	-	Mar	 1	0:00	0	-
+Rule	ArgAQ	1964	1966	-	Oct	15	0:00	1:00	S
+Rule	ArgAQ	1967	only	-	Apr	 2	0:00	0	-
+Rule	ArgAQ	1967	1968	-	Oct	Sun>=1	0:00	1:00	S
+Rule	ArgAQ	1968	1969	-	Apr	Sun>=1	0:00	0	-
+Rule	ArgAQ	1974	only	-	Jan	23	0:00	1:00	S
+Rule	ArgAQ	1974	only	-	May	 1	0:00	0	-
+Rule	ChileAQ	1972	1986	-	Mar	Sun>=9	3:00u	0	-
+Rule	ChileAQ	1974	1987	-	Oct	Sun>=9	4:00u	1:00	S
+Rule	ChileAQ	1987	only	-	Apr	12	3:00u	0	-
+Rule	ChileAQ	1988	1989	-	Mar	Sun>=9	3:00u	0	-
+Rule	ChileAQ	1988	only	-	Oct	Sun>=1	4:00u	1:00	S
+Rule	ChileAQ	1989	only	-	Oct	Sun>=9	4:00u	1:00	S
+Rule	ChileAQ	1990	only	-	Mar	18	3:00u	0	-
+Rule	ChileAQ	1990	only	-	Sep	16	4:00u	1:00	S
+Rule	ChileAQ	1991	1996	-	Mar	Sun>=9	3:00u	0	-
+Rule	ChileAQ	1991	1997	-	Oct	Sun>=9	4:00u	1:00	S
+Rule	ChileAQ	1997	only	-	Mar	30	3:00u	0	-
+Rule	ChileAQ	1998	only	-	Mar	Sun>=9	3:00u	0	-
+Rule	ChileAQ	1998	only	-	Sep	27	4:00u	1:00	S
+Rule	ChileAQ	1999	only	-	Apr	 4	3:00u	0	-
+Rule	ChileAQ	1999	max	-	Oct	Sun>=9	4:00u	1:00	S
+Rule	ChileAQ	2000	max	-	Mar	Sun>=9	3:00u	0	-
+Zone Antarctica/Casey	0	-	zzz	1969
+			8:00	-	WST	# Western (Aus) Standard Time
+Zone Antarctica/Davis	0	-	zzz	1957 Jan 13
+			7:00	-	DAVT	1964 Nov # Davis Time
+			0	-	zzz	1969 Feb
+			7:00	-	DAVT
+Zone Antarctica/Mawson	0	-	zzz	1954 Feb 13
+			6:00	-	MAWT	# Mawson Time
+Zone Indian/Kerguelen	0	-	zzz	1950	# Port-aux-Francais
+			5:00	-	TFT	# ISO code TF Time
+Zone Antarctica/DumontDUrville 0 -	zzz	1947
+			10:00	-	PMT	1952 Jan 14 # Port-Martin Time
+			0	-	zzz	1956 Nov
+			10:00	-	DDUT	# Dumont-d'Urville Time
+Zone Antarctica/Syowa	0	-	zzz	1957 Jan 29
+			3:00	-	SYOT	# Syowa Time
+Rule	NZAQ	1974	only	-	Nov	 3	2:00s	1:00	D
+Rule	NZAQ	1975	1988	-	Oct	lastSun	2:00s	1:00	D
+Rule	NZAQ	1989	only	-	Oct	 8	2:00s	1:00	D
+Rule	NZAQ	1990	2006	-	Oct	Sun>=1	2:00s	1:00	D
+Rule	NZAQ	1975	only	-	Feb	23	2:00s	0	S
+Rule	NZAQ	1976	1989	-	Mar	Sun>=1	2:00s	0	S
+Rule	NZAQ	1990	2007	-	Mar	Sun>=15	2:00s	0	S
+Rule	NZAQ	2007	max	-	Sep	lastSun	2:00s	1:00	D
+Rule	NZAQ	2008	max	-	Apr	Sun>=1	2:00s	0	S
+Zone Antarctica/Vostok	0	-	zzz	1957 Dec 16
+			6:00	-	VOST	# Vostok time
+Zone Antarctica/Rothera	0	-	zzz	1976 Dec  1
+			-3:00	-	ROTT	# Rothera time
+Zone Antarctica/Palmer	0	-	zzz	1965
+			-4:00	ArgAQ	AR%sT	1969 Oct 5
+			-3:00	ArgAQ	AR%sT	1982 May
+			-4:00	ChileAQ	CL%sT
+Zone Antarctica/McMurdo	0	-	zzz	1956
+			12:00	NZAQ	NZ%sT
+Link	Antarctica/McMurdo	Antarctica/South_Pole

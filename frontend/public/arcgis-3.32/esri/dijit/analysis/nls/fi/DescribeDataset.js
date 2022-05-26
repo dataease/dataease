@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/fi/DescribeDataset",{inputLayerLabel:"Valitse kuvailtava aineistoryhm\u00e4",describeDataLabel:"Saa k\u00e4sitys aineistostasi luomalla (valinnainen)",sampleLayer:"Mallikarttataso",extentLayer:"Laajuuskarttataso",noOfFeaturesLabel:"Sis\u00e4llytett\u00e4vien kohteiden m\u00e4\u00e4r\u00e4",outputLayerName:"Tulostason nimi",resultName:"Kuvaile karttatason ${layerName} aineistoa",itemDescription:"Kohdekarttataso, joka on luotu suorittamalla Kuvaile karttatason ${layerName} aineistoryhm\u00e4\u00e4 -toiminto. ",
+itemTags:"Analyysin tulos, Kuvaile aineistoryhm\u00e4\u00e4, ${layername}",itemSnippet:"Kuvaile aineistoryhm\u00e4\u00e4 -toiminnon perusteella luotu kohdekarttataso."});

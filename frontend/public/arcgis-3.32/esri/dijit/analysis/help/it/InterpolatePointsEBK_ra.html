@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolazione punti</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Strumento Interpolazione punti"></h2>
+        <hr/>
+    <p>Questo strumento consente di prevedere i valori in corrispondenza di nuove posizioni sulla base delle misurazioni di una raccolta di punti. Lo strumento considera i dati relativi ai punti con valori in corrispondenza di ciascun punto e restituisce un raster di valori previsti.
+    </p>
+    <p>&Egrave; inoltre possibile utilizzare questo strumento nei seguenti casi:
+
+        <ul>
+            <li>un distretto per la gestione della qualit&agrave; dell'aria dispone di sensori per misurare i livelli di inquinamento. &Egrave; possibile utilizzare Interpolazione punti per prevedere i livelli di inquinamento nelle localit&agrave; in cui non sono presenti sensori, ad esempio localit&agrave; con popolazioni a rischio, come scuole oppure ospedali.
+                
+
+            </li>
+            <li>&Egrave; possibile prevedere le concentrazioni di metalli pesanti nei raccolti in base ai campioni prelevati da singole piante.
+                
+
+            </li>
+            <li>&Egrave; possibile prevedere i livelli di nutrienti (azoto, fosforo, potassio e cos&igrave; via) presenti nel suolo, oltre ad altri indicatori, come la conducibilit&agrave; elettrica, al fine di studiarne le relazioni con il raccolto e prescrivere le esatte quantit&agrave; di fertilizzanti in ogni punto del campo.
+                
+
+            </li>
+            <li>Le applicazioni meteorologiche includono la previsione delle temperature, delle precipitazioni e di variabili associate, come le piogge acide.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Scegli il layer punto contenente posizioni con valori noti</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer di punti che contiene i punti in cui i valori sono stati misurati.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Scegliere il campo per l\'interpolazione</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere il campo di cui si desidera interpolare i valori. Il campo deve essere numerico.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Ottimizza per</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere la preferenza tra velocit&agrave; e precisione.
+            </p>
+            <p>Previsioni pi&ugrave; accurate richiedono tempi di calcolo pi&ugrave; lunghi. Questo parametro altera i valori predefiniti di alcuni altri parametri di Interpolazione punti al fine di ottimizzare velocit&agrave; di calcolo, precisione dei risultati o di ottenere un equilibrio di entrambi. Per impostazione predefinita, lo strumento tenter&agrave; di ottenere un equilibrio.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Trasforma dati in distribuzione normale.</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere se trasformare i dati nella distribuzione normale.
+            </p>
+            <p>L'interpolazione &egrave; pi&ugrave; accurata per i dati che seguono una distribuzione normale (a forma di campana). Se i dati non sembrano essere distribuiti normalmente, si consiglia di eseguire una trasformazione.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Dimensione di modelli locali</h2></div>
+        <hr/>
+        <div>
+            <p>Interpolazione punti funziona costruendo modelli di interpolazione locale che vengono uniti per creare la mappa di predizione finale. Questo parametro controlla quanti punti saranno contenuti in ciascun modello locale. Valori pi&ugrave; piccoli produrranno risultati pi&ugrave; locali e possono mostrare effetti in scala ridotta, ma possono introdurre instabilit&agrave; nei calcoli. Valori pi&ugrave; grandi saranno pi&ugrave; stabili ma alcuni effetti locali potrebbero essere assenti.
+            </p>
+            <p>Il valore pu&ograve; variare da 30 a 500, ma i valori tipici sono compresi tra 50 e 200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Numero di vicini</h2></div>
+        <hr/>
+        <div>
+            <p>Le predizioni sono calcolate in base ai punti nelle vicinanze. Questo parametro controlla quanti punti saranno utilizzati nel calcolo. L'utilizzo di un gran numero di vicini generalmente produrr&agrave; risultati pi&ugrave; accurati, ma richiederanno pi&ugrave; tempo per il calcolo.
+            </p>
+            <p>Questo valore pu&ograve; variare da 1 a 64, ma i valori tipici sono compresi tra 5 e 15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Dimensione cella di output</h2></div>
+        <hr/>
+        <div>
+            <p>La dimensione della cella e l'unit&agrave; per i raster di output.
+            </p>
+            <p>Le unit&agrave; disponibili sono piedi, miglia, metri e chilometri.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Errore di predizione di output</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere se creare un raster di errori standard per i valori previsti.
+            </p>
+            <p>Gli errori standard sono utili perch&eacute; forniscono informazioni sull'affidabilit&agrave; dei valori previsti. Secondo la regola generale il valore reale &egrave; compreso tra due errori standard del valore previsto nel 95% del tempo. Ad esempio, si supponga che a una nuova localit&agrave; sia assegnato un valore previsto di 50 con un errore standard di 5. Questi valori indicano che lo strumento considerer&agrave; 50 come valore effettivo della posizione, ma che tale valore potrebbe scendere a 40 oppure salire a 60. Per calcolare questo intervallo di valori ipotizzabili, moltiplicare per due il valore dell'errore standard, quindi sommarlo o sottrarlo dal valore previsto in modo da ottenere rispettivamente il valore massimo o il valore minimo dell'intervallo.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome.
+            </p>
+            <p>&Egrave; possibile specificare il nome di una cartella in  <b>I miei contenuti</b> in cui salvare il risultato usando la casella a discesa <b>Salva risultato in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

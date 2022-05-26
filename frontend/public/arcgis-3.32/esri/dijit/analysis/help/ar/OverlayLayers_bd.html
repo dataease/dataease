@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>تراكب الطبقات</h2><p/>
+        <h2><img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" alt="تراكب الطبقات"></h2>
+        <hr/>
+    <p>تراكب الطبقات يدمج طبقتين أو أكثر داخل طبقة فردية واحدة. يمكن الاعتقاد أن التراكب كنظير لتكدس الخرائط وإنشاء خريطة فردية تتضمن جميع المعلومات الموجودة في التكدس. يكون التراكب أكبر من دمج الخطوط، يتم تسليم جميع البيانات الجدولية للمعالم الموجودة في التراكب في المنتج النهائي. يتم استخدام التراكب للإجابة على واحد من أكثر الأسئلة الأساسية المتعلقة بعلم الجغرافيا: &quot;ماذا يقع أعلى ماذا؟&quot; فيما يلي الأمثلة:
+        <ul>
+            <li>ما هي قطع الأرض الموجودة داخل السهل المعرض للانغمار بمياه الفيضان خلال 100 عام؟ (داخل طريقة أخرى بالأعلى).
+                  
+            </li>
+            <li>ما هو استخدام الأراضي أعلى نوع التربة؟
+                 
+            </li>
+            <li>ما هي الآبار الموجودة داخل القواعد العسكرية؟
+            </li>
+        </ul>
+        
+    </p>
+    <p>إذا تم التأشير على  <b>استخدام نطاق الخريطة الحالي</b> ، سيتم تراكب المعالم الموجودة في طبقات التراكب المرئية داخل نطاق الخريطة الحالي. إذا لم يتم التأشير عليها، سيتم تراكب جميع المعالم في كلا من طبقة الإدخال والتراكب، حتى إذا كانت خارج نطاق الخريطة الحالي.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>اختر طبقة الإدخال</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم تراكب النقطة، أو الخط، أو طبقة المنطقة.
+            </p>
+            <p class="OnlineOnly">بالإضافة إلى اختيار الطبقة من الخريطة، يمكنك تحديد  <b>اختيار طبقة تحليل أطلس الحي</b> أو <b>اختيار طبقة التحليل</b> الموجودة أسفل القائمة المنسدلة. يفتح المعرض الحالي الذي يحتوي على مجموعة من الطبقات المفيدة للعديد من عمليات التحليل. 
+            </p>
+        </div>
+    </div>
+    <div id="overlayLayer">
+        <div><h2>اختر طبقة التراكب</h2></div>
+        <hr/>
+        <div>
+            <p>الطبقة التي سيتم تراكبها على طبقة الإدخال.  
+            </p>
+            <p>بالإضافة إلى اختيار طبقة من الخريطة، يمكنك تحديد  <b>اختيار طبقة التحليل</b> أسفل القائمة المنسدلة لاستعراض محتوياتك لمجموعة بيانات مشاركة ملف البيانات الضخمة أو طبقة معالم.
+            </p>
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>اختر طريقة التراكب</h2></div>
+        <hr/>
+        <div>
+            <p>تقوم طريقة التراكب بتعريف كيفية دمج طبقة الإدخال وطبقة التراكب.  
+
+                <ul>
+                    <li> <b>التقاطع</b>&mdash;ستتضمن النتيجة هذه المعالم فقط أو أجزاء المعالم في طبقة التراكب التي تتراكب مع المعالم في طبقة التحليل. عند تقاطع خط أو معالم منطقة، يكون لديك الخيار لتحديد نوع المعالم التي ترغبها في صورة مخرجات.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>نقاط مع نقاط
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="نقاط ومدخلات النقاط">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="نقاط ونقاط مع مخرجات النقاط">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>خطوط مع خطوط 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="خطوط مع مدخلات الخطوط">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="خطوط وخطوط مع مخرجات الخط ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>مناطق مع مناطق
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="مناطق ومدخلات المناطق">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="مناطق ومناطق مع مخرجات المناطق">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>مسح</b>&mdash;ستتضمن النتيجة هذه المعالم فقط أو أجزاء المعالم في طبقة التراكب التي لا تتراكب مع المناطق في طبقة الإدخال.  يمكن أن تتضمن طبقة التراكب معالم النقاط أو الخطوط أو النقاط.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم إنشاء اسم الطبقة في  <b>المحتوى</b> وسيتم إضافته إلى الخريطة. ستكون بنفس نوع المعالم (المناطق أو الخطوط أو النقاط) على أنها الطبقات المدخلة وطبقات التراكب. يستند الاسم الافتراضي إلى طريقة التراكب واسم الطبقة المدخلة. إذا وُجدت الطبقة بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>عند استخدام مربع السهم المنسدل  <b>حفظ النتائج في</b> يمكن تحديد اسم المجلد في <b>المحتويات</b> حيث يتم حفظ النتائج.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

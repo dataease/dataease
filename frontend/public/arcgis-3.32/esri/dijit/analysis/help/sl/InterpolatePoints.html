@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolacija točk</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Interpolacija točk"></h2>
+        <hr/>
+    <p>   Orodje Interpolacija točk vam omogoča, da predvidite vrednosti na novih lokacijah glede na merjene vrednosti iz zbirke točk. Orodje vzame točkovne podatke z vrednostmi na vsaki točki in vrne območja, klasificirana po predvidenih vrednostih. Na primer
+        <ul>
+            <li>Okoli&scaron;, v katerem se upravlja s kakovostjo zraka, ima tipala, ki merijo ravni onesnaženja. Interpolacija točk je lahko uporabljena za napoved ravni onesnaženja na lokacijah, ki nimajo tipal, kot so lokacije z ogroženo populacijo &ndash; na primer vrtci in bolni&scaron;nice.
+            </li>
+            <li>Napovejte koncentracije težkih kovin v pridelkih na podlagi vzorcev, zbranih s posameznih rastlin.
+            </li>
+            <li>Predvidite ravni hranil v tleh (du&scaron;ik, fosfor, kalij, itd.), da preučite njihov vpliv na donosnost pridelka in predpi&scaron;ete natančne količine gnojila za vsako lokacijo na terenu. 
+            </li>
+            <li>Meteorolo&scaron;ke aplikacije vsebujejo napovedovanje temperatur, padavin in povezanih spremenljivk (npr. kisel dež). 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi točkovni sloj, ki vsebuje lokacije z znanimi vrednostmi</h2></div>
+        <hr/>
+        <div>
+            <p>Točkovni sloj, ki se bo uporabil kot podlaga za interpolacijo.  
+
+            </p>
+            <p>Poleg izbire sloja s karte lahko izberete  <b>Izberi sloj za analizo</b> ki se nahaja v spodnjem delu spustnega menija. Ta možnost odpre galerijo, kjer lahko brskate in izberete sklope podatkov iz različnih virov za uporabo v svoji analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Izberi polje za interpolacijo</h2></div>
+        <hr/>
+        <div>
+            <p>Izberite polje, ki vsebuje vrednosti, ki jih želite interpolirati.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Optimiraj za</h2></div>
+        <hr/>
+        <div>
+            <p>Izberite svoje nastavitve za hitrost glede na natančnost. Za izračun natančnej&scaron;ih napovedi je potrebno več časa.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Rezultat napak napovedi</h2></div>
+        <hr/>
+        <div>
+            <p> Če jih obkljukate, bo ustvarjen sloj standardnih napak za napovedi z interpolacijo. Ime izhodnega sloja bo ime sloja z rezultati z dodanimi &raquo;Napakami&laquo;.
+            </p>
+            <p>Standardne napake so uporabne, ker navajajo informacije o zanesljivosti napovedanih vrednosti. Enostavno pravilo se glasi, da se bo prava vrednost nahajala med dvema standardnima napakama napovedane vrednosti 95 % časa. Na primer, predpostavite, da ima nova lokacija napovedano vrednost 50 s standardno napako 5. To pomeni, da bo orodje ocenilo, da je prava vrednost na tej lokaciji 50, vendar bi lahko bila vrednost tudi med 40 in 60. Za izračun tega razpona primernih vrednosti pomnožite standardno napako z 2, to vrednost dodajte napovedani vrednosti, da dobite zgornjo mejo razpona, in jo odvzemite od napovedane vrednosti, da dobite spodnjo mejo razpona.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Klasificiraj po</h2></div>
+        <hr/>
+        <div>
+            <p>Izberite, kako bodo napovedane vrednosti klasificirane v območja.
+                <ul>
+                    <li>Geometrični interval &ndash; območja temeljijo na intervalih razreda, ki imajo geometrične nize. Ta metoda zagotavlja, da ima vsak razpon razreda približno enako &scaron;tevilo vrednosti v vsakem razredu in da je sprememba med intervali dosledna.
+                    </li>
+                    <li>Enak interval &ndash; območja so ustvarjena, tako da je razpon predvidenih vrednosti enak za vsako območje.
+                    </li>
+                    <li>Enake povr&scaron;ine &ndash; območja so ustvarjena, tako da je &scaron;tevilo vrednosti podatkov v vsakem območju enako. Na primer, če imajo podatki več velikih kot majhnih vrednosti, bo več območij ustvarjenih za velike vrednosti.
+                    </li>
+                    <li>Ročno &ndash; ta možnost vam omogoča, da določite svoj razpon vrednosti območij. Te vrednosti bodo vnesene v spodnji parameter  <b>Mejne vrednosti razredov</b>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Število razredov</h2></div>
+        <hr/>
+        <div>
+            <p>Navede &scaron;tevilo razredov (razpon napovedanih vrednosti) v sloju z rezultati. Vsak razred določa mejo območij. Vrednosti teh razredov bo določil zgornji parameter 
+ <b>Klasificiraj po</b>.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Mejne vrednosti razredov</h2></div>
+        <hr/>
+        <div>
+            <p>Vnesite želene mejne vrednosti razredov in jih ločite s presledkom. Na primer, če želite mejne vrednosti razredov pri vrednostih 1,5, 3 in 7, vnesite  <code>1,5 3 7</code>. Te vrednosti bodo določile zgornjo mejo vsakega razreda, tako da bo &scaron;tevilo razredov enako &scaron;tevilu vnesenih vrednosti. Območja ne bodo ustvarjena za nobeno lokacijo s predvidenimi vrednostmi nad največjo vneseno mejno vrednostjo. Vnesti morate vsaj dve vrednosti in ne več kot 32.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Izsekaj izhodni sloj na</h2></div>
+        <hr/>
+        <div>
+            <p>Bodisi nari&scaron;ite bodisi zagotovite sloj, ki določa območje, kjer želite, da bodo izrisani rezultati. Na primer, če interpolirate meritve onesnaženosti jezera, lahko uporabite mejo jezera za ta parameter in rezultat se bo izrisal samo znotraj meje jezera.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Napovej na tej lokaciji</h2></div>
+        <hr/>
+        <div>
+            <p>Bodisi nari&scaron;ite bodisi navedite sloj, ki določa točkovne lokacije, za izračun napovedanih vrednosti. To vam omogoča napovedovanje na določenih lokacijah, ki vas zanimajo. Na primer, če vhodni sloj predstavlja meritve ravni onesnaženja, lahko ta parameter uporabite za napovedovanje ravni onesnaženja lokacij z visokim tveganjem za rizično populacijo, kot so &scaron;ole in bolni&scaron;nice.Nato lahko te informacije uporabite za dajanje priporočil zdravstvenim delavcem na teh lokacijah.
+            </p>
+            <p>Če je na voljo, bo to orodje izdelalo izhodni točkovni sloj napovedi na določenih lokacijah. Ime izhodnega sloja bo ime sloja z rezultati z dodatkom &raquo;Točke&laquo;.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>To je ime sloja, ki bo ustvarjen v  <b>Moji vsebini</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če ime sloja že obstaja, boste morali vnesti drugo ime.
+            </p>
+            <p>S pomočjo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

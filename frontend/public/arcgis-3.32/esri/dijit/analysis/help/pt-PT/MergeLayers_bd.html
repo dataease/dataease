@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Juntar Camadas</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Fundir Camadas"></h2>
+        <hr/>
+    <p>Esta ferramenta combina duas camadas de elementos para criar uma &uacute;nica camada de sa&iacute;da.    As camadas a serem fundidas t&ecirc;m de ter o mesmo tipo de geometria e de tempo.  &Eacute; poss&iacute;vel controlar como os campos das camadas de entrada v&atilde;o ser unidos e copiados. Por exemplo:
+        <ul>
+            <li>Eu tenho tr&ecirc;s camadas para a Inglaterra, Gales e Esc&oacute;cia, e eu quero uma &uacute;nica camada da Gr&atilde;-Bretanha. 
+            </li>
+            <li>Eu tenho 2 camadas e cada uma cont&eacute;m informa&ccedil;&otilde;es parcelares de munic&iacute;pios cont&iacute;guos.  Quero junt&aacute;-las numa &uacute;nica camada, mantendo apenas os campos que t&ecirc;m o mesmo nome e tipo nas 2 camadas de entrada.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolher camada</h2></div>
+        <hr/>
+        <div>
+            <p>A camada com elementos tabulares, de ponto, de linha ou de &aacute;rea &agrave; qual a segunda camada de elementos se vai fundir. Todos os campos desta camada ser&atilde;o inclu&iacute;dos na camada resultante.
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>Escolher camada a fundir</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de elementos a fundir com a camada de entrada. A camada a fundir tem que possuir o mesmo tipo de geometria e de tempo que a camada de entrada.
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>Modificar os campos fundidos</h2></div>
+        <hr/>
+        <div>
+            <p>Por predefini&ccedil;&atilde;o, todos os campos de ambas as camadas de entrada ser&atilde;o inclu&iacute;dos no resultado.  &Eacute; poss&iacute;vel alterar o modo como os campos da camada a fundir ser&atilde;o inclu&iacute;dos na sa&iacute;da mediante as seguintes op&ccedil;&otilde;es:
+                <ul>
+                    <li> <b>Renomear</b>&mdash;O campo ser&aacute; renomeado no resultado.
+                    </li>
+                    <li> <b>Remover</b>&mdash;O campo ser&aacute; removido da sa&iacute;da.
+                    </li>
+                    <li> <b>Correspond&ecirc;ncia</b>&mdash;Os nomes de campo s&atilde;o feitos equivalentes.  Os valores dos campos da camada fundida ser&atilde;o copiados para oos campos do resultados final.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Caso ambas as camadas contenham um campo com um nome e tipo de dados id&ecirc;nticos, o conte&uacute;do de ambos os campo ser&aacute; unido num campo com esse nome. Isto n&atilde;o se aplica a campos em que  <b>Corresponder</b> &eacute; utilizado no par&acirc;metro <b>Modificar campos de jun&ccedil;&atilde;o</b> .
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se estiver a escrever para ArcGIS Data Store, os seus resultados ser&atilde;o gravados em  <b>O Meu Conte&uacute;do</b> e adicionados ao mapa. Se estiver a escrever para uma partilha de ficheiros big data, os seus resultados ser&atilde;o guardados numa partilha de ficheiros big data e adicionados ao seu manifesto. N&atilde;o ser&atilde;o adicionados ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Caso a camada j&aacute; existe, a ferramenta ir&aacute; falhar.
+            </p>
+            <p>Ao escrever para   ArcGIS Data Store  (armazenamento relacional ou espaciotemporal de dados big data) utilizando a caixa suspensa  <b>Guardar resultado em</b> pode especificar o nome de uma pasta em <b>O Meu Conte&uacute;do</b>, onde ser&aacute; armazenado o resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

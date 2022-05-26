@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Berika lager</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Berika lager"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget berikar dina data genom att h&auml;mta fakta om m&auml;nniskor, platser och f&ouml;retag som omger dina dataplatser, och det ger dig ocks&aring; m&ouml;jlighet att svara p&aring; nya fr&aring;gor om platser som inte kan besvaras med enbart kartans hj&auml;lp. Till exempel: Vilket slags m&auml;nniskor bor h&auml;r? Vad tycker m&auml;nniskor om att g&ouml;ra i det h&auml;r omr&aring;det? Vad har de f&ouml;r vanor och livsstilar? Vilka slags f&ouml;retag finns i omr&aring;det?
+    </p>
+    <p>Resultatet blir ett nytt lager som inneh&aring;ller all demografisk och geografisk information fr&aring;n de angivna datasamlingarna. Den nya informationen l&auml;ggs till som f&auml;lt i tabellen.
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> markeras, berikas endast de geoobjekt i indatalagret som visas i den aktuella kartutbredningen. Om alternativet inte markeras, berikas alla geoobjekt i indatalagret, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj lager som ska berikas med nya data.</h2></div>
+        <hr/>
+        <div>
+            <p>Punkt-, linje- eller omr&aring;deslagret som ska berikas med nya attributdata. 
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. Det alternativet &ouml;ppnar ett galleri d&auml;r du kan bl&auml;ddra till och v&auml;lja dataupps&auml;ttningar fr&aring;n diverse k&auml;llor som du kan anv&auml;nda i din analys. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Berikningsvariabler</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Klicka p&aring;  <b>V&auml;lj variabler</b> f&ouml;r att &ouml;ppna <b>Databl&auml;ddraren</b>. Med <b>Databl&auml;ddraren</b> kan du hitta och v&auml;lja berikningsvariabler, antingen enskilt eller i samlingar.
+            </p>
+            <p>En region v&auml;ljs automatiskt baserat p&aring; dina data. Du kan v&auml;lja en annan region om dina data t&auml;cker mer &auml;n ett land. 
+            </p>
+            <p>Berikningsvariablerna &auml;r ordnade i datasamlingar f&ouml;r att underl&auml;tta &aring;tkomsten. N&auml;r du v&auml;ljer en datasamling visar webbl&auml;saren n&aring;gra av de mest popul&auml;ra berikningsvariablerna i samlingen. Under  <b>Forts&auml;tt bl&auml;ddra</b> visas &auml;ven kategorierna inom samlingen. Inom varje kategori kan du v&auml;lja hela underkategorier, eller g&aring; mer p&aring; djupet i en underkategori och v&auml;lja individuella berikningsvariabler. Du kan &auml;ven anv&auml;nda s&ouml;krutan om du vill hitta en specifik variabel inom en kategori.
+            </p>
+            <p>N&auml;r du v&auml;ljer variabler som ska tas med i berikningen l&auml;ggs de till i kundvagnen i h&ouml;rnet av  <b>Databl&auml;ddraren</b>. Anv&auml;nd den h&auml;r kundvagnen om du vill h&aring;lla reda p&aring; hur m&aring;nga variabler som du har valt.
+            </p>
+            <p>Varje vald variabel l&auml;ggs till som ett f&auml;lt i resultatlagret.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Definiera områden att berika</h2></div>
+        <hr/>
+        <div>
+            <p>Definiera omr&aring;det runt dina indatapunkter eller linjer som ska berikas genom att anv&auml;nda ett avst&aring;nd med raka linjer eller valt f&auml;rdl&auml;ge. F&ouml;r ett avst&aring;nd som avser rakaste v&auml;gen (flygv&auml;gen) kan du ange ett v&auml;rde upp till 1&nbsp;609 kilometer (1&nbsp;000 engelska mil). F&auml;rdl&auml;gena g&aring;r endast att anv&auml;nda n&auml;r ditt indatalager inneh&aring;ller punkter. Vilka f&auml;rdl&auml;gen som &auml;r tillg&auml;ngliga avg&ouml;rs av organisationens administrat&ouml;r. N&auml;r du anv&auml;nder n&aring;got av f&auml;rdl&auml;gena g&ouml;rs m&auml;tningarna l&auml;ngs v&auml;gar eller g&aring;ngv&auml;gar med h&auml;nsyn till till&auml;mpliga regler, till exempel enkelriktade gator eller otill&aring;tna sv&auml;ngar. N&auml;r du har valt l&auml;ge och m&aring;tt anger du en varaktighet eller ett avst&aring;nd p&aring; upp till 5 timmar (300 minuter) eller 482,8 kilometer (300 engelska mil).
+            </p>
+            <p>Om  <b>Returnera resultat som begr&auml;nsningsomr&aring;den</b> &auml;r markerat kommer det resultat som returneras att vara omr&aring;desgeoobjekt som definieras av tids- eller avst&aring;ndsv&auml;rdena ovan. Om alternativet inte &auml;r markerat kommer resultaten som returneras att vara punktgeoobjekt.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagernamnet redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Opret buffere</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Opret buffere"></h2>
+        <hr/>
+    <p>En buffer er et omr&aring;de, der d&aelig;kker en given afstand fra et punkt, en linje eller et omr&aring;deobjekt. 
+    </p>
+    <p>Buffere benyttes typisk til at oprette omr&aring;der, der kan underkastes yderligere analyse ved hj&aelig;lp af et v&aelig;rkt&oslash;j, som f.eks. Overlay Layers. Hvis sp&oslash;rgsm&aring;let f.eks. lyder: &quot;Hvilke bygninger ligger inden for en kilometer fra skolen?&quot;, kan svaret findes ved at oprette en buffer p&aring; 1 km rundt om skolen og bruge v&aelig;rkt&oslash;jet Overlay Layers til at integrere bufferen med det lag, der indeholder aftryk af bygninger. Det endelige resultat er et lag med de bygninger, der ligger inden for 1 km fra skolen.  
+    </p>
+    <p>Hvis feltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, er det kun objekterne, der er synlige inden for den aktuelle kortudstr&aelig;kning, der medtages i bufferen. Hvis feltet ikke er markeret, medtages alle objekter i inputlaget i bufferen, ogs&aring; selvom de befinder sig uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg lag, der indeholder objekter, der skal placeres i bufferen</h2></div>
+        <hr/>
+        <div>
+            <p>Punkt-, linje eller omr&aring;deobjekter, der skal placeres i bufferen. 
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Indtast bufferstørrelse</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan indtaste en enkelt afstandsv&aelig;rdi eller flere -v&aelig;rdier ved at adskille hver v&aelig;rdi med et mellemrum. Du kan ogs&aring; angive en attribut for det inputlag, der indeholder afstandsv&aelig;rdien, ved at klikk ep&aring;  <b>Felt</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>Indstillinger</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg, hvordan overlappende buffere skal h&aring;ndteres. For enhver buffer, der er placeret oven p&aring; en anden buffer, kan du bevare de omr&aring;der, de har til f&aelig;lles (Overlap), eller de kan kombineres (Opl&oslash;s). N&aring;r du bruger  <b>Opl&oslash;s</b>, opl&oslash;ses alle buffere og bliver til et enkelt multipart-objekt, og evt.  overlapning fjernes.
+            </p>  
+            <p> N&aring;r du bruger flere afstande, kan du v&aelig;lge, hvordan afstanden fra den sidste bufferafstand skal vises, f.eks. hvis afstandene er 10 og 14:
+                <ul>
+                    <li>Hvis du v&aelig;lger  <b>Ringe</b>, vil det resultere i buffere, der g&aring;r fra 0 til 10 og fra 10 til 14.
+                    </li>
+                    <li>Hvis du v&aelig;lger  <b>Plader</b>, vil det resultere i buffere, der g&aring;r fra 0 til 10 og fra 0 til 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>Indstillinger</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg, hvordan overlappende buffere skal h&aring;ndteres. For enhver buffer, der er placeret oven p&aring; en anden buffer, kan du bevare de omr&aring;der, de har til f&aelig;lles (Overlap), eller de kan kombineres (Opl&oslash;s). N&aring;r du bruger  <b>Opl&oslash;s</b>, opl&oslash;ses alle buffere og bliver til et enkelt multipart-objekt, og evt.  overlapning fjernes.
+            </p>
+            <p>N&aring;r du opretter en enkelt buffer omkring omr&aring;deobjekter (der angives &eacute;n afstand), kan du v&aelig;lge, om det objekt, der placeres i bufferen, skal medtages eller udelukkes i resultatbufferen.
+            </p>
+            <p>N&aring;r du bruger flere afstande, kan du v&aelig;lge, hvordan afstanden fra den sidste bufferafstand skal vises, f.eks. hvis afstandene er 10 og 14:
+                <ul>
+                    <li>Hvis du v&aelig;lger  <b>Ringe</b>, vil det resultere i buffere, der g&aring;r fra 0 til 10 og fra 10 til 14.
+                    </li>
+                    <li>Hvis du v&aelig;lger  <b>Plader</b>, vil det resultere i buffere, der g&aring;r fra 0 til 10 og fra 0 til 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>Indstillinger</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg, hvordan overlappende buffere skal h&aring;ndteres. For enhver buffer, der er placeret oven p&aring; en anden buffer, kan du bevare de omr&aring;der, de har til f&aelig;lles (Overlap), eller de kan kombineres (Opl&oslash;s). N&aring;r du bruger  <b>Opl&oslash;s</b>, opl&oslash;ses alle buffere og bliver til et enkelt multipart-objekt, og evt.  overlapning fjernes.
+            </p>
+            <p>N&aring;r du opretter en enkelt buffer omkring linjer (der angives &eacute;n afstand), kan du v&aelig;lge, hvilken side af linjen der skal placeres i bufferen. Du vil typisk v&aelig;lge begge sider. Venstre og h&oslash;jre bestemmes, som om du gik fra den f&oslash;rste x,y-koordinat for linjen (startkoordinaten) til den sidste x,y-koordinat for linjen (slutkoordinaten). Hvis du v&aelig;lger venstre og h&oslash;jre, betyder det ofte, at du ved, at linjeobjekterne blev oprettet og lagret i en bestemt retning (f.eks. mod eller med str&oslash;mmen i et flodsystem). Ved linjeslutningerne kan bufferen rundes (Rund) eller f&oslash;res lige over (Flad).
+            </p>
+            <p>N&aring;r du opretter flere buffere (mere end &eacute;n afstand), kan du v&aelig;lge, hvordan afstanden fra den sidste bufferafstand skal vises, f.eks. hvis afstandene er 10 og 14:
+                <ul>
+                    <li>Hvis du v&aelig;lger  <b>Ringe</b>, vil det resultere i buffere, der g&aring;r fra 0 til 10 og fra 10 til 14.
+                    </li>
+                    <li>Hvis du v&aelig;lger  <b>Plader</b>, vil det resultere i buffere, der g&aring;r fra 0 til 10 og fra 0 til 14.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>Indstillinger</h2></div>
+        <hr/>
+        <div>
+            <p>N&aring;r du har valgt et lag, der skal placeres i bufferen, kan du v&aelig;lge, hvordan overlappende buffere skal h&aring;ndteres. For enhver buffer, der er placeret oven p&aring; en anden buffer, kan du bevare de omr&aring;der, de har til f&aelig;lles (Overlap), eller de kan kombineres (Opl&oslash;s). N&aring;r du bruger  <b>Opl&oslash;s</b>, opl&oslash;ses alle buffere og bliver til et enkelt multipart-objekt, og evt.  overlapning fjernes. Desuden kan du angive, hvordan flere afstande skal vises.   For lag med linjeobjekter kan du v&aelig;lge, hvilken side af linjen der skal placeres i bufferen.  For lag med omr&aring;deobjekter kan du v&aelig;lge, om det objekt, der placeres i bufferen, skal medtages eller udelukkes i resultatbufferen.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

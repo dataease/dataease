@@ -1,0 +1,62 @@
+-------------------------------------------------------------------------------
+dojox.validate
+-------------------------------------------------------------------------------
+Version 0.02
+Release date: 07/12/2007
+-------------------------------------------------------------------------------
+Project state: experimental / beta
+-------------------------------------------------------------------------------
+Credits
+	port: Peter Higgins (dante)
+	contributions: Kun Xi (bookstack at gmail com), Jared Jurkiewicz
+-------------------------------------------------------------------------------
+Project description
+
+	Provides a set of validation functions to match
+	values against known constants for use in form
+	validation, such as email address, TLD, ipAddress,
+	country-specific phone numbers and SSN, among
+	others.. 
+
+	It is broken into many parts. dojox.validate._base
+	is required by most named modules in this project.
+	
+	ca.js provides Canadian specific functionality
+	
+	check.js provides an experimental form-management utility,
+		which will likely be deprecated in favor 
+
+	creditCard.js provides validation functions for most standard
+		credit card types. 
+		
+	isbn.js validates ISBN numbers
+	
+	regexp.js provides a strange place to put regular expressions
+		related to validation. It was formerly polluting namespaces
+		and created in `dojox.regexp`. This is now `dojox.validate.regexp`
+		to confine values to the dojox.validate project.
+		
+	us.js provides US-Specific validation. Zip, Social, etc.
+	
+	web.js provides url and email address validation, as well as a number
+		of web/network related validation functions. 
+
+	br.js provides Brazil specific validators for CNPJ and CPF numbers.
+		
+-------------------------------------------------------------------------------
+Dependencies:
+
+	Requires Base Dojo and dojo.regexp.
+
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+
+http://svn.dojotoolkit.org/src/dojox/trunk/validate.js
+http://svn.dojotoolkit.org/src/dojox/trunk/validate
+
+Install into the following directory structure:
+/dojox/validate/
+
+...which should be at the same level as your Dojo checkout.

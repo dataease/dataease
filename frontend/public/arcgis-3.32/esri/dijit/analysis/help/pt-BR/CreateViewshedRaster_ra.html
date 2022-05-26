@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Criar Panorama</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Ferramenta Criar Panorama"></h2>
+        <hr/>
+    <p>Esta ferramenta identifica as &aacute;reas que um observador pode ver, levando em conta a topografia de superf&iacute;cie. Os locais de ponto de entrada podem representar tanto observadores (como as pessoas na superf&iacute;cie ou vigias em uma torre de fogo) ou objetos observados (como turbinas e&oacute;licas, torres de &aacute;gua, ve&iacute;culos ou outras pessoas). Os resultados definem as &aacute;reas que podem ser vistas a partir das localiza&ccedil;&otilde;es do observador.
+    </p>
+    <p>Ambos os observadores e os objetos observados podem ter uma altura acima da superf&iacute;cie e estas alturas s&atilde;o utilizadas para determinar a visibilidade. Por exemplo, um panorama calculado para turbinas e&oacute;licas de 300 p&eacute;s e uma pessoa alta de 6 p&eacute;s normalmente ser&aacute; maior que um panorama calculado para turbinas de 200 p&eacute;s e uma pessoa alta de 5 p&eacute;s.
+    </p>
+    <p>A camada resultante registra o n&uacute;mero de vezes que cada posi&ccedil;&atilde;o de c&eacute;lula no raster da superf&iacute;cie de entrada pode ser visualizada pelos pontos de observa&ccedil;&atilde;o de entrada. As c&eacute;lulas n&atilde;o vis&iacute;veis recebem valores de NoData.
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente a &aacute;rea do raster e os pontos do observador que s&atilde;o vis&iacute;veis dentro da extens&atilde;o de mapa atual ser&atilde;o analisados. Se n&atilde;o selecionada, todos os pontos do observador na camada de entrada ser&atilde;o analisados, mesmo que estiverem fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Superfície de elevação</h2></div>
+        <hr/>
+        <div>
+            <p>A superf&iacute;cie de eleva&ccedil;&atilde;o para utilizar no c&aacute;lculo de panorama.
+            </p>
+            <p>Se a unidade vertical da superf&iacute;cie de entrada for diferente da unidade horizontal, como quando os valores de eleva&ccedil;&atilde;o s&atilde;o representados em p&eacute;s, mas o sistema de coordenadas est&aacute; em metros, a superf&iacute;cie dever&aacute; ter um sistema de coordenadas vertical definido. A raz&atilde;o para isto &eacute; que a ferramenta utiliza unidades verticais (Z) e horizontais (XY) para calcular um fator Z em an&aacute;lises do panorama. Sem um sistema de coordenadas verticais, e deste modo n&atilde;o tendo quaisquer informa&ccedil;&otilde;es da unidade Z dispon&iacute;veis, a ferramenta assumir&aacute; que a unidade Z &eacute; mesma que a unidade XY. O resultado disto &eacute; que um fator Z interno de 1.0 ser&aacute; utilizado para a an&aacute;lise, que pode fornecer resultados inesperados.
+            </p>
+            <p>A superf&iacute;cie de eleva&ccedil;&atilde;o pode ser um ponto flutuante ou inteiro.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Feições de ponto que representam locais do observador</h2></div>
+        <hr/>
+        <div>
+            <p>As fei&ccedil;&otilde;es de ponto que representam os locais do observador ao calcular os panoramas.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Otimizar para</h2></div>
+        <hr/>
+        <div>
+            <p>O m&eacute;todo de otimiza&ccedil;&atilde;o para utilizar no c&aacute;lculo de panoramas.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Este m&eacute;todo otimiza a velocidade de processamento, tratando de alguma precis&atilde;o no resultado para um maior desempenho. Este &eacute; o padr&atilde;o.
+
+                </li>
+                <li>Accuracy &mdash; 
+Este m&eacute;todo &eacute; otimizado para precis&atilde;o nos resultados, &agrave;s custas de um tempo de processamento mais longo.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Distância de visualização máxima</h2></div>
+        <hr/>
+        <div>
+            <p>Insira uma dist&acirc;ncia de corte onde ir&aacute; parar o c&aacute;lculo de &aacute;reas vis&iacute;veis. Al&eacute;m desta dist&acirc;ncia, se os pontos do obervador e outros objetos puderem ver uns aos outros, n&atilde;o ser&atilde;o determinados.
+            </p>
+            <p>Voc&ecirc; pode especificar um valor num&eacute;rico representando uma dist&acirc;ncia linear ou selecionar um campo num&eacute;rico a partir das fei&ccedil;&otilde;es do observador de entrada. Se um campo for fornecido, os valores contidos no campo devem estar na mesma unidade que a unidade xy da superf&iacute;cie de eleva&ccedil;&atilde;o de entrada.
+            </p>
+            <p>Note que grandes valores aumentar&atilde;o o tempo de c&aacute;lculo. A menos que especificada, uma dist&acirc;ncia m&aacute;xima padr&atilde;o ser&aacute; calculada baseada na resolu&ccedil;&atilde;o e extens&atilde;o da superf&iacute;cie de eleva&ccedil;&atilde;o de entrada.
+            </p>
+            <p>Este par&acirc;metro &eacute; &uacute;til para modelagem de determinados fen&ocirc;menos. Por exemplo, limitando a extens&atilde;o de visibilidade, voc&ecirc; pode modelar condi&ccedil;&otilde;es clim&aacute;ticas, como uma n&eacute;voa clara. Da mesma forma, restringir a extens&atilde;o visibilidade pode dar-lhe algum controle sobre a hora do dia atrav&eacute;s da aproxima&ccedil;&atilde;o do efeito de crep&uacute;sculo.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Distância de visualização máxima</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Distância de visualização mínima</h2></div>
+        <hr/>
+        <div>
+            <p>Insira uma dist&acirc;ncia onde ser&aacute; iniciado o c&aacute;lculo de &aacute;reas vis&iacute;veis. As c&eacute;lulas na superf&iacute;cie mais pr&oacute;ximas que esta dist&acirc;ncia n&atilde;o s&atilde;o vis&iacute;veis na sa&iacute;da, mas ainda podem bloquear a visibilidade das c&eacute;lulas entre a dist&acirc;ncia de visualiza&ccedil;&atilde;o m&iacute;nima e m&aacute;xima.
+            </p>
+            <p>Voc&ecirc; pode especificar um valor num&eacute;rico representando uma dist&acirc;ncia linear ou selecionar um campo num&eacute;rico a partir das fei&ccedil;&otilde;es do observador de entrada. Se um campo for fornecido, os valores contidos no campo devem estar na mesma unidade que a unidade xy da superf&iacute;cie de eleva&ccedil;&atilde;o de entrada.
+            </p>
+            <p>Este par&acirc;metro &eacute; &uacute;til para controlar a &aacute;rea de an&aacute;lise do panorama em uma dist&acirc;ncia espec&iacute;fica longe do observador. Por exemplo, se voc&ecirc; estiver avaliando a visibilidade do topo de edif&iacute;cio at&eacute; um parque distante, voc&ecirc; poder&aacute; configurar uma dist&acirc;ncia m&iacute;nima de visualiza&ccedil;&atilde;o para excluir as &aacute;reas pr&oacute;ximas daquelas que s&atilde;o de nenhum interesse e obter uma velocidade de processamento melhor.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Distância de visualização mínima</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>A distância é 3D</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique se os par&acirc;metros da dist&acirc;ncia de visualiza&ccedil;&atilde;o m&iacute;nima ou m&aacute;xima s&atilde;o medidos em um modo tridimensional ou em um modo bidimensional mais simples. Quando a op&ccedil;&atilde;o est&aacute; selecionada, as dist&acirc;ncias de visualiza&ccedil;&atilde;o s&atilde;o tratadas como uma dist&acirc;ncia 3D. Quando n&atilde;o selecionadas, elas s&atilde;o tratadas como dist&acirc;ncias 2D.
+            </p> 
+            <p>A dist&acirc;ncia 2D &eacute; a dist&acirc;ncia linear simples medida entre um observador e o destino utilizando suas localiza&ccedil;&otilde;es projetadas ao n&iacute;vel do mar. A dist&acirc;ncia 3D fornece um valor mais realista levando em considera&ccedil;&atilde;o suas alturas relativas.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Elevação dos locais do observador</h2></div>
+        <hr/>
+        <div>
+            <p>Insira a eleva&ccedil;&atilde;o dos seus locais de observador.
+            </p>
+            <p>Voc&ecirc; pode especificar um valor num&eacute;rico representando a eleva&ccedil;&atilde;o de todos os observadores ou como um campo que representa a eleva&ccedil;&atilde;o de cada observador. Se um campo for fornecido, o valor contido no campo deve estar na mesma unidade que a unidade Z da superf&iacute;cie de eleva&ccedil;&atilde;o de entrada.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Elevação dos locais do observador</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Altura dos observadores</h2></div>
+        <hr/>
+        <div>
+            <p>Insira a altura acima da superf&iacute;cie para seus locais de observador.
+            </p> 
+            <p>Voc&ecirc; pode especificar um valor num&eacute;rico para a altura ou um campo a partir das fei&ccedil;&otilde;es do observador de entrada. Se um campo for fornecido, o valor contido no campo deve estar na mesma unidade que a unidade z da superf&iacute;cie de eleva&ccedil;&atilde;o de entrada.
+            </p>
+            <p>O padr&atilde;o &eacute; 6 p&eacute;s. Se voc&ecirc; estiver olhando de um local elevado, como uma torre de observa&ccedil;&atilde;o ou um edif&iacute;cio alto, utilize esta altura. Durante o c&aacute;lculo de panorama, este valor &eacute; adicionado &agrave; eleva&ccedil;&atilde;o do observador se for especificado; caso contr&aacute;rio, &eacute; adicionado ao valor Z da superf&iacute;cie interpolada.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Altura dos observadores</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Altura do alvo</h2></div>
+        <hr/>
+        <div>
+            <p>Insira a altura das estruturas ou das pessoas na superf&iacute;cie utilizada para estabelecer a visibilidade.
+            </p>
+            <p>Voc&ecirc; pode especificar um valor num&eacute;rico para a altura ou um campo a partir das fei&ccedil;&otilde;es do observador de entrada. Se um campo for fornecido, o valor contido no campo deve estar na mesma unidade que a unidade z da superf&iacute;cie de eleva&ccedil;&atilde;o de entrada.
+            </p>
+            <p>O panorama resultante identifica estas &aacute;reas onde um ponto do observador pode visualizar estes objetos na superf&iacute;cie. O inverso tamb&eacute;m &eacute; verdadeiro; os objetos na superf&iacute;cie podem visualizar um ponto do observador. 
+            </p>
+            <p>A seguir est&atilde;o alguns exemplos de configura&ccedil;&otilde;es de altura do alvo:
+            </p>
+            <ul>
+                <li>Se os seus pontos de entrada representarem turbinas e&oacute;licas e voc&ecirc; deseja determinar onde as pessoas em p&eacute; na superf&iacute;cie podem visualizar as turbinas, insira a altura m&eacute;dia de uma pessoa (aproximadamente 6 p&eacute;s).
+                    
+
+                </li>
+                <li>Se os seus pontos de entrada representarem torres de vigia de inc&ecirc;ndios e voc&ecirc; deseja determinar quais torres de vigia podem visualizar uma plumagem de fuma&ccedil;a de 20 p&eacute;s de altura ou mais altas, insira 20 p&eacute;s para a altura de destino.
+                    
+
+                </li>
+                <li>Se os seus pontos de entrada representarem mirantes ao longo de algumas estradas ou trilhas e voc&ecirc; deseja determinar onde as turbinas e&oacute;licas que tem 400 p&eacute;s de altura ou mais podem ser visualizadas, digite 400 p&eacute;s para a altura.
+                    
+
+                </li>
+                <li>Se os seus pontos de entrada representarem mirantes e voc&ecirc; deseja determinar a quantidade de &aacute;rea na superf&iacute;cie que as pessoas em p&eacute; podem visualizar, insira zero para a altura de destino. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Altura dos observadores</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Altura de saída para ficar visível</h2></div>
+        <hr/>
+        <div>
+            <p>O nome de sa&iacute;da acima do resutado de n&iacute;vel da superf&iacute;cie (AGL). O resultado AGL &eacute; um raster, onde cada valor de c&eacute;lula &eacute; a altura m&iacute;nima que deve ser adicionada a uma c&eacute;lula de outra forma n&atilde;o vis&iacute;vel para torn&aacute;-la vis&iacute;vel por pelo menos um observador. As c&eacute;lulas que j&aacute; estavam vis&iacute;veis ser&atilde;o atribu&iacute;das neste raster de sa&iacute;da com valor de 0.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Voc&ecirc; pode especificar o nome de uma pasta em  <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo utilizando a caixa suspensa <b>Salvar resultados em</b> .
+            </p>
+        </div>
+    </div>
+</div>
+</html>

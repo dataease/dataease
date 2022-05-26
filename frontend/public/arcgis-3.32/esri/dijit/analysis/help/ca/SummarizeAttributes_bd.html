@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Resumir els atributs</h2><p/>
+        <h2><img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" alt="Diagrama de Resumir els atributs"></h2>
+        <hr/>
+    <p> Aquesta eina resumeix tots els valors coincidents d'un o diversos camps i en calcula les estad&iacute;stiques. L'estad&iacute;stica m&eacute;s b&agrave;sica &eacute;s el recompte d'entitats que s'han resumit juntes, per&ograve; tamb&eacute; podeu calcular estad&iacute;stiques m&eacute;s avan&ccedil;ades.
+    </p>
+    <p>Per exemple, suposeu que teniu entitats de punts d'ubicacions de botigues amb un camp que representa el par&agrave;metre  <i>DISTRICT_MANAGER_NAME</i>, i que voleu resumir les vendes de caf&egrave; per administrador. Podeu especificar el camp <i>DISTRICT_MANAGER_NAME</i> com el camp sobre el qual fer la dissoluci&oacute;, i es resumiran totes les files de dades que representen administradors individuals. Aix&ograve; significa que totes les ubicacions de botigues administrades per <pre>Manager1</pre> res resumiran en una fila, amb les estad&iacute;stiques de resum calculades. En aquesta inst&agrave;ncia, es calcularan les estad&iacute;stiques com ara el recompte del nombre de botigues i la suma de <i>TOTAL_SALES</i> de totes les botigues que administra <pre>Manager1</pre>, aix&iacute; com de qualsevol altre administrador que es mostri al camp <i>DISTRICT_MANAGER_NAME</i>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu l'entrada que es resumirà</h2></div>
+        <hr/>
+        <div>
+            <p>Capa que cont&eacute; els camps que es resumiran.  
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Trieu com es resumiran les dades</h2></div>
+        <hr/>
+        <div>
+            <p>Hi ha dues maneres de resumir les dades:
+                <ul>
+                    <li> <b>Totes les entitats a una de sola</b>: calcula les estad&iacute;stiques de totes les entitats.
+                    </li>
+                    <li> <b>Per camps</b>: agrupa les entitats per valors similars dels camps especificats.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Per exemple, suposem que teniu un dataset d'arbres que inclouen camps de  <i>treetype</i> amb els valors <code>Maple</code>, <code>Fir</code> i <code>Pine</code> i un camp <i>treeheight</i>, i que us interessa trobar la mitjana de <i>treeheight</i>. Si resumiu totes les entitats en una de sola, trobareu l'altura mitjana de tots els arbres, amb la qual cosa tindreu un valor mitj&agrave;. Si resumiu pel camp <i>treeheight</i>, acabareu amb una mitjana d'erables (Maple), una mitjana d'avets (Fir) i una mitjana de pins (Pine).
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Afegeix estadístiques (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p> Podeu calcular les estad&iacute;stiques sobre les entitats que s'han resumit. Als camps num&egrave;rics, podeu calcular el seg&uuml;ent:
+                <ul>
+                    <li>Recompte: calcula el nombre de valors no nuls. Es pot utilitzar a les cadenes o als camps num&egrave;rics. El recompte de [nul, 0, 2] &eacute;s 2.
+                    </li>
+                    <li>Suma: suma dels valors num&egrave;rics d'un camp. La suma de [nul, nul, 3] &eacute;s 3.
+                    </li>
+                    <li>Mitjana: mitjana dels valors num&egrave;rics. La mitjana de [0, 2, nul] &eacute;s 1.
+                    </li>
+                    <li>M&iacute;nim: valor m&iacute;nim d'un camp num&egrave;ric. El m&iacute;nim de [0, 2, nul] &eacute;s 0. 
+                    </li>
+                    <li>M&agrave;xim: valor m&agrave;xim d'un camp num&egrave;ric. El valor m&agrave;xim de [0, 2, nul] &eacute;s 2.
+                    </li>
+                    <li>Interval: interval d'un camp num&egrave;ric. Es calcula com els valors m&iacute;nims restats del m&agrave;xim. L'interval de [0, nul, 1] &eacute;s 1. L'interval de [nul, 4] &eacute;s 0.
+                    </li>
+                    <li>Vari&agrave;ncia: vari&agrave;ncia d'un camp num&egrave;ric en un recorregut. La vari&agrave;ncia de [1] &eacute;s nul. La vari&agrave;ncia de [nul, 1,0,1,1] &eacute;s 0,25.
+                    </li>
+                    <li>Desviaci&oacute; est&agrave;ndard: desviaci&oacute; est&agrave;ndard d'un camp num&egrave;ric. La desviaci&oacute; est&agrave;ndard de [1] &eacute;s nul. La desviaci&oacute; est&agrave;ndard de [nul, 1,0,1,1] &eacute;s 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Als camps num&egrave;rics, podeu calcular el seg&uuml;ent:
+                <ul>
+                    <li>Recompte: nombre de cadenes no nul&middot;les.
+                    </li>
+                    <li>Qualsevol: aquesta estad&iacute;stica &eacute;s una mostra aleat&ograve;ria del valor d'una cadena al camp especificat.
+                    </li>
+                </ul>
+                Totes les estad&iacute;stiques es calcularan sobre valors no nuls. La capa resultant contindr&agrave; un camp nou per a cada estad&iacute;stica calculada. Per afegir qualsevol nombre d'estad&iacute;stiques, podeu triar un atribut i una estad&iacute;stica. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Trieu un magatzem de dades</h2></div>
+        <hr/>
+        <div>
+            <p>Els resultats del GeoAnalytics s'emmagatzemen en un magatzem de dades i s'exposen com una capa d'entitats al  Portal for ArcGIS. En la majoria dels casos, conv&eacute; emmagatzemar els resultats en un magatzem de dades espaciotemporal, que &eacute;s l'opci&oacute; per defecte. En alguns casos, desar els resultats al magatzem de dades relacional &eacute;s una bona opci&oacute;. A continuaci&oacute; teniu alguns motius pels quals &eacute;s bona idea desar els resultats al magatzem de dades relacional: 
+                <ul>
+                    <li>Podeu utilitzar els resultats en la col&middot;laboraci&oacute; de portal a portal.
+                    </li>
+                    <li>Podeu habilitar les funcions de sincronitzaci&oacute; amb els vostres resultats.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la capa que es crear&agrave;.  Si esteu escrivint en un ArcGIS Data Store, els resultats es desaran a  <b>El meu contingut</b> i s'afegiran al mapa. Si esteu escrivint en un recurs compartit de fitxers de dades massives, els resultats s'emmagatzemaran en aquest recurs i s'afegiran al seu manifest. No s'afegiran al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, l'eina no funcionar&agrave;.
+            </p>
+            <p>Si escriviu a l' ArcGIS Data Store (magatzem de dades massives relacional o espaciotemporal) mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta a <b>El meu contingut</b>, on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

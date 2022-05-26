@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/utils/htmlToSvg/supportClasses/text/TextStyleBuilder",["../dom-style"],function(c){var h=/font-weight:normal;|font-style:normal;|text-align:.*?;|line-height:.*?;|word-wrap:.*?;|word-break:.*?;|overflow-wrap:.*?;|text-decoration:none.*?;/g;return{buildTextStyleString:function(a,d){var f=a.node;c.setComputedStyleCache(f,a.style.styleCache);var b="white-space:pre;",g=this._getTagStyles(f,a);for(e in g)b+=e+":"+g[e]+";";(g=c.get(f,"fontFamily").replace(/"/g,"'"))&&(b+=
+"font-family:"+g+";");a=a.style;a.fontSize&&(b+="font-size:"+a.fontSize+"px;");a.letterSpacing&&"normal"!==a.letterSpacing&&(b+="letter-spacing:"+a.letterSpacing);a.wordSpacing&&"normal"!==a.wordSpacing&&"0px"!==a.wordSpacing&&(b+="word-spacing:"+a.wordSpacing);c.clearCache(f);for(var e in d)b=b.replace(new RegExp("(^|;)"+e+":.*?(;|$)"),"$1"+e+":"+d[e]+"$2");return b=b.replace(h,"")},_getTagStyles:function(a,d){return{"font-weight":a.style.fontWeight||(d.isB?"bold":"")||c.get(a,"fontWeight"),"font-style":a.style.fontStyle||
+(d.isI?"italic":"")||c.get(a,"fontStyle"),"text-decoration":a.style.textDecoration||(d.isU?"underline":"")||c.get(a,"textDecoration")}}}});

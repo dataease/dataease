@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>创建缓冲区</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="创建缓冲区"></h2>
+        <hr/>
+    <p>缓冲区是一个以点、线或面要素为起点，并覆盖给定距离的区域。
+    </p>
+    <p>缓冲区通常用于创建一些可使用其他工具进行深入分析的区域。例如，假设问题是&ldquo;在学校 1 英里范围内存在哪些建筑物？&rdquo;，通过在学校周围创建一个 1 英里的缓冲区并将缓冲区与包含建筑物覆盖区的图层相叠加即可找到答案。最终结果是一个包含学校 1 英里范围内建筑物的图层。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>选择应用缓冲的图层</h2></div>
+        <hr/>
+        <div>
+            <p>待缓冲的点、线或面要素。输入图层必须在投影坐标系中，否则必须使用 <b>分析环境</b>将处理空间参考设置为投影坐标系。
+            </p>
+            <p>除了从地图中选择图层外，还可以在下拉列表的底部选择 <b>选择分析图层</b>，以浏览至大数据文件共享数据集或要素图层中的内容。
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>选择要应用的缓冲类型</h2></div>
+        <hr/>
+        <div>
+            <p>可通过三种方法指定输入要素的缓冲区大小： 
+                <ul>
+                    <li>指定将应用于所有要素的距离。
+                    </li>
+                    <li>指定包含距离值的输入图层上的字段。可以使用字符串字段或数值字段。如果未定义线性单位，将使用空间参考单位。如果正在使用地理坐标系，将假定无单位字段的单位为米。
+                    </li>
+                    <li>使用多个字段和数学运算符构建表达式。例如，要将名为  <i>wind_speed</i> 的字段值缓冲 10 倍，请添加表达式 <i>$feature[&quot;wind_speed&quot;] x 10</i>。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>选择缓冲方法</h2></div>
+        <hr/>
+        <div>
+            <p>可选择使用 <b>平面</b>方法或 <b>测地线</b>方法。 <b>平面</b>方法的处理速度可能更快，适用于对投影数据进行局部分析。 <b>测地线</b>方法适用于大片区域和任何地理坐标系。
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>选择融合方法的类型</h2></div>
+        <hr/>
+        <div>
+            <p>用于指定融合方法的选项。如果已选定融合方法，则可以选择创建多部件或单部件区域，且将能够根据提供的字段计算统计数据。
+                <ul>
+                    <li> <b>全部</b> - 将融合全部要素。如果允许使用多部件要素，则会将所有要素融合为单个要素。如果不允许使用多部件要素，将融合相邻或重叠的要素。
+                    </li>
+                    <li> <b>字段</b> - 将融合共享同一指定字段或指定字段组合的要素。如果允许使用多部件要素，则会将具有相同字段的所有要素融合为单个要素。如果不允许使用多部件，将融合具有相同字段的相邻或重叠的要素。
+                    </li>
+                    <li> <b>无</b> - 不会融合任何要素。这是默认设置。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>允许多部件要素</h2></div>
+        <hr/>
+        <div>
+            <p>用于指定结果是否将包含单部件或多部件要素的选项。
+
+            </p>
+            <p>
+                <ul>
+                    <li>选中 - 分析结果将包含多部件要素。
+                    </li>
+                    <li>未选中 - 分析结果将包含单部件要素，这是默认设置。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>添加统计数据（可选）</h2></div>
+        <hr/>
+        <div>
+            <p> 可以计算汇总的要素的统计数据。可计算数值字段的以下内容：
+                <ul>
+                    <li>计数 - 计算非空值的数目。此项可用于数值字段或字符串。[null, 0, 2] 的计数为 2。
+                    </li>
+                    <li>总和 - 字段内数值的总和。[null, null, 3] 的总和为 3。
+                    </li>
+                    <li>平均值 - 数值的平均值。[0, 2, null] 的平均值为 1。
+                    </li>
+                    <li>最小值 - 数值字段的最小值。[0, 2, null] 的最小值为 0。
+                    </li>
+                    <li>最大值 - 数值字段的最大值。[0, 2, null] 的最大值为 2。
+                    </li>
+                    <li>范围 - 数值字段的范围。其计算方法为最大值减去最小值。[0, null, 1] 的范围为 1。[null, 4] 的范围为 0。
+                    </li>
+                    <li>方差 - 轨迹中数值字段内数值的方差。[1] 的方差为空。[null, 1,0,1,1] 的方差为 0.25。
+                    </li>
+                    <li>标准差 - 数值字段的标准差。[1] 的标准差为空。[null, 1,0,1,1] 的标准差为 0.5。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>可计算字符串字段的以下内容：
+                <ul>
+                    <li>计数 - 非空字符串的数目。
+                    </li>
+                    <li>任意 - 该统计数据是指定字段中字符串值的随机样本。
+                    </li>
+                </ul>
+                所有统计数据均根据非空值计算而得。生成的图层将包含一个针对每个计算而得的统计数据的新字段。通过选择一个属性和统计数据可添加任意数量的统计数据。 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>选择要保存结果的 ArcGIS Data Store</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics 结果存储在数据存储中并显示为  Portal for ArcGIS 中的要素图层。大多数情况下，结果应存储在时空数据存储中（此为默认设置）。某些情况下，将结果存储在关系数据存储也是一个很好的选择。下列内容说明了您可能需要将结果存储在关系数据存储中的原因： 
+                <ul>
+                    <li>可在门户到门户协作中应用结果。
+                    </li>
+                    <li>可启用结果的同步功能。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果您希望您的 GeoAnalytics 结果增加并希望利用时空大数据存储功能处理大量数据，则您不应使用关系数据存储。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p> 要创建的图层的名称。如果您要写入 ArcGIS Data Store，则您的结果将保存在<b>我的内容</b>并添加到地图中。如果您要写入大数据文件共享，则您的结果将存储于大数据文件共享中，并添加到其清单。结果将不会添加到地图中。默认名称基于工具名称以及输入图层名称。如果该图层已存在，将无法使用该工具。
+            </p>
+            <p>如果写入  ArcGIS Data Store（关系或时空大数据存储），可以使用<b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

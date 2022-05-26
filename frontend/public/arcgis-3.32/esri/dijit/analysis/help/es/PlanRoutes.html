@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Planificar rutas</h2><p/>
+        <h2><img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="Planificar rutas"></h2>
+        <hr/>
+    <p>Planificar rutas determina la manera de dividir las tareas con eficiencia entre los integrantes de una plantilla m&oacute;vil.
+    </p>
+    <p>Debe proporcionar a la herramienta un conjunto de paradas y el n&uacute;mero de veh&iacute;culos disponibles para visitarlas. La herramienta asigna las paradas a los veh&iacute;culos y genera rutas en las que se muestra c&oacute;mo puede llegar cada veh&iacute;culo a las paradas asignadas en el menor tiempo posible.
+    </p>
+    <p>Con Planificar rutas, los trabajadores m&oacute;viles pueden llegar a m&aacute;s ubicaciones en menos tiempo, lo que aumenta la productividad y mejora el servicio al cliente.
+        <ul>
+            <li>Inspeccionar viviendas, restaurantes u obras de construcci&oacute;n
+                
+
+            </li>
+            <li>Proporcionar servicios de reparaci&oacute;n, instalaci&oacute;n o t&eacute;cnicos
+            </li>
+            <li>Entregar mercanc&iacute;as y paquetes peque&ntilde;os
+            </li>
+            <li>Realizar visitas de ventas
+            </li>
+            <li>Transportar personas desde sus hogares a un evento
+            </li>
+        </ul>
+        
+    </p>
+    <p>La salida de Planificar rutas incluye una capa de paradas codificadas por las rutas a las que est&aacute;n asignadas, una capa de rutas que muestra las rutas m&aacute;s cortas para visitar las paradas asignadas y, dependiendo de si hay alguna parada a la que no se ha podido llegar, una capa de paradas sin asignar. 
+    </p>
+    <p>Si  <b>Usar la extensi&oacute;n del mapa actual</b> se ha activado, solo se tendr&aacute;n en cuenta en el an&aacute;lisis las entidades que est&eacute;n visibles en la extensi&oacute;n de mapa actual.  
+Si no se ha activado, se tendr&aacute;n en cuenta todas las entidades de la capa de entrada, aunque est&eacute;n fuera de la extensi&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Elegir la capa de puntos que representa las paradas que se deben visitar</h2></div>
+        <hr/>
+        <div>
+            <p>Elige la capa de puntos que las rutas (o veh&iacute;culos) deben visitar.  Estos puntos se convierten en paradas asignadas o sin asignar en la salida. 
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+            <p>La herramienta admite un m&aacute;ximo de 2000 entidades de entrada. 
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Modos de viaje para rutas</h2></div>
+        <hr/>
+        <div>
+            <p>Elija su modo de viaje.  Las rutas resultantes seguir&aacute;n carreteras o caminos y respetar&aacute;n las reglas aplicables, como por ejemplo las v&iacute;as de sentido &uacute;nico y los giros prohibidos en coche o en cami&oacute;n.  Los modos de viaje disponibles vienen determinados por el administrador de su organizaci&oacute;n.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Las rutas empiezan en paradas</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique d&oacute;nde y cu&aacute;ndo inician las rutas los veh&iacute;culos.
+            </p>
+            <p>Con Planificar rutas, puede especificar una o varias ubicaciones iniciales para los veh&iacute;culos.
+            </p>
+            <p>Cuando se especifica una ubicaci&oacute;n de punto, todos los veh&iacute;culos parten de ese punto con independencia del n&uacute;mero de veh&iacute;culos disponibles. Puede elegir una capa de puntos con un punto o agregar un punto al mapa. Para ello, elija  <b>Agregar punto al mapa</b>, haga clic en el bot&oacute;n de edici&oacute;n del punto adyacente y haga clic en el mapa. 
+            </p>
+            <p>Cuando se especifican varias ubicaciones, cada veh&iacute;culo se tiene que asociar con su propio punto. El n&uacute;mero de veh&iacute;culos debe coincidir con el n&uacute;mero de puntos de la capa. Elija una capa con varios puntos y especifique un campo que identifique de forma &uacute;nica cada ruta, cada veh&iacute;culo o cada conductor en la lista desplegable  <b>Campo de Id. de ruta</b>.
+            </p>
+            <p>La hora de inicio es la misma para todas las rutas. La zona horaria de la hora de inicio coincide con la zona horaria en la que se encuentran el punto o los puntos iniciales. Aseg&uacute;rate de que la hora que especifiques sea local. Por ejemplo, imaginemos que est&aacute; en una ubicaci&oacute;n con la hora est&aacute;ndar del pac&iacute;fico o PST (UTC-8:00) y que los veh&iacute;culos cuyas rutas desea definir est&aacute;n estacionados en una zona con la hora est&aacute;ndar de las monta&ntilde;as o MST (UTC-7:00). Si son las 9:30 PST (10:30 MST) y sus veh&iacute;culos tienen que iniciar sus rutas en 30 minutos, debe definir la hora de inicio como 11:00. 
+            </p>
+            <p>Si sus veh&iacute;culos parten de diferentes zonas horarias, la hora de inicio no puede ser simult&aacute;nea, tendr&aacute; un desfase. Por ejemplo, si una ruta parte de un punto en la zona PST y otra se inicia en la zona MST, y especificas las 11:00 como hora de inicio, la ruta de la zona PST comenzar&aacute; a las 11:00 PST y la ruta MST comenzar&aacute; a las 11:00 MST, con una hora de diferencia.
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Las rutas terminan en paradas</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique d&oacute;nde terminan las rutas los veh&iacute;culos.
+            </p>
+            <p>Puede configurar las rutas de modo que terminen en una de tres posibles ubicaciones: 
+                <ul>
+                    <li>La misma ubicaci&oacute;n en la que empezaron, tanto si se originaron en una ubicaci&oacute;n como si partieron de varias
+                    </li>
+                    <li>Una sola ubicaci&oacute;n
+                    </li>
+                    <li>Muchas ubicaciones, es decir: un punto final para cada ruta
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Active  <b>Volver al inicio</b> si los veh&iacute;culos inician y terminan sus rutas en las mismas ubicaciones.
+            </p>
+            <p>Para llevar todos los veh&iacute;culos hasta un punto final com&uacute;n que no coincida con el punto inicial, desactive  <b>Volver al inicio</b> y agregue un punto al mapa o elija una capa que contenga exactamente un punto.
+            </p>
+            <p>Para que las rutas terminen en ubicaciones &uacute;nicas, desactive  <b>Volver al inicio</b> y elija una capa que contenga m&aacute;s de un punto. El n&uacute;mero de veh&iacute;culos debe coincidir con el n&uacute;mero de puntos de la capa elegida. En la lista desplegable <b>Campo de Id. de ruta</b>, elige un campo que identifique de forma &uacute;nica cada ruta, cada veh&iacute;culo o cada conductor. Si los veh&iacute;culos parten de varias ubicaciones y finalizan en varias ubicaciones, los Id. de ruta elegidos para las capas inicial y final deben coincidir.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Seleccionar capas de barrera</h2></div>
+        <hr/>
+        <div>
+            <p> Una o varias entidades que act&uacute;an como restricciones temporales (barreras) al viajar por las calles subyacentes. Puede especificar las barreras mediante entidades poligonales, de puntos o l&iacute;neas.
+            </p>
+            <p>Una barrera de punto puede modelar un &aacute;rbol ca&iacute;do, un accidente, una l&iacute;nea el&eacute;ctrica ca&iacute;da o cualquier cosa que bloquee completamente el tr&aacute;fico en una posici&oacute;n concreta a lo largo de la calle. Se permite el desplazamiento por la calle, pero no por la barrera. Puede especificar hasta 250 entidades para que act&uacute;en como barreras de punto.
+            </p>
+            <p>Una barrera de l&iacute;nea proh&iacute;be viajar a cualquier punto en que la barrera interseque las calles. Por ejemplo, un desfile o una protesta que bloquee el tr&aacute;fico por varios segmentos de calle se puede modelar con una barrera de l&iacute;nea. Si el n&uacute;mero de las entidades de calle intersecadas por todas las barreras de l&iacute;nea supera 500, la herramienta devuelve un error.
+            </p>
+            <p>Una barrera de pol&iacute;gono proh&iacute;be viajar a cualquier punto en que el pol&iacute;gono interseque las calles. Un uso de este tipo de barrera consiste en modelar inundaciones cubriendo &aacute;reas de la red de calles que hacen inviables los viajes por carretera. Si el n&uacute;mero de las entidades de calle intersecadas por todas las barreras de pol&iacute;gono supera 2.000, la herramienta devuelve un error.
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Número máximo de vehículos para definir rutas</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique el n&uacute;mero de veh&iacute;culos que est&aacute;n disponibles para visitar las paradas. La herramienta admite un m&aacute;ximo de  100 veh&iacute;culos. 
+            </p>
+            <p>La herramienta puede encontrar una soluci&oacute;n que utilice menos veh&iacute;culos de los especificados aqu&iacute; dependiendo del n&uacute;mero total de paradas, del n&uacute;mero de paradas permitido para cada veh&iacute;culo, de la distancia entre las paradas, del tiempo pasado en cada parada y de cualquier l&iacute;mite definido para el tiempo de ruta total por veh&iacute;culo.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Número máximo de paradas por vehículo</h2></div>
+        <hr/>
+        <div>
+            <p>Este es uno de los dos par&aacute;metros que equilibran la carga de trabajo total entre las rutas. Puede especificar un valor comprendido entre 1 y  200. 
+            </p>
+            <p>Si reduce el n&uacute;mero m&aacute;ximo de paradas que se pueden asignar a cada veh&iacute;culo, es m&aacute;s probable que el n&uacute;mero de paradas asignadas sea el mismo para cada uno de ellos. Esto ayuda a equilibrar la carga de trabajo entre los conductores. La desventaja, sin embargo, es que puede generar una soluci&oacute;n que sea menos eficiente.
+            </p>
+            <p>Si se incrementan las paradas por veh&iacute;culo, la herramienta tiene m&aacute;s libertad para encontrar soluciones m&aacute;s eficientes; sin embargo, la carga de trabajo podr&iacute;a distribuirse de un modo desigual entre los conductores y los veh&iacute;culos. Puede equilibrar las cargas de trabajo por tiempo y por n&uacute;mero de paradas especificando un valor para el par&aacute;metro  <b>Limitar el tiempo de ruta total por veh&iacute;culo</b>.
+            </p>
+            <p>Los siguientes ejemplos demuestran los efectos de limitar el n&uacute;mero m&aacute;ximo de paradas por veh&iacute;culo o el tiempo total por veh&iacute;culo. En todos los ejemplos hay seis paradas y dos rutas que parten de la misma ubicaci&oacute;n.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="../images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="Paradas y tiempos de recorrido equilibrados">
+                </td>
+                <td>
+                    <p>Paradas y tiempos de recorrido equilibrados por ruta:
+                    </p>
+                    <p>Las paradas se encuentran a distancias m&aacute;s o menos similares, de modo que definir el n&uacute;mero m&aacute;ximo de paradas por veh&iacute;culo para distribuir de una manera uniforme la carga de trabajo genera rutas que tienen aproximadamente la misma duraci&oacute;n.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Tiempos de ruta no equilibrados">
+                </td>
+                <td>
+                    <p>Paradas equilibradas por ruta, pero tiempos de recorrido no equilibrados:
+                    </p>
+                    <p>Cinco de las seis paradas est&aacute;n agrupadas cerca de la ubicaci&oacute;n inicial, pero una parada est&aacute; lejos y requiere un tiempo de recorrido mucho m&aacute;s largo para llegar hasta ella. Dividir las paradas de manera uniforme entre las dos rutas puede generar tiempos de recorrido desequilibrados.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="Tiempos de recorrido equilibrados">
+                </td>
+                <td>
+                    <p>Paradas no equilibradas por ruta, pero tiempos de recorrido equilibrados:
+                    </p>
+                    <p>Las paradas est&aacute;n en la misma ubicaci&oacute;n que en el gr&aacute;fico anterior, pero al aumentar el n&uacute;mero m&aacute;ximo de paradas por ruta y limitar el tiempo total de recorrido por veh&iacute;culo, los tiempos de recorrido est&aacute;n equilibrados.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Tiempo pasado en cada parada</h2></div>
+        <hr/>
+        <div>
+            <p>Define el tiempo de servicio medio esperado para cada parada. Por ejemplo, si ha programado un d&iacute;a de trabajo para los inspectores y el tiempo medio de inspecci&oacute;n es de 45 minutos, especifique  <code>45</code>.
+            </p>
+            <p>Se entiende que el tiempo de servicio es el mismo en todas las paradas.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Limitar el tiempo de ruta total por vehículo</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique el tiempo m&aacute;ximo que una ruta debe durar de principio a fin. Esto incluye el tiempo de recorrido esperado y los tiempos de servicio pasados en las paradas de la ruta. Si los conductores no deben sobrepasar un tiempo de trabajo en un d&iacute;a, por ejemplo ocho horas, puede especificar aqu&iacute; ese l&iacute;mite.
+            </p>
+            <p>Consulte la ayuda de  <b>N&uacute;mero m&aacute;ximo de paradas por veh&iacute;culo</b> para obtener informaci&oacute;n sobre la manera de equilibrar las cargas de trabajo.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>El nombre de la capa de entidades que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa. Si la capa de entidades ya existe, se le pedir&aacute; que indique otro nombre. La capa de entidades contendr&aacute; una capa para cada uno de los elementos siguientes: rutas, paradas asignadas y paradas sin asignar si alguna parada de entrada no se pudo asignar a ninguna ruta.
+            </p>
+            <p>Si selecciona  <b>Incluir capas de rutas</b>, cada ruta del resultado se guarda tambi&eacute;n como una capa de rutas. Las capas de rutas incluyen toda la informaci&oacute;n de una determinada ruta, por ejemplo, las paradas asignadas a la ruta y las indicaciones del viaje. Crear capas de rutas resulta &uacute;til si desea compartir rutas concretas con otros miembros de su organizaci&oacute;n o si desea modificar a&uacute;n m&aacute;s las rutas utilizando el bot&oacute;n <b>Indicaciones</b> del Visor de mapas. Las capas de rutas utilizan el nombre proporcionado para la capa de entidades como prefijo y se agrega el nombre de ruta generado como parte del an&aacute;lisis para crear un nombre &uacute;nico para cada capa de rutas.
+            </p>
+            <p>En el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute;n la capa de entidades y las capas de rutas, si se han creado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

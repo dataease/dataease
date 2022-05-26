@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Geocodificar ubicaciones de tabla</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Geocodificar ubicaciones de tabla"></h2>
+        <hr/>
+    <p>La geocodificaci&oacute;n convierte direcciones en coordenadas. Esta herramienta convierte direcciones de una tabla de recurso compartido de archivos de big data en una capa de entidades, con las coordenadas como columnas adicionales.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Elegir una tabla de entrada</h2></div>
+        <hr/>
+        <div>
+            <p>La tabla de entrada con las direcciones que se van a geocodificar. 
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Elegir un localizador</h2></div>
+        <hr/>
+        <div>
+            <p>Elija un servicio de localizador para geocodificar con respecto a &eacute;l. Si el servicio de localizador que desea usar no est&aacute; en el men&uacute; desplegable, contacte con su administrador para que el servicio de localizador se configure para la geocodificaci&oacute;n por lotes.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>País</h2></div>
+        <hr/>
+        <div>
+            <p>Si todas las direcciones son de un pa&iacute;s, seleccione ese pa&iacute;s para garantizar la mayor exactitud posible en los resultados. En caso contrario, deje este par&aacute;metro vac&iacute;o.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Seleccionar campos de datos</h2></div>
+        <hr/>
+        <div>
+            <p>El servicio de localizador espera ciertos campos en los datos, por ejemplo, direcci&oacute;n, ciudad, estado o c&oacute;digo postal. Asigne los campos de datos del archivo o la tabla de entrada a los campos que espera el localizador usando los cuadros desplegables. Cuantos m&aacute;s campos se asignen, m&aacute;s exactos ser&aacute;n los resultados. Si la tabla de entrada tiene todos los datos en una sola columna, seleccione  <b>Campo &uacute;nico</b> y elija un campo de datos en el men&uacute; desplegable. De lo contrario, seleccione <b>Varios campos</b> y asigne los campos de localizador correspondientes a las distintas columnas de campos de la tabla.
+            </p>
+        </div>
+    </div>
+    <div id="includeAttributes">
+        <div><h2>Para cada ubicación</h2></div>
+        <hr/>
+        <div>
+            <p>Incluir los campos adicionales devueltos por el servicio de ubicaci&oacute;n. Si esta opci&oacute;n est&aacute; activada, se devolver&aacute;n todos los campos creados por el localizador. Si est&aacute; desactivada, sus datos de entrada se devolver&aacute;n con las coordenadas geocodificadas. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre del resultado de salida</h2></div>
+        <hr/>
+        <div>
+            <p> El nombre de la capa que se crear&aacute;.  Si escribe en un ArcGIS Data Store, sus resultados se guardar&aacute;n en  <b>Mi contenido</b> y se agregar&aacute;n al mapa. Si escribe en un recurso compartido de archivos de big data, sus resultados se almacenar&aacute;n en el recurso compartido de archivos de big data y se agregar&aacute;n a su manifiesto. No se agregar&aacute;n al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, la herramienta fallar&aacute;.
+            </p>
+            <p>Cuando escriba en  ArcGIS Data Store (big data store espaciotemporal o relacional) con el cuadro desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

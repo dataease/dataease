@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>使用深度學習以分類像素</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="使用深度學習以分類像素"></h2>
+        <hr/>
+    <p>此工具可在輸入點陣上執行經過培訓的深度學習模型來產生分類的點陣，並將一個類別標籤指派給每一個有效的像素。
+    </p>
+    <p>如果勾選 <b>使用當前地圖範圍</b>，則僅對當前地圖範圍中可見的點陣區域進行分析。如果未勾選，則將分析整個點陣，包括超出目前地圖範圍的圖徵。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>選擇用來分類像素的圖片</h2></div>
+        <hr/>
+        <div>
+            <p>要分類的輸入圖片。
+            </p>
+            <p>它可為圖片服務 URL、點陣圖層或圖片服務圖層。
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>選擇用來分類像素的深度學習模型</h2></div>
+        <hr/>
+        <div>
+            <p>輸入深度學習套件 ( <code>.dlpk</code>) 項目。
+            </p>
+            <p>深度學習套件包含 Esri 模型定義 JSON 檔案 ( <code>.emd</code>)、深度學習二進位模型檔案，以及（選用）要使用的 Python 點陣函數。
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>指定深度學習模型引數</h2></div>
+        <hr/>
+        <div>
+            <p>函數引數是在輸入模型參考的 Python 點陣函數類別中定義。您可以在這裡列出供實驗和精細化的其他深度學習參數和引數，例如用於調整敏感度的信心閾值。
+            </p>
+            <p>工具會讀取點陣分析伺服器上的 Python 模組來填入引數的名稱。
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果已存在該名稱的圖層，系統將提示您提供其他名稱。
+            </p>
+            <p>您可以使用 <b>將結果儲存到</b>下拉式方塊，在 <b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

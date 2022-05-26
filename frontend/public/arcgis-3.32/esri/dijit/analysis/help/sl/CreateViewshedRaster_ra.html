@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Ustvari vidno polje</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Orodje Ustvari območje vidnosti"></h2>
+        <hr/>
+    <p>To orodje določa območja, ki jih lahko vidi opazovalec, pri čemer upo&scaron;teva povr&scaron;insko topografijo. Vhodne točkovne lokacije lahko predstavljajo bodisi opazovalce (kot so ljudje na tleh ali izvidniki v požarnih stolpih) ali opazovane objekte (kot so vetrne turbine, vodni stolpi, vozila ali drugi ljudje). Rezultati določajo območja, ki jih je mogoče videti z lokacij opazovalca.
+    </p>
+    <p>Tako opazovalci kot opazovani objekti so lahko dvignjeni nad tlemi, te vi&scaron;ine pa so uporabljene pri določanju vidnosti. Na primer, vidno polje, ki je izračunano za vetrne turbine, visoke 90 metrov, in človeka, ki stoji na tleh in je visok 1,80 metra, bo običajno večje kot vidno polje, izračunano za turbine, visoke 60 metrov, in človeka, visokega 1,50 metra.
+    </p>
+    <p>Sloj z rezultati beleži &scaron;tevilo, kolikokrat je posamezno lokacijo celice na vhodnem rastru povr&scaron;ine mogoče videti od vhodnih opazovalnih točk. Nevidne celice dobijo vrednosti brez podatkov.
+    </p>
+    <p>Če je obkljukano  <b>Uporabi trenutni obseg karte</b>, bodo analizirani samo rastrsko območje in opazovalne točke, vidne znotraj trenutnega obsega karte. Če je možnost odkljukana, bodo analizirane vse opazovane točke, tudi če so zunaj trenutnega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Površina višin</h2></div>
+        <hr/>
+        <div>
+            <p>Povr&scaron;ina vi&scaron;in, ki jo je mogoče uporabiti za izračun vidnega polja.
+            </p>
+            <p>Če se navpična enota vhodne povr&scaron;ine razlikuje od vodoravne enote, na primer, ko so vrednosti vi&scaron;ine prikazane v čevljih, koordinatni sistem pa v metrih, mora biti za povr&scaron;ino določen navpični koordinatni sistem. To je zato, ker orodje uporablja navpične (Z) in vodoravne (XY) enote za izračun z-faktorja za analizo vidnega polja. Brez navpičnega koordinatnega sistema informacije o enoti Z niso na voljo, orodje pa tako domneva, da je enota Z enaka enoti XY. Rezultat tega je, da bo za analizo uporabljen notranji faktor Z z vrednostjo 1,0, kar lahko da nepričakovane rezultate.
+            </p>
+            <p>Povr&scaron;ina vi&scaron;in je lahko celo &scaron;tevilo ali plavajoča vejica.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Točkovni geoobjekti, ki predstavljajo lokacije opazovalca</h2></div>
+        <hr/>
+        <div>
+            <p>Točkovni geoobjekti, ki predstavljajo lokacije opazovalca pri izračunu vidnega polja.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimiraj za</h2></div>
+        <hr/>
+        <div>
+            <p>Optimizacijska metoda, ki jo je mogoče uporabiti za izračun vidnega polja.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Ta metoda optimizira hitrost obdelave z zmanj&scaron;anjem natančnosti rezultata za doseganje večje učinkovitosti. To je privzeto.
+
+                </li>
+                <li>Accuracy &mdash; 
+Ta metoda je optimizirana za natančnost rezultatov na račun dalj&scaron;ega časa obdelave.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maksimalna razdalja gledanja</h2></div>
+        <hr/>
+        <div>
+            <p>Vnesite mejno vrednost razdalje, pri kateri se bo zaključil izračun vidnih območij. Zunaj te razdalje ne bo določeno, ali opazovalne točke vidijo druge objekte in obratno.
+            </p>
+            <p>Lahko navedete &scaron;tevilčno vrednost, ki predstavlja linearno razdaljo, ali izberete &scaron;tevilčno polje iz vhodnih geoobjektov opazovalca. Če je na voljo polje, morajo biti vrednosti, vsebovane v polju, v isti enoti kot enota xy na vhodni povr&scaron;ini vi&scaron;in.
+            </p>
+            <p>Upo&scaron;tevajte, da bodo velike vrednosti podalj&scaron;ale trajanje izračuna. Če ni drugače določeno, bo privzeta maksimalna razdalja izračunana glede na ločljivost in obseg vhodne povr&scaron;ine vi&scaron;in.
+            </p>
+            <p>Ta parameter je uporaben za modeliranje določenih pojavov. Na primer, z omejevanjem obsega vidnosti lahko modelirate vremenske razmere, kot je redka megla. Podobno lahko z omejevanjem obsega vidnosti pridobite nadzor nad obdobjem dneva s približnim določanjem zasenčenosti.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Maksimalna razdalja gledanja</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Minimalna razdalja gledanja</h2></div>
+        <hr/>
+        <div>
+            <p>Vnesite vrednost razdalje, pri kateri se bo začel izračun vidnih območij. Celice na povr&scaron;ini, ki so bližje tej razdalji, niso vidne v rezultatu, lahko pa &scaron;e vedno ovirajo vidnost celic med najmanj&scaron;o in največjo razdaljo razgleda.
+            </p>
+            <p>Lahko navedete &scaron;tevilčno vrednost, ki predstavlja linearno razdaljo, ali izberete &scaron;tevilčno polje iz vhodnih geoobjektov opazovalca. Če je na voljo polje, morajo biti vrednosti, vsebovane v polju, v isti enoti kot enota xy na vhodni povr&scaron;ini vi&scaron;in.
+            </p>
+            <p>Ta parameter je uporaben pri nadzoru območja analize vidnega polja na določeni razdalji od opazovalca. Če, na primer, ocenjujete vidnost od vrha zgradbe do oddaljenega parka, lahko nastavite najmanj&scaron;o razdaljo razgleda, da izključite območja v bližini, ki so nepomembna, in pridobite večjo hitrost obdelave.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Minimalna razdalja gledanja</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>Razdalja je 3D</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite, ali bo meritev parametrov najmanj&scaron;e in največje razdalje razgleda potekala na tridimenzionalen način ali na preprostej&scaron;i, dvodimenzionalen način. Ko je možnost obkljukana, se razdalje razgleda obravnavajo kot 3D-razdalje. Če je odkljukana, se obravnavajo kot 2D-razdalje.
+            </p> 
+            <p>2D-razdalja je preprosta linearna razdalja, izmerjena med opazovalcem in ciljem s pomočjo njihovih projiciranih lokacij na nivoju morske gladine. 3D-razdalja daje bolj realno vrednost z upo&scaron;tevanjem njihovih relativnih vi&scaron;in.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Višina lokacij opazovalca</h2></div>
+        <hr/>
+        <div>
+            <p>Vnesite vi&scaron;ino svojih lokacij opazovalcev.
+            </p>
+            <p>Navedete lahko &scaron;tevilsko vrednost, ki predstavlja vi&scaron;ino vseh opazovalcev, ali polje, ki predstavlja vi&scaron;ino vsakega opazovalca. Če je na voljo polje, mora biti vrednost, vsebovana v polju, v isti enoti kot enota Z na vhodni povr&scaron;ini vi&scaron;in.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Višina lokacij opazovalca</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Višina opazovalcev</h2></div>
+        <hr/>
+        <div>
+            <p>Vnesite vi&scaron;ino nad tlemi svojih lokacij opazovalca.
+            </p> 
+            <p>Lahko navedete &scaron;tevilčno vrednost za vi&scaron;ino ali polje iz vhodnih geoobjektov opazovalca. Če je na voljo polje, mora biti vrednost, vsebovana v polju, v isti enoti kot enota z na vhodni povr&scaron;ini vi&scaron;in.
+            </p>
+            <p>Privzeto je 6 čevljev. Če gledate s povi&scaron;ane lokacije, kot je opazovalni stolp ali visoka zgradba, namesto privzete uporabite to vi&scaron;ino. Med izračunom vidnega polja se ta vrednost dodaja vi&scaron;ini opazovalca, če je določena, sicer se doda na interpolirano povr&scaron;ino vrednosti z.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Višina opazovalcev</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Višina cilja</h2></div>
+        <hr/>
+        <div>
+            <p>Vnesite vi&scaron;ino struktur ali ljudi na tleh, uporabljeno za vzpostavitev vidnosti.
+            </p>
+            <p>Lahko navedete &scaron;tevilčno vrednost za vi&scaron;ino ali polje iz vhodnih geoobjektov opazovalca. Če je na voljo polje, mora biti vrednost, vsebovana v polju, v isti enoti kot enota z na vhodni povr&scaron;ini vi&scaron;in.
+            </p>
+            <p>Rezultat vidnega polja določa območja, od koder opazovalne točke vidijo te objekte na tleh. Velja tudi nasprotno; objekti na tleh lahko vidijo opazovalne točke. 
+            </p>
+            <p>V nadaljevanju je navedenih nekaj primerov nastavitev ciljne vi&scaron;ine:
+            </p>
+            <ul>
+                <li>Če va&scaron;e vhodne točke predstavljajo vetrne turbine in želite ugotoviti, od kod lahko ljudje, ki stojijo na tleh, vidijo turbine, vnesite povprečno vi&scaron;ino osebe (približno 1,8 metra).
+                    
+
+                </li>
+                <li>Če va&scaron;e vhodne točke predstavljajo požarne stolpe in želite ugotoviti, s katerih stolpov je mogoče videti dvigovanje dima 6 metrov visoko ali vi&scaron;je, vnesite 6 metrov za ciljno vi&scaron;ino.
+                    
+
+                </li>
+                <li>Če va&scaron;e vhodne točke predstavljajo razgledne točke ob nekaterih cestah ali poteh ter želite ugotoviti, s katerih mest je mogoče videti vetrne turbine, visoke 120 metrov ali več, za vi&scaron;ino vnesite 120 metrov.
+                    
+
+                </li>
+                <li>Če va&scaron;e vhodne točke predstavljajo razgledne točke in želite ugotoviti, kolik&scaron;no območje na tleh vidijo ljudje z mesta razglednih točk, vnesite ničlo za ciljno vi&scaron;ino. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Višina opazovalcev</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Potrebna izhodna višina za vidnost</h2></div>
+        <hr/>
+        <div>
+            <p>Ime izhodnega rezultata nad nivojem tal (AGL). Rezultat AGL je raster, kjer je vsaka vrednost celice minimalna vi&scaron;ina, ki jo je treba dodati v sicer nevidno celico, da bi postala vidna vsaj enemu opazovalcu. Celicam, ki so že vidne, bo v tem izhodnem rastru dodeljena 0.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>Ime sloja, ki bo ustvarjen v odseku  <b>Moja vsebina</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, bo od vas zahtevano, da vnesete drugo ime.
+            </p>
+            <p>Lahko navedete ime mape v  <b>Moji vsebini</b>, kjer bo rezultat shranjen s pomočjo spustnega menija <b>Shrani rezultat v</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

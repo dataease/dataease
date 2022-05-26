@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Klasifikacija i regresija zasnovana na šumi</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Dijagram radnog toka Klasifikacije i regresije zasnovane na &scaron;umi"></h2>
+        <hr/>
+    <p>Kreira modele i generi&scaron;e predviđanja kori&scaron;ćenjem adaptacije algoritma &scaron;ume nasumičnih stabala Lea Brimana, metodom ma&scaron;inskog učenja pod nadzorom. Predviđanja mogu da se izvr&scaron;e za obe kategorijske promenljive (klasifikacija) i neprekidne promenljive (regresija). Opisne promenljive su polja u atributnoj tabeli geoobjektima obuke. Alatka može da se pokrene da generi&scaron;e model radi procene performansi ili da generi&scaron;e model i predvidi rezultate drugog skupa podataka.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Tip analize</h2></div>
+        <hr/>
+        <div>
+            <p>Navodi režim rada alatke. Alatka može da se pokrene radi obučavanja modela da samo proceni performanse ili da obuči model i predvidi geoobjekte. Vrste predviđanja su sledeće:
+                <ul>
+                    <li> <b>Obuči model radi procene performansi modela</b> &ndash; model će biti obučen i uklopljen sa ulaznim podacima. Koristite ovu opciju da procenite tačnost svog modela pre generisanja predviđanja na novom skupu podataka. Izlaz ove opcije će biti servis geoobjekata va&scaron;ih uklopljenih podataka za obuku, dijagnostika modela i opciona tabela promenljive važnosti.
+                    </li>
+                    <li> <b>Obuči model i predvidi vrednosti</b> &ndash; generisaće se predviđanja ili klasifikacije za geoobjekte. Opisne promenljive moraju da se unesu i za geoobjekte obuke i za geoobjekte koje treba predvideti. Izlaz ove opcije će biti servis geoobjekata va&scaron;ih predviđenih vrednosti, dijagnostika modela i opciona tabela promenljive važnosti.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Obuči model radi procene performansi modela</h2></div>
+        <hr/>
+        <div>
+            <p>Koristite ovaj režim ako želite da uklopite model i ispitate uklapanje.
+            </p>
+            <p>Sa ovim izborom, model će biti obučen kori&scaron;ćenjem ulaznog sloja. Koristite ovu opciju da procenite tačnost svog modela pre generisanja predviđanja na novom skupu podataka. Ova opcija će dati dijagnostiku modela u prozoru za poruke i primeniti model na va&scaron;e podatke za obuku.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Obuči model i predvidi vrednosti</h2></div>
+        <hr/>
+        <div>
+            <p>Koristite ovaj režim ako želite da uklopite model i primenite model na skup podataka radi generisanja predviđanja.
+            </p>
+            <p>Generisaće se predviđanja ili klasifikacije za geoobjekte. Izlaz ove opcije će biti servis geoobjekata, dijagnostika modela i opciona tabela promenljive važnosti.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Odaberite sloj obuke</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj geoobjekta koji sadrži promenljivu za predviđanje i polja koja će se koristiti za generisanje predviđanja.
+            </p>
+            <p>Kao dodatak odabiru sloja iz mape, možete da odaberete  <b>Izaberi sloj za analizu</b> na dnu padajuće liste da biste potražili deljeni skup podataka za datoteke sa velikim podacima ili sloj geoobjekta u svojim sadržajima.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Odaberite sloj za predviđanje vrednosti</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj geoobjekta koji predstavlja lokacije na kojima će se napraviti predviđanja. Ovaj sloj geoobjekta mora da sadrži i sve opisne promenljive koje su date kao polja koja odgovaraju onima koja se koriste iz geoobjekata obuke.
+            </p>
+            <p>Kao dodatak odabiru sloja iz mape, možete da odaberete  <b>Izaberi sloj za analizu</b> na dnu padajuće liste da biste potražili deljeni skup podataka za datoteke sa velikim podacima ili sloj geoobjekta u svojim sadržajima.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Odaberite polje za predviđanje</h2></div>
+        <hr/>
+        <div>
+            <p>Polje iz geoobjekata obuke koje sadrži vrednosti koje treba koristiti za obuku modela. Ovo polje sadrži poznate vrednosti (za obuku) promenljive koje će se koristiti za predviđanje na nepoznatim lokacijama. Ako su vrednosti kategorijske (na primer Javor, Bor, Hrast), izaberite polje za potvrdu  <b>Kategorijske</b>.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Odaberite jednu ili više opisnih promenljivih</h2></div>
+        <hr/>
+        <div>
+            <p>Jedno ili vi&scaron;e polja koja predstavljaju opisne promenljive (polja) koje pomažu u predviđanju vrednosti ili kategorije promenljive koju treba predvideti.  Koristite kategorijsko polje za potvrdu za sve promenljive koje predstavljaju klase ili kategorije (kao &scaron;to je zemljin pokrivač ili prisustvo ili odsustvo). Označite promenljivu kao tačnu za sve koje predstavljaju klase ili kategorije kao &scaron;to je zemljin pokrivač ili prisustvo ili odsustvo, a kao netačnu ako je promenljiva neprekidna.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Broj stabala</h2></div>
+        <hr/>
+        <div>
+            <p>Broj stabala za kreiranje u modelu. Vi&scaron;e stabala će obično za rezultat imati tačnije predviđanje modela, ali će za izračunavanje modela biti potrebno vi&scaron;e vremena. Podrazumevani broj stabala je 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Minimalna veličina lista</h2></div>
+        <hr/>
+        <div>
+            <p>Minimalni broj opservacija koje su potrebne da se list zadrži (to je krajnji čvor na stablu bez daljih podela). Podrazumevani minimum za regresiju je 5, a podrazumevani za klasifikaciju je 1. Za veoma velike podatke, povećavanje ovih brojki će skratiti vreme rada alatke.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Maksimalna dubina stabla</h2></div>
+        <hr/>
+        <div>
+            <p>Maksimalan broj podela koje će biti izvr&scaron;ene niz stablo. Kori&scaron;ćenjem velike maksimalne dubine biće kreirano vi&scaron;e podela, &scaron;to može da poveća mogućnosti za prekomerno uklapanje modela. Podrazumevana je vođena podacima i zavisi od broja kreiranih stabala i broja uključenih promenljivih.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Dostupni podaci po stablu (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Navodi procenat geoobjekata u sloju obuke koji se koriste za svako stablo odluke. Podrazumevano je 100 procenata podataka. Uzorci za svako stablo se uzimaju nasumično iz dve trećine navedenih podataka.
+            </p>
+            <p>Svako stablo odluke u &scaron;umi je kreirano pomoću nasumičnog uzorka ili podskupa (približno dve trećine) dostupnih podataka za obuku. Kori&scaron;ćenje manjeg procenta ulaznih podataka za svako stablo odluke povećava brzinu alatke za veoma velike skupove podataka.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Broj nasumično uzorkovanih promenljivih</h2></div>
+        <hr/>
+        <div>
+            <p>Navodi broj opisnih promenljivih koje se koriste za kreiranje svakog stabla odluke.
+            </p>
+            <p>Svako od stabala odluke u &scaron;umi je kreirano pomoću nasumičnog podskupa navedenih opisnih promenljivih. Povećavanje broja promenljivih koje se koriste u svakom stablu odluke će povećati mogućnosti prekomernog uklapanja va&scaron;eg modela, naročito ako postoji jedna ili par uticajnih promenljivih. Uobičajena praksa je kori&scaron;ćenje kvadratnog korena od ukupnog broja opisnih promenljivih ako je promenljive za predviđanje numerička ili deljenjem ukupnog broja opisnih promenljivih sa 3 ako je promenljiva za predviđanje kategorijska.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Odaberite kako će se podudarati opisna polja</h2></div>
+        <hr/>
+        <div>
+            <p>Kako će se odgovarajuće promenljive u sloju za obuku podudarati sa promenljivima u sloju predviđanja. U tabelu će biti uključene samo promenljive koje se koriste za obuku.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Broj izvršavanja za proveru valjanosti</h2></div>
+        <hr/>
+        <div>
+            <p>Navodi procenat (između 0 i 50 procenata) geoobjekata u sloju obuke za rezervisanje u vidu skupa podataka testa za proveru valjanosti. Model će biti obučen bez ovog nasumičnog podskupa podataka, a vrednosti opservacije za te geoobjekte će biti upoređene sa predviđenom vredno&scaron;ću. Podrazumevano je 10 procenata.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Vraćeni rezultati će zavisiti od tipa analize. Ako obučavate radi procene uklapanja modela, rezultati će sadržati sloj podataka obuke koji je uklopljen sa modelom i informacije o rezultatu procene uklapanja modela. Ako obučavate i predviđate, rezultati će sadržati sloj podataka obuke koji je uklopljen sa modelom, sloj predviđenih rezultata i informacije o rezultatu procene uklapanja modela.
+            </p>
+            <p>Koristeći  <b>Sačuvaj rezultat u</b> padajućem polju, možete da navedete ime fascikle u <b>Mom sadržaju</b> u kojoj će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

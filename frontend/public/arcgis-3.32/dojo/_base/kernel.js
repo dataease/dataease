@@ -1,0 +1,12 @@
+/*
+	Copyright (c) 2004-2016, The JS Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+//>>built
+define("dojo/_base/kernel",["../global","../has","./config","require","module"],function(g,e,h,k,b){var d,f={},m={},a={config:h,global:g,dijit:f,dojox:m},f={dojo:["dojo",a],dijit:["dijit",f],dojox:["dojox",m]};b=k.map&&k.map[b.id.match(/[^\/]+/)[0]];for(d in b)f[d]?f[d][0]=b[d]:f[d]=[b[d],{}];for(d in f)b=f[d],b[1]._scopeName=b[0],h.noGlobals||(g[b[0]]=b[1]);a.scopeMap=f;a.baseUrl=a.config.baseUrl=k.baseUrl;a.isAsync=k.async;a.locale=h.locale;g="$Rev: d6e8ff38 $".match(/[0-9a-f]{7,}/);a.version={major:1,
+minor:14,patch:2,flag:"",revision:g?g[0]:NaN,toString:function(){var c=a.version;return c.major+"."+c.minor+"."+c.patch+c.flag+" ("+c.revision+")"}};e("csp-restrictions")||Function("d","d.eval \x3d function(){return d.global.eval ? d.global.eval(arguments[0]) : eval(arguments[0]);}")(a);a.exit=function(){};e("host-webworker");e.add("console-as-object",function(){return Function.prototype.bind&&console&&"object"===typeof console.log});"undefined"!=typeof console||(console={});b="assert count debug dir dirxml error group groupEnd info profile profileEnd time timeEnd trace warn log".split(" ");
+var l;for(g=0;l=b[g++];)console[l]?e("console-as-object")&&(console[l]=Function.prototype.bind.call(console[l],console)):function(){var c=l+"";console[c]="log"in console?function(){var a=Array.prototype.slice.call(arguments);a.unshift(c+":");console.log(a.join(" "))}:function(){};console[c]._fake=!0}();e.add("dojo-debug-messages",!!h.isDebug);a.deprecated=a.experimental=function(){};e("dojo-debug-messages")&&(a.deprecated=function(c,a,b){c="DEPRECATED: "+c;a&&(c+=" "+a);b&&(c+=" -- will be removed in version: "+
+b);console.warn(c)},a.experimental=function(a,b){a="EXPERIMENTAL: "+a+" -- APIs subject to change without notice.";b&&(a+=" "+b);console.warn(a)});if(h.modulePaths){a.deprecated("dojo.modulePaths","use paths configuration");e={};for(d in h.modulePaths)e[d.replace(/\./g,"/")]=h.modulePaths[d];k({paths:e})}a.moduleUrl=function(b,d){a.deprecated("dojo.moduleUrl()","use require.toUrl","2.0");var c=null;b&&(c=k.toUrl(b.replace(/\./g,"/")+(d?"/"+d:"")+"/*.*").replace(/\/\*\.\*/,"")+(d?"":"/"));return c};
+a._hasResource={};return a});

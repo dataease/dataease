@@ -1,0 +1,82 @@
+@import "variables.less";
+@import "../common/TabBar.less";
+@import "../common/domButtons/DomButtonWhiteCross.css";
+
+.mblTabBar {
+  color: @ios7-grey2;
+  font-weight: normal;
+}
+
+.mblTabBarSegmentedControl .mblTabBarButton {
+  border-top: solid 2px @ios7-base-color;
+  border-bottom: solid 2px @ios7-base-color;
+  border-left: solid 1px @ios7-base-color;
+  border-right: solid 1px @ios7-base-color;
+
+}
+
+.mblTabBarSegmentedControl .mblTabBarButton:first-child {
+  border-left: solid 2px @ios7-base-color;
+  border-top-left-radius: 7px;
+  border-bottom-left-radius: 7px;
+}
+
+.mblTabBarSegmentedControl .mblTabBarButton:last-child {
+  border-right: solid 2px @ios7-base-color;
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 7px;
+
+}
+
+.mblHeading .mblTabBar {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.mblTabBarSlimTab {
+  border: none;
+  background-color: @ios7-base-color;
+  background-image: none;
+}
+
+.mblTabBarSlimTab .mblTabBarButton, .mblTabBarFlatTab .mblTabBarButton {
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none;
+  color: @ios7-grey1;
+  font-weight: normal;
+  text-shadow: none;
+  border-color: white;
+}
+
+.mblTabBarFlatTab .mblTabBarButton {
+  color: black;
+}
+
+.mblTabBarSlimTab .mblTabBarButton:first-child {
+  border-color: white;
+}
+
+.mblTabBarSlimTab .mblTabBarButtonSelected, .mblTabBarFlatTab .mblTabBarButtonSelected {
+  background-color: white;
+  background-image: none;
+  color: @ios7-base-color;
+  border-color: white;
+  font-weight: normal;
+}
+
+.mblTabBarTallTab {
+  background-color: @ios7-base-color;
+  background-image: none;
+  margin: 0;
+}
+
+.mblTabBarTallTab .mblTabBarButton {
+  background-image: none;
+  border: none;
+
+}
+
+.mblTabBarTallTab .mblTabBarButtonSelected {
+  color: @ios7-base-color;
+  background-color: white;
+  border: none;
+}

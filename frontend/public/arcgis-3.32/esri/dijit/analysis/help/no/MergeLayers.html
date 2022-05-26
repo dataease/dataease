@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Slå sammen lag</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Sl&aring; sammen lag"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet kopierer geoobjekter fra to lag til et nytt lag. Lagene som skal sl&aring;s sammen, m&aring; inneholde de samme geoobjektstypene (punkt, linjer eller omr&aring;der). Du kan bestemme hvordan feltene fra inndatalagrene skal sl&aring;s sammen og kopieres. Eksempel:
+        <ul>
+            <li>Hvis du har tre lag for England, Wales og Skottland, og du vil ha et enkelt lag for Storbritannia. 
+            </li>
+            <li>Du har 12 lag, og hvert lag inneholder tomteinformasjon for tilst&oslash;tende kommuner. Du vil sl&aring; lagene sammen til ett lag og kun beholde feltene som har samme navn og type i de 12 inndatalagene.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hvis det er merket av for  <b>Use current map extent</b>, er det kun geoobjektene som vises i gjeldende kartutstrekning, som sl&aring;s sammen. Hvis det ikke er merket av for dette alternativet, sl&aring;s alle geoobjektene i begge lagene sammen, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg kartlag</h2></div>
+        <hr/>
+        <div>
+            <p>Punkt-, linje- eller omr&aring;degeoobjektene som skal sl&aring;s sammen med laget som er angitt nedenfor. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Velg laget som skal slås sammen</h2></div>
+        <hr/>
+        <div>
+            <p>Velg laget som skal sl&aring;s sammen med det f&oslash;rste laget.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Endre felter som slås sammen</h2></div>
+        <hr/>
+        <div>
+            <p>Standardinnstillingen er at alle feltene fra begge inndatalagene videref&oslash;res til utdatalaget. Du kan endre hvordan feltene videref&oslash;res til utdatalaget:
+                <ul>
+                    <li> <b>Gi nytt navn</b> &ndash; Feltet f&aring;r nytt navn i utdatalaget.
+                    </li>
+                    <li> <b>Fjern</b> &ndash; Feltet fjernes fra utdatalaget.
+                    </li>
+                    <li> <b>Match</b> &ndash; Feltnavnene beholdes. Verdiene i feltene i laget som skal sl&aring;s sammen, kopieres til de tilsvarende utdatafeltene.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Hvis begge lagene inneholder et felt med et identisk navn og datatype, blir innholdet i begge feltene sl&aring;tt sammen til ett felt med det aktuelle navnet. Det gjelder ikke felter der  <b>Match</b> brukes i parameteren <b>Endre felter som sl&aring;s sammen</b>.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis lagnavnet finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

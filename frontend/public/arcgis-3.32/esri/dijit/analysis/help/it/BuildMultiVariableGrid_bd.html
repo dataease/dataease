@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Crea griglia multi-variabile</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Diagramma del flusso di lavoro Aggiungi dati"></h2>
+        <hr/>
+    <p>Lo strumento Crea griglia multi-variabile funziona con uno o pi&ugrave; layer di feature puntuale, lineare o poligonale. Lo strumento genera una griglia di bin quadrati o esagonali e calcola i valori per ciascun bin in base alla prossimit&agrave; di ciascun layer di input. Questi valori possono includere le seguenti variabili: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Distanza dal pi&ugrave; vicino</b>: la distanza da ogni bin alla feature pi&ugrave; vicina
+            </li>
+            <li> <b>Attributo del pi&ugrave; vicino</b>: un valore di campo della feature pi&ugrave; vicina ad ogni bin
+            </li>
+            <li> <b>Riepilogo delle vicinanze</b>: una statistica specifica di tutte le feature entro una distanza di ogni bin
+            </li>
+            <li> <b>Riepilogo delle intersezioni</b>: una statistica specifica di tutte le feature che intersecano ogni bin
+            </li>
+        </ul>
+        
+    </p>
+    <p>Solo le variabili specificate verranno incluse nel layer risultante. Tali variabili possono consentire di capire la vicinanza e la distribuzione dei dati.. I risultati possono consentire di iniziare a rispondere a domande come le seguenti:
+        <ul>
+            <li>Dati vari layer di infrastrutture di trasporto pubblico, quale parte della citt&agrave; &egrave; meno accessibile con i mezzi pubblici?
+            </li>
+            <li>Dati i layer di corsi fluviali, come laghi e fiumi, qual &egrave; il nome del corso d'acqua pi&ugrave; vicino a ogni localit&agrave; negli Stati Uniti?
+            </li>
+            <li>Dato uno layer di reddito familiare, dove &egrave; la maggiore differenza di reddito nelle 50 miglia circostanti negli Stati Uniti?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Scegli il tipo di bin da utilizzare per creare la griglia multi-variabile</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Il tipo e le dimensioni dei bin che verranno utilizzati per creare la griglia multi-variabile. Per l&rsquo;opzione  <b>Quadrato</b>, il numero e le unit&agrave; specificate determinano l'altezza e la lunghezza del quadrato. Per l&rsquo;opzione <b>Esagono</b>, il numero e le unit&agrave; specificate determinano la distanza tra i lati paralleli.
+            </p>
+            <p>Questa analisi utilizza contenitori e richiede un sistema di coordinate proiettate. &Egrave; possibile impostare il  <b>Sistema di coordinate di elaborazione</b> negli <b>Ambienti di analisi</b>. Se il sistema di coordinate di elaborazione non &egrave; impostato su un sistema di coordinate proiettate, verr&agrave; chiesto di impostarlo quando si <b>Esegue l'analisi</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Scegli i layer di input e le variabili da includere nella griglia</h2></div>
+        <hr/>
+        <div>
+            <p>Fare clic sul pulsante Aggiungi ( <b>+</b>) per aprire la finestra <b>Aggiungi variabili</b> e aggiungere un layer all&rsquo;analisi. Nella finestra <b>Aggiungi variabili</b>, scegliere un layer di input e configurare le variabili da calcolare per quel layer di input.
+            </p>
+            <p>Dopo aver scelto e configurato le variabili da calcolare, il layer verr&agrave; elencato nella finestra dello strumento con qualsiasi altro layer selezionato. Fare clic sul pulsante di modifica di qualsiasi layer per aprire la finestra  <b>Aggiungi variabili</b> e vedere tutte le variabili configurate per quel layer. Fare clic sul pulsante Elimina di qualsiasi layer per rimuovere quel layer e tutte le variabili correlate dall'analisi.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Aggiungi variabili</h2></div>
+        <hr/>
+        <div>
+            <p>Questa finestra consente di scegliere un layer di input e configurare le variabili da calcolare per quel layer di input. Per iniziare, utilizzare il menu a discesa  <b>Scegli un layer di input</b> per selezionare il layer puntuale, poligonale o lineare da aggiungere all&rsquo;analisi.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+            <p>Dopo aver scelto un layer di input, fare clic sul pulsante  <b>Aggiungi variabile</b> per aprire una nuova variabile per la modifica. &Egrave; necessario fornire un nome univoco per ogni variabile. Sar&agrave; il nome del campo creato nella tabella attributi del layer risultante.
+            </p>
+            <p>Utilizzare il menu a discesa per selezionare il tipo di variabile da aggiungere. Ogni tipo di variabile deve essere configurato con un set univoco di parametri e sono necessari tutti i parametri.
+            </p>
+            <p>Dopo aver aggiunto tutte le variabili desiderate per il layer selezionato, fare clic sul pulsante  <b>Aggiungi</b> per salvare le variabili.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p> Il nome del layer che verr&agrave; creato.  Se si scrive su un ArcGIS Data Store, i risultati saranno salvati in  <b>I miei contenuti</b> e aggiunti alla mappa. Se si scrive su una condivisione file Big Data, i risultati saranno memorizzati nella condivisione file Big Data e aggiunti al suo Manifest. Non saranno aggiunti alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, lo strumento non verr&agrave; eseguito.
+            </p>
+            <p>Quando si scrive su  ArcGIS Data Store (data store relazionale o Spatiotemporal Big Data Store) usando la casella a discesa  <b>Salva risultato in</b>, &egrave; possibile specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

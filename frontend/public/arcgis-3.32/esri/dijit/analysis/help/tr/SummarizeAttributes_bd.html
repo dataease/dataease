@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Öznitelikleri Özetleme</h2><p/>
+        <h2><img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" alt="&Ouml;znitelikleri &Ouml;zetleme diyagramı"></h2>
+        <hr/>
+    <p> Bu ara&ccedil; bir veya birka&ccedil; alan i&ccedil;indeki eşleşen değerlerin t&uuml;m&uuml;n&uuml; &ouml;zetler ve bunlarla ilgili istatistikleri hesaplar. En temel istatistik, birlikte &ouml;zetlenen detay sayısı olmakla birlikte, daha gelişmiş diğer istatistikleri de hesaplayabilirsiniz.
+    </p>
+    <p>&Ouml;rneğin, elinizde mağaza konumlarının nokta detaylarıyla birlikte  <i>DISTRICT_MANAGER_NAME</i>, bilgisini temsil eden bir alan olduğunu ve y&ouml;neticiye g&ouml;re kahve satışlarını &ouml;zetlemek istediğinizi varsayalım. <i>DISTRICT_MANAGER_NAME</i> alanını yayılımın yapılacağı alan olarak belirtebilirsiniz, bu durumda tek tek y&ouml;neticileri temsil eden veri satırlarının t&uuml;m&uuml; &ouml;zetlenir. Bu, <pre>Manager1</pre> tarafından idare edilen t&uuml;m mağaza konumlarının &ouml;zet istatistikleri hesaplanmış olarak tek satırda g&ouml;r&uuml;nt&uuml;leneceği anlamına gelir. Bu durumda, <pre>Manager1</pre> tarafından idare edilen t&uuml;m mağazalar i&ccedil;in mağaza sayısı sayımı ve <i>TOTAL_SALES</i> toplamının yanı sıra, <i>DISTRICT_MANAGER_NAME</i> alanında listelenen diğer y&ouml;neticiler i&ccedil;in de aynısı hesaplanır.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Özetlenecek girdiyi seçin</h2></div>
+        <hr/>
+        <div>
+            <p>&Ouml;zetlenecek alanları kapsayan katman.  
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Verilerinizi nasıl özetlemek istediğinizi seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Verilerinizi &ouml;zetlemenin iki yolu vardır:
+                <ul>
+                    <li> <b>T&uuml;m detaylar tek bir detaya</b>&mdash;T&uuml;m detaylarla ilgili istatistikleri hesaplar.
+                    </li>
+                    <li> <b>Alana g&ouml;re</b>&mdash;Detayları, belirtilen alanlardaki gibi değerlere g&ouml;re gruplar.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>&Ouml;rneğin,  <code>Ak&ccedil;aağa&ccedil;</code>, <code>K&ouml;knar</code> ve <code>&Ccedil;am Ağacı</code> gibi <i>ağa&ccedil; t&uuml;rleri</i> değerlerinin olduğu bir alan ve <i>ağa&ccedil; y&uuml;ksekliğini</i> i&ccedil;eren bir alana sahip bir ağa&ccedil; k&uuml;mesine sahip olduğunuzu varsayın ve ortalama <i>ağa&ccedil; y&uuml;ksekliğini</i> bulmak istiyorsunuz. T&uuml;m detayları tek bir detaya &ouml;zetlerseniz, t&uuml;m ağa&ccedil;ların ortalama ağa&ccedil; y&uuml;ksekliğini bulursunuz ve bu da aradığınız ortalama değerdir. Eğer <i>ağa&ccedil; y&uuml;ksekliği</i> alanına g&ouml;re &ouml;zetleseydiniz, ak&ccedil;aağa&ccedil; ağa&ccedil;ları i&ccedil;in bir ortalama, k&ouml;knar ağa&ccedil;ları i&ccedil;in bir ortalama ve &ccedil;am ağa&ccedil;ları i&ccedil;in bir ortalama bulmuş olurdunuz.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>İstatistik ekle (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p> &Ouml;zetlenen detaylarla ilgili istatistikleri hesaplayabilirsiniz. Aşağıdakileri sayısal alanlarda hesaplayabilirsiniz:
+                <ul>
+                    <li>Sayım&mdash;Null olmayan değerlerin sayısını hesaplar. Sayısal alan veya dizelerde kullanılabilir. [null, 0, 2] sonucu 2&rsquo;dir.
+                    </li>
+                    <li>Toplam; bir alandaki sayısal değerlerin toplamıdır. [null, null, 3] toplamı 3&rsquo;t&uuml;r.
+                    </li>
+                    <li>Ortalama; sayısal değerlerin ortalamasıdır. [0, 2, null] ortalaması 1&rsquo;dir.
+                    </li>
+                    <li>Min; bir sayısal alanın minimum değeridir. [0, 2, null] minimumu 0&rsquo;dır. 
+                    </li>
+                    <li>Maks; bir sayısal alanın maksimum değeridir. [0, 2, null] maksimum değeri 2&rsquo;dir.
+                    </li>
+                    <li>Aralık; bir sayısal alanın aralığıdır. Bu değer, minimum değerlerin maksimum değerlerden &ccedil;ıkartılmasıyla hesaplanır. [0, null, 1] aralığı 1&rsquo;dir. [null, 4] aralığı 0&rsquo;dır.
+                    </li>
+                    <li>Varyans; bir izdeki sayısal değerin sapmasını g&ouml;sterir. [1] sapması null&rsquo;dır. [null, 1,0,1,1] sapması 0,25&rsquo;dir.
+                    </li>
+                    <li>Standart sapma; bir sayısal alanın standart sapmasıdır. [1] standart sapması null&rsquo;dır. [null, 1,0,1,1] standart sapması 0,5&rsquo;dir. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Aşağıdakileri dize alanlarında hesaplayabilirsiniz:
+                <ul>
+                    <li>Sayım; null olmayan dizelerin sayısını hesaplar.
+                    </li>
+                    <li>Herhangi; bu istatistik belirtilen alandaki bir dize değerinin rastgele &ouml;rneğidir.
+                    </li>
+                </ul>
+                T&uuml;m istatistikler null olmayan değerler &uuml;zerinde hesaplanır. Sonu&ccedil; katmanı hesaplanan her istatistik i&ccedil;in yeni bir alan i&ccedil;erir. Herhangi bir sayıda istatistik, &ouml;znitelik ve istatistik se&ccedil;ilerek eklenebilir. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Veri deposu seç</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics sonu&ccedil;ları,  bir veri deposunda saklanır ve  Portal for ArcGIS i&ccedil;inde bir detay katmanı olarak yansıtılır. Pek &ccedil;ok durumda sonu&ccedil;ların mekan-zamansal b&uuml;y&uuml;k veri deposuna depolanması gerekir ve bu varsayılan ayardır. Bazı durumlarda, sonu&ccedil;ların ilişkisel veri deposuna kaydedilmesi iyi bir se&ccedil;enektir. Sonu&ccedil;ların ilişkisel veri deposuna  saklanmasını isteyebileceğiniz nedenler aşağıda sunulmuştur: 
+                <ul>
+                    <li>Bu sonu&ccedil;ları, portaldan-portala işbirliğinde kullanabilirsiniz.
+                    </li>
+                    <li>Sonu&ccedil;larınızı eşzamanlama &ouml;zellikleriyle etkinleştirebilirsiniz.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> Oluşturulacak katmanın adı. Bir ArcGIS Data Store&lsquo;a yazdığınızda, sonu&ccedil;larınız  <b>İ&ccedil;eriğime</b> kaydedilir ve haritaya eklenir. Bir b&uuml;y&uuml;k veri dosya paylaşımına yazdığınızda,  sonu&ccedil;larınız b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;ine kaydedilir ve   manifestosuna eklenir.  haritaya eklenmez. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Detay katmanı zaten varsa ara&ccedil; &ccedil;alışmaz.
+            </p>
+            <p> ArcGIS Data Store&lsquo;a yazarken (ilişkisel ya da mekan-zamansal b&uuml;y&uuml;k veri deposu)  <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

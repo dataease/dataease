@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Konversi Raster ke Fitur</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Alat Konversi Raster ke Fitur"></h2>
+        <hr/>
+    <p>Alat ini mengubah raster ke rangkaian data fitur, seperti titik, garis, atau poligon.
+    </p>
+    <p>Parameter  <b>Pilih kolom</b> memungkinkan Anda untuk memilih kolom atribut manakah dari rangkaian data raster input yang akan menjadi sebuah atribut di kelas fitur output. Parameter ini hanya tersedia untuk raster bilangan bulat yang memiliki atribut tambahan di tabel terkait.
+    </p>
+    <p>Raster input dapat memiliki ukuran sel berapa pun.
+    </p>
+    <p>Raster bilangan bulat dapat dikonversi ke fitur titik, garis, atau poligon; tetapi, raster bilangan titik mengambang hanya dapat dikonversi ke fitur titik.
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya sel raster yang terlihat di dalam jangkauan peta saat ini yang akan dikonversikan. Jika tidak dicentang, semua sel pada layer raster akan dikonversikan, meskipun berada di luar jangkauan peta saat ini. Perhatikan hal ini jika layer raster memiliki ukuran yang besar atau memiliki resolusi yang sangat tinggi.
+    </p>
+    <p>Contoh penggunaan alat ini mencakup hal berikut:
+ 
+        <ul>
+            <li>Membuat fitur poligon dari raster klasifikasi penggunaan tanah.
+                
+ 
+            </li>
+            <li>Aliran yang teridentifikasi di DEM dapat dikonversikan ke fitur garis.
+                
+
+            </li>
+            <li>DEM dapat dikonversikan ke fitur titik yang dapat digunakan di alur kerja berbasis nonraster.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pilih layer raster untuk dikonversi</h2></div>
+        <hr/>
+        <div>
+            <p>Layer raster input yang akan dikonversikan ke feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Pilih kolom</h2></div>
+        <hr/>
+        <div>
+            <p>Sediakan kolom yang menentukan nilai manakah yang akan digunakan untuk konversi.
+            </p>
+            <p>Bisa saja berupa bilangan bulat atau nilai teks.
+            </p>
+            <p>Kolom yang berisi nilai bilangan titik mengambang hanya dapat digunakan jika output adalah ke set data titik.
+            </p>
+            <p>Pilihan default adalah menggunakan kolom  <i>Value</i>, yang berisi nilai di setiap sel raster.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Pilih tipe output</h2></div>
+        <hr/>
+        <div>
+            <p>Pilih tipe output antara titik, garis, atau poligon.
+            </p>
+            <ul>
+                <li>Titik&mdash;Raster akan dikonversi ke rangkaian data titik.
+                    
+ 
+                </li>
+                <li>Garis&mdash;Raster akan dikonversi ke rangkaian data fitur garis.
+                    
+ 
+                </li>
+                <li>Poligon&mdash;Raster akan dikonversi ke rangkaian data fitur poligon.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Sederhanakan garis atau poligon</h2></div>
+        <hr/>
+        <div>
+            <p>Tentukan apakah fitur harus disederhanakan.
+            </p>
+            <p>Jika dicentang (default), fitur garis atau poligon akan diperhalus untuk memberikan hasil yang lebih digeneralisasi. Jika opsi ini tidak dicentang, fitur linear akan mengikuti batasan sel rangkaian data raster.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Anda dapat menentukan nama folder di  <b>Konten Saya</b> tempat hasil akan disimpan menggunakan kotak drop-down <b>Simpan hasil di</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

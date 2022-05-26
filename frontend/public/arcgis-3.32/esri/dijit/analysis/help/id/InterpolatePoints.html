@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolasikan Titik</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Sisipkan Titik"></h2>
+        <hr/>
+    <p>   Alat Titik Interpolasi memungkinkan Anda memprediksikan nilai di lokasi baru berdasarkan pengukuran dari suatu kumpulan titik. Alat ini mengambil nilai data pada setiap titik dan menampilkan area yang dikelompokkan menurut nilai prediksi. Contoh
+        <ul>
+            <li>Suatu distrik manajemen kualitas udara memiliki sensor yang mengukur tingkat polusi.    Titik Interpolasi dapat digunakan untuk memprediksi tingkat polusi di lokasi yang tidak memiliki sensor, seperti lokasi dengan populasi berisiko&mdash;sekolah atau rumah sakit misalnya.
+            </li>
+            <li>Memprediksikan konsentrasi logam berat pada hasil panen berdasarkan sampel yang diambil dari masing-masing tanaman.
+            </li>
+            <li>Memprediksi tingkat nutrisi tanah (nitrogen, fosfor, potasium, dan lain-lain) dan indikator lainnya (seperti konduktivitas listrik) untuk mempelajari hubungannya dengan hasil panen guna menentukan jumlah pupuk yang tepat untuk masing-masing lokasi. 
+            </li>
+            <li>Aplikasi meteorologis mencakup prediksi suhu, curah hujan, dan variabel terkait (seperti hujan asam). 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pilih layer titik yang berisi lokasi dengan nilai yang diketahui</h2></div>
+        <hr/>
+        <div>
+            <p>Layer titik yang akan digunakan sebagai dasar interpolasi.  
+
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Pilih kolom untuk diinterpolasi</h2></div>
+        <hr/>
+        <div>
+            <p>Pilih kolom yang berisi nilai yang ingin Anda interpolasi.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Optimalkan untuk</h2></div>
+        <hr/>
+        <div>
+            <p>Tentukan pilihan Anda untuk kecepatan versus akurasi. Prediksi yang lebih akurat memerlukan waktu penghitungan yang lebih lama.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Kesalahan prediksi output</h2></div>
+        <hr/>
+        <div>
+            <p> Jika dicentang, sebuah layer kesalahan standar untuk prediksi interpolasi akan dibuat.  Nama layer output akan menjadi nama layer hasil dengan lampiran 'Kesalahan'.
+            </p>
+            <p>Kesalahan standar bermanfaat karena menyediakan informasi mengenai keandalan nilai prediksi.  Aturan dasarnya adalah bahwa nilai yang benar akan terbagi dalam dua kesalahan standar nilai prediksi 95 persen dari waktu.  Contohnya, anggap suatu lokasi baru mendapat nilai prediksi sebesar 50 dengan kesalahan standar 5.  Artinya perkiraan terbaik alat ini adalah bahwa nilai yang benar di lokasi itu sebesar 50, tetapi bisa saja bernilai lebih rendah sebesar 40 atau lebih tinggi hingga 60.  Untuk menghitung rentang nilai yang wajar, kalikan kesalahan standar dengan 2, tambahkan nilai ini ke nilai prediksi untuk mendapat batas rentang atas, dan kurangi dari nilai prediksi untuk mendapat batas rentang bawah.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Klasifikasikan menurut</h2></div>
+        <hr/>
+        <div>
+            <p>Pilih cara bagaimana nilai prediksi akan diklasifikasikan menjadi area.
+                <ul>
+                    <li>Interval geometrik&mdash;Area didasarkan pada interval kelas yang memiliki rangkaian geometrik. Metode ini memastikan bahwa setiap rentang kelas memiliki kira-kira angka nilai yang sama dalam setiap kelas dan perubahan antar interval bersifat konsisten.
+                    </li>
+                    <li>Interval setara&mdash;Area yang dibuat sedemikian rupa sehingga rentang nilai prediksi setara untuk setiap area.
+                    </li>
+                    <li>Area setara&mdash;Area yang dibuat sedemikian rupa sehingga jumlah nilai data di setiap area adalah setara.  Contohnya, jika data memiliki lebih banyak nilai besar daripada nilai kecil, lebih banyak area yang akan dibuat untuk nilai yang lebih besar.
+                    </li>
+                    <li>Manual&mdash;Opsi ini memungkinkan Anda menentukan rentang nilai Anda sendiri untuk area.  Nilai ini akan dimasukkan ke parameter  <b>Class break values</b> (Nilai pecahan kelas) di bawah ini.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Jumlah kelas</h2></div>
+        <hr/>
+        <div>
+            <p>Menentukan jumlah kelas (rentang nilai prediksi) di layer hasil.  Setiap kelas menentukan batas area.  Nilai kelas ini akan ditentukan oleh parameter 
+ <b>Classify by</b> (Klasifikasikan menurut) di atas.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Nilai pecahan kelas</h2></div>
+        <hr/>
+        <div>
+            <p>Masukkan nilai-nilai pecahan kelas yang diinginkan, pisahkan dengan spasi.  Contohnya, jika Anda ingin kelas pecah di nilai 1,5, 3, dan 7, masukkan  <code>1,5 3 7</code>.  Nilai ini akan menentukan batas atas setiap kelas, jadi jumlah kelas akan setara dengan jumlah nilai yang dimasukkan.  Area tidak akan dibuat untuk lokasi mana pun yang nilai prediksinya melebihi batas atas yang dimasukkan.  Anda harus memasukkan paling sedikit dua nilai dan tidak lebih dari 32.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Potong output menjadi</h2></div>
+        <hr/>
+        <div>
+            <p>Buat gambar atau sediakan layer yang akan menentukan area dimana Anda ingin hasilnya digambar. Contohnya, jika Anda menginterpolasi pengukuran polusi danau, Anda dapat menggunakan batas danau di parameter ini dan output hanya akan digambar di dalam batas danau tersebut.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Prediksikan di lokasi ini</h2></div>
+        <hr/>
+        <div>
+            <p>Gambar atau sediakan layer yang menentukan lokasi titik untuk menghitung nilai prediksi. Ini memungkinkan Anda membuat prediksi di lokasi tertentu yang menjadi perhatian. Contohnya, jika layer input mewakili pengukuran tingkat polusi, Anda dapat menggunakan parameter ini untuk memprediksikan tingkat polusi pada lokasi dengan populasi berisiko tinggi, seperti sekolah atau rumah sakit.  Selanjutnya Anda dapat menggunakan informasi ini untuk memberi rekomendasi kepada petugas kesehatan di lokasi tersebut.
+            </p>
+            <p>Jika disediakan, alat ini akan menghasilkan output layer titik prediksi di lokasi tertentu.  Nama layer output akan menjadi nama layer hasil dengan lampiran 'Titik'.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta.  Nama default ditetapkan berdasarkan nama layer input. Jika nama layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Dengan menggunakan  <b>Simpan hasil di</b> menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

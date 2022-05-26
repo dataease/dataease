@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Pridėti duomenų</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Duomenų pridėjimo darbo eigos diagrama"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis prideda duomenų į esamą talpinamą elementų sluoksnį. Duomenų pridėjimas keičia pradinį įvesties sluoksnį ir negeneruoja naujo i&scaron;vesties sluoksnio. Galite derinti laukus pagal lauko pavadinimą ir tipą arba galite taikyti pažangesnius atitikimo metodus.
+    </p>
+    <p>Toliau pateikiami pavyzdžiai: 
+        <ul>
+            <li>Jūs esate didelės draudimo bendrovės darbuotojas, kas mėnesį generuojantis įvykdytus pardavimus. Metinei ataskaitai reikalingas kasmėnesinių duomenų rinkinys, kurį galėtumėte analizuoti. Norėdami pradėti pardavimų analizę, galite naudodami Pridėti duomenų įrankį atnaujinti AnnualReport_2018 sluoksnį, kai tik turėsite mėnesinius duomenis. Kadangi žinote, jog jūsų organizacija kiekvieną mėnesį laikosi pastovios schemos, galite naudoti numatytąjį laukų susiejimo metodą ir efektyviai pridėti elementus pagal lauko pavadinimą ir tipą.
+            </li>
+            <li>De&scaron;imt aplinkosaugos grupių atlieka &scaron;imtus tūkstančių klimato matavimų savo teritorijose. &Scaron;ios organizacijos nori sujungti duomenis, kad geriau suprastų regionines ir pasaulines tendencijas. Kiekviena organizacija turi savo duomenų rinkinio schemą. Jos nurodė skirtingus temperatūros ir vėjo greičio duomenų laukų pavadinimus. Kadangi duomenų rinkiniuose laukų pavadinimai skiriasi, laukų susiejimą galima naudoti nurodant, kaip pridėti temperatūros ir vėjo greičio matavimus prie atitinkamų laukų.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pasirinkite sluoksnį, prie kurio norite pridėti</h2></div>
+        <hr/>
+        <div>
+            <p>Lentelės, ta&scaron;kų, linijos arba ploto elementai, prie kurių bus pridedami duomenys.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Jūsų pridedamas sluoksnis bus keičiamas įrankiui veikiant. Prie&scaron; tęsdami įsitikinkite, kad norite keisti &scaron;į sluoksnį.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti talpinamo elementų sluoksnio.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Pasirinkite sluoksnį, kurį norite pridėti</h2></div>
+        <hr/>
+        <div>
+            <p>Lentelės, ta&scaron;kų, linijos arba ploto elementai, kurie bus pridedami į įvesties sluoksnį.
+            </p>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti didelių duomenų rinkinio arba elemento sluoksnio.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Pridėkite visus elementus arba apibrėžkite poaibį (neprivaloma)</h2></div>
+        <hr/>
+        <div>
+            <p>Nustato elementus, kurie bus pridedami. &Scaron;is parametras neprivalomas.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Pasirinkite, kaip pridėti laukus (neprivaloma)</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodo, kaip papildomo sluoksnio laukai pridedami į įvesties sluoksnį. Pagal numatytuosius nustatymus pridedami visi atitinkantys įvesties ir papildomi laukai. Laukai atitinka, jei jų pavadinimai ir tipai sutampa. Pasirinktinai galite nurodyti, kaip bus derinami laukai, arba skaičiuoti Arcade i&scaron;rai&scaron;kas, kurios pateiks laukų reik&scaron;mes.
+            </p>
+            <p>Pavyzdžiui, jei turite įvesties sluoksnį su  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i> laukais ir papildomą sluoksnį su laukais <i>field_string</i>, <i>field_number</i> ir <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>Pagal numatytuosius nustatymus įrankis suderins  <i>field_number</i> įvesties sluoksnyje su <i>field_number</i> papildomame sluoksnyje ir <i>field_string</i> įvesties sluoksnyje su <i>field_string</i> papildomame sluoksnyje.
+                    </li>
+                    <li>Pagal numatytuosius nustatymus įvesties sluoksnio laukai  <i>date_field</i> ir <i>unused_field</i> bus užpildyti <i>null</i> reik&scaron;mėmis, nes nėra juos atitinkančių laukų papildomame sluoksnyje.
+                    </li>
+                    <li>Pasirinktinai galite pridėti reik&scaron;mes laukams, kurie nebuvo automati&scaron;kai suderinti. Pavyzdžiui,  <i>date_field</i> įvesties sluoksnyje galima suderinti su papildomo sluoksnio <i>MY_DATE_FIELD</i>. Norėdami tai padaryti, pasinaudokite &scaron;alia <i>date_field</i> pirmojo stulpelio esančiu i&scaron;skleidžiamuoju meniu ir pasirinkite <i>MY_DATE_FIELD</i> i&scaron;skleidžiamojo meniu antrajame stulpelyje.
+                    </li>
+                </ul>
+                 Kitas pavyzdys: įvesties sluoksnyje yra skaitiniai laukai <i>value_1</i>, <i>value_2</i>, <i>value_3</i> ir <i>my_Average</i>, o papildomame sluoksnyje yra skaitiniai laukai <i>value_1</i>, <i>value_2</i> ir <i>value_3</i>.
+                <ul>
+                    <li>Pagal numatytuosius nustatymus  <i>value_1</i>, <i>value_2</i> ir <i>value_3</i> bus laikomi atitinkančiais ir pridėti.
+                    </li>
+                    <li>Be veiksmų pagal numatytuosius nustatymus, galima skaičiuoti lauko  <i>my_Average</i> reik&scaron;mes. Tai galite padaryti naudodami kelis laukus ir matematines operacijas, pasirinkdami <b>I&scaron;rai&scaron;kos</b> parinktį i&scaron;skleidžiamajame meniu stulpelyje greta <i>my_Average</i> ir sukurdami adaptuotą Arcade i&scaron;rai&scaron;ką, pavyzdžiui, <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

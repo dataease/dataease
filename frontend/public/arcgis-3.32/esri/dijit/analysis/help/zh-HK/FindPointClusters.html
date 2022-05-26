@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>尋找點叢集</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="尋找點叢集"></h2>
+        <hr/>
+    <p>此工具可在基於其空間分佈的周圍噪訊內，尋找點圖徵的叢集。
+    </p>
+    <p>如果勾選 <b>使用當前地圖範圍</b>，則僅分析目前地圖範圍中輸入點圖層的圖徵。如果未勾選，則分析輸入點圖層中的所有圖徵，包括超出目前地圖範圍的圖徵。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>選擇要尋找的叢集所在的圖層</h2></div>
+        <hr/>
+        <div>
+            <p>將在其中尋找叢集的點圖層。
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>要視為一個叢集的最少點數</h2></div>
+        <hr/>
+        <div>
+            <p>要視為叢集的圖徵數下限。若叢集的圖徵少於提供的圖徵，則會將叢集視為噪訊。
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>將搜尋範圍限制為 (選用)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>用來將圖徵視為屬於相同叢集的最長距離。如果保留空白，工具將執行 DBSCAN，從而使用不同的距離來區分不同密度的叢集與稀疏噪訊。如果提供值，工具將執行 HDBSCAN，從而使用指定的距離來區分密集叢集與稀疏噪訊。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層名稱已存在，系統將提示您提供其他名稱。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式功能表，可以在 <b>我的內容</b>中指定儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

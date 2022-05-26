@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Overlay Layers</h2><p/>
+        <h2><img src="./images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" alt="Overlay Layers"></h2>
+        <hr/>
+    <p>Overlay combines two or more layers into one single layer.  You can think of overlay as peering through a stack of maps and creating a single map containing all the information found in the stack.   
+ Overlay is much more than a merging of line
+work; all the attributes of the features taking part in the overlay
+are carried through to the final product. Overlay is used to answer one of the most basic questions of geography, &quot;What is on top of what?&quot; For example:
+        <ul>
+            <li>What parcels are within the 100-year floodplain? (Within is just another way of saying on top of.)
+                  
+            </li>
+            <li>What roads are within what counties?
+            </li>
+            <li>What land use is on top of what soil type?
+                 
+            </li>
+            <li>What wells are within abandoned military bases?
+            </li>
+        </ul>
+        
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the features in the input and overlay layer that are visible within the current map extent will be overlaid.  If unchecked, all features in both the input layer and the overlay layer will be overlaid, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose input layer</h2></div>
+        <hr/>
+        <div>
+            <p>The point, line, or area layer that will be overlaid.
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="OverlayLayer">
+        <div><h2>Choose overlay layer</h2></div>
+        <hr/>
+        <div>
+            <p>The layer to overlay on the input layer.  
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p> 
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Choose overlay method</h2></div>
+        <hr/>
+        <div>
+            <p>The overlay method defines how the input layer and the overlay layer are combined.  
+
+
+
+
+
+
+
+                <ul>
+                    <li> <b>Intersect</b>&mdash;The result will contain only those features or portions of features in the overlay layer that overlap  with features in the input layer. When intersecting line or area features, you have the option to  specify the type of features you want as output.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Points with  Points
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="./images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Points and points input">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="./images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Points and points with point output">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Points with Lines
+
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="./images/GUID-F1E6C6C8-4F51-4063-984D-0FC8D08EB2D2-web.png" alt="Points and lines input">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="./images/GUID-02CFAFDC-1B3C-4C4B-A58C-7B0B78BA0B56-web.png" alt="Points and lines with point  output">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Points with Areas
+
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="./images/GUID-5EE90BD6-CC3D-4E2F-A5D0-DC57298E8416-web.png" alt="points and areas input">
+                                </p>
+                            </td>
+                            <td> <img src="./images/GUID-5CCA360F-D4C9-43AB-8FB2-E6E62DE93BD4-web.png" alt="points and areas with point output">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Lines with Lines 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="./images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Lines and lines input">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="./images/GUID-DDCCB226-6490-4914-B87C-299125466256-web.png" alt="Lines and lines with point output">
+                                </p>
+                                <p> <img src="./images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Lines and lines with line output ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Lines with Areas
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="./images/GUID-E38EB7D6-9D35-4E0D-937A-9FEC4144AF2E-web.png" alt="Lines and areas input">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="./images/GUID-639F492C-BEE7-4A5F-AEBC-325B74FEC766-web.png" alt="Lines and areas with point output">
+                                </p>
+                                <p> <img src="./images/GUID-58DF5CF6-0A56-4717-AD9C-C3BEC8EA6906-web.png" alt="Lines and areas with line output">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Areas with Areas
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="./images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Areas and areas input">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="./images/GUID-3F71AD46-A6A2-436D-8BBA-13E014BB94D0-web.png" alt="Areas and areas with point output">
+                                </p>
+                                <p> <img src="./images/GUID-6AF62F09-6D32-4212-97C6-844580E34A22-web.png" alt="Areas and areas with line output">
+                                </p>
+                                <p> <img src="./images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="Areas and areas with area output">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Union</b>&mdash;The result will contain features from both the input layer and the overlay layer. The Union option is only available if both the input layer and the overlay layer contain area features.
+                    </li>
+                    <li> <b>Erase</b>&mdash;The result will contain features or portions of features in the overlay layer that do not overlap with the areas in the input layer.  The overlay layer can contain area, line, or point features.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>If  <b>Use current map extent</b> is checked, only the features in the input and overlay layer that are visible within the current map extent will be overlaid.  If unchecked, all features in both the input layer and the overlay layer will be overlaid, even if they are outside the current map extent.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p> This is the name of the layer that will be created in <b>My Content</b> and added to the map.  It will have the same feature type (areas, lines, or points) as the overlay layer.  The default  name is based on the overlay method and the input layer name. If the layer already exists, you will be asked to you will be asked to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down box, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p> 
+        </div>
+    </div>
+</div>
+</html>

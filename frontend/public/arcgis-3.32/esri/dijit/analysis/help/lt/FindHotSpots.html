@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rasti karštuosius taškus</h2><p/>
+        <h2><img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" alt="Rasti kar&scaron;tuosius ta&scaron;kus"></h2>
+        <hr/>
+    <p> Rasti kar&scaron;tuosius ta&scaron;kus įrankis aptiks statisti&scaron;kai reik&scaron;mingas elementų sankaupas duomenyse.
+        <ul>
+            <li>Ar jūsų ta&scaron;kai (nusikaltimai, medžiai, avarijos) yra pasiskirstę sankaupomis? Kaip galite įsitikinti?
+            </li>
+            <li>Ar i&scaron; tikrųjų aptikote statisti&scaron;kai reik&scaron;mingą (didelės apyvartos, mirtingumo ar auk&scaron;tų įvertinimų) elementų sankaupą, ar pakeistas žemėlapio atvaizdavimas suteiktų papildomos informacijos?
+            </li>
+        </ul>
+        Rasti kar&scaron;tuosius ta&scaron;kus patikimai atsako į &scaron;iuos klausimus.
+    </p>
+    <p>Net ir atsitiktiniai rei&scaron;kiniai pasiskirsto nežymiomis sankaupomis.  Be to, mūsų rega natūraliai bando atpažinti pasikartojimus ar dėsningumus net ten, kur jų nėra. Taigi, gali būti pakankamai sudėtinga nustatyti, ar duomenų elementai yra pasiskirstę atsitiktinai, ar vis dėlto galima aptikti tam tikrus vidinius dėsningumus. &Scaron;tai kodėl tyrinėtojai naudoja tokius analizės metodus kaip kar&scaron;tųjų ta&scaron;kų paie&scaron;ka (Getis-Ord Gi*), kad galėtų apskaičiuoti pasiskirstymo dėsningumus. Statisti&scaron;kai reik&scaron;mingų sankaupų nustatymas leidžia gauti labai vertingos informacijos. Žinant, kur ir kada susidaro duomenų elementų sankaupos, galima kurti prielaidas apie procesus, lemiančius tokį i&scaron;sidėstymą. Žinant, kad vagystės i&scaron; butų dažniau įvyksta tam tikruose rajonuose, svarbu, kad galima kurti efektyvesnes prevencijos programas, paskirstyti ribotus policijos i&scaron;teklius, inicijuoti stebėjimo programas, įgalinti i&scaron;samius nusikaltimų tyrimus arba nustatyti potencialius įtariamuosius.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Pasirinkite sluoksnį, kuriam norėsite apskaičiuoti karštuosius taškus</h2></div>
+        <hr/>
+        <div>
+            <p>Ta&scaron;kų arba plotų sluoksnis, kuriame bus ie&scaron;koma kar&scaron;tųjų ir &scaron;altųjų ta&scaron;kų. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Raskite didelių ir mažų reikšmių sankaupas</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;i analizė parodo, kur yra didelių ir mažų reik&scaron;mių sankaupos.
+            </p>
+            <p>Jei jūsų duomenys yra ta&scaron;kai ir jūs pasirinksite parinktį  <b>Skaičiuoti</b>, &scaron;is įrankis įvertins erdvinį ta&scaron;kinių elementų i&scaron;sidėstymą tam, kad atsakytų į klausimą, kuriose vietose ta&scaron;kai i&scaron;sidėstę sankaupomis, o kur ne.
+            </p>
+            <p>Jei pasirinksite lauką, &scaron;is įrankis įvertins reik&scaron;mių, susijusių su kiekvienu elementu, erdvinį i&scaron;sidėstymą, kad atsakytų į klausimą, kur yra didelių ir mažų reik&scaron;mių sankaupos.
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Skaičiuoti taškus, patenkančius į</h2></div>
+        <hr/>
+        <div>
+            <p>Pagal nutylėjimą, remiantis jūsų ta&scaron;kų duomenimis, bus skaičiuojami ta&scaron;kai, patenkantys į įrankio sukurtą tinklą. Taip pat galite pasirinkti skaičiuoti ta&scaron;kus &scaron;e&scaron;iakampiame tinklelyje arba pateikti plotų sluoksnį (pavyzdžiui, administracinio suskirstymo ribų, savivaldybių, seniūnijų, gyvenviečių), kad atsakytumėte į klausimą: ar yra vietų su statisti&scaron;kai reik&scaron;mingomis erdvinėmis didelių arba mažu ta&scaron;kų reik&scaron;mių sankaupomis, atsižvelgiant į ta&scaron;kų, patenkančių į kiekvieną ploto elementą, skaičių?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Nurodykite, kur yra galimi taškai</h2></div>
+        <hr/>
+        <div>
+            <p>Nubrėžkite arba pateikite sluoksnį, nurodantį, kur įvykiai galimi, kad atsakytumėte į klausimą: Ar &scaron;iuose plotuose yra vietų su neįprastai didelėmis ar mažomis ta&scaron;kų koncentracijomis?   
+            </p>
+            <p>Nubrėžti arba nurodyto sluoksnio plotiniai objektai apibrė&scaron; tokių įvykių ribas. Norėdami nubrėžti &scaron;iuos plotus, spustelėkite  <b>brėžimo</b> mygtuką, tada spustelėkite vietą žemėlapyje, kur norite sukurti plotą. Jei norite nubrėžti papildomų plotų, spustelėkite brėžimo mygtuką dar kartą, tada spustelėkite vietą žemėlapyje ir tęskite.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Dalinti iš</h2></div>
+        <hr/>
+        <div>
+            <p>Kartais gali prireikti analizuoti dėsningumus, atsirandančius dėl esamų pasiskirstymų. Pavyzdžiui, jei jūsų ta&scaron;kai vaizduoja nusikaltimus, jų skaičių padaliję i&scaron; viso gyventojų skaičiaus, gausite vienam žmogui tenkančių nusikaltimų skaičių.  Atributo, i&scaron; kurio bus dalinama, pasirinkimas dažnai vadinamas normalizavimu.
+            </p>
+            <p>Pasirinkus  <i>Esri Population</i>, kiekvieno ploto elementai bus papildyti gyventojų skaičiaus reik&scaron;mėmis, kurios bus naudojamos kaip atributai, i&scaron; kurių dalinama. &Scaron;i parinktis naudoja kreditus.
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Keisti parinktis</h2></div>
+        <hr/>
+        <div>
+            <p> &Scaron;is įrankis ras optimalius parametrus, skirtus <b>Gardelės dydžio</b> ir <b>Atstumo</b> numatytoms reik&scaron;mėms, pagrįstoms jūsų duomenų charakteristikomis. Tačiau jei turite i&scaron;skirtinį <b>Gardelės dydį</b> arba <b>Atstumą</b>, kuris turi prasmę jūsų analizei, parinktį <b>Perra&scaron;yti parinktis</b> galima naudoti &scaron;ioms reik&scaron;mėms nustatyti.
+            </p>
+            <p> <b>Perra&scaron;yti parinktis</b> taip pat naudinga vykdant analizę skirtinguose duomenų rinkiniuose, nes leidžia i&scaron;laikyti nuoseklias <b>Atstumo</b> ir <b>Gardelės dydžio</b> reik&scaron;mes keliuose duomenų rinkiniuose. Tada galite atitinkamai palyginti rezultatus (pavyzdžiui, nutukimo ir diabeto rodiklius arba dviejų skirtingų metų nusikalstamumo lygį).
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Gardelės dydis</h2></div>
+        <hr/>
+        <div>
+            <p>Tinklelio gardelių dydis, naudojamas ta&scaron;kams jame skaičiuoti.  
+            </p>
+            <p>Naudojant &scaron;e&scaron;iakampį tinklelį ta&scaron;kams jame skaičiuoti, &scaron;is atstumas naudojamas kaip &scaron;e&scaron;iakampių auk&scaron;tis.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Atstumas</h2></div>
+        <hr/>
+        <div>
+            <p>Kiekvienas elementas analizuojamas greta &scaron;ių, nurodytu atstumu, esančių elementų kontekste. Įrankis apskaičiuos numatytąjį atstumą už jus arba galite naudoti &scaron;ią parinktį konkrečiam atstumui, turinčiam prasmę analizei, nustatyti. 
+            </p>
+            <p>Pavyzdžiui, jei analizuojate važinėjimą į darbą arba, pavyzdžiui, žinote, kad kelionė į darbą sudaro vidutini&scaron;kai 15 mylių, analizėje galite naudoti 15 mylių atstumą.
+            </p>
+        </div>
+    </div>
+    <div id="hotSpotsResultLayer">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Pateikite pavadinimą sluoksnio, kuris bus sukurtas  <b>Turinyje</b> bei pridėtas žemėlapyje. Gautame sluoksnyje matysite statisti&scaron;kai reik&scaron;mingas dideles ir mažas reik&scaron;mių sankaupas ar ta&scaron;kų skaičius. Jei toks sluoksnio pavadinimas jau egzistuoja, turėsite jį pakeisti.
+            </p>
+            <p>Naudodami i&scaron;plečiamo meniu parinktį  <b>Rezultatą įra&scaron;yti į</b>, galite nurodyti puslapyje <b>Turinys</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

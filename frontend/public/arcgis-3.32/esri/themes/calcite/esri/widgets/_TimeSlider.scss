@@ -1,0 +1,51 @@
+@import "../../dojox/form/RangeSlider";
+.#{$theme-name} {
+  .esriTimeSlider {
+    width: 100%;
+    z-index: 999;
+    position: relative;
+    .dijitButton {
+      margin: $timeslider-btn-margin;
+    }
+    .dijitButtonContents {
+      padding: ($timeslider-btn-height - $icon-size-base - 2px) * 0.5 ($timeslider-btn-width - $icon-size-base - 2px) * 0.5;
+      line-height: 1;
+    }
+    .tsButton {
+      margin: 0;
+      @include dijit-icons;
+    }
+    .tsPlayButton {
+      &:before {
+        @include icon-get-content(esri-icon-play);
+      }
+    }
+    .tsPauseButton {
+      &:before {
+        @include icon-get-content(esri-icon-pause);
+      }
+    }
+    .tsPrevButton {
+      &:before {
+        @include icon-get-content(esri-icon-reverse);
+      }
+    }
+    .tsNextButton {
+      &:before {
+        @include icon-get-content(esri-icon-forward);
+      }
+    }
+    .tsFlipImage {
+      @include transform(scaleX(-1));
+      @include filter(FlipH);
+    }
+    .ts {
+      margin: $timeslider-margin;
+      margin-bottom: 0;
+    }
+    .tsLabels {
+      font-size: $timeslider-ruler-label-font-size;
+    }
+  }
+}
+

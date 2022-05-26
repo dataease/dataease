@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calculer la densité</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="Outil Calculer la densit&eacute;"></h2>
+        <hr/>
+    <p>Cet outil permet de cr&eacute;er une carte de densit&eacute; &agrave; partir d'entit&eacute;s ponctuelles ou lin&eacute;aires en r&eacute;partissant des quantit&eacute;s connues de certains ph&eacute;nom&egrave;nes (repr&eacute;sent&eacute;s sous forme d'attributs des points ou des lignes) sur la carte. Il en r&eacute;sulte une couche de surfaces class&eacute;es des moins denses aux plus denses.
+    </p>
+    <p>Pour le point en entr&eacute;e, chaque point doit repr&eacute;senter l'emplacement d'un &eacute;v&eacute;nement ou incident, et la couche de r&eacute;sultat repr&eacute;sente un nombre d'incidents par zone unitaire. Une valeur de densit&eacute; sup&eacute;rieure dans un nouvel emplacement indique qu'il existe plus de points &agrave; proximit&eacute; de cet emplacement. Dans de nombreux cas, la couche de r&eacute;sultat peut &ecirc;tre interpr&eacute;t&eacute;e comme une zone &agrave; risque pour des &eacute;v&eacute;nements futurs. Par exemple, si les points en entr&eacute;e repr&eacute;sentent les emplacements d'&eacute;clairs, la couche de r&eacute;sultat peut &ecirc;tre interpr&eacute;t&eacute;e comme une zone &agrave; risque pour les &eacute;clairs &agrave; venir.
+    </p>
+    <p>Pour la ligne en entr&eacute;e, la surface de densit&eacute; lin&eacute;aire repr&eacute;sente la quantit&eacute; totale de lignes &agrave; proximit&eacute; de chaque emplacement. Les unit&eacute;s des valeurs de densit&eacute; calcul&eacute;es correspondent &agrave; la longueur de ligne par zone unitaire. Par exemple, si les lignes repr&eacute;sentent des rivi&egrave;res, la couche de r&eacute;sultat repr&eacute;sente la longueur totale des rivi&egrave;res qui se trouvent au sein du rayon de recherche. Ce r&eacute;sultat peut servir &agrave; identifier les zones d'accueil pour les animaux de p&acirc;turage.
+    </p>
+    <p>Voici les autres cas d'utilisation de cet outil :
+
+        <ul>
+            <li>Cr&eacute;ation de cartes de densit&eacute; criminelle afin d'aider les services de police &agrave; allouer convenablement les ressources sur les zones &agrave; forte criminalit&eacute;.
+                
+ 
+            </li>
+            <li>Calcul des densit&eacute;s des h&ocirc;pitaux au sein d&rsquo;un comt&eacute;. La couche de r&eacute;sultat affiche les zones dont l'accessibilit&eacute; aux h&ocirc;pitaux est &eacute;lev&eacute;e ou faible et ces informations peuvent servir &agrave; choisir o&ugrave; implanter de nouveaux h&ocirc;pitaux.
+                
+ 
+            </li>
+            <li>Identification des zones pr&eacute;sentant de forts risques d'incendies forestiers en fonction des emplacements historiques des incendies forestiers.
+                
+ 
+            </li>
+            <li>Localisation des communaut&eacute;s qui se trouvent &agrave; l'&eacute;cart des principaux axes routiers en vue de planifier la construction de nouvelles routes.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>Choisissez la couche de points ou linéaire en entrée à partir de laquelle calculer la densité</h2></div>
+        <hr/>
+        <div>
+            <p>Le point en entr&eacute;e ou la couche de lignes qui servira &agrave; calculer la couche de densit&eacute;.
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>Utiliser un champ de nombre</h2></div>
+        <hr/>
+        <div>
+            <p>Fournissez un champ sp&eacute;cifiant le nombre d'incidents &agrave; chaque emplacement. Par exemple, si des points repr&eacute;sentent des villes, vous pouvez utiliser un champ repr&eacute;sentant la population de la ville sous forme de champ de nombre. La couche de densit&eacute; de la population r&eacute;sultant calcule alors les densit&eacute;s de population sup&eacute;rieures &agrave; proximit&eacute; des villes dont la population est plus &eacute;lev&eacute;e.
+            </p>
+            <p>Si la valeur par d&eacute;faut  <b>Aucun</b> est utilis&eacute;e, chaque emplacement est suppos&eacute; repr&eacute;senter un seul nombre.
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Distance de recherche</h2></div>
+        <hr/>
+        <div>
+            <p>Entrez une valeur indiquant la distance de recherche d'entit&eacute;s ponctuelles ou lin&eacute;aires lors du calcul de valeurs de densit&eacute;. Par exemple, si vous indiquez une distance de recherche de 10 000 m&egrave;tres, la densit&eacute; de n'importe quel emplacement dans la couche en sortie est calcul&eacute;e en fonction des entit&eacute;s qui se trouvent &agrave; moins de 10 000 m&egrave;tres de l'emplacement. Tout emplacement qui ne poss&egrave;de pas d'incidents &agrave; moins de 10 000 m&egrave;tres recevra une valeur de densit&eacute; de z&eacute;ro.
+            </p>
+            <p>Si aucune distance n'est fournie, une valeur par d&eacute;faut est calcul&eacute;e en fonction des emplacements des entit&eacute;s en entr&eacute;e et des valeurs du champ de nombre (si un champ de nombre est sp&eacute;cifi&eacute;).
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>Unités de surface en sortie</h2></div>
+        <hr/>
+        <div>
+            <p>Pr&eacute;cisez l'unit&eacute; de surface en sortie. La densit&eacute; correspond au nombre divis&eacute; par la surface et ce param&egrave;tre indique l'unit&eacute; de la surface dans le calcul de la densit&eacute;.
+            </p>
+            <p>Les unit&eacute;s surfaciques disponibles sont exprim&eacute;es en miles carr&eacute;s, en pieds carr&eacute;s, en m&egrave;tres carr&eacute;s et en kilom&egrave;tres carr&eacute;s.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Taille de cellule en sortie</h2></div>
+        <hr/>
+        <div>
+            <p>Taille de cellule et unit&eacute; des rasters en sortie.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

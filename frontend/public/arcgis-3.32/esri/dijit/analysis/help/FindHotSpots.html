@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Find Hot Spots</h2><p/>
+        <h2><img src="./images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" alt="Find Hot Spots"></h2>
+        <hr/>
+    <p> The Find Hot Spots tool will determine if there is any statistically significant clustering in the spatial pattern of your data.
+        <ul>
+            <li>Are your points (crime incidents, trees, traffic accidents) really clustered?  How can you be sure?
+            </li>
+            <li>Have you truly discovered a statistically significant hot spot (for spending, infant mortality, consistently high test scores) or would your map tell a different story if you changed the way it was symbolized?
+            </li>
+        </ul>
+        The Find Hot Spots tool will help you answer these questions with confidence.
+    </p>
+    <p>Even random spatial patterns exhibit some degree of clustering.  In addition, our eyes and brains naturally try to find patterns even when none exist.  Consequently, it can be difficult to know if the patterns in your data are the result of real spatial processes at work or just the result of random chance.  This is why researchers and analysts use statistical methods like Find Hot Spots (Getis-Ord Gi*) to quantify spatial patterns.  When you do find statistically significant clustering in your data, you have valuable information.  Knowing where and when clustering occurs can provide important clues about the processes promoting the patterns you're seeing.  Knowing that residential burglaries, for example, are consistently higher in particular neighborhoods is vital information if you need to design effective prevention strategies, allocate limited police resources, initiate neighborhood watch programs, authorize in-depth criminal investigations, or identify potential suspects.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Choose layer for which hot spots will be calculated</h2></div>
+        <hr/>
+        <div>
+            <p>The point or area layer from which hot and cold spots will be found.
+
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Find clusters of high and low</h2></div>
+        <hr/>
+        <div>
+            <p>This analysis answers the question: Where do high and low values cluster spatially?
+            </p>
+            <p>If your data is points and you  choose  <b>Point Counts</b>, this tool will evaluate the spatial arrangement of the point features to answer the question: Where are points unexpectedly clustered or spread out?
+            </p>
+            <p>If you choose a field, this tool will evaluate the spatial arrangement of the values associated with each feature to answer the question: Where are high and low values clustering?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Count points within</h2></div>
+        <hr/>
+        <div>
+            <p>The default is to count points within a fishnet grid created by the tool based on your point data. Alternatively, you can choose to count points within a hexagon grid or provide an area layer (typically, these would reflect administrative reporting districts such as census tracts, municipal boundaries, or counties) to answer the question: Given the number of points counted within each area feature, are there locations with statistically significant spatial clustering of high or low point counts?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Define where points are possible</h2></div>
+        <hr/>
+        <div>
+            <p>Either draw or provide a layer defining where incidents are possible to answer the question: Within the areas, are there any locations with unexpectedly high or low point concentrations?   
+            </p>
+            <p>The area features you draw or the features in the area layer you specify should define where points could possibly occur.  To draw these areas, click the  <b>Draw</b> button and click a location on the map to create an area shape.  To draw additional areas, click the draw button again and click a location on the map to continue.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Divide by</h2></div>
+        <hr/>
+        <div>
+            <p>Sometimes you may want to analyze patterns that take into account underlying distributions. For example,   if your points represent crimes, dividing by total population would result in an analysis of crimes per capita rather than raw crime counts.  Choosing an attribute to divide by is often referred to as normalization.
+            </p>
+            <p>Choosing  <i>Esri Population</i> will enrich each area feature with population values, which will then be used as  the attribute to divide by.  This option will use credits.
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Override Options</h2></div>
+        <hr/>
+        <div>
+            <p> The tool will find optimal settings for <b>Cell Size</b> and <b>Distance Band</b> defaults based on the characteristics of your data. However, if you have a particular <b>Cell Size</b> or <b>Distance Band</b> that makes sense for your analysis, the <b>Override Options</b> can be used  to set those values.
+            </p>
+            <p>The  <b>Override Options</b> are also useful when running analysis on different datasets,  allowing you to keep <b>Distance Band</b> and <b>Cell Size</b> consistent across multiple datasets.  You can then appropriately compare the results, for example, obesity and diabetes rates or even crime rates for two different years.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Cell Size</h2></div>
+        <hr/>
+        <div>
+            <p>The size of the grid cells used to count points within.  
+            </p>
+            <p>When using a hexagon grid to count points within, this distance is used as the height of the hexagons.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Distance Band</h2></div>
+        <hr/>
+        <div>
+            <p>Each feature is analyzed within the context of those neighboring features located within the distance you specify.  The tool will calculate a default distance for you, or you may use this option to set a particular distance that makes sense for your analysis. 
+            </p>
+            <p>For instance, if you are studying commuting patterns and you know that the average journey to work is 15 miles, for example, you may want to use a 15-mile distance band for your analysis.
+            </p>
+        </div>
+    </div>
+    <div id="hotSpotsResultLayer">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>Provide a name for the layer that will be created in  <b>My Content</b>  and added to the map.  
+This result layer will show you statistically significant clusters of high and low values or point counts. If the result layer name already exists, you will be asked to rename it.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down box, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

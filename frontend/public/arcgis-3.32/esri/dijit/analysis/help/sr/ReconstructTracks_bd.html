@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rekonstruiši staze</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="Rekonstrui&scaron;i staze"></h2>
+        <hr/>
+    <p> Ova alatka radi sa vremenski omogućenim slojem bilo tačkastih ili geoobjekata oblati koji predstavljaju <code>trenutak</code> u vremenu.   Ona prvo određuje koji geoobjekti pripadaju stazi koja koristi identifikator. Koristeći vreme na svakoj lokaciji, staze su poređane redom i transformisane u liniju ili oblast koja predstavlja putanju pomeranja tokom vremena. Opciono, ulazni podaci mogu da bude sme&scaron;teni u zonu bliskosti pomoću polja, &scaron;to će kreirati oblast na svakoj lokaciji. Ove tačke za koje je kreirana zona bliskosti ili ulazne oblasti se zatim pridružuju redom da bi kreirali stazu kao oblast gde je &scaron;irina predstavnik atributa od značaja. Rezultujuće staze imaju vreme početka i kraja, koje vremenski predstavlja prvi i poslednji geoobjekat u datoj stazi. Kada se kreiraju staze, izračunavaju se statistički podaci u vezi sa ulaznim geoobjektima i dodeljuju izlaznoj stazi. Najosnovnija statistika je broj tačaka unutar oblasti, ali je takođe moguće izračunati i druge statistike.
+    </p>
+    <p>Geoobjekti u vremenski omogućenim slojevima mogu da se predstave na jedan od dva načina:
+        <ul>
+            <li>Trenutak &ndash; jedan trenutak u vremenu
+            </li>
+            <li>Interval &ndash; vreme početka i kraja
+            </li>
+        </ul>
+        
+    </p>
+    <p>Na primer, pretpostavimo da imate GPS merenja uragana svakih 10 minuta. Svako GPS merenje zapisuje ime uragana, lokaciju, vreme zapisivanja i brzinu vetra. Sa ovim informacijama, mogli biste da kreirate staze za svaki uragan koristeći ime za identifikaciju staze i staze za svaki uragan bi bile generisane. Dodatno, mogli biste da izračunate statistiku kao &scaron;to je srednja, maksimalna i minimalna brzina vetra svakog uragana, kao i broj merenja unutar svake staze.
+    </p>
+    <p>Koristeći isti primer, mogli biste da kreirate zonu bliskosti za svoje trake prema brzini vetra. To bi kreiralo zonu bliskosti za svako polje merenja brzine vetra na toj lokaciji i pridružilo zajedno oblasti za koje je kreirana zona bliskosti, kreirajući predstavničku oblast putanje staze, kao i promene u brzinama vetra u toku napredovanja uragana.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izaberite geoobjekte iz kojih treba rekonstruisati staze</h2></div>
+        <hr/>
+        <div>
+            <p>Tačkasti ili sloj oblasti koji će biti rekonstruisan u staze. Ulazni sloj mora da bude vremenski omogućen sa geoobjektima koji predstavljaju trenutak u vremenu. Sloj mora da bude u projektovanom koordinatnom sistemu ili prostorna referenca obrade mora da bude postavljena na projektovani koordinatni sistem kori&scaron;ćenjem  <b>Okruženja analize</b> ako se primeni zona bliskosti.
+            </p>
+            <p>Kao dodatak odabiru sloja iz mape, možete da odaberete  <b>Izaberi sloj za analizu</b> na dnu padajuće liste da biste potražili deljeni skup podataka za datoteke sa velikim podacima ili sloj geoobjekta u svojim sadržajima.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Odaberite jedno ili više polja za identifikovanje staza</h2></div>
+        <hr/>
+        <div>
+            <p>Polja koja predstavljaju identifikator staza. 
+            </p>
+            <p>Kao primer, ako biste rekonstruisali staze uragana, mogli biste da koristite ime uragana kao polje staze.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Izaberite metod koji se koristi za rekonstrukciju staza</h2></div>
+        <hr/>
+        <div>
+            <p>Metod koji se koristi za pridruživanje staza i primenu zone bliskosti (ako je primenljivo).  <b>Planarni</b> metod može da izračuna rezultate brže, ali neće omotati staze oko međunarodne datumske granice ili uračunati stvaran oblik zemlje pri stvaranju zone bliskosti. <b>Geodetski</b> metod će omotati staze oko međunarodne datumske granice, po potrebi, i primeniti geodetsku zonu bliskosti kako bi uračunao oblik zemlje.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Kreirajte izraz po kom će se ulazni geoobjekti staviti u zonu bliskosti (opciono)</h2></div>
+        <hr/>
+        <div>
+            <p>Jednačina koja se koristi za izračunavanje rastojanja zone bliskosti oko ulaznih geoobjekata. Ova jednačina može da se generi&scaron;e pomoću kalkulatora zone bliskosti i podržanih osnovnih operacija kao &scaron;to su sabiranje, oduzimanje, množenje i deljenje. Vrednosti se izračunavaju kori&scaron;ćenjem koordinatnog sistema za analizu. Sloj mora da bude u projektovanom koordinatnom sistemu ili prostorna referenca obrade mora da bude postavljena na projektovani koordinatni sistem kori&scaron;ćenjem  <b>Okruženja analize</b> ako se primeni zona bliskosti.
+            </p>
+            <p>Jednačina kao &scaron;to je  <code>$feature.windspeed * 1000</code> bi primenila zonu bliskosti 1000 uvećanu poljem <i>windspeed</i>. Možete da koristite vi&scaron;e od jednog polja u kalkulatoru zone bliskosti.
+            </p>
+            <p> Možete i da navedete izraz koji je usklađen sa stazom. Na primer, možete da izračunate sumu vrednosti polja <i>windspeed</i> za trenutnu geoobjekat i prethodna dva geoobjekta sa jednačinom <code>$track.field(windspeed).history(-3)</code>. Na svakoj lokaciji, suma trenutnog merenja <i>windspeed</i> i prethodna dva merenja bi bila izračunata i kreirana zona bliskosti.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Izaberite vreme po kom će se deliti staze (opciono)</h2></div>
+        <hr/>
+        <div>
+            <p>Vreme koje se koristi za deljenje staza. Ako ulazne tačke ili oblasti imaju duže trajanje između njih od podeljenog vremena, biće podeljene u različite staze.
+            </p>
+            <p>Ako navedete podeljeno vreme i podeljenu razdaljinu, staze će se podeliti kada se ispuni jedan ili oba uslova. 
+            </p>
+            <p>Zamislite da ste imali tačkaste geoobjekte koji predstavljaju letove aviona, pri čemu je polje staze bio ID aviona. Ovaj avion bi mogao da putuje vi&scaron;e puta i da bude predstavljen kao jedna staza.  Kada biste znali da postoji pauza od 1 sata između letova, mogli biste da koristite  <code>1 sat</code> kako se va&scaron;e staze dele, pa bi svaki let bio podeljen u svoju sopstvenu stazu.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Podeli staze (opciono)</h2></div>
+        <hr/>
+        <div>
+            <p>Možete da podelite staze kori&scaron;ćenjem tri različita metoda. Možete da koristite kombinaciju nijednog, svih ili nekih metoda deljenja. 
+            </p>
+            <p>Podele mogu da se zavr&scaron;e na sledeće načine:
+                <ul>
+                    <li> <b>Na osnovu rastojanja između ulaza</b> &ndash; Ako ulazne tačke ili oblasti imaju veće međusobno rastojanje od navedene razdaljine, biće podeljene u različite staze. Na primer, ako ste naveli rastojanje od 10 kilometara, uzastopne tačke veće od 10 kilometara bi bile odvojene staze.
+                    </li>
+                    <li> <b>Na osnovu vremena između ulaza</b> &ndash; Ako ulazne tačke ili oblasti imaju duži međusobni vremenski razmak od podeljenog vremena, biće podeljene u različite staze. Na primer, ako ste imali tačkaste geoobjekte koji predstavljaju letove aviona, pri čemu je polje staze bio ID aviona. Ovaj avion bi mogao da putuje vi&scaron;e puta i da bude predstavljen kao jedna staza.  Kada biste znali da postoji pauza od 1 sata između letova, mogli biste da koristite <code>1 sat</code> kako se va&scaron;e staze dele, pa bi svaki let bio podeljen u svoju sopstvenu stazu.
+                    </li>
+                    <li> <b>U definisanim vremenskim intervalima</b> &ndash; Deljenje kori&scaron;ćenjem regularnih intervala, određeno vremenskim intervalom i referentnim vremenom. Ako ne navedete referentno vreme, koristiće se 1. januar 1970. Na primer, ako ste naveli 1 godinu sa referentnim vremenom od 2. februara 1990. u 10:00, delili biste staze 2. februara 1990. u 10:00, 2. februara 1991. u 10:00 i nastavili u intervalima od jedne godine.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ako navedete vi&scaron;e opcija deljenja, staze će se podeliti kada se ispuni jedan ili vi&scaron;e uslova. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Izaberite rastojanje po kom će se deliti staze (opciono)</h2></div>
+        <hr/>
+        <div>
+            <p>Rastojanje koje se koristi za deljenje staza. Ako ulazne tačke ili oblasti imaju veće međusobno rastojanje od podeljene razdaljine, biće podeljene u različite staze.
+            </p>
+            <p>Ako navedete podeljeno vreme i podeljenu razdaljinu, staze će se podeliti kada se ispuni jedan ili oba uslova. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Dodaj statistiku (opciono)</h2></div>
+        <hr/>
+        <div>
+            <p> Možete da izračunate statistiku na geoobjektima koji su sumirani. Možete da izračunate sledeće na numeričkim poljima:
+                <ul>
+                    <li>Brojač&mdash;izračunava broj vrednosti koje nisu null. Može da bude kori&scaron;ćen u numeričkim poljima ili niskama. Brojač od [null, 0, 2] je 2.
+                    </li>
+                    <li>Zbir&mdash;zbir numeričkih vrednosti u polju. Zbir od [null, null, 3] je 3.
+                    </li>
+                    <li>Značenje&mdash;značenje numeričkih vrednosti. Značenje od [0, 2, null] je 1.
+                    </li>
+                    <li>Min&mdash;minimalna vrednost numeričkog polja. Minimum od [0, 2, null] je 0. 
+                    </li>
+                    <li>Maks&mdash;maksimalna vrednost numeričkog polja. Maksimalna vrednost od [0, 2, null] je 2.
+                    </li>
+                    <li>Opseg&mdash;opseg numeričkog polja. Ovo se izračunava kada se minimalna vrednost oduzme od maksimalne vrednosti. Opseg od [0, null, 1] je 1. Opseg od [null, 4] je 0.
+                    </li>
+                    <li>Varijansa&mdash;varijansa numeričkog polja u stazi. Varijansa od [1] je null. Varijansa od [null, 1,0,1,1] je 0,25.
+                    </li>
+                    <li>Standardna devijacija&mdash;standardna devijacija numeričkog polja. Standardna devijacija od [1] je null. Standardna devijacija od [null, 1,0,1,1] je 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Možete da izračunate sledeće na poljima niski:
+                <ul>
+                    <li>Brojač&mdash;broj vrednosti koje nisu null.
+                    </li>
+                    <li>Bilo koji&mdash;ova statistika je nasumični uzorak vrednosti niske u navedenom polju.
+                    </li>
+                </ul>
+                Sva statistika se izračunava na vrednostima koje nisu null (bez vrednosti). Rezultujući sloj će sadržati novo polje za svaku izračunatu statistiku. Svaki broj statistike može da se doda odabirom atributa i statistike. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Odaberite ArcGIS skladište podataka u koje će se čuvati rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultati geoanalize se skladi&scaron;te u skladi&scaron;tu podataka i izloženi su kao sloj geoobjekata u  Portal for ArcGIS. U većini slučajeva, rezultati bi trebali da budu skladi&scaron;teni u u skladi&scaron;te prostorno-vremenskih podataka i ovo je podrazumevano. U nekim slučajevima, čuvanje rezultata u skladi&scaron;te relacionih podataka je dobar izbor. Slede razlozi zbog kojih ćete želeti da skladi&scaron;tite rezultate u skladi&scaron;tu relacionih podataka: 
+                <ul>
+                    <li>Možete da koristite rezultate u kolaboraciji portal-sa-portalom.
+                    </li>
+                    <li>Možete da omogućite mogućnosti sinhronizacije sa va&scaron;im rezultatima.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ne treba da koristite skladi&scaron;te relacionih podataka ako očekujete da se geoanalitički podaci povećaju i treba da iskoristite mogućnosti prostorno-vremenskog skladi&scaron;ta velikih podataka kako biste upravljali velikim količinama podataka.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p> Ime sloja koji će se kreirati. Ako vr&scaron;ite upis u ArcGIS Data Store, va&scaron;i rezultati će se čuvati u  <b>Mom sadržaju</b> i biće dodati na mapu. Ako vr&scaron;ite upis u deljeni resurs za datoteke sa velikim podacima, va&scaron;i rezultati će se čuvati u deljenom resursu za datoteke sa velikim podacima i biti dodati u njegov manifest. On neće biti dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, alatka će otkazati.
+            </p>
+            <p>Prilikom upisa u  ArcGIS Data Store (skladi&scaron;te relacionih ili prostorno-vremenskih velikih podataka) koristeći padajuće polje  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> gde će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

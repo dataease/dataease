@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Izračunaj gustinu</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="Alatka Izračunaj gustinu"></h2>
+        <hr/>
+    <p>Ova alatka kreira mapu gustine od tačkastih ili linijskih geoobjekata &scaron;irenjem poznatog kvantiteta neke pojave (predstavljene kao atributa tačaka ili linija) kroz mapu. Rezultat je sloj oblasti klasifikovanih od najmanje do najvi&scaron;e gustih.
+    </p>
+    <p>Za unos tačaka, svaka tačka treba da predstavlja lokaciju nekog događaja ili incidenta, a sloj sa rezultatima predstavlja broj incidenata po jediničnoj oblasti. Veća vrednost gustine u novoj lokaciji znači da postoji vi&scaron;e tačaka blizu te lokacije. U mnogim slučajevima, sloj sa rezultatima može da se protumači kao povr&scaron;ina rizika za buduće događaje. Na primer, ako ulazne tačke predstavljaju lokacije udara groma, sloj sa rezultatima može da se protumači kao povr&scaron;ina rizika za buduće udare groma.
+    </p>
+    <p>Za linijski unos, povr&scaron;ina gustine linija predstavlja ukupnu količinu linija koja je blizu svake lokacije. Jedinice izračunatih vrednosti gustine su dužina oblasti linije-po-jedinici. Na primer, ako linije predstavljaju reke, sloj sa rezultatima predstavljaće ukupnu dužinu reka koje su unutar radijusa pretrage. Ovaj rezultat može da se koristi za identifikovanje oblasti koje su gostoljubive prema životinjama na ispa&scaron;i.
+    </p>
+    <p>Drugi slučajevi upotrebe ove alatke uključuju sledeće:
+
+        <ul>
+            <li>Kreiranje mapa gustine kriminalnih dela &scaron;to pomaže policijskim odeljenjima da dodele resurse u oblastima visoke stope kriminala.
+                
+ 
+            </li>
+            <li>Izračunavanje gustina bolnica unutar okruga. Sloj sa rezultatima prikazaće oblasti sa visokom i niskom pristupačno&scaron;ću bolnicama, a ove informacije mogu da se koriste za dono&scaron;enje odluke gde treba izgraditi nove bolnice.
+                
+ 
+            </li>
+            <li>Identifikovanje oblasti u kojima postoji veliki rizik od &scaron;umskih požara na osnovu arhivskih lokacija &scaron;umskih požara.
+                
+ 
+            </li>
+            <li>Lociranje zajednica koje su predaleko od velikih autoputeva u svrhe planiranja gde bi trebalo izgraditi nove puteve.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>Odaberite ulazni tačkasti ili linijski sloj iz kojeg će se izračunati gustina</h2></div>
+        <hr/>
+        <div>
+            <p>Ulaznu tačku ili linijski sloj koji će se koristiti za izračunavanje sloja gustine.
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>Koristi polje brojača</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite polje navodeći broj incidenata na svakoj lokaciji. Na primer, ako imate tačke koje predstavljaju gradove, možete da koristite polje koje predstavlja populaciju grada kao polje brojača, a rezultujući sloj sa gustinom populacije izračunaće veće gustine populacije blizu gradova sa većim populacijama.
+            </p>
+            <p>Ako se koristi podrazumevani izbor  <b>None</b>, tada će se pretpostavljati da svaka lokacija predstavlja jedan broj..
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Pretraži rastojanje</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite razdaljinu navodeći koliko daleko treba pretraživati da bi se prona&scaron;li tačkasti ili linijski geoobjekti prilikom izračunavanja vrednosti gustine. Na primer, ako unesete pretragu razdaljine od 10.000 metara, gustina bilo koje lokacije u izlaznom sloju izračunava se na osnovu geoobjekata koji su unutar 10.000 metara od lokacije. Svaka lokacija koja nema nijedan incident unutar 10.000 metara primiće vrednost gustine nula.
+            </p>
+            <p>Ako razdaljina nije uneta, biće izračunata podrazumevana vrednost zasnovana na lokacijama ulaznih geoobjekata i vrednostima u polju brojača (ako je polje brojača omogućeno).
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>Jedinice izlazne površine</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite jedinicu izlazne povr&scaron;ine. Gustina je broj podeljen sa povr&scaron;inom, i ovaj parametar određuje jedinice povr&scaron;ine u izračunavanju gustine.
+            </p>
+            <p>Jedinice povr&scaron;ine koje su na raspolaganju su kvadratne milje , kvadratne stop, kvadratni metri i kvadratni kilometri.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Veličina izlazne ćelije</h2></div>
+        <hr/>
+        <div>
+            <p>Veličina ćelije i jedinica za izlazne rastere.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat mapi. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Možete da navedete ime fascikle u  <b>Mom sadržaju</b> gde će rezultat biti sačuvan kori&scaron;ćenjem padajućeg polja <b>Sačuvaj rezultat u</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

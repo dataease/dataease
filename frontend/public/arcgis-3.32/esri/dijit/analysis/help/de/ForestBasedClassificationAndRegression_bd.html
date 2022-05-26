@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Forest-basierte Klassifizierung und Regression</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Diagramm des Workflows &quot;Forest-basierte Klassifizierung und Regression&quot;"></h2>
+        <hr/>
+    <p>Erstellt Modelle und generiert Vorhersagen mithilfe einer Adaption des &quot;Random Forest&quot;-Algorithmus, einer Methode f&uuml;r &uuml;berwachtes maschinelles Lernen von Leo Breiman. Vorhersagen k&ouml;nnen sowohl f&uuml;r Kategorievariablen (Klassifizierung) als auch f&uuml;r kontinuierliche Variablen (Regression) getroffen werden. Erkl&auml;rende Variablen sind Felder in der Attributtabelle der Trainings-Features. Das Werkzeug kann ausgef&uuml;hrt werden, um ein Modell f&uuml;r die Bewertung der Performance zu erstellen oder um ein Modell zu erstellen und Ergebnisse f&uuml;r andere Datasets vorherzusagen.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analysetyp</h2></div>
+        <hr/>
+        <div>
+            <p>Gibt den Operationsmodus des Werkzeugs an. Das Werkzeug kann ausgef&uuml;hrt werden, um ein Modell nur f&uuml;r die Bewertung der Performance zu trainieren oder um ein Modell zu trainieren und Features vorherzusagen. Die folgenden Vorhersagetypen sind verf&uuml;gbar:
+                <ul>
+                    <li> <b>Modell f&uuml;r die Bewertung der Modell-Performance trainieren</b>: Ein Modell wird trainiert und an die Eingabedaten angepasst. Pr&uuml;fen Sie die Genauigkeit des Modells mit dieser Option, bevor Sie Vorhersagen f&uuml;r ein neues Dataset generieren. Die Ausgaben dieser Option sind ein Feature-Service Ihrer angepassten Trainingsdaten, Modelldiagnosen und optional eine Tabelle der Variablenbedeutung.
+                    </li>
+                    <li> <b>Modell trainieren und Werte vorhersagen</b>: Vorhersagen oder Klassifikationen werden f&uuml;r Features generiert. Sowohl f&uuml;r die Trainings-Features als auch f&uuml;r die vorherzusagenden Features m&uuml;ssen erkl&auml;rende Variablen angegeben werden. Die Ausgaben dieser Option sind ein Feature-Service Ihrer vorhergesagten Werte, Modelldiagnosen und optional eine Tabelle der Variablenbedeutung.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Ein Modell trainieren, um die Modell-Performance zu bewerten</h2></div>
+        <hr/>
+        <div>
+            <p>Verwenden Sie diesen Modus, wenn Sie ein Modell anpassen und die Anpassung untersuchen m&ouml;chten.
+            </p>
+            <p>Mit dieser Auswahl wird das Modell mithilfe eines Eingabe-Layers trainiert. Pr&uuml;fen Sie die Genauigkeit des Modells mit dieser Option, bevor Sie Vorhersagen f&uuml;r ein neues Dataset generieren. Mit dieser Option werden Modelldiagnosen im Meldungsfenster ausgegeben und wird das Modell auf Ihre Trainingsdaten angewendet.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Ein Modell trainieren und Werte vorhersagen</h2></div>
+        <hr/>
+        <div>
+            <p>Verwenden Sie diesen Modus, wenn Sie ein Modell anpassen m&ouml;chten, und wenden Sie das Modell auf das Dataset an, um Vorhersagen zu generieren.
+            </p>
+            <p>Es werden Vorhersagen oder Klassifizierungen f&uuml;r Features generiert. Die Ausgaben dieser Option sind ein Feature-Service, Modelldiagnosen und optional eine Tabelle der Variablenbedeutung.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Training-Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Feature-Layer, der die vorherzusagende Variable und die Felder enth&auml;lt, mit denen die Vorhersage generiert wird.
+            </p>
+            <p>Sie k&ouml;nnen nicht nur einen Layer aus der Karte ausw&auml;hlen, sondern auch unten in der Dropdown-Liste die Option  <b>Analyse-Layer ausw&auml;hlen</b> ausw&auml;hlen, um zu Ihren Inhalten f&uuml;r ein Big-Data-Dateifreigabe-Dataset bzw. -Feature-Layer zu navigieren.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Wählen Sie einen Layer aus, für den Werte vorhergesagt werden sollen</h2></div>
+        <hr/>
+        <div>
+            <p>Ein Feature-Layer, der Positionen darstellt, an denen Vorhersagen getroffen werden. Dieser Feature-Layer muss auch erkl&auml;rende Variablen enthalten, die als Felder bereitgestellt wurden und den von den Trainings-Features verwendeten Feldern entsprechen.
+            </p>
+            <p>Sie k&ouml;nnen nicht nur einen Layer aus der Karte ausw&auml;hlen, sondern auch unten in der Dropdown-Liste die Option  <b>Analyse-Layer ausw&auml;hlen</b> ausw&auml;hlen, um zu Ihren Inhalten f&uuml;r ein Big-Data-Dateifreigabe-Dataset bzw. -Feature-Layer zu navigieren.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Vorherzusagendes Feld auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Das Feld aus den Trainings-Features mit den Werten, die zum Trainieren des Modells verwendet werden sollen. Dieses Feld enth&auml;lt bekannte (Trainings-)Werte der Variablen, mit denen eine Vorhersage an unbekannten Positionen getroffen wird. Aktivieren Sie das Kontrollk&auml;stchen  <b>Kategorisch</b>, wenn Werte kategorisch sind (z.&nbsp;B. Ahorn, Pinie, Eiche).
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Eine oder mehrere erklärende Variablen auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Ein oder mehrere Felder, die erkl&auml;rende Variablen (Felder) darstellen und die Vorhersage des Wertes oder der Kategorie von &quot;Vorherzusagende Variable&quot; unterst&uuml;tzen. Verwenden Sie das Kontrollk&auml;stchen &quot;Kategorie&quot; f&uuml;r alle Variablen, die Klassen oder Kategorien darstellen (z.&nbsp;B. Landbedeckung oder Anwesenheit oder Abwesenheit). Geben Sie f&uuml;r alle Werte der Variable, die Klassen oder Kategorien wie Landbedeckung oder Anwesenheit oder Abwesenheit darstellen, &quot;true&quot; an und &quot;false&quot;, wenn es sich um eine kontinuierliche Variable handelt.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Anzahl der Bäume</h2></div>
+        <hr/>
+        <div>
+            <p>Die Anzahl der B&auml;ume, die im Modell erstellt werden sollen. Eine h&ouml;here Anzahl von Strukturen f&uuml;hrt zu einer genaueren Modellvorhersage, f&uuml;r die Berechnung des Modells wird jedoch mehr Zeit ben&ouml;tigt. Die Standardzahl von Strukturen betr&auml;gt 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Minimale Blattgröße</h2></div>
+        <hr/>
+        <div>
+            <p>Die minimale Anzahl der Beobachtungen, die mindestens erforderlich sind, um ein Element (also den Endpunkt einer Struktur, der keine weiteren Verzweigungen hat) beizubehalten. Das Standardminimum ist 5 f&uuml;r die Regression und 1 f&uuml;r die Klassifizierung. Bei sehr gro&szlig;en Daten f&uuml;hrt eine Erh&ouml;hung dieser Zahlen zu einer Erh&ouml;hung der Laufzeit des Werkzeugs.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Maximale Strukturtiefe</h2></div>
+        <hr/>
+        <div>
+            <p>Die maximale Anzahl von Teilungen entlang einer Struktur. Je gr&ouml;&szlig;er die maximale Tiefe, desto mehr Teilungen werden erstellt. Dadurch steigt das Risiko einer &Uuml;beranpassung des Modells. Die Standardeinstellung ist datenabh&auml;ngig und abh&auml;ngig von der Anzahl der erstellten Strukturen und der ber&uuml;cksichtigten Variablen.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Pro Baum verfügbare Daten (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Gibt den Prozentsatz der f&uuml;r jede Entscheidungsstruktur verwendeten Features im Trainings-Layer an. Die Standardeinstellung liegt bei 100&nbsp;Prozent der Daten. Samples f&uuml;r jede Struktur werden nach dem Zufallsprinzip aus zwei Dritteln der angegebenen Daten entnommen.
+            </p>
+            <p>Alle Entscheidungsb&auml;ume im Wald werden mithilfe einer zuf&auml;lligen Stichprobe oder einer zuf&auml;lligen Teilmenge (etwa zwei Drittel) der verf&uuml;gbaren Trainingsdaten erstellt. Durch die Verwendung eines niedrigeren Prozentsatzes der Eingabedaten f&uuml;r die einzelnen Entscheidungsb&auml;ume wird die Geschwindigkeit des Werkzeugs bei sehr gro&szlig;en Datasets beschleunigt.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Anzahl der nach dem Zufallsprinzip erfassten Variablen</h2></div>
+        <hr/>
+        <div>
+            <p>Gibt die Anzahl der erkl&auml;renden Variablen f&uuml;r die Erstellung der einzelnen Entscheidungsstrukturen an.
+            </p>
+            <p>Alle Entscheidungsstrukturen in der Gesamtstruktur werden mithilfe einer zuf&auml;lligen Teilmenge der erkl&auml;renden Variablen erstellt. Durch eine Erh&ouml;hung der Anzahl der in den einzelnen Entscheidungsb&auml;umen verwendeten Variablen steigt die Wahrscheinlichkeit einer &Uuml;beranpassung des Modells, vor allem dann, wenn dominante Variablen vorhanden sind. Eine g&auml;ngige Praxis besteht darin, die Quadratwurzel aus der Gesamtzahl der erkl&auml;renden Variablen zu ziehen, wenn &quot;Vorherzusagende Variable&quot; numerisch ist, oder die Gesamtzahl der erkl&auml;renden Variablen durch 3 zu teilen, wenn &quot;Vorherzusagende Variable&quot; kategorisch ist.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Wählen Sie aus, wie erklärende Felder zugeordnet werden</h2></div>
+        <hr/>
+        <div>
+            <p>Auf welche Weise die entsprechenden Variablen im Training-Layer mit den Variablen im Vorhersage-Layer &uuml;bereinstimmen. Es werden ausschlie&szlig;lich die beim Training verwendeten Variablen in die Tabelle einbezogen.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Anzahl der ausgeführten Validierungen</h2></div>
+        <hr/>
+        <div>
+            <p>Gibt den Prozentsatz (zwischen 0 und 50&nbsp;Prozent) der Features im Trainings-Layer an, die als Test-Dataset f&uuml;r die Validierung reserviert sind. Das Modell wird ohne diese zuf&auml;llige Teilmenge der Daten trainiert, und die beobachteten Werte f&uuml;r diese Features werden mit dem vorhergesagten Wert verglichen. Der Standardwert ist 10&nbsp;Prozent.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>Die zur&uuml;ckgegebenen Ergebnisse sind vom jeweiligen Analysetyp abh&auml;ngig. Wenn Sie ein Training zum Bewerten der Modellanpassung durchf&uuml;hren, enthalten die Ergebnisse einen an das Modell angepassten Layer mit Trainingsdaten und Ergebnisinformationen mit einer Bewertung der Modellanpassung. Wenn Sie Trainings und Vorhersagen durchf&uuml;hren, enthalten die Ergebnisse einen an das Modell angepassten Layer mit den Trainingsdaten, einen Layer mit vorhergesagten Ergebnissen und Ergebnisinformationen mit einer Bewertung der Modellanpassung.
+            </p>
+            <p>&Uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

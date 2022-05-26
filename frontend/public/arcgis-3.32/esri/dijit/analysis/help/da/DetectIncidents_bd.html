@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Registrér hændelser</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Registr&eacute;r h&aelig;ndelser"></h2>
+        <hr/>
+    <p> Dette v&aelig;rkt&oslash;j arbejder med et tidsafh&aelig;ngigt lag best&aring;ende af punkter, linjer, omr&aring;der eller tabeller, der repr&aelig;senterer et &oslash;jeblik i tiden. Ved at benytte objekter, der er ordnet i r&aelig;kkef&oslash;lge, ogs&aring; kaldet spor, bestemmer dette v&aelig;rkt&oslash;j, hvilke objekter der repr&aelig;senterer h&aelig;ndelser af interesse. H&aelig;ndelserne bestemmes ud fra de betingelser, du angiver.
+    </p>
+    <p>F&oslash;rst bestemmer v&aelig;rkt&oslash;jet, hvilke objekter der tilh&oslash;rer et spor, ved at benytte et eller flere felter. Ved at benytte tid i forhold til hvert objekt arrangeres sporene i r&aelig;kkef&oslash;lge og h&aelig;ndelsesbetingelsen anvendes. De objekter, der opfylder start-h&aelig;ndelsesbetingelsen, markeres som en h&aelig;ndelse. Du kan ogs&aring; v&aelig;lge at anvende en slut-h&aelig;ndelsesbetingelse; n&aring;r slutbetingelsen er sand, er objektet ikke l&aelig;ngere en h&aelig;ndelse.  Resultaterne vil blive returneret sammen med de oprindelige objekter  &ndash; med nye kolonner, der repr&aelig;senterer h&aelig;ndelsesnavnet &ndash; og angive, hvilke objekter der opfylder h&aelig;ndelsesbetingelsen. Du kan returnere alle de oprindelige objekter eller kun de objekter, der er h&aelig;ndelser.
+    </p>
+    <p>Forestil dig f.eks., at du f&aring;r GPS-m&aring;linger af orkaner hvert 10. minut. Hver GPS-m&aring;ling registrerer orkanens navn, position, registreringstidspunkt samt vindhastighed. Ved at bruge disse felter kan du oprette en h&aelig;ndelse, hvor alle m&aring;linger med en vindhastighed p&aring; over 208 km/t er en h&aelig;ndelse med titlen  <code>Katastrofal</code>. N&aring;r en slutbetingelse ikke angives, ville h&aelig;ndelsen slutte, hvis objektet ikke l&aelig;ngere opfylder startbetingelsen (vindhastigheden falder til under 208 km/t).
+    </p>
+    <p>Et andet eksempel kunne v&aelig;re, at du overv&aring;ger koncentrationer af et kemisk stof i din lokale vandforsyning ved at bruge et felt med navnet  <code>contanimateLevel</code>. Du ved, at de anbefalede niveauer ligger p&aring; under 0,01 mg/l, og at farlige niveauer ligger over 0,03 mg/l. For at kunne registrere at en v&aelig;rdi p&aring; over 0,03 mg/l er en h&aelig;ndelse, og at den forbliver en h&aelig;ndelse, indtil forureningsniveauet igen er normalt, kan du oprette en h&aelig;ndelse ved at bruge startbetingelsen <code>contaminateLevel &gt; 0,03</code> og slutbetingelsen <code>contaminateLevel &lt; 0,01</code>. Dette vil markere enhver sekvens, hvor v&aelig;rdierne overskrider 0,03 mg/l, indtil de vender tilbage til en v&aelig;rdi, der er lavere end 0,01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg lag for at registrere hændelser fra</h2></div>
+        <hr/>
+        <div>
+            <p>De punkter, linjer, omr&aring;der og tabeller, der vil blive anvendt til at identificere h&aelig;ndelser. Input-laget skal v&aelig;re tidsafh&aelig;ngigt og indeholde objekter, der repr&aelig;senterer et &oslash;jeblik i tiden, og der skal desuden v&aelig;re et eller flere felter, der kan bruges til at identificere spor.
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Vælg ét eller flere felter for at identificere spor</h2></div>
+        <hr/>
+        <div>
+            <p>Felter, der repr&aelig;senterer sporidentifikatoren. Du kan bruge &eacute;t eller flere felter til at repr&aelig;sentere unikke v&aelig;rdier for sporene.
+            </p>
+            <p>Hvis du f.eks. skulle rekonstruere spor af orkaner, kunne du benytte orkanens navn som sporingsfelt.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Opret et betingelsesudtryk, der betegner starten på en hændelse</h2></div>
+        <hr/>
+        <div>
+            <p>Tilf&oslash;j et udtryk ved at bruge Expression Builder-programmet til at bestemme, hvad en h&aelig;ndelse er. Hvis den betingelse, du angiver, er sand, er objektet en h&aelig;ndelse. Hvis du ikke angiver en slutbetingelse, slutter en h&aelig;ndelse, n&aring;r startbetingelsen ikke l&aelig;ngere er sand.
+            </p>
+            <p>Forestil dig f.eks., at du &oslash;nsker at blive alarmeret, n&aring;r summen af felterne  <code>concentration_1</code> og <code>concentration_2</code> er st&oslash;rre end <code>concentration_3</code>.   For at g&oslash;re dette skal du anvende betingelsen <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>Hvis du var interesseret i, hvordan koncentrationerne &aelig;ndrer sig over tid, og &oslash;nskede at blive advaret, n&aring;r den nuv&aelig;rende  <code>concentration_1</code> er st&oslash;rre end de to tidligere m&aring;linger af <code>concentration_2</code> kunne du bruge et udtryk som <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Opret en udtryksbetingelse, der betegner slutningen på en hændelse (valgfrit)</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan v&aelig;lge at tilf&oslash;je et udtryk ved at bruge Expression Builder-programmet til at definere slutningen p&aring; en h&aelig;ndelse. Hvis den slutbetingelse, som du angiver, er sand, er objektet ikke l&aelig;ngere en h&aelig;ndelse. Hvis du ikke angiver en slutbetingelse, slutter en h&aelig;ndelse, n&aring;r startbetingelsen ikke l&aelig;ngere er sand.    
+            </p>
+            <p>Forestil dig f.eks., at du &oslash;nsker at blive alarmeret, n&aring;r summen af felterne  <code>concentration_1</code> og <code>concentration_2</code> er st&oslash;rre end <code>concentration_3</code>, og du &oslash;nsker, at h&aelig;ndelsen skal slutte, hvis <code>concentration_4</code> er mindre end <code>concentration_1</code>. For at g&oslash;re dette skal du anvende startbetingelsen <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> og slutbetingelsen <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>.
+            </p>
+            <p>Hvis du ville have en h&aelig;ndelse til at stoppe, n&aring;r middelv&aelig;rdien af den nuv&aelig;rende  <code>concentration_1</code> og fire tidligere m&aring;linger er st&oslash;rre end den f&oslash;rste m&aring;ling, kunne du bruge et udtryk som <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Vis mig</h2></div>
+        <hr/>
+        <div>
+            <p>Alle output-metoder vil knytte felter til de oprindelige objekter. Der er to m&aring;der, hvorp&aring; du kan bestemme, hvilke objekter der skal returneres:
+                <ul>
+                    <li> <b>Alle objekter</b> &ndash; Dette er standardindstillingen. Alle objekter i inputtet vil blive returneret.
+                    </li>
+                    <li> <b>Kun h&aelig;ndelser</b> &ndash; Denne metode vil kun returnere de objekter, der er h&aelig;ndelser. Eventuelle objekter, der ikke er h&aelig;ndelser, vil ikke blive returneret.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analysér data med tidsintervaller (valgfri)</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv, om du vil registrere h&aelig;ndelser ved hj&aelig;lp af tidsintervaller, som vil segmentere dine inputobjekter til analyse. Hvis du bruger tidsintervaller, skal du angive det tidsinterval, du vil bruge, og evt. indstille referencetidspunktet. Hvis du ikke angiver et referencetidspunkt, benyttes 1. januar 1970. 
+            </p>
+            <p>Hvis du f.eks. indstiller tidsgr&aelig;nsen til at v&aelig;re 1 dag, der begynder kl. 9.00 den 1. januar 1990, bliver hvert spor afkortet klokken 9:00 for hver dag og analyseret inden for dette segment. 
+            </p>
+            <p>Brug af tidsintervaller er en hurtig m&aring;de at nedbringe beregningstiden, da der hurtigt oprettes mindre spor til analyse. Hvis opsplitning ved et tilbagevendende tidsinterval giver mening for din analyse, anbefales det behandling af big data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; det lag, som oprettes. Hvis du skriver til et ArcGIS Data Store, bliver  dine resultater gemt i  <b>Mit indhold</b> og f&oslash;jet til kortet. Hvis du skriver til en big data-fildeling, bliver dine resultater gemt i big data-fildelingen og f&oslash;jet til dens manifest. De bliver ikke f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil v&aelig;rkt&oslash;jet ikke fungere.
+            </p>
+            <p>N&aring;r du skriver til   ArcGIS Data Store  (relationelt eller spatiotemporalt big data-lager) ved hj&aelig;lp af rullelisten  <b>Gem resultat i </b>, kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

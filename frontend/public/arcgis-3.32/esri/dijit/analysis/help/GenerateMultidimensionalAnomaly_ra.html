@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Generate Multidimensional Anomaly</h2><p/>
+        <h2><img src="./images/GUID-8D54C66F-5C16-4EE5-93E9-80722D10AF12-web.png" alt="Generate Multidimensional Anomaly"></h2>
+        <hr/>
+    <p>Generates a multidimensional raster dataset by combining existing multidimensional raster variables along a dimension.
+    </p>
+    <p>An anomaly is the deviation of an observation from its standard, mean, or median value.
+    </p>
+    <p>This tool calculates anomalies over time for one or more variables in a multidimensional raster. If you have a nontime dimension in addition to the time dimension, the anomaly will be calculated at each step in the additional dimension.
+    </p>
+    <p>For example, you have monthly ocean temperature data, collected every 1 meter of depth up to 100 meters, and you want to calculate the temperature anomalies as deviations from the yearly mean. This tool will determine the temperature anomalies based on a yearly mean if you set  <b>Yearly</b> as the <b>temporal interval to calculate the mean</b>, and it will return anomaly values for each of the 100 depths.
+    </p>
+    <p>This tool only supports multidimensional raster datasets that have a time dimension.
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, variables of the layer that are  visible within the current map extent will be analyzed. If unchecked, variables of the full layer will be analyzed, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputMultidimensionalRaster">
+        <div><h2>Choose multidimensional imagery layer to generate anomaly</h2></div>
+        <hr/>
+        <div>
+            <p>The input imagery layer of a multidimensional raster dataset.
+            </p>
+        </div>
+    </div>
+    <div id="variables">
+        <div><h2>Choose variable(s) for which anomalies will be generated</h2></div>
+        <hr/>
+        <div>
+            <p>The variable or variables for which anomalies will be calculated. If no variable is specified, all variables with a time dimension will be analyzed.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Choose method to generate anomaly</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the method that will be used to calculate the anomaly. 
+                <ul>
+                    <li> <b>Difference From Mean</b>&mdash;The difference between a pixel value and the mean of that pixel's value across slices defined by the interval will be calculated. This is the default.
+                    </li>
+                    <li> <b>Percent Difference From Mean</b>&mdash;The percent difference between a pixel value and the mean of that pixel's value across slices defined by the interval will be calculated.
+                    </li>
+                    <li> <b>Percent of Mean</b>&mdash;The percent of the mean will be calculated.
+                    </li>
+                    <li> <b>Z Score</b>&mdash;The z-score for each pixel will be calculated. A z-score of 0 indicates the pixel's value is identical to the mean. A z-score of 1 indicates the pixel's value is 1 standard deviation from the mean. If a z-score is 2, the pixel's value is 2 standard deviations from the mean, and so on.
+                    </li>
+                    <li> <b>Difference From Median</b>&mdash;The difference between a pixel value and the mathematical median of that pixel's values across slices defined by the interval will be calculated.
+                    </li>
+                    <li> <b>Percent Difference From Median</b>&mdash;The percent difference between a pixel value and the mathematical median of that pixel's values across slices defined by the interval will be calculated.
+                    </li>
+                    <li> <b>Percent of Median</b>&mdash;The percent of the mathematical median will be calculated.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>The mathematical methods for calculating anomaly values are listed below. Anomalies can be calculated using either the mean or the median values as the definition of the average. If the data distribution is skewed, the mean can be highly influenced by outliers, so the median value or z-score method may be better suited for this type of data.
+            </p>
+            <p>
+                <ul>
+                    <li>Difference from mean = x - &micro;
+
+                        <ul>
+                            <li>x = pixel value in a slice
+                                
+
+                            </li>
+                            <li>&micro; = mean of that pixel's values over the given time interval
+                                
+
+                            </li>
+                        </ul>
+                        
+                        
+
+                    </li>
+                    <li>Percent difference from mean = |x - &micro;| / [(x + &micro;)/2]
+
+                        <ul>
+                            <li>x = pixel value in a slice
+                                
+
+                            </li>
+                            <li>&micro; = mean of that pixel's values over the given time interval
+                                
+
+                            </li>
+                            <li>|x - &micro;| = absolute value of the difference between the value and the mean
+                                
+
+                            </li>
+                        </ul>
+                        
+                        
+
+                    </li>
+                    <li>Percent of mean = x / &micro;
+
+                        <ul>
+                            <li>x = pixel value in a slice
+                                
+
+                            </li>
+                            <li>&micro; = mean of that pixel's values over the given time interval
+                                
+
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li>Difference from median = x - &szlig;
+                        <ul>
+                            <li>x = pixel value in a slice
+                            </li>
+                            <li>&szlig; = median of that pixel's values over the given time interval
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li>Percent difference from median = |x - &szlig;| / [(x + &szlig;)/2]
+                        <ul>
+                            <li>x = pixel value in a slice
+                            </li>
+                            <li>&szlig; = median of that pixel's values over the given time interval
+                            </li>
+                            <li>|x - &szlig;| = absolute value of the difference between the value and the median
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li>Percent of  median = x / &szlig;
+                        <ul>
+                            <li>x = pixel value in a slice
+                            </li>
+                            <li>&szlig; = median of that pixel's values over the given time interval
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li>Z-score  = (x - &micro;) / S
+                        <ul>
+                            <li>x = pixel value in a slice
+                            </li>
+                            <li>&micro; = mean of that pixel's values over the given time interval
+                            </li>
+                            <li>S = the standard deviation of the pixel's values over the given time interval
+                            </li>
+                        </ul>
+                        
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="calculationInterval">
+        <div><h2>Choose temporal interval to calculate the mean</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies the temporal interval that will be used to calculate the mean. 
+                <ul>
+                    <li> <b>All</b>&mdash;Calculates the mean across all slices for each pixel.
+                    </li>
+                    <li> <b>Yearly</b>&mdash;Calculates the yearly mean for each pixel.
+                    </li>
+                    <li> <b>Recurring Monthly</b>&mdash;Calculates the monthly mean for each pixel.
+                    </li>
+                    <li> <b>Recurring Weekly</b>&mdash;Calculates the weekly mean for each pixel.
+                    </li>
+                    <li> <b>Recurring Daily</b>&mdash;Calculates the daily mean for each pixel.
+                    </li>
+                    <li> <b>Hourly</b>&mdash;Calculates the hourly mean for each pixel.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="ignoreNodata">
+        <div><h2>Ignore missing values in calculation</h2></div>
+        <hr/>
+        <div>
+            <p>Specifies whether missing values are ignored in the analysis. 
+                <ul>
+                    <li>Checked&mdash;The analysis will include all valid pixels along a given dimension and ignore any NoData pixels. This is the default.
+                    </li>
+                    <li>UnChecked&mdash;The analysis will result in NoData if there are any NoData values for the pixel along the given dimension.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map. The default name is based on the tool name and the input layer name. If the layer already exists, you will be prompted to provide another name.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

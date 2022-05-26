@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Vannskille</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Oppgave om vannskille"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet bestemmer omr&aring;det som bidrar over et sett med celler i et raster.
+    </p>
+    <p>Et vannskille er et h&oslash;yereliggende omr&aring;de som bidrar med tilf&oslash;rsel &ndash; som regel av vann&nbsp;&ndash; til et felles uttak som et konsentrert avl&oslash;p. Det kan v&aelig;re en del av et st&oslash;rre vannskille og kan ogs&aring; inneholde mindre vannskiller, s&aring;kalte sub-bassenger.
+    </p>
+    <p>Verdien av hvert enkelt vannskille trekkes fra verdien av kilden i inndatarasteret eller utl&oslash;pspunktets geoobjektslag. N&aring;r utl&oslash;pspunktet er et rasterdatasett, brukes celleverdiene som standard. N&aring;r utl&oslash;pspunktet er et datasett med punktgeoobjekter, kommer verdiene fra det angitte feltet.
+    </p>
+    <p>Vannskille-verkt&oslash;yet st&oslash;tter bare et rasterlag med D8-str&oslash;mretningslag som inndata.
+    </p>
+    <p>N&aring;r du angir innl&oslash;pspunktene som geoobjektsdata, blir standardfeltet det f&oslash;rste gyldige feltet som er tilgjengelig. Hvis det ikke finnes noen gyldige felt, brukes objekt-ID-feltet (f.eks. OID eller FID) som standard.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Velg strømningsretningslag</h2></div>
+        <hr/>
+        <div>
+            <p>Inndatarasteret som viser str&oslash;mretningen ut av hver enkelt celle.
+            </p>
+            <p>Rasteret for str&oslash;mretning kan opprettes ved hjelp av verkt&oslash;yet Str&oslash;mretning eller str&oslash;mretningsoppgaven i RasterAnalysisTools-tjenesten. Det kj&oslash;res ved &aring; bruke standardtypen for str&oslash;mretning,  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Angi plasseringen av innløpspunktene</h2></div>
+        <hr/>
+        <div>
+            <p>Plasseringen av innl&oslash;pspunktene.
+            </p>
+            <p>For et raster representerer dette cellene nedenfor tilf&oslash;rselsomr&aring;det eller nedb&oslash;rsfeltet, og som plasseringen m&aring; ligge over. Alle celler som ikke er NoData, brukes som kildeceller. Hvis inndataene er punkter, representerer det lokasjoner nedenfor tilf&oslash;rselsomr&aring;det eller nedb&oslash;rsfeltet, og som plasseringen m&aring; ligge ovenfor.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Velg utløpspunktfelt</h2></div>
+        <hr/>
+        <div>
+            <p>Feltet brukes til &aring; tilordne verdier til utl&oslash;pspunktenes lokasjoner.
+            </p>
+            <p>Hvis utl&oslash;pspunktlaget er et raster, brukes Verdi. Hvis det er et geoobjekt, brukes et numerisk felt. Hvis feltet inneholder flyttall, trunkeres verdiene til heltall.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Du kan angi navnet p&aring; en mappe i  <b>Mitt innhold</b>, der resultatet blir lagret via rullegardinlisten <b>Lagre resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

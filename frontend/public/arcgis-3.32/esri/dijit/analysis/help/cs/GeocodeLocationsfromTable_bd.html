@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Geokódovat umístění z tabulky (Geocode Locations from Table)</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Geok&oacute;dovat um&iacute;stěn&iacute; z&nbsp;tabulky"></h2>
+        <hr/>
+    <p>Geok&oacute;dov&aacute;n&iacute; přev&aacute;d&iacute; adresy na souřadnice. Tento n&aacute;stroj přev&aacute;d&iacute; adresy z&nbsp;tabulky pro sd&iacute;len&iacute; souborů Big Data do vrstvy prvků, kde jsou souřadnice uvedeny v&nbsp;dodatečn&yacute;ch sloupc&iacute;ch.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Zvolit vstupní tabulku</h2></div>
+        <hr/>
+        <div>
+            <p>Vstupn&iacute; tabulka s&nbsp;adresami, kter&eacute; se maj&iacute; geok&oacute;dovat. 
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Zvolit lokátor</h2></div>
+        <hr/>
+        <div>
+            <p>Zvolte službu lok&aacute;toru, pro kterou se m&aacute; geok&oacute;dovat. Pokud požadovan&aacute; služba lok&aacute;toru v&nbsp;rozbalovac&iacute; nab&iacute;dce chyb&iacute;, kontaktujte administr&aacute;tora, aby nakonfiguroval službu lok&aacute;toru pro d&aacute;vkov&eacute; geok&oacute;dov&aacute;n&iacute;.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Země</h2></div>
+        <hr/>
+        <div>
+            <p>Pokud v&scaron;echny va&scaron;e adresy proch&aacute;zej&iacute; z&nbsp;jedn&eacute; země, vyberte ji. Zpřesn&iacute;te t&iacute;m v&yacute;sledky. V&nbsp;opačn&eacute;m př&iacute;padě ponechte tento parametr pr&aacute;zdn&yacute;.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Vybrat datová pole</h2></div>
+        <hr/>
+        <div>
+            <p>Služba lok&aacute;toru oček&aacute;v&aacute; v&nbsp;datech určit&aacute; pole, jako jsou adresa, město, st&aacute;t a PSČ. Přiřaďte pomoc&iacute; rozbalovac&iacute;ch nab&iacute;dek datov&aacute; pole ve vstupn&iacute;m souboru nebo tabulce k&nbsp;pol&iacute;m, kter&eacute; lok&aacute;tor oček&aacute;v&aacute;. Č&iacute;m v&iacute;ce pol&iacute; namapujete, t&iacute;m přesněj&scaron;&iacute; budou v&yacute;sledky. M&aacute;-li vstupn&iacute; tabulka v&scaron;echna data v&nbsp;jedin&eacute;m sloupci, zvolte možnost  <b>Jedno pole</b>a z&nbsp;rozbalovac&iacute; nab&iacute;dky vyberte datov&eacute; pole. V&nbsp;opačn&eacute;m př&iacute;padě vyberte možnost <b>V&iacute;ce pol&iacute;</b>a př&iacute;slu&scaron;n&aacute; pole lok&aacute;toru namapujte k v&iacute;ce sloupcům (pol&iacute;m) v&nbsp;tabulce.
+            </p>
+        </div>
+    </div>
+    <div id="includeAttributes">
+        <div><h2>Pro každou lokalitu</h2></div>
+        <hr/>
+        <div>
+            <p>přidejte dal&scaron;&iacute; pole vr&aacute;cen&aacute; službou lok&aacute;toru. Když je tato možnost za&scaron;krtnuta, budou vr&aacute;cena v&scaron;echna pole, kter&aacute; lok&aacute;tor vytvoř&iacute;. Když za&scaron;krtnut&aacute; nen&iacute;, budou va&scaron;e vstupn&iacute; data vr&aacute;cena s geok&oacute;dovan&yacute;mi souřadnicemi. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výstupního výsledku</h2></div>
+        <hr/>
+        <div>
+            <p> N&aacute;zev vytv&aacute;řen&eacute; vrstvy. Pokud zapisujete ArcGIS Data Store, va&scaron;e v&yacute;sledky budou uloženy v  <b>Můj obsah</b> a přid&aacute;ny na mapu. Pokud zapisujete sd&iacute;len&yacute; soubor velk&yacute;ch dat, va&scaron;e v&yacute;sledky budou uloženy ve sd&iacute;len&eacute;m souboru velk&yacute;ch dat a přid&aacute;ny do jejich manifestu.  Nebudou přid&aacute;ny na mapu. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, n&aacute;stroj selže.
+            </p>
+            <p>Když zapisujete do   ArcGIS Data Store  (datov&eacute; &uacute;loži&scaron;tě relačn&iacute;ch a časoprostorov&yacute;ch velk&yacute;ch dat) pomoc&iacute; rozbalovac&iacute;ho seznamu  <b>Uložit v&yacute;sledek do</b> , můžete zadat n&aacute;zev složky v <b>Můj obsah</b>, kde budou v&yacute;sledky uloženy.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

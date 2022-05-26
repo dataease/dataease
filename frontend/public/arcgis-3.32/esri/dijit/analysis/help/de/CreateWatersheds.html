@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Abflussgbiete erstellen</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Abflussgebiete erstellen"></h2>
+        <hr/>
+    <p>Dieses Werkzeug ermittelt f&uuml;r jeden Punkt in Ihrem Eingabe-Layer das Wassereinzugsgebiet bzw. die flussaufw&auml;rts gelegene, beitragende Fl&auml;che. 
+    </p>
+    <p>Nehmen Sie beispielsweise an, Sie verf&uuml;gen &uuml;ber Punkt-Features, die Orte einer Wasserverschmutzung darstellen und Sie m&ouml;chten die wahrscheinlichen Quellen der Verschmutzung ermitteln. Da die Quelle der Verschmutzung von Ihrem Punkt aus im Wassereinzugsgebiet flussaufw&auml;rts liegen muss, w&uuml;rden Sie dieses Werkzeug verwenden, um die Wassereinzugsgebiete zu definieren, in denen die Quelle der Verschmutzung liegt.
+    </p>
+    <p>Die Position Ihrer Eingabepunkte ist wichtig.  Wenn sie nicht exakt auf einer Drainageleitung liegen, fallen die sich ergebenden Wassereinzugsgebiete eventuell sehr klein aus und sind f&uuml;r Ihre Analyse nicht von Nutzen. Die  <b>Suchentfernung zur n&auml;chsten Drainage</b> kann verwendet werden, um die Position Ihrer Eingabepunkte anzupassen, damit sie direkt auf eine Drainageleitung fallen. So k&ouml;nnen Sie das Wassereinzugsgebiet finden, dessen Wasser zu dem Punkt flie&szlig;t, der auf der Drainageleitung liegt.  Die angepassten Positionen zur Ermittlung der Wassereinzugsgebiete werden in den Ausgabe-Layer geschrieben. Ihre Eingabepunkte werden nicht ge&auml;ndert.
+    </p>
+    <p>Das Ergebnis ist ein Gruppen-Layer mit zwei Layern: die Abflussgebiete und die angepassten Punkte, die zur Berechnung der Abflussgebiete verwendet wurden.     
+    </p>
+    <p>Die sich ergebenden Wassereinzugsgebiete verf&uuml;gen &uuml;ber alle Attribute Ihrer Eingabepunkte sowie diese zus&auml;tzlichen Attribute:     
+        <ul>
+            <li> <i>PourPtID</i>: Enth&auml;lt den ID-Wert des Eingabepunktes.
+            </li>
+            <li> <i>Area Square Kilometers</i>: Enth&auml;lt die Fl&auml;che des flussaufw&auml;rts liegenden Abflussgebiets in Quadratkilometern.
+            </li>
+            <li> <i>Description</i> und <i>DataResolution</i>: Enthalten Informationen, die sich auf die zur Berechnung der Verfolgung verwendeten hydrologischen Daten beziehen.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features in der aktuellen Kartenausdehnung zur Berechnung von Wassereinzugsgebieten verwendet.  Wenn diese Option deaktiviert ist, werden alle Features im Eingabe-Layer analysiert, auch diejenigen, die sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punkt-Features zum Berechnen von Abflussgebieten</h2></div>
+        <hr/>
+        <div>
+            <p>F&uuml;r jeden Punkt wird ein Wassereinzugsgebiet (die flussaufw&auml;rts gelegene, beitragende Fl&auml;che) berechnet.  
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Suchentfernung zur nächsten Drainage</h2></div>
+        <hr/>
+        <div>
+            <p>Wenn sich Ihre Eingabepunkte nicht auf einer Drainageleitung befinden, sind die sich ergebenden Wassereinzugsgebiete wahrscheinlich sehr klein und wenig hilfreich bei der Analyse (wie z. B. die Ermittlung der flussaufw&auml;rts liegenden Quelle einer Verschmutzung).  In den meisten F&auml;llen sollte Ihr Eingabepunkt auf der n&auml;chstgelegenen Drainageleitung liegen, um diejenigen Wassereinzugsgebiete zu finden, aus denen das Wasser zu einem Punkt auf der Drainageleitung flie&szlig;t.  Um die n&auml;chstgelegene Drainageleitung zu finden, geben Sie eine Suchentfernung ein. Wenn Sie keine Suchentfernung eingeben, berechnet und verwendet das Werkzeug einen vorsichtigen Sch&auml;tzwert f&uuml;r die Suchentfernung.  
+            </p>
+            <p>Um die exakte Position Ihres Eingabepunktes zu verwenden, geben Sie f&uuml;r die Suchentfernung Null ein.  
+            </p>
+            <p>Zu Analysezwecken wurden Drainageleitungen von Esri mit Hilfe von hydrologischen Standardmodellen im Voraus berechnet. Wenn sich innerhalb der Suchentfernung keine Drainageleitung befindet, wird diejenige Position innerhalb der Suchentfernung mit der h&ouml;chsten Abflussakkumulation verwendet.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+            <p> F&uuml;r die Ausf&uuml;hrung dieses Werkzeugs werden keine Credits verbraucht.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

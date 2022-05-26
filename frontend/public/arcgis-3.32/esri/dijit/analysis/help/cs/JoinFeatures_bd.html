@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Připojit prvky (Join Features)</h2><p/>
+        <h2><img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" alt="Připojit prvky"></h2>
+        <hr/>
+    <p>N&aacute;stroj Připojit prvky pracuje se dvěma vrstvami. N&aacute;stroj Připojit prvky připoj&iacute; atributy jednoho prvku k&nbsp;atributům jin&eacute;ho prvku na z&aacute;kladě prostorov&eacute;ho, časov&eacute;ho a atributov&eacute;ho vztahu nebo jejich kombinace. N&aacute;stroj urč&iacute; v&scaron;echny vstupn&iacute; prvky, kter&eacute; odpov&iacute;daj&iacute; zadan&yacute;m podm&iacute;nk&aacute;m připojen&iacute;, a připoj&iacute; druhou vstupn&iacute; vrstvu k&nbsp;prvn&iacute; vrstvě. Volitelně můžete připojit v&scaron;echny prvky k&nbsp;odpov&iacute;daj&iacute;c&iacute;m prvkům nebo odpov&iacute;daj&iacute;c&iacute; prvky sumarizovat.
+    </p>
+    <p>N&aacute;stroj Připojit prvky lze použ&iacute;t na body, linie, plochy a tabulky. Časov&eacute; připojen&iacute; vyžaduje, aby va&scaron;e vstupn&iacute; data obsahovala informace o čase, a prostorov&eacute; připojen&iacute; vyžaduje, aby data obsahovala geometrii. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Vybrat cílovou vrstvu</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva, k&nbsp;jej&iacute;ž tabulce budou připojeny atributy z&nbsp;vrstvy připojen&iacute;.
+            </p>
+            <p>Anal&yacute;za využ&iacute;vaj&iacute;c&iacute; vztah prostorov&eacute; bl&iacute;zkosti  <b>Vzd&aacute;lenost</b> vyžaduje rovinn&yacute; souřadnicov&yacute; syst&eacute;m. Můžete nastavit <b>Souřadnicov&yacute; syst&eacute;m pro zpracov&aacute;n&iacute;</b> v <b>Prostřed&iacute; anal&yacute;zy</b>. Pokud v&aacute;&scaron; souřadnicov&yacute; syst&eacute;m pro zpracov&aacute;n&iacute; nen&iacute; nastaven na rovinn&yacute; souřadnicov&yacute; syst&eacute;m, budete vyzv&aacute;ni k&nbsp;jeho nastaven&iacute; při <b>Spu&scaron;těn&iacute; anal&yacute;zy</b> .
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Zvolit vrstvu pro připojení k cílové vrstvě</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva připojen&iacute; s&nbsp;atributy, kter&eacute; budou připojeny k&nbsp;c&iacute;lov&eacute; vrstvě.
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Zvolit operaci připojení</h2></div>
+        <hr/>
+        <div>
+            <p>Tato možnost určuje, jak budou ve v&yacute;stupu o&scaron;etřena připojen&iacute; mezi c&iacute;lov&yacute;mi vrstvami a připojen&yacute;mi vrstvami, pokud bude nalezeno v&iacute;ce připojovac&iacute;ch prvků se stejn&yacute;m vztahem k&nbsp;připojovan&eacute; vrstvě. Můžete si vybrat ze dvou operac&iacute; připojen&iacute;:
+                <ul>
+                    <li> <b>Připojit jeden k&nbsp;jednomu</b> &ndash; Tato možnost sumarizuje v&scaron;echny odpov&iacute;daj&iacute;c&iacute; prvky ke každ&eacute;mu připojovan&eacute;mu prvku.
+                    </li>
+                    <li> <b>Připojit jeden k&nbsp;v&iacute;ce</b> &ndash; Tato možnost připoj&iacute; v&scaron;echny odpov&iacute;daj&iacute;c&iacute; prvky k připojovan&eacute;&nbsp;vrstvě.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Předpokl&aacute;dejme např&iacute;klad, že chcete naj&iacute;t supermarkety ve vzd&aacute;lenosti 2 km od farm&aacute;řsk&eacute;ho trhu. V tomto př&iacute;padě m&aacute; c&iacute;lov&aacute; vrstva jedin&yacute; prvek představuj&iacute;c&iacute; farm&aacute;řsk&yacute; trh a připojuj&iacute;c&iacute; vrstva představuje m&iacute;stn&iacute; obchody s&nbsp;potravinami a m&aacute; atributy, jako jsou např. celkov&eacute; ročn&iacute; tržby. Pomoc&iacute; n&aacute;stroje Připojit prvky najdete pět obchodů s&nbsp;potravinami, kter&eacute; splňuj&iacute; dan&aacute; krit&eacute;ria. Pokud byste určili operaci připojen&iacute;  <b>Připojit jeden k&nbsp;v&iacute;ce</b>, dostali byste ve v&yacute;sledku pět prvků, kde každ&yacute; ř&aacute;dek představuje farm&aacute;řsk&yacute; trh a supermarket. Pokud byste určili vztah <b>Připojit jeden k&nbsp;jednomu</b>, dostali byste ve v&yacute;sledku jeden prvek představuj&iacute;c&iacute; farm&aacute;řsk&yacute; trh a sumarizovan&eacute; informace ze supermarketů, jako je počet (2) a jin&eacute; statistiky, např. souhrn ročn&iacute;ch tržeb.
+            </p>
+        </div>
+    </div>
+    <div id="joinOptions">
+        <div><h2>Vybrat jedno nebo více připojení</h2></div>
+        <hr/>
+        <div>
+            <p>Určuje použitou možnost připojen&iacute;. Můžete použ&iacute;t jeden, dva nebo tři z n&aacute;sleduj&iacute;c&iacute;ch typů připojen&iacute;: 
+                <ul>
+                    <li> <b>Zvolit prostorov&yacute; vztah</b> &ndash; Použ&iacute;v&aacute; k&nbsp;připojen&iacute; prvků zadan&yacute; prostorov&yacute; vztah. Toto vyžaduje, aby obě vrstvy měly geometrii.
+                    </li>
+                    <li> <b>Časov&yacute;</b> &ndash; Použ&iacute;v&aacute; k&nbsp;připojen&iacute; prvků zadan&yacute; časov&yacute; vztah. Toto vyžaduje, aby obě vrstvy měly povolen&eacute; informace o čase.
+                    </li>
+                    <li> <b>Zvolit pole pro shodu</b> &ndash; Připoj&iacute; prvky na z&aacute;kladě shodn&yacute;ch pol&iacute;.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Zvolit prostorový vztah</h2></div>
+        <hr/>
+        <div>
+            <p>Prostorov&yacute; vztah urč&iacute;, zda budou prvky připojeny jeden k&nbsp;druh&eacute;mu. N&aacute;sleduj&iacute;c&iacute; dostupn&eacute; vztahy z&aacute;vis&iacute; na typu geometrie (body, polylinie nebo polygon) použ&iacute;van&eacute;m pro vstupn&iacute; prvky:
+                <ul>
+                    <li> <b>Prot&iacute;n&aacute;</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud se navz&aacute;jem prot&iacute;naj&iacute;.
+                    </li>
+                    <li> <b>Rovn&aacute; se</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud maj&iacute; stejnou geometrii.
+                    </li>
+                    <li> <b>Vzd&aacute;lenost</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud se od sebe nach&aacute;zej&iacute; v&nbsp;určen&eacute; vzd&aacute;lenosti. C&iacute;lov&aacute; vrstva mus&iacute; b&yacute;t v rovinn&eacute;m souřadnicov&eacute;m syst&eacute;mu nebo souřadnicov&yacute; syst&eacute;m zpracov&aacute;n&iacute; mus&iacute; b&yacute;t nastaven na rovinn&yacute; souřadnicov&yacute; syst&eacute;m použ&iacute;vaj&iacute;c&iacute; <b>Prostřed&iacute; anal&yacute;zy</b>, pokud je použit prostorov&yacute; vztah <b>Bl&iacute;zk&yacute;</b>.
+                    </li>
+                    <li> <b>Obsahuje</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud je připojovan&aacute; vrstva obsažena v&nbsp;připojuj&iacute;c&iacute;ch prvc&iacute;ch.
+                    </li>
+                    <li> <b>V rozmez&iacute;</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud je připojovan&aacute; vrstva obsažena v&nbsp;rozmez&iacute; připojuj&iacute;c&iacute;ch prvků.
+                    </li>
+                    <li> <b>Dot&yacute;k&aacute; se</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud maj&iacute; hranici, kter&aacute; se dot&yacute;k&aacute; c&iacute;lov&eacute;ho prvku.
+                    </li>
+                    <li> <b>Kř&iacute;ž&iacute;</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud maj&iacute; kř&iacute;ž&iacute;c&iacute; se obrys.
+                    </li>
+                    <li> <b>Přesah</b> &ndash; Prvky budou připojeny, pokud maj&iacute; přesah.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearSpatial">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            <p> Určuje poloměr použit&yacute; na vztah prostorov&eacute; bl&iacute;zkosti.
+            </p>
+            <p>Pokud byste např&iacute;klad měli datovou sadu představuj&iacute;c&iacute; atomovou elektr&aacute;rnu a datovou sadu představuj&iacute;c&iacute; obydl&iacute;, mohli byste nastavit vzd&aacute;lenost nearSpatial 1 kilometr, abyste na&scaron;li domy v okruhu jednoho kilometru od elektr&aacute;rny.
+            </p> 
+        </div>
+    </div>
+    <div id="temporalRelationship">
+        <div><h2>Zvolit časový vztah</h2></div>
+        <hr/>
+        <div>
+            <p>Časov&yacute; vztah urč&iacute;, zda budou prvky připojeny jeden k&nbsp;druh&eacute;mu. Tato možnost je k&nbsp;dispozici pouze pokud obě vrstvy obsahuj&iacute; informace o čase, a dostupn&eacute; vztahy z&aacute;vis&iacute; na typu času (okamžik nebo interval) použit&eacute;m pro vstupn&iacute; prvky. K dispozici jsou n&aacute;sleduj&iacute;c&iacute; časov&eacute; vztahy:
+                <ul>
+                    <li> <b>Potk&aacute;v&aacute;</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud prvn&iacute; prvek potk&aacute;v&aacute; druh&yacute; prvek.
+                    </li>
+                    <li> <b>Potk&aacute;no</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud je prvn&iacute; prvek potk&aacute;n druh&yacute;m prvkem.
+                    </li>
+                    <li> <b>Přesahuje</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud prvn&iacute; prvek přesahuje přes druh&yacute; prvek.
+                    </li>
+                    <li> <b>Přesaženo</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud druh&yacute; prvek přesahuje přes prvn&iacute; prvek.
+                    </li>
+                    <li> <b>Během</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud se prvn&iacute; prvek kon&aacute; během druh&eacute;ho prvku.
+                    </li>
+                    <li> <b>Obsahuje</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud je v prvn&iacute;m prvku obsažen druh&yacute; prvek.
+                    </li>
+                    <li> <b>Rovn&aacute; se</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud se prvn&iacute; prvek rovn&aacute; druh&eacute;mu prvku.
+                    </li>
+                    <li> <b>Dokončuje</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud prvn&iacute; prvek dokončuje druh&yacute; prvek.
+                    </li>
+                    <li> <b>Dokončeno</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud je prvn&iacute; prvek dokončen druh&yacute;m prvkem.
+                    </li>
+                    <li> <b>Zahajuje</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud prvn&iacute; prvek zahajuje druh&yacute; prvek.
+                    </li>
+                    <li> <b>Zah&aacute;jeno</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud je prvn&iacute; prvek zah&aacute;jen druh&yacute;m prvkem.
+                    </li>
+                    <li> <b>Prot&iacute;n&aacute;</b> &ndash; Prvky budou sp&aacute;rov&aacute;ny, pokud se časy jak&yacute;mkoli způsobem prot&iacute;naj&iacute;.
+                    </li>
+                    <li> <b>Vzd&aacute;lenost</b> &ndash; Prvky budou připojeny, pokud se nach&aacute;zej&iacute; bl&iacute;zko sebe na z&aacute;kladě zadan&eacute;ho času.
+                    </li>
+                    <li> <b>Vzd&aacute;lenost před</b> &ndash; Prvky budou připojeny, pokud je prvn&iacute; prvek před druh&yacute;m prvkem a v r&aacute;mci zadan&eacute;ho času.
+                    </li>
+                    <li> <b>Vzd&aacute;lenost po</b> &ndash; Prvky budou připojeny, pokud je prvn&iacute; prvek po druh&eacute;m prvku a v r&aacute;mci zadan&eacute;ho času.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearTemporal">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            
+            <p>Určuje časov&yacute; poloměr použit&yacute; na vztah časov&eacute; bl&iacute;zkosti. Vztah časov&eacute; bl&iacute;zkosti obsahuje  <b>Bl&iacute;zk&yacute;</b>, <b>Bl&iacute;zk&yacute; před</b> a <b>Bl&iacute;zk&yacute; po</b>.
+            </p>
+            <p>Pokud m&aacute;te např&iacute;klad vrstvu lodn&iacute;ch ne&scaron;těst&iacute; a vrstvu GPS sledov&aacute;n&iacute; hurik&aacute;nů, můžete vyhledat lodn&iacute; ne&scaron;těst&iacute; do určit&eacute; vzd&aacute;lenosti od stopy hurik&aacute;nu, a to jak prostorově (1 kilometr), tak i časově (5 hodin). V&yacute;sledkem bude připojen&iacute; nehod lod&iacute; k&nbsp;hurik&aacute;nům, ke kter&yacute;m maj&iacute; prostorově i časově bl&iacute;zko.
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Zvolit pole pro shodu</h2></div>
+        <hr/>
+        <div>
+            <p>Přiřad&iacute; hodnoty v&nbsp;poli jedn&eacute; vrstvy k&nbsp;hodnot&aacute;m v&nbsp;poli druh&eacute; vrstvy. 
+            </p>
+            <p>Pokud m&aacute;te např&iacute;klad celost&aacute;tn&iacute; geografickou vrstvu rezidenčn&iacute;ch adres (včetně pole  <i>ZIP</i>) a tabulkovou datovou sadu demografick&yacute;ch &uacute;dajů t&yacute;kaj&iacute;c&iacute;ch se zdrav&iacute; dle PSČ (pole s n&aacute;zvem <i>HEALTHZIP</i>), můžete datovou sadu připojit k rezidenčn&iacute;m &uacute;dajům pomoc&iacute; p&aacute;rov&aacute;n&iacute; pole <i>ZIP</i> s polem <i>HEALTHZIP</i>. V&yacute;sledkem bude vrstva obydl&iacute; s př&iacute;slu&scaron;n&yacute;mi daty o zdrav&iacute;.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Přidat statistiku (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p>Vypoč&iacute;t&aacute; statistick&eacute; &uacute;daje připojen&yacute;ch prvků, pokud je operace připojen&iacute;  <b>Připojit jeden k&nbsp;jednomu</b>. Ve v&yacute;choz&iacute;m nastaven&iacute; se vypoč&iacute;taj&iacute; v&scaron;echny statistick&eacute; &uacute;daje.
+            </p>
+            <p>Můžete vypoč&iacute;tat statistiku sumarizovan&yacute;ch prvků. U č&iacute;seln&yacute;ch pol&iacute; můžete vypoč&iacute;tat n&aacute;sleduj&iacute;c&iacute;: 
+                <ul>
+                    <li>Počet &ndash; Spoč&iacute;t&aacute; počet nenulov&yacute;ch hodnot. Lze jej použ&iacute;t na č&iacute;seln&yacute;ch pol&iacute;ch nebo řetězc&iacute;ch. Počet pro [null, 0, 2] je 2.
+                    </li>
+                    <li>Součet &ndash; Součet č&iacute;seln&yacute;ch hodnot v poli. Součet pro [null, null, 3] je 3.
+                    </li>
+                    <li>Průměr &ndash; Průměr č&iacute;seln&yacute;ch hodnot. Průměr pro [0, 2, null] je 1.
+                    </li>
+                    <li>Min &ndash; Minim&aacute;ln&iacute; hodnota č&iacute;seln&eacute;ho pole. Minimum pro [0, 2, null] je 0. 
+                    </li>
+                    <li>Max &ndash; Maxim&aacute;ln&iacute; hodnota č&iacute;seln&eacute;ho pole. Maximum pro [0, 2, null] je 2.
+                    </li>
+                    <li>Rozsah &ndash; Rozsah č&iacute;seln&eacute;ho pole. Vypočtou se jako minim&aacute;ln&iacute; hodnoty odečten&eacute; od maxim&aacute;ln&iacute; hodnoty. Rozsah pro [0, null, 1] je 1. Rozsah pro [null, 4] je 0.
+                    </li>
+                    <li>Odchylka &ndash; Odchylka č&iacute;seln&eacute;ho pole ve stopě. Odchylka pro [1]  je null. Odchylka pro [null, 1,0,1,1] je 0,25.
+                    </li>
+                    <li>Standardn&iacute; odchylka &ndash; Standardn&iacute; odchylka č&iacute;seln&eacute;ho pole. Standardn&iacute; odchylka pro [1] je null. Standardn&iacute; odchylka pro [null, 1,0,1,1] je 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>U řetězcov&yacute;ch pol&iacute; můžete vypoč&iacute;tat n&aacute;sleduj&iacute;c&iacute;:
+                <ul>
+                    <li>Počet &ndash; Počet nenulov&yacute;ch řetězců.
+                    </li>
+                    <li>Libovoln&eacute; &ndash; Tato statistika je n&aacute;hodn&yacute;m vzorkem hodnoty řetězce v&nbsp;určen&eacute;m poli.
+                    </li>
+                </ul>
+                V&scaron;echny statistiky se poč&iacute;taj&iacute; pro nenulov&eacute; hodnoty. V&yacute;sledn&aacute; vrstva bude obsahovat nov&eacute; pole pro každou vypoč&iacute;tanou statistiku. Lze přidat libovoln&yacute; počet statistik zvolen&iacute;m atributu a statistiky.
+            </p>
+            <p>V&scaron;echny statistiky se poč&iacute;taj&iacute; pro nenulov&eacute; hodnoty. V&yacute;sledn&aacute; vrstva bude obsahovat nov&eacute; pole pro každou vypoč&iacute;tanou statistiku. Lze přidat libovoln&yacute; počet statistik zvolen&iacute;m atributu a statistiky.
+            </p>
+        </div>
+    </div>
+    <div id="joinCondition">
+        <div><h2>Vytvořit výraz pro připojení prvků (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p>Použije podm&iacute;nku na určen&aacute; pole. Budou připojeny pouze prvky s&nbsp;poli splňuj&iacute;c&iacute;mi tyto podm&iacute;nky.
+            </p>
+            <p>Pokud si např&iacute;klad přejete připojit k datov&eacute; sadě pouze takov&eacute; prvky, kde  <i>health_spending</i>  je vy&scaron;&scaron;&iacute; než 20% <i>income</i>,  použijte podm&iacute;nku připojen&iacute; <code>$target[&ldquo;health_spending&ldquo;] &gt; ($join[&ldquo;income&ldquo;] * .20)</code> za použit&iacute; <i>health_spending</i> z prvn&iacute; datov&eacute; sady (datov&eacute; sady, ke kter&eacute; jsou připojeny prvky) a pole <i>income</i> z druh&eacute; datov&eacute; sady (datov&aacute; sada, kter&aacute; je připojov&aacute;na).
+            </p>
+            <p>Podm&iacute;nky připojen&iacute; lze aplikovat pomoc&iacute; kalkul&aacute;toru v&yacute;razů.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Zvolte datové úložiště</h2></div>
+        <hr/>
+        <div>
+            <p>V&yacute;sledky geoanal&yacute;zy jsou ukl&aacute;d&aacute;ny do nějak&eacute;ho datov&eacute;ho &uacute;loži&scaron;tě a jsou zobrazeny jako vrstva prvků v   Portal for ArcGIS. Ve vět&scaron;ině př&iacute;padů by v&yacute;sledky měly b&yacute;t uloženy do časoprostorov&eacute;ho datov&eacute;ho &uacute;loži&scaron;tě a toto je v&yacute;choz&iacute; nastaven&iacute;. V někter&yacute;ch př&iacute;padech je vhodn&eacute; uložit v&yacute;sledky do relačn&iacute;ho datov&eacute;ho &uacute;loži&scaron;tě. Důvody k uložen&iacute; v&yacute;sledků do relačn&iacute;ho datov&eacute;ho &uacute;loži&scaron;tě: 
+                <ul>
+                    <li>Můžete použ&iacute;t v&yacute;sledky ke spolupr&aacute;ci mezi port&aacute;ly.
+                    </li>
+                    <li>Můžete povolit funkce synchronizace s v&yacute;sledky
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relačn&iacute; datov&eacute; &uacute;loži&scaron;tě byste použ&iacute;vat neměli, pokud oček&aacute;v&aacute;te n&aacute;růst množstv&iacute; v&yacute;sledků geoanal&yacute;zy a chcete využ&iacute;t v&yacute;hod časoprostorov&eacute;ho &uacute;loži&scaron;tě Big Data ke zpracov&aacute;n&iacute; velk&yacute;ch objemů dat.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p> N&aacute;zev vytv&aacute;řen&eacute; vrstvy. Pokud zapisujete ArcGIS Data Store, va&scaron;e v&yacute;sledky budou uloženy v  <b>Můj obsah</b> a přid&aacute;ny na mapu. Pokud zapisujete sd&iacute;len&yacute; soubor velk&yacute;ch dat, va&scaron;e v&yacute;sledky budou uloženy ve sd&iacute;len&eacute;m souboru velk&yacute;ch dat a přid&aacute;ny do jejich manifestu.  Nebudou přid&aacute;ny na mapu. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, n&aacute;stroj selže.
+            </p>
+            <p>Když zapisujete do   ArcGIS Data Store  (datov&eacute; &uacute;loži&scaron;tě relačn&iacute;ch a časoprostorov&yacute;ch velk&yacute;ch dat) pomoc&iacute; rozbalovac&iacute;ho seznamu  <b>Uložit v&yacute;sledek do</b> , můžete zadat n&aacute;zev složky v <b>Můj obsah</b>, kde budou v&yacute;sledky uloženy.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

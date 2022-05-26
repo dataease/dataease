@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Stroomgebied maken</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Stroomgebied maken"></h2>
+        <hr/>
+    <p>Deze tool bepaalt het stroomgebied, of stroomopwaarts bijdragend gebied, voor elk punt in uw invoerlaag. 
+    </p>
+    <p>Stel bijvoorbeeld dat u puntobjecten heeft van locaties met waterverontreiniging en u wilt de bronnen van de verontreiniging zoeken. Omdat de bron van de vervuiling zich ergens binnen het stroomgebied stroomopwaarts van het punt moet bevinden, kunt u deze tool gebruiken om de stroomgebieden te bepalen die verontreinigd zijn.
+    </p>
+    <p>De locatie van uw invoerpunten is belangrijk. Als ze zich niet precies op een afvoerlijn bevinden, kunnen de resulterende stroomgebieden erg klein zijn en niet nuttig voor uw analyse. De   <b>Zoekafstand tot dichtstbijzijnde afvoer</b> kan worden gebruikt om de locatie van uw invoerpunten te corrigeren zodat ze zich precies op een afvoerlijn bevinden om het stroomgebied te vinden dat naar het punt stroomt op de afvoerlijn. De gecorrigeerde locaties gebruikt om de stroomgebieden te vinden worden weggeschreven naar de uitvoerlaag&mdash;uw invoerpunten worden niet gewijzigd.
+    </p>
+    <p>Het resultaat is een groepslaag met twee lagen: de stroomgebieden en de gecorrigeerde punten gebruikt om de stroomgebieden te berekenen.     
+    </p>
+    <p>De resulterende stroomgebieden hebben alle kenmerken van uw invoerpunten alsmede deze aanvullende kenmerken:     
+        <ul>
+            <li> <i>PourPtID</i> - bevat de ID-waarde van het invoerpunt
+            </li>
+            <li> <i>Area Square Kilometers</i> - bevat het oppervlak in vierkante kilometers van het stroomgebied stroomopwaarts
+            </li>
+            <li> <i>Description</i> en <i>DataResolution</i> &mdash;Bevat informatie met betrekking tot de hydrologische gegevens gebruikt om het spoor te berekenen
+            </li>
+        </ul>
+        
+    </p>
+    <p>Als  <b>Huidig kaartextent gebruiken</b> is geselecteerd, worden alleen de objecten in het huidige kaartextent gebruikt om stroomgebieden te berekenen. Als de optie niet is aangevinkt, worden alle objecten in de invoerlaag geanalyseerd, zelfs als deze zich buiten het huidige extent van de kaart bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Puntobjecten om stroombekkens te berekenen</h2></div>
+        <hr/>
+        <div>
+            <p>Een waterstroom (het stroomopwaarts bijdragend gebied) wordt berekend voor elk punt.  
+            </p>
+            <p>Naast het kiezen van een laag uit uw kaart, kunt u  <b>Analyselaag kiezen</b> selecteren onderaan de vervolgkeuzelijst. Met deze optie wordt een galerij geopend waarin u kunt bladeren naar en datasets van verschillende bronnen kunt selecteren die u in uw analyse kunt gebruiken. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Zoekafstand tot dichtstbijzijnde afvoer</h2></div>
+        <hr/>
+        <div>
+            <p>De stroomgebieden in het resultaat zijn waarschijnlijk erg klein en niet heel nuttig om de bron van vervuiling stroomopwaarts te bepalen als uw invoerpunten uit de buurt liggen van een afvoerlijn. In de meeste gevallen wilt u dat het invoerpunt op de dichtstbijzijnde afvoerlijn ligt om stroomgebieden te vinden die naar een punt stromen op de afvoerlijn. Geef een zoekafstand op om de dichtstbijzijnde afvoerlijn te vinden. Als u geen zoekafstand opgeeft, berekent en gebruikt de tool een conservatieve zoekafstand.  
+            </p>
+            <p>Geef de zoekafstand nul op om de exacte locatie van uw invoerpunt te gebruiken.  
+            </p>
+            <p>Voor analysedoeleinden zijn afvoerlijnen door Esri voorberekend met behulp van standaard hydrologische modellen. Als er geen afvoerlijn binnen de zoekafstand ligt, wordt de locatie met de hoogste stroomaccumulatie binnen de zoekafstand gebruikt.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laagnaam al bestaat, wordt u gevraagd een nieuwe naam te verschaffen.
+            </p>
+            <p>Met behulp van het vervolgkeuzemenu  <b>Resultaat opslaan in</b> kunt u de naam van een map opgeven in <b>Mijn Content</b> waar het resultaat wordt opgeslagen.
+            </p>
+            <p> Door het uitvoeren van deze tool worden geen credits verbruikt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>
