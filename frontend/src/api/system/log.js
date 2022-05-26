@@ -17,11 +17,12 @@ export function opTypes() {
   })
 }
 
-export function exportExcel() {
+export function exportExcel(data) {
   return request({
     url: '/api/log/export',
     method: 'post',
     loading: true,
-    responseType: 'blob'
+    responseType: 'blob',
+    data
   })
 }

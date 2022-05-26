@@ -1340,7 +1340,7 @@ export default {
     show_info: '驱动信息',
     file_name: '文件名',
     version: '版本',
-    please_set_driverClass: '请指定驱动类',
+    please_set_driverClass: '请指定驱动类'
   },
   datasource: {
     auth_method: '认证方式',
@@ -2072,6 +2072,7 @@ export default {
     user: '操作用户',
     time: '操作时间',
     export: '导出',
+    confirm: '确定导出吗？',
     search_by_key: '搜索详情'
   },
   plugin_style: {

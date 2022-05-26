@@ -11,6 +11,7 @@ import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CustomCellWriteUtil;
+import io.dataease.commons.utils.ServletUtils;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.dto.SysLogDTO;
@@ -76,6 +77,15 @@ public class LogService {
 
 
     public List<SysLogGridDTO> query(BaseGridRequest request) {
+        request = detailRequest(request);
+
+        GridExample gridExample = request.convertExample();
+        List<SysLogWithBLOBs> voLogs = extSysLogMapper.query(gridExample);
+        List<SysLogGridDTO> dtos = voLogs.stream().map(this::convertDTO).collect(Collectors.toList());
+        return dtos;
+    }
+
+    private BaseGridRequest detailRequest(BaseGridRequest request) {
         List<ConditionEntity> conditions = request.getConditions();
         if (CollectionUtils.isNotEmpty(conditions)) {
             ConditionEntity optypeCondition = null;
@@ -107,11 +117,7 @@ public class LogService {
                 if (ObjectUtils.isNotEmpty(sourceCondition))conditions.add(sourceCondition);
             }
         }
-
-        GridExample gridExample = request.convertExample();
-        List<SysLogWithBLOBs> voLogs = extSysLogMapper.query(gridExample);
-        List<SysLogGridDTO> dtos = voLogs.stream().map(this::convertDTO).collect(Collectors.toList());
-        return dtos;
+        return request;
     }
 
 
@@ -206,8 +212,10 @@ public class LogService {
         sysLogMapper.insert(sysLogWithBLOBs);
     }
 
-    public void exportExcel(HttpServletResponse response) throws Exception{
-        BaseGridRequest request = new BaseGridRequest();
+    public void exportExcel(BaseGridRequest request) throws Exception{
+        request = detailRequest(request);
+        HttpServletResponse response = ServletUtils.response();
+
         GridExample gridExample = request.convertExample();
         List<SysLogWithBLOBs> lists = extSysLogMapper.query(gridExample);
         List<LogExcel> excels = lists.stream().map(item -> {

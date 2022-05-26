@@ -11,7 +11,7 @@
       @sort-change="sortChange"
     >
       <template #toolbar>
-        <el-button v-permission="['log:export']" icon="el-icon-download" size="mini" @click="exportData">{{ $t('log.export') }}</el-button>
+        <el-button v-permission="['log:export']" icon="el-icon-download" size="mini" @click="exportConfirm">{{ $t('log.export') }}</el-button>
       </template>
 
       <el-table-column :show-overflow-tooltip="true" prop="opType" :label="$t('log.optype')" width="140">
@@ -92,9 +92,26 @@ export default {
   },
 
   methods: {
+
+    exportConfirm() {
+      this.$confirm(this.$t('log.confirm'), '', {
+        confirmButtonText: this.$t('commons.confirm'),
+        cancelButtonText: this.$t('commons.cancel'),
+        type: 'warning'
+      }).then(() => {
+        this.exportData()
+      }).catch(() => {
+        // this.$info(this.$t('commons.delete_cancel'))
+      })
+    },
     exportData() {
-      console.log('exportting...')
-      exportExcel().then(res => {
+      let condition = this.last_condition
+      condition = formatQuickCondition(condition, 'key')
+      const temp = formatCondition(condition)
+      const param = temp || {}
+      param['orders'] = formatOrders(this.orderConditions)
+
+      exportExcel(param).then(res => {
         const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
         const link = document.createElement('a')
         link.style.display = 'none'
