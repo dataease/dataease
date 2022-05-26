@@ -129,7 +129,7 @@ export default {
       method(param).then(res => {
         this.datas = this.optionDatas(res.data)
         this.$nextTick(() => {
-          this.$refs.deSelectTree.treeDataUpdateFun(this.datas)
+          this.$refs.deSelectTree && this.$refs.deSelectTree.treeDataUpdateFun(this.datas)
         })
       }) || (this.element.options.value = '')
     },
@@ -191,7 +191,7 @@ export default {
         method({ fieldIds: this.element.options.attrs.fieldId.split(',') }).then(res => {
           this.datas = this.optionDatas(res.data)
           this.$nextTick(() => {
-            this.$refs.deSelectTree.treeDataUpdateFun(this.datas)
+            this.$refs.deSelectTree && this.$refs.deSelectTree.treeDataUpdateFun(this.datas)
           })
         })
       }
@@ -231,7 +231,8 @@ export default {
       const param = {
         component: this.element,
         value: this.formatFilterValue(),
-        operator: this.operator
+        operator: this.operator,
+        isTree: true
       }
       this.inDraw && this.$store.commit('addViewFilter', param)
     },
