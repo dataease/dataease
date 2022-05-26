@@ -542,8 +542,10 @@ public class ChartViewService {
         if (ObjectUtils.isEmpty(view)) {
             throw new RuntimeException(Translator.get("i18n_chart_delete"));
         }
-        Type tokenType = new TypeToken<List<ChartViewFieldDTO>>() {}.getType();
-        Type filterTokenType = new TypeToken<List<ChartFieldCustomFilterDTO>>() {}.getType();
+        Type tokenType = new TypeToken<List<ChartViewFieldDTO>>() {
+        }.getType();
+        Type filterTokenType = new TypeToken<List<ChartFieldCustomFilterDTO>>() {
+        }.getType();
 
         List<ChartViewFieldDTO> viewFields = gson.fromJson(view.getViewFields(), tokenType);
         Map<String, List<ChartViewFieldDTO>> extFieldsMap = null;
@@ -640,24 +642,50 @@ public class ChartViewService {
                 String fieldId = request.getFieldId();
                 if (StringUtils.isNotEmpty(fieldId)) {
                     String[] fieldIds = fieldId.split(",");
-                    for (String fId : fieldIds) {
+                    if (request.getIsTree()) {
                         ChartExtFilterRequest filterRequest = new ChartExtFilterRequest();
                         BeanUtils.copyBean(filterRequest, request);
-                        filterRequest.setFieldId(fId);
-
-                        DatasetTableField datasetTableField = dataSetTableFieldsService.get(fId);
-                        if (datasetTableField == null) {
-                            continue;
+                        filterRequest.setDatasetTableFieldList(new ArrayList<>());
+                        for (String fId : fieldIds) {
+                            DatasetTableField datasetTableField = dataSetTableFieldsService.get(fId);
+                            if (datasetTableField == null) {
+                                continue;
+                            }
+                            if (!desensitizationList.contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())) {
+                                if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
+                                    if (CollectionUtils.isNotEmpty(filterRequest.getViewIds())) {
+                                        if (filterRequest.getViewIds().contains(view.getId())) {
+                                            filterRequest.getDatasetTableFieldList().add(datasetTableField);
+                                        }
+                                    } else {
+                                        filterRequest.getDatasetTableFieldList().add(datasetTableField);
+                                    }
+                                }
+                            }
                         }
-                        if (!desensitizationList.contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())) {
-                            filterRequest.setDatasetTableField(datasetTableField);
-                            if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
-                                if (CollectionUtils.isNotEmpty(filterRequest.getViewIds())) {
-                                    if (filterRequest.getViewIds().contains(view.getId())) {
+                        if (CollectionUtils.isNotEmpty(filterRequest.getDatasetTableFieldList())) {
+                            extFilterList.add(filterRequest);
+                        }
+                    } else {
+                        for (String fId : fieldIds) {
+                            ChartExtFilterRequest filterRequest = new ChartExtFilterRequest();
+                            BeanUtils.copyBean(filterRequest, request);
+                            filterRequest.setFieldId(fId);
+
+                            DatasetTableField datasetTableField = dataSetTableFieldsService.get(fId);
+                            if (datasetTableField == null) {
+                                continue;
+                            }
+                            if (!desensitizationList.contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())) {
+                                filterRequest.setDatasetTableField(datasetTableField);
+                                if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
+                                    if (CollectionUtils.isNotEmpty(filterRequest.getViewIds())) {
+                                        if (filterRequest.getViewIds().contains(view.getId())) {
+                                            extFilterList.add(filterRequest);
+                                        }
+                                    } else {
                                         extFilterList.add(filterRequest);
                                     }
-                                } else {
-                                    extFilterList.add(filterRequest);
                                 }
                             }
                         }
