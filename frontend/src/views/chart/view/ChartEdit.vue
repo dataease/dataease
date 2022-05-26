@@ -2019,6 +2019,7 @@ export default {
     },
 
     onColorChange(val) {
+      console.log('val: ', val)
       this.view.customAttr.color = val
       this.calcStyle()
     },

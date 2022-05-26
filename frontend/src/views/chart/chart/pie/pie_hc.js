@@ -106,6 +106,7 @@ export function basePieOption(chart_option, chart, terminal = 'pc') {
   console.log('apple......')
   terminalType = terminal
   let customAttr = {}
+  console.log('chart.customAttr: ', chart.customAttr)
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
     if (customAttr.color) {
@@ -173,6 +174,7 @@ export function componentStyle(chart_option, chart) {
   const padding = '8px'
   if (chart.customStyle) {
     const customStyle = JSON.parse(chart.customStyle)
+    console.log('componentStyle: ', customStyle)
 
     if (customStyle.text) {
       chart_option.title.text = customStyle.text.show ? chart.title : ''
