@@ -1,6 +1,7 @@
 package io.dataease.service.dataset.impl.direct;
 
 import com.google.gson.Gson;
+import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.BaseTreeNode;
 import io.dataease.commons.utils.TreeUtils;
 import io.dataease.plugins.common.base.domain.DatasetTable;
@@ -61,6 +62,11 @@ public class DirectFieldService implements DataSetFieldService {
 
         DatasetTableField datasetTableField = DatasetTableField.builder().tableId(field.getTableId()).checked(Boolean.TRUE).build();
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
+        final List<String> allTableFieldIds = fields.stream().map(DatasetTableField::getId).collect(Collectors.toList());
+        boolean multi = fieldIds.stream().anyMatch(item -> !allTableFieldIds.contains(item));
+        if (multi && needMapping) {
+            DEException.throwException("Cross multiple dataset is not supported");
+        }
 
         List<DatasetTableField> permissionFields = fields;
         List<ChartFieldCustomFilterDTO> customFilter = new ArrayList<>();
@@ -69,8 +75,9 @@ public class DirectFieldService implements DataSetFieldService {
             List<String> desensitizationList = new ArrayList<>();
             fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable.getId(), userId);
 
-
-            permissionFields = fields.stream().filter(node -> fieldIds.stream().anyMatch(item -> StringUtils.equals(node.getId(), item))).collect(Collectors.toList());
+            Map<String, DatasetTableField> fieldMap = fields.stream().collect(Collectors.toMap(DatasetTableField::getId, node -> node));
+            permissionFields = fieldIds.stream().map(fieldMap::get).collect(Collectors.toList());
+            //permissionFields = fields.stream().filter(node -> fieldIds.stream().anyMatch(item -> StringUtils.equals(node.getId(), item))).collect(Collectors.toList());
 
             if (CollectionUtils.isEmpty(permissionFields)) {
                 return new ArrayList<>();
