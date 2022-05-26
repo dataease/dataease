@@ -14,6 +14,7 @@
       v-model="labels"
       v-popover:popover
       :style="styles"
+      :collapse-tags="showNumber"
       class="el-tree-select-input"
       :disabled="disabled"
       popper-class="select-option"
@@ -77,7 +78,9 @@ export default {
       type: Object,
       // {}
       default() {
-        return {}
+        return {
+          width: '100%'
+        }
       }
     },
     // 下拉框 挂类
@@ -119,8 +122,10 @@ export default {
       }
     },
     // 树渲染方法，具体参考el-tree Function(h, { node, data, store }) {}
+    // eslint-disable-next-line vue/require-default-prop
     treeRenderFun: Function,
     // 搜索过滤方法，具体参考el-tree Function(h, { value, data, node }) {}
+    // eslint-disable-next-line vue/require-default-prop
     filterNodeMethod: Function,
     /*
         文本框参数，几乎支持el-select所有的API<br>
@@ -215,7 +220,8 @@ export default {
       ids: [], // 存储id
       visible: false, // popover v-model
       width: 150,
-      showParent: false
+      showParent: false,
+      showNumber: false
     }
   },
   computed: {
@@ -241,6 +247,9 @@ export default {
           this.ids = val === '' ? [] : [val]
         }
       }
+    },
+    labels: function() {
+      this.setShowNumber()
     }
   },
   created() {
@@ -549,6 +558,22 @@ export default {
          */
     filterFun(val) {
       this.$refs.tree.filter(val)
+    },
+
+    setShowNumber() {
+      this.showNumber = false
+
+      this.$nextTick(() => {
+        if (!this.selectParams.multiple || !this.$refs.select || !this.$refs.select.$refs.tags) {
+          return
+        }
+        const kids = this.$refs.select.$refs.tags.children[0].children
+        let contentWidth = 0
+        kids.forEach(kid => {
+          contentWidth += kid.offsetWidth
+        })
+        this.showNumber = contentWidth > ((this.$refs.select.$refs.tags.clientWidth - 35) * 0.9)
+      })
     }
   }
 }

@@ -1191,27 +1191,27 @@ export const TYPE_CONFIGS = [
         'tableItemBgColor',
         'tableFontColor',
         'alpha'
+      ],
+      'size-selector': [
+        'tablePageMode',
+        'tablePageSize',
+        'tableTitleFontSize',
+        'tableItemFontSize',
+        'tableTitleHeight',
+        'tableItemHeight',
+        'tableColumnMode'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
       ]
-    },
-    'size-selector': [
-      'tablePageMode',
-      'tablePageSize',
-      'tableTitleFontSize',
-      'tableItemFontSize',
-      'tableTitleHeight',
-      'tableItemHeight',
-      'tableColumnMode'
-    ],
-    'title-selector': [
-      'show',
-      'title',
-      'fontSize',
-      'color',
-      'hPosition',
-      'vPosition',
-      'isItalic',
-      'isBolder'
-    ]
+    }
   },
 
   {

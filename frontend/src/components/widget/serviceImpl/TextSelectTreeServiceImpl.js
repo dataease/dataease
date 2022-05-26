@@ -88,7 +88,11 @@ class TextSelectTreeServiceImpl extends WidgetService {
     const param = {
       component: element,
       value: !value ? [] : Array.isArray(value) ? value : value.toString().split(','),
-      operator: element.options.attrs.multiple ? 'in' : 'eq'
+      operator: element.options.attrs.multiple ? 'in' : 'eq',
+      isTree: true
+    }
+    if (param.value && param.value.length) {
+      param.value = param.value.map(val => val.replaceAll('-de-', ','))
     }
     return param
   }

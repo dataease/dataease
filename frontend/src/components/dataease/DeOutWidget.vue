@@ -13,7 +13,6 @@
       <div
         ref="deContentContainer"
         class="condition-content"
-        :style="titleStyle"
         :class="element.options.attrs.title ? '' : 'condition-content-default'"
       >
         <div class="condition-content-container">
@@ -174,6 +173,7 @@ export default {
   .condition-content {
     overflow: auto hidden;
     letter-spacing: 0px !important;
+    width: 100%;
   }
   .condition-content-container {
     position: relative;
