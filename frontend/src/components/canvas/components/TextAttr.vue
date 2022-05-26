@@ -153,7 +153,7 @@
 
       <div v-if="attrShow('titlePostion')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
         <el-tooltip content="标题位置">
-          <title-postion :style-info="styleInfo" />
+          <title-postion :show-vertical="showVertical" :style-info="styleInfo" />
         </el-tooltip>
       </div>
       <!--tab 内部组件样式-->
@@ -181,7 +181,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import Hyperlinks from '@/components/canvas/components/Editor/Hyperlinks'
 import VideoLinks from '@/components/canvas/components/Editor/VideoLinks'
 import StreamMediaLinks from '@/components/canvas/components/Editor/StreamMediaLinks'
 import DateFormat from '@/components/canvas/components/Editor/DateFormat'
@@ -189,7 +188,7 @@ import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import FrameLinks from '@/components/canvas/components/Editor/FrameLinks'
 
 export default {
-  components: { FrameLinks, Hyperlinks, DateFormat, VideoLinks, StreamMediaLinks },
+  components: { FrameLinks, DateFormat, VideoLinks, StreamMediaLinks },
   props: {
     scrollLeft: {
       type: Number,
@@ -355,6 +354,9 @@ export default {
     },
     canvasWidth() {
       return this.canvasStyleData.width * this.curCanvasScale.scalePointWidth
+    },
+    showVertical() {
+      return !['textSelectGridWidget', 'numberSelectGridWidget'].includes(this.curComponent.serviceName)
     },
     ...mapState([
       'curComponent',
