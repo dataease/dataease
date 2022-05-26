@@ -82,10 +82,10 @@ export default {
       this.batchOptChange('customStyle', 'xAxis', val)
     },
     onChangeYAxisForm(val) {
-      this.batchOptChange('customStyle', 'xAxis', val)
+      this.batchOptChange('customStyle', 'yAxis', val)
     },
     onChangeYAxisExtForm(val) {
-      this.batchOptChange('customStyle', 'yAxis', val)
+      this.batchOptChange('customStyle', 'yAxisExt', val)
     },
     onChangeSplitForm(val) {
       this.batchOptChange('customStyle', 'split', val)

@@ -82,6 +82,7 @@ import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
 import UserViewMobileDialog from '@/components/canvas/custom-component/UserViewMobileDialog'
 import bus from '@/utils/bus'
 import { buildFilterMap } from '@/utils/conditionUtil'
+import { hasDataPermission } from '@/utils/permission'
 export default {
   components: { UserViewMobileDialog, ComponentWrapper, UserViewDialog, CanvasOptBar },
   model: {
@@ -176,7 +177,7 @@ export default {
     showUnpublishedArea() {
       // return this.panelInfo.status === 'unpublished'
       if (this.mainActiveName === 'PanelMain' && this.activeTab === 'PanelList') {
-        return this.panelInfo.status === 'unpublished' && this.panelInfo.privileges.indexOf('manage') === -1
+        return this.panelInfo.status === 'unpublished' && !hasDataPermission('manage', this.panelInfo.privileges)
       } else {
         return this.panelInfo.status === 'unpublished'
       }
@@ -270,12 +271,15 @@ export default {
     this._isMobile()
     const _this = this
     const erd = elementResizeDetectorMaker()
+    const canvasMain = document.getElementById('canvasInfoMain')
     // 监听主div变动事件
-    erd.listenTo(document.getElementById('canvasInfoMain'), element => {
-      _this.$nextTick(() => {
-        _this.restore()
+    if (canvasMain) {
+      erd.listenTo(canvasMain, element => {
+        _this.$nextTick(() => {
+          _this.restore()
+        })
       })
-    })
+    }
     // 监听画布div变动事件
     const tempCanvas = document.getElementById('canvasInfoTemp')
     if (tempCanvas) {

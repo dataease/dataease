@@ -468,7 +468,7 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position'
+        'position-v'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -540,7 +540,7 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position'
+        'position-v'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -605,7 +605,7 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position'
+        'position-v'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -670,7 +670,7 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position'
+        'position-h'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -743,7 +743,7 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position'
+        'position-h'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -815,7 +815,7 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position'
+        'position-pie'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -866,7 +866,8 @@ export const TYPE_CONFIGS = [
       'label-selector-ant-v': [
         'show',
         'fontSize',
-        'color'
+        'color',
+        'position-pie'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -919,7 +920,7 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position'
+        'position-v'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -1113,7 +1114,7 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position'
+        'position-h'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -1308,7 +1309,7 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position',
+        'position-v',
         'formatter',
         'gaugeFormatter'
       ],
@@ -1512,7 +1513,7 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position',
+        'position-v',
         'formatter'
       ],
       'tooltip-selector': [
@@ -1594,7 +1595,7 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position',
+        'position-v',
         'formatter'
       ],
       'tooltip-selector': [
@@ -1668,7 +1669,7 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position',
+        'position-v',
         'formatter'
       ],
       'tooltip-selector': [
@@ -1742,7 +1743,7 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position',
+        'position-h',
         'formatter'
       ],
       'tooltip-selector': [
@@ -1817,7 +1818,7 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position',
+        'position-h',
         'formatter'
       ],
       'tooltip-selector': [
@@ -1892,7 +1893,7 @@ export const TYPE_CONFIGS = [
         'labelLine',
         'fontSize',
         'color',
-        'position',
+        'position-v',
         'formatter'
       ],
       'tooltip-selector': [
@@ -1951,7 +1952,7 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position',
+        'position-pie',
         'formatter'
       ],
       'tooltip-selector': [
@@ -2009,7 +2010,7 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position',
+        'position-v',
         'formatter'
       ],
       'tooltip-selector': [
@@ -2123,7 +2124,7 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position',
+        'position-v',
         'formatter'
       ],
       'tooltip-selector': [
@@ -2193,7 +2194,7 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position',
+        'position-h',
         'formatter'
       ],
       'tooltip-selector': [
@@ -2249,7 +2250,6 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position',
         'formatter'
       ],
       'tooltip-selector': [
