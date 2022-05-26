@@ -19,7 +19,7 @@
             Tips:{{ $t('panel.live_tips') }}
           </span>
         </el-form-item>
-        <el-row v-if="streamMediaInfoTemp.videoType==='flv'">
+        <el-row v-if="streamMediaInfoTemp.videoType !== 'webrtc'">
           <el-form-item :label="$t('panel.is_live')">
             <el-radio-group v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].isLive">
               <el-radio :label="true">{{ $t('panel.yes') }}</el-radio>
@@ -39,27 +39,11 @@
             <el-input v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].url" />
           </el-form-item>
         </el-row>
-        <el-row v-if="streamMediaInfoTemp.videoType==='hls'">
-          <el-form-item :label="$t('panel.is_live')">
-            <el-radio-group v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].isLive">
-              <el-radio :label="true">{{ $t('panel.yes') }}</el-radio>
-              <el-radio :label="false">{{ $t('panel.no') }}</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item v-if="!streamMediaInfoTemp[streamMediaInfoTemp.videoType].isLive" :label="$t('panel.auto_play')">
-            <el-switch v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].autoplay" size="mini" />
-          </el-form-item>
-          <el-form-item v-if="!streamMediaInfoTemp[streamMediaInfoTemp.videoType].isLive" :label="$t('panel.play_frequency')">
-            <el-radio-group v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].loop">
-              <el-radio :label="false">{{ $t('panel.play_once') }}</el-radio>
-              <el-radio :label="true">{{ $t('panel.play_circle') }}</el-radio>
-            </el-radio-group>
-          </el-form-item>
+        <el-row v-if="streamMediaInfoTemp.videoType === 'webrtc'">
           <el-form-item :label="$t('panel.video_links')">
             <el-input v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].url" />
           </el-form-item>
         </el-row>
-
         <el-form-item>
           <el-button type="primary" @click="onSubmit">{{ $t('panel.confirm') }}</el-button>
           <el-button @click="onClose">{{ $t('panel.cancel') }}</el-button>
