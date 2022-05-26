@@ -640,6 +640,9 @@ public class ChartViewService {
             for (ChartExtFilterRequest request : requestList.getFilter()) {
                 // 解析多个fieldId,fieldId是一个逗号分隔的字符串
                 String fieldId = request.getFieldId();
+                if (request.getIsTree() == null) {
+                    request.setIsTree(false);
+                }
                 if (StringUtils.isNotEmpty(fieldId)) {
                     String[] fieldIds = fieldId.split(",");
                     if (request.getIsTree()) {
