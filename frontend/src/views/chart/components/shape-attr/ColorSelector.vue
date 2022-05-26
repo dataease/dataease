@@ -64,13 +64,13 @@
                   :key="index"
                   style="display: flex;align-items: center;margin: 2px 0;"
                 >
-                  <span class="span-label" :title="item.name">{{ item.name }}</span>
                   <el-color-picker
                     v-model="item.color"
                     class="color-picker-style"
                     :predefine="predefineColors"
                     @change="switchCustomColor(index)"
                   />
+                  <span class="span-label" :title="item.name">{{ item.name }}</span>
                 </div>
               </div>
 
@@ -394,17 +394,18 @@ export default {
   }
 
 .span-label {
-  width: 100px;
+  width: 300px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   display: inline-block;
+  padding: 0 8px;
 }
 
 .custom-color-style {
   height: 300px;
   overflow-y: auto;
-  padding: 4px;
+  padding: 4px 12px;
   border: 1px solid #e6e6e6;
 }
 </style>
