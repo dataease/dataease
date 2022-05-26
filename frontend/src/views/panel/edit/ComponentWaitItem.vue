@@ -20,6 +20,7 @@
       :is-edit="false"
       :element="config"
       :h="outItemHeight"
+      :canvas-style-data="canvasStyleData"
     />
   </div>
 </template>
@@ -70,6 +71,7 @@ export default {
     ...mapState([
       'mobileLayoutStatus',
       'componentData',
+      'canvasStyleData',
       'componentGap'
     ])
   },
@@ -91,5 +93,6 @@ export default {
   .component-item {
     padding: 5px;
     height: 200px!important;
+    position: relative;
   }
 </style>
