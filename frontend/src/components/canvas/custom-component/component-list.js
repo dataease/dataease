@@ -281,7 +281,7 @@ const list = [
     id: '10002',
     component: 'de-rich-text',
     label: '富文本',
-    propValue: '双击输入文字',
+    propValue: '双击进入编辑状态',
     icon: 'icon-fuwenbenkuang',
     type: 'de-rich-text',
     mobileStyle: BASE_MOBILE_STYLE,
