@@ -367,7 +367,7 @@ export default {
         }
       }
       if (this.param.editType === 0 && this.param.tableId) {
-        $confirm(i18n.t('dataset.excel_replace_msg'), () => {
+        $confirm(i18n.t('dataset.task.excel_replace_msg'), () => {
           this.saveExcelData(sheetFileMd5, table)
         })
       }else {
